@@ -1,0 +1,10 @@
+name = "churchos"
+compatibility_date = "2026-05-28"
+compatibility_flags = [
+  "nodejs_compat"
+]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "churchos-prod-db"
+database_id = "your-d1-database-uuid"

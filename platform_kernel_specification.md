@@ -444,3 +444,27 @@ Enables selective canary releases, beta trials, or pricing-tier entitlements dyn
 
 **Implementation Guidelines:**
 Feature flag queries must be heavily cached in memory (e.g., Redis) since they are checked on almost every request.
+
+---
+
+## 13. Centralized Settings Engine
+Specifies unified settings overrides per tenant and module key, validating entries against registered configurations.
+
+### Entity: Module Settings
+Stores a JSON representation of active setting values for each module under a specific tenant.
+| Field | Type | Description |
+|---|---|---|
+| `id` | `UUID` | Primary Key |
+| `tenant_id` | `UUID` | Foreign key to Tenant |
+| `module_key` | `VARCHAR(100)` | Unique key identifier for the module (e.g. liveChat, cells, media) |
+| `settings` | `TEXT` | JSON stringified key-values representing custom overrides |
+| `created_at` | `TIMESTAMP` | Creation timestamp |
+| `updated_at` | `TIMESTAMP` | Last updated timestamp |
+
+**Relationships:**
+- Belongs to one Tenant
+- Dynamically queried by individual module service pipelines to configure their parameters
+
+**Implementation Guidelines:**
+Every setting update request (`PATCH /api/settings/:moduleKey`) must be dynamically validated against the module’s registered configuration schema (rejections on incorrect types or numbers outside the min/max range bounds).
+
