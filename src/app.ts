@@ -1,5 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import path from 'path';
 import { tenantMiddleware } from './middleware/tenant';
 import { requireModule } from './middleware/entitlements';
 import authRoutes from './routes/auth';
@@ -57,6 +58,9 @@ const app = express();
 
 // ── Global middleware ──────────────────────────────────────
 app.use(express.json());
+
+// ── Serve static files ──────────────────────────────────────
+app.use(express.static(path.join(__dirname, '..')));
 
 // ── Health check (no tenant required) ──────────────────────
 app.get('/health', (_req, res) => {

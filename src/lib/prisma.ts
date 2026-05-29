@@ -45,16 +45,22 @@ if (isCloudflare) {
   } else if (rawUrl.startsWith('file:')) {
     // Local SQLite file database (Local dev / testing)
     try {
-      const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
-      const relativePath = rawUrl.replace(/^file:/, '');
-      const dbPath = path.isAbsolute(relativePath)
-        ? relativePath
-        : path.resolve(process.cwd(), relativePath);
+      if (process.env.VERCEL === '1') {
+        // In Vercel serverless environment, native modules like better-sqlite3 are not supported.
+        // We use standard Prisma Client without adapter.
+        prisma = new (PrismaClient as any)();
+      } else {
+        const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
+        const relativePath = rawUrl.replace(/^file:/, '');
+        const dbPath = path.isAbsolute(relativePath)
+          ? relativePath
+          : path.resolve(process.cwd(), relativePath);
 
-      const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
-      prisma = new PrismaClient({ adapter });
+        const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+        prisma = new PrismaClient({ adapter });
+      }
     } catch (err) {
-      console.error('Failed to initialize better-sqlite3 adapter:', err);
+      console.error('Failed to initialize SQLite client:', err);
       throw err;
     }
   } else {
