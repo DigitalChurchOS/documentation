@@ -263,7 +263,15 @@ export const ModelName = {
   CommunityChannel: 'CommunityChannel',
   ChatKbArticle: 'ChatKbArticle',
   AltarCallResponse: 'AltarCallResponse',
-  ModuleSettings: 'ModuleSettings'
+  ModuleSettings: 'ModuleSettings',
+  PageRevision: 'PageRevision',
+  NavigationMenu: 'NavigationMenu',
+  CmsFooter: 'CmsFooter',
+  ReusableBlock: 'ReusableBlock',
+  CmsActivityLog: 'CmsActivityLog',
+  ThemeEngineModule: 'ThemeEngineModule',
+  ThemeEngineModuleActivity: 'ThemeEngineModuleActivity',
+  ThemeEngineModuleSettings: 'ThemeEngineModuleSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -531,6 +539,9 @@ export const PageScalarFieldEnum = {
   content: 'content',
   status: 'status',
   isHome: 'isHome',
+  seoTitle: 'seoTitle',
+  seoDescription: 'seoDescription',
+  seoKeywords: 'seoKeywords',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3526,6 +3537,115 @@ export const ModuleSettingsScalarFieldEnum = {
 } as const
 
 export type ModuleSettingsScalarFieldEnum = (typeof ModuleSettingsScalarFieldEnum)[keyof typeof ModuleSettingsScalarFieldEnum]
+
+
+export const PageRevisionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  pageId: 'pageId',
+  content: 'content',
+  version: 'version',
+  createdById: 'createdById',
+  createdAt: 'createdAt'
+} as const
+
+export type PageRevisionScalarFieldEnum = (typeof PageRevisionScalarFieldEnum)[keyof typeof PageRevisionScalarFieldEnum]
+
+
+export const NavigationMenuScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  websiteId: 'websiteId',
+  name: 'name',
+  items: 'items',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NavigationMenuScalarFieldEnum = (typeof NavigationMenuScalarFieldEnum)[keyof typeof NavigationMenuScalarFieldEnum]
+
+
+export const CmsFooterScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  websiteId: 'websiteId',
+  copyrightText: 'copyrightText',
+  socialLinks: 'socialLinks',
+  secondaryLinks: 'secondaryLinks',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CmsFooterScalarFieldEnum = (typeof CmsFooterScalarFieldEnum)[keyof typeof CmsFooterScalarFieldEnum]
+
+
+export const ReusableBlockScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  key: 'key',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReusableBlockScalarFieldEnum = (typeof ReusableBlockScalarFieldEnum)[keyof typeof ReusableBlockScalarFieldEnum]
+
+
+export const CmsActivityLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  pageId: 'pageId',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type CmsActivityLogScalarFieldEnum = (typeof CmsActivityLogScalarFieldEnum)[keyof typeof CmsActivityLogScalarFieldEnum]
+
+
+export const ThemeEngineModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ThemeEngineModuleScalarFieldEnum = (typeof ThemeEngineModuleScalarFieldEnum)[keyof typeof ThemeEngineModuleScalarFieldEnum]
+
+
+export const ThemeEngineModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type ThemeEngineModuleActivityScalarFieldEnum = (typeof ThemeEngineModuleActivityScalarFieldEnum)[keyof typeof ThemeEngineModuleActivityScalarFieldEnum]
+
+
+export const ThemeEngineModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ThemeEngineModuleSettingsScalarFieldEnum = (typeof ThemeEngineModuleSettingsScalarFieldEnum)[keyof typeof ThemeEngineModuleSettingsScalarFieldEnum]
 
 
 export const SortOrder = {

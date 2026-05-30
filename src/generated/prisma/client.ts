@@ -1104,3 +1104,43 @@ export type AltarCallResponse = Prisma.AltarCallResponseModel
  * 
  */
 export type ModuleSettings = Prisma.ModuleSettingsModel
+/**
+ * Model PageRevision
+ * 
+ */
+export type PageRevision = Prisma.PageRevisionModel
+/**
+ * Model NavigationMenu
+ * 
+ */
+export type NavigationMenu = Prisma.NavigationMenuModel
+/**
+ * Model CmsFooter
+ * 
+ */
+export type CmsFooter = Prisma.CmsFooterModel
+/**
+ * Model ReusableBlock
+ * 
+ */
+export type ReusableBlock = Prisma.ReusableBlockModel
+/**
+ * Model CmsActivityLog
+ * 
+ */
+export type CmsActivityLog = Prisma.CmsActivityLogModel
+/**
+ * Model ThemeEngineModule
+ * 
+ */
+export type ThemeEngineModule = Prisma.ThemeEngineModuleModel
+/**
+ * Model ThemeEngineModuleActivity
+ * 
+ */
+export type ThemeEngineModuleActivity = Prisma.ThemeEngineModuleActivityModel
+/**
+ * Model ThemeEngineModuleSettings
+ * 
+ */
+export type ThemeEngineModuleSettings = Prisma.ThemeEngineModuleSettingsModel

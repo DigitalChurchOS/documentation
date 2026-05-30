@@ -217,6 +217,8 @@ export type WebsiteWhereInput = {
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   theme?: Prisma.XOR<Prisma.ThemeScalarRelationFilter, Prisma.ThemeWhereInput>
   pages?: Prisma.PageListRelationFilter
+  navigationMenus?: Prisma.NavigationMenuListRelationFilter
+  cmsFooters?: Prisma.CmsFooterListRelationFilter
 }
 
 export type WebsiteOrderByWithRelationInput = {
@@ -232,6 +234,8 @@ export type WebsiteOrderByWithRelationInput = {
   tenant?: Prisma.TenantOrderByWithRelationInput
   theme?: Prisma.ThemeOrderByWithRelationInput
   pages?: Prisma.PageOrderByRelationAggregateInput
+  navigationMenus?: Prisma.NavigationMenuOrderByRelationAggregateInput
+  cmsFooters?: Prisma.CmsFooterOrderByRelationAggregateInput
 }
 
 export type WebsiteWhereUniqueInput = Prisma.AtLeast<{
@@ -250,6 +254,8 @@ export type WebsiteWhereUniqueInput = Prisma.AtLeast<{
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   theme?: Prisma.XOR<Prisma.ThemeScalarRelationFilter, Prisma.ThemeWhereInput>
   pages?: Prisma.PageListRelationFilter
+  navigationMenus?: Prisma.NavigationMenuListRelationFilter
+  cmsFooters?: Prisma.CmsFooterListRelationFilter
 }, "id" | "domain">
 
 export type WebsiteOrderByWithAggregationInput = {
@@ -293,6 +299,8 @@ export type WebsiteCreateInput = {
   tenant: Prisma.TenantCreateNestedOneWithoutWebsitesInput
   theme: Prisma.ThemeCreateNestedOneWithoutWebsitesInput
   pages?: Prisma.PageCreateNestedManyWithoutWebsiteInput
+  navigationMenus?: Prisma.NavigationMenuCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterCreateNestedManyWithoutWebsiteInput
 }
 
 export type WebsiteUncheckedCreateInput = {
@@ -306,6 +314,8 @@ export type WebsiteUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   pages?: Prisma.PageUncheckedCreateNestedManyWithoutWebsiteInput
+  navigationMenus?: Prisma.NavigationMenuUncheckedCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterUncheckedCreateNestedManyWithoutWebsiteInput
 }
 
 export type WebsiteUpdateInput = {
@@ -319,6 +329,8 @@ export type WebsiteUpdateInput = {
   tenant?: Prisma.TenantUpdateOneRequiredWithoutWebsitesNestedInput
   theme?: Prisma.ThemeUpdateOneRequiredWithoutWebsitesNestedInput
   pages?: Prisma.PageUpdateManyWithoutWebsiteNestedInput
+  navigationMenus?: Prisma.NavigationMenuUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUpdateManyWithoutWebsiteNestedInput
 }
 
 export type WebsiteUncheckedUpdateInput = {
@@ -332,6 +344,8 @@ export type WebsiteUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pages?: Prisma.PageUncheckedUpdateManyWithoutWebsiteNestedInput
+  navigationMenus?: Prisma.NavigationMenuUncheckedUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUncheckedUpdateManyWithoutWebsiteNestedInput
 }
 
 export type WebsiteCreateManyInput = {
@@ -517,6 +531,34 @@ export type WebsiteUpdateOneRequiredWithoutPagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WebsiteUpdateToOneWithWhereWithoutPagesInput, Prisma.WebsiteUpdateWithoutPagesInput>, Prisma.WebsiteUncheckedUpdateWithoutPagesInput>
 }
 
+export type WebsiteCreateNestedOneWithoutNavigationMenusInput = {
+  create?: Prisma.XOR<Prisma.WebsiteCreateWithoutNavigationMenusInput, Prisma.WebsiteUncheckedCreateWithoutNavigationMenusInput>
+  connectOrCreate?: Prisma.WebsiteCreateOrConnectWithoutNavigationMenusInput
+  connect?: Prisma.WebsiteWhereUniqueInput
+}
+
+export type WebsiteUpdateOneRequiredWithoutNavigationMenusNestedInput = {
+  create?: Prisma.XOR<Prisma.WebsiteCreateWithoutNavigationMenusInput, Prisma.WebsiteUncheckedCreateWithoutNavigationMenusInput>
+  connectOrCreate?: Prisma.WebsiteCreateOrConnectWithoutNavigationMenusInput
+  upsert?: Prisma.WebsiteUpsertWithoutNavigationMenusInput
+  connect?: Prisma.WebsiteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WebsiteUpdateToOneWithWhereWithoutNavigationMenusInput, Prisma.WebsiteUpdateWithoutNavigationMenusInput>, Prisma.WebsiteUncheckedUpdateWithoutNavigationMenusInput>
+}
+
+export type WebsiteCreateNestedOneWithoutCmsFootersInput = {
+  create?: Prisma.XOR<Prisma.WebsiteCreateWithoutCmsFootersInput, Prisma.WebsiteUncheckedCreateWithoutCmsFootersInput>
+  connectOrCreate?: Prisma.WebsiteCreateOrConnectWithoutCmsFootersInput
+  connect?: Prisma.WebsiteWhereUniqueInput
+}
+
+export type WebsiteUpdateOneRequiredWithoutCmsFootersNestedInput = {
+  create?: Prisma.XOR<Prisma.WebsiteCreateWithoutCmsFootersInput, Prisma.WebsiteUncheckedCreateWithoutCmsFootersInput>
+  connectOrCreate?: Prisma.WebsiteCreateOrConnectWithoutCmsFootersInput
+  upsert?: Prisma.WebsiteUpsertWithoutCmsFootersInput
+  connect?: Prisma.WebsiteWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WebsiteUpdateToOneWithWhereWithoutCmsFootersInput, Prisma.WebsiteUpdateWithoutCmsFootersInput>, Prisma.WebsiteUncheckedUpdateWithoutCmsFootersInput>
+}
+
 export type WebsiteCreateWithoutTenantInput = {
   id?: string
   title: string
@@ -527,6 +569,8 @@ export type WebsiteCreateWithoutTenantInput = {
   updatedAt?: Date | string
   theme: Prisma.ThemeCreateNestedOneWithoutWebsitesInput
   pages?: Prisma.PageCreateNestedManyWithoutWebsiteInput
+  navigationMenus?: Prisma.NavigationMenuCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterCreateNestedManyWithoutWebsiteInput
 }
 
 export type WebsiteUncheckedCreateWithoutTenantInput = {
@@ -539,6 +583,8 @@ export type WebsiteUncheckedCreateWithoutTenantInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   pages?: Prisma.PageUncheckedCreateNestedManyWithoutWebsiteInput
+  navigationMenus?: Prisma.NavigationMenuUncheckedCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterUncheckedCreateNestedManyWithoutWebsiteInput
 }
 
 export type WebsiteCreateOrConnectWithoutTenantInput = {
@@ -591,6 +637,8 @@ export type WebsiteCreateWithoutThemeInput = {
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutWebsitesInput
   pages?: Prisma.PageCreateNestedManyWithoutWebsiteInput
+  navigationMenus?: Prisma.NavigationMenuCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterCreateNestedManyWithoutWebsiteInput
 }
 
 export type WebsiteUncheckedCreateWithoutThemeInput = {
@@ -603,6 +651,8 @@ export type WebsiteUncheckedCreateWithoutThemeInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   pages?: Prisma.PageUncheckedCreateNestedManyWithoutWebsiteInput
+  navigationMenus?: Prisma.NavigationMenuUncheckedCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterUncheckedCreateNestedManyWithoutWebsiteInput
 }
 
 export type WebsiteCreateOrConnectWithoutThemeInput = {
@@ -640,6 +690,8 @@ export type WebsiteCreateWithoutPagesInput = {
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutWebsitesInput
   theme: Prisma.ThemeCreateNestedOneWithoutWebsitesInput
+  navigationMenus?: Prisma.NavigationMenuCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterCreateNestedManyWithoutWebsiteInput
 }
 
 export type WebsiteUncheckedCreateWithoutPagesInput = {
@@ -652,6 +704,8 @@ export type WebsiteUncheckedCreateWithoutPagesInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
+  navigationMenus?: Prisma.NavigationMenuUncheckedCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterUncheckedCreateNestedManyWithoutWebsiteInput
 }
 
 export type WebsiteCreateOrConnectWithoutPagesInput = {
@@ -680,6 +734,8 @@ export type WebsiteUpdateWithoutPagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutWebsitesNestedInput
   theme?: Prisma.ThemeUpdateOneRequiredWithoutWebsitesNestedInput
+  navigationMenus?: Prisma.NavigationMenuUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUpdateManyWithoutWebsiteNestedInput
 }
 
 export type WebsiteUncheckedUpdateWithoutPagesInput = {
@@ -692,6 +748,152 @@ export type WebsiteUncheckedUpdateWithoutPagesInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  navigationMenus?: Prisma.NavigationMenuUncheckedUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUncheckedUpdateManyWithoutWebsiteNestedInput
+}
+
+export type WebsiteCreateWithoutNavigationMenusInput = {
+  id?: string
+  title: string
+  description?: string | null
+  domain?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutWebsitesInput
+  theme: Prisma.ThemeCreateNestedOneWithoutWebsitesInput
+  pages?: Prisma.PageCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterCreateNestedManyWithoutWebsiteInput
+}
+
+export type WebsiteUncheckedCreateWithoutNavigationMenusInput = {
+  id?: string
+  tenantId: string
+  themeId: string
+  title: string
+  description?: string | null
+  domain?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pages?: Prisma.PageUncheckedCreateNestedManyWithoutWebsiteInput
+  cmsFooters?: Prisma.CmsFooterUncheckedCreateNestedManyWithoutWebsiteInput
+}
+
+export type WebsiteCreateOrConnectWithoutNavigationMenusInput = {
+  where: Prisma.WebsiteWhereUniqueInput
+  create: Prisma.XOR<Prisma.WebsiteCreateWithoutNavigationMenusInput, Prisma.WebsiteUncheckedCreateWithoutNavigationMenusInput>
+}
+
+export type WebsiteUpsertWithoutNavigationMenusInput = {
+  update: Prisma.XOR<Prisma.WebsiteUpdateWithoutNavigationMenusInput, Prisma.WebsiteUncheckedUpdateWithoutNavigationMenusInput>
+  create: Prisma.XOR<Prisma.WebsiteCreateWithoutNavigationMenusInput, Prisma.WebsiteUncheckedCreateWithoutNavigationMenusInput>
+  where?: Prisma.WebsiteWhereInput
+}
+
+export type WebsiteUpdateToOneWithWhereWithoutNavigationMenusInput = {
+  where?: Prisma.WebsiteWhereInput
+  data: Prisma.XOR<Prisma.WebsiteUpdateWithoutNavigationMenusInput, Prisma.WebsiteUncheckedUpdateWithoutNavigationMenusInput>
+}
+
+export type WebsiteUpdateWithoutNavigationMenusInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutWebsitesNestedInput
+  theme?: Prisma.ThemeUpdateOneRequiredWithoutWebsitesNestedInput
+  pages?: Prisma.PageUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUpdateManyWithoutWebsiteNestedInput
+}
+
+export type WebsiteUncheckedUpdateWithoutNavigationMenusInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  themeId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pages?: Prisma.PageUncheckedUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUncheckedUpdateManyWithoutWebsiteNestedInput
+}
+
+export type WebsiteCreateWithoutCmsFootersInput = {
+  id?: string
+  title: string
+  description?: string | null
+  domain?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutWebsitesInput
+  theme: Prisma.ThemeCreateNestedOneWithoutWebsitesInput
+  pages?: Prisma.PageCreateNestedManyWithoutWebsiteInput
+  navigationMenus?: Prisma.NavigationMenuCreateNestedManyWithoutWebsiteInput
+}
+
+export type WebsiteUncheckedCreateWithoutCmsFootersInput = {
+  id?: string
+  tenantId: string
+  themeId: string
+  title: string
+  description?: string | null
+  domain?: string | null
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  pages?: Prisma.PageUncheckedCreateNestedManyWithoutWebsiteInput
+  navigationMenus?: Prisma.NavigationMenuUncheckedCreateNestedManyWithoutWebsiteInput
+}
+
+export type WebsiteCreateOrConnectWithoutCmsFootersInput = {
+  where: Prisma.WebsiteWhereUniqueInput
+  create: Prisma.XOR<Prisma.WebsiteCreateWithoutCmsFootersInput, Prisma.WebsiteUncheckedCreateWithoutCmsFootersInput>
+}
+
+export type WebsiteUpsertWithoutCmsFootersInput = {
+  update: Prisma.XOR<Prisma.WebsiteUpdateWithoutCmsFootersInput, Prisma.WebsiteUncheckedUpdateWithoutCmsFootersInput>
+  create: Prisma.XOR<Prisma.WebsiteCreateWithoutCmsFootersInput, Prisma.WebsiteUncheckedCreateWithoutCmsFootersInput>
+  where?: Prisma.WebsiteWhereInput
+}
+
+export type WebsiteUpdateToOneWithWhereWithoutCmsFootersInput = {
+  where?: Prisma.WebsiteWhereInput
+  data: Prisma.XOR<Prisma.WebsiteUpdateWithoutCmsFootersInput, Prisma.WebsiteUncheckedUpdateWithoutCmsFootersInput>
+}
+
+export type WebsiteUpdateWithoutCmsFootersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutWebsitesNestedInput
+  theme?: Prisma.ThemeUpdateOneRequiredWithoutWebsitesNestedInput
+  pages?: Prisma.PageUpdateManyWithoutWebsiteNestedInput
+  navigationMenus?: Prisma.NavigationMenuUpdateManyWithoutWebsiteNestedInput
+}
+
+export type WebsiteUncheckedUpdateWithoutCmsFootersInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  themeId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  pages?: Prisma.PageUncheckedUpdateManyWithoutWebsiteNestedInput
+  navigationMenus?: Prisma.NavigationMenuUncheckedUpdateManyWithoutWebsiteNestedInput
 }
 
 export type WebsiteCreateManyTenantInput = {
@@ -715,6 +917,8 @@ export type WebsiteUpdateWithoutTenantInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   theme?: Prisma.ThemeUpdateOneRequiredWithoutWebsitesNestedInput
   pages?: Prisma.PageUpdateManyWithoutWebsiteNestedInput
+  navigationMenus?: Prisma.NavigationMenuUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUpdateManyWithoutWebsiteNestedInput
 }
 
 export type WebsiteUncheckedUpdateWithoutTenantInput = {
@@ -727,6 +931,8 @@ export type WebsiteUncheckedUpdateWithoutTenantInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pages?: Prisma.PageUncheckedUpdateManyWithoutWebsiteNestedInput
+  navigationMenus?: Prisma.NavigationMenuUncheckedUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUncheckedUpdateManyWithoutWebsiteNestedInput
 }
 
 export type WebsiteUncheckedUpdateManyWithoutTenantInput = {
@@ -761,6 +967,8 @@ export type WebsiteUpdateWithoutThemeInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutWebsitesNestedInput
   pages?: Prisma.PageUpdateManyWithoutWebsiteNestedInput
+  navigationMenus?: Prisma.NavigationMenuUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUpdateManyWithoutWebsiteNestedInput
 }
 
 export type WebsiteUncheckedUpdateWithoutThemeInput = {
@@ -773,6 +981,8 @@ export type WebsiteUncheckedUpdateWithoutThemeInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   pages?: Prisma.PageUncheckedUpdateManyWithoutWebsiteNestedInput
+  navigationMenus?: Prisma.NavigationMenuUncheckedUpdateManyWithoutWebsiteNestedInput
+  cmsFooters?: Prisma.CmsFooterUncheckedUpdateManyWithoutWebsiteNestedInput
 }
 
 export type WebsiteUncheckedUpdateManyWithoutThemeInput = {
@@ -793,10 +1003,14 @@ export type WebsiteUncheckedUpdateManyWithoutThemeInput = {
 
 export type WebsiteCountOutputType = {
   pages: number
+  navigationMenus: number
+  cmsFooters: number
 }
 
 export type WebsiteCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   pages?: boolean | WebsiteCountOutputTypeCountPagesArgs
+  navigationMenus?: boolean | WebsiteCountOutputTypeCountNavigationMenusArgs
+  cmsFooters?: boolean | WebsiteCountOutputTypeCountCmsFootersArgs
 }
 
 /**
@@ -816,6 +1030,20 @@ export type WebsiteCountOutputTypeCountPagesArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.PageWhereInput
 }
 
+/**
+ * WebsiteCountOutputType without action
+ */
+export type WebsiteCountOutputTypeCountNavigationMenusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NavigationMenuWhereInput
+}
+
+/**
+ * WebsiteCountOutputType without action
+ */
+export type WebsiteCountOutputTypeCountCmsFootersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CmsFooterWhereInput
+}
+
 
 export type WebsiteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -830,6 +1058,8 @@ export type WebsiteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   theme?: boolean | Prisma.ThemeDefaultArgs<ExtArgs>
   pages?: boolean | Prisma.Website$pagesArgs<ExtArgs>
+  navigationMenus?: boolean | Prisma.Website$navigationMenusArgs<ExtArgs>
+  cmsFooters?: boolean | Prisma.Website$cmsFootersArgs<ExtArgs>
   _count?: boolean | Prisma.WebsiteCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["website"]>
 
@@ -878,6 +1108,8 @@ export type WebsiteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   theme?: boolean | Prisma.ThemeDefaultArgs<ExtArgs>
   pages?: boolean | Prisma.Website$pagesArgs<ExtArgs>
+  navigationMenus?: boolean | Prisma.Website$navigationMenusArgs<ExtArgs>
+  cmsFooters?: boolean | Prisma.Website$cmsFootersArgs<ExtArgs>
   _count?: boolean | Prisma.WebsiteCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WebsiteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -895,6 +1127,8 @@ export type $WebsitePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     tenant: Prisma.$TenantPayload<ExtArgs>
     theme: Prisma.$ThemePayload<ExtArgs>
     pages: Prisma.$PagePayload<ExtArgs>[]
+    navigationMenus: Prisma.$NavigationMenuPayload<ExtArgs>[]
+    cmsFooters: Prisma.$CmsFooterPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1303,6 +1537,8 @@ export interface Prisma__WebsiteClient<T, Null = never, ExtArgs extends runtime.
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   theme<T extends Prisma.ThemeDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ThemeDefaultArgs<ExtArgs>>): Prisma.Prisma__ThemeClient<runtime.Types.Result.GetResult<Prisma.$ThemePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   pages<T extends Prisma.Website$pagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Website$pagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  navigationMenus<T extends Prisma.Website$navigationMenusArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Website$navigationMenusArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NavigationMenuPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  cmsFooters<T extends Prisma.Website$cmsFootersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Website$cmsFootersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CmsFooterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1761,6 +1997,54 @@ export type Website$pagesArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.PageScalarFieldEnum | Prisma.PageScalarFieldEnum[]
+}
+
+/**
+ * Website.navigationMenus
+ */
+export type Website$navigationMenusArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the NavigationMenu
+   */
+  select?: Prisma.NavigationMenuSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the NavigationMenu
+   */
+  omit?: Prisma.NavigationMenuOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NavigationMenuInclude<ExtArgs> | null
+  where?: Prisma.NavigationMenuWhereInput
+  orderBy?: Prisma.NavigationMenuOrderByWithRelationInput | Prisma.NavigationMenuOrderByWithRelationInput[]
+  cursor?: Prisma.NavigationMenuWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NavigationMenuScalarFieldEnum | Prisma.NavigationMenuScalarFieldEnum[]
+}
+
+/**
+ * Website.cmsFooters
+ */
+export type Website$cmsFootersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CmsFooter
+   */
+  select?: Prisma.CmsFooterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CmsFooter
+   */
+  omit?: Prisma.CmsFooterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CmsFooterInclude<ExtArgs> | null
+  where?: Prisma.CmsFooterWhereInput
+  orderBy?: Prisma.CmsFooterOrderByWithRelationInput | Prisma.CmsFooterOrderByWithRelationInput[]
+  cursor?: Prisma.CmsFooterWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CmsFooterScalarFieldEnum | Prisma.CmsFooterScalarFieldEnum[]
 }
 
 /**

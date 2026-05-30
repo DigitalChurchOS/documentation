@@ -468,16 +468,24 @@
 
         document.getElementById('cards').innerHTML = modules
           .map(
-            (mod, index) => `
-              <article class="card">
-                <h3>${mod.name}</h3>
-                <p>${mod.note}</p>
-                <div class="row">
-                  <button data-load="${index}">Load Sample</button>
-                  <button data-get="${index}">GET</button>
-                </div>
-              </article>
-            `
+            (mod, index) => {
+              const extraLink = mod.name === 'CMS'
+                ? `<a href="/cms.html" target="_blank" class="badge" style="text-decoration:none; background:#eef2ff; color:#2457d6; font-weight:700; border:1px solid #c7d2fe; margin-left:8px;">Open Builder ↗</a>`
+                : '';
+              return `
+                <article class="card">
+                  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px;">
+                    <h3 style="margin:0;">${mod.name}</h3>
+                    ${extraLink}
+                  </div>
+                  <p>${mod.note}</p>
+                  <div class="row">
+                    <button data-load="${index}">Load Sample</button>
+                    <button data-get="${index}">GET</button>
+                  </div>
+                </article>
+              `;
+            }
           )
           .join('');
 

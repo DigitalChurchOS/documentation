@@ -30,6 +30,11 @@ model Tenant {
   themes            Theme[]
   websites          Website[]
   pages             Page[]
+  navigationMenus   NavigationMenu[]
+  cmsFooters        CmsFooter[]
+  reusableBlocks    ReusableBlock[]
+  cmsActivityLogs   CmsActivityLog[]
+  pageRevisions     PageRevision[]
 
   families           Family[]
   crmPipelines       CrmPipeline[]
@@ -214,6 +219,10 @@ model Tenant {
   branchRegions          BranchRegion[]
   branchLeaders          BranchLeader[]
 
+  themeEngineModules     ThemeEngineModule[]
+  themeEngineActivities  ThemeEngineModuleActivity[]
+  themeEngineSettings    ThemeEngineModuleSettings[]
+
   @@map("tenants")
 }
 
@@ -323,6 +332,7 @@ model User {
   mobilePushTokens       MobilePushToken[]
   branchLeaderAssignments BranchLeader[]
   agentPresence          AgentPresence?
+  pageRevisions          PageRevision[]
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -636,7 +646,9 @@ model Website {
   tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   theme  Theme  @relation(fields: [themeId], references: [id], onDelete: Restrict)
 
-  pages Page[]
+  pages           Page[]
+  navigationMenus NavigationMenu[]
+  cmsFooters      CmsFooter[]
 
   @@index([tenantId])
   @@index([themeId])
@@ -647,21 +659,25 @@ model Website {
 // 17. PAGE  (CMS content block structure)
 // ─────────────────────────────────────────────────────────────
 model Page {
-  id        String   @id @default(uuid())
-  tenantId  String   @map("tenant_id")
-  websiteId String   @map("website_id")
-  slug      String // e.g. "about", "give" (home is "")
-  title     String
-  content   String   @default("[]") // JSON string array of layouts and content blocks
-  status    String   @default("draft") // draft | published
-  isHome    Boolean  @default(false) @map("is_home")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  tenantId       String   @map("tenant_id")
+  websiteId      String   @map("website_id")
+  slug           String // e.g. "about", "give" (home is "")
+  title          String
+  content        String   @default("[]") // JSON string array of layouts and content blocks
+  status         String   @default("draft") // draft | published
+  isHome         Boolean  @default(false) @map("is_home")
+  seoTitle       String?  @map("seo_title")
+  seoDescription String?  @map("seo_description")
+  seoKeywords    String?  @map("seo_keywords")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
   funnelSteps FunnelStep[]
+  revisions   PageRevision[]
 
   @@unique([websiteId, slug])
   @@index([tenantId])
@@ -5091,6 +5107,160 @@ model ModuleSettings {
   @@index([tenantId])
   @@map("module_settings")
 }
+
+// ─────────────────────────────────────────────────────────────
+// 45. CMS PAGE REVISIONS
+// ─────────────────────────────────────────────────────────────
+model PageRevision {
+  id          String   @id @default(uuid())
+  tenantId    String   @map("tenant_id")
+  pageId      String   @map("page_id")
+  content     String   // JSON string of page content
+  version     Int
+  createdById String?  @map("created_by_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  page      Page    @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  createdBy User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([pageId])
+  @@map("page_revisions")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 46. NAVIGATION MENU
+// ─────────────────────────────────────────────────────────────
+model NavigationMenu {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  websiteId String   @map("website_id")
+  name      String   // e.g. "Header", "Footer"
+  items     String   @default("[]") // JSON string list of links
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([websiteId])
+  @@map("navigation_menus")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 47. CMS FOOTER
+// ─────────────────────────────────────────────────────────────
+model CmsFooter {
+  id             String   @id @default(uuid())
+  tenantId       String   @map("tenant_id")
+  websiteId      String   @map("website_id")
+  copyrightText  String?  @map("copyright_text")
+  socialLinks    String   @default("[]") @map("social_links") // JSON string of social media profiles
+  secondaryLinks String   @default("[]") @map("secondary_links") // JSON string of footer navigation links
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([websiteId])
+  @@map("cms_footers")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 48. REUSABLE CMS BLOCKS
+// ─────────────────────────────────────────────────────────────
+model ReusableBlock {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  name      String
+  key       String   // unique label per block
+  content   String   // JSON string representing block structure and text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+  @@map("reusable_blocks")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 49. CMS ACTIVITY LOGS (AUDIT TRAILS)
+// ─────────────────────────────────────────────────────────────
+model CmsActivityLog {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type") // page_create | page_update | page_rollback | navigation_update | footer_update
+  pageId       String?  @map("page_id")
+  metadataJson String   @default("{}") @map("metadata_json") // JSON metadata context
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("cms_activity_logs")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 50. THEME ENGINE MODULE MODELS
+// ─────────────────────────────────────────────────────────────
+
+model ThemeEngineModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String   @map("title")
+  description  String?
+  status       String   @default("active") // active | inactive
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("public") // public | private
+  createdBy    String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("theme_engine_module")
+}
+
+model ThemeEngineModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String   @map("user_id")
+  actionType   String   @map("action_type") // install | preview | customize | toggle
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("theme_engine_module_activity")
+}
+
+model ThemeEngineModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key") // theme-engine
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan") // free | premium
+  providerMode String   @default("bring_your_own") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@map("theme_engine_module_settings")
+}
+
 
 
 

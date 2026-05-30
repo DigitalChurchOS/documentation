@@ -33,6 +33,9 @@ export type PageMinAggregateOutputType = {
   content: string | null
   status: string | null
   isHome: boolean | null
+  seoTitle: string | null
+  seoDescription: string | null
+  seoKeywords: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -46,6 +49,9 @@ export type PageMaxAggregateOutputType = {
   content: string | null
   status: string | null
   isHome: boolean | null
+  seoTitle: string | null
+  seoDescription: string | null
+  seoKeywords: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -59,6 +65,9 @@ export type PageCountAggregateOutputType = {
   content: number
   status: number
   isHome: number
+  seoTitle: number
+  seoDescription: number
+  seoKeywords: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -74,6 +83,9 @@ export type PageMinAggregateInputType = {
   content?: true
   status?: true
   isHome?: true
+  seoTitle?: true
+  seoDescription?: true
+  seoKeywords?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -87,6 +99,9 @@ export type PageMaxAggregateInputType = {
   content?: true
   status?: true
   isHome?: true
+  seoTitle?: true
+  seoDescription?: true
+  seoKeywords?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +115,9 @@ export type PageCountAggregateInputType = {
   content?: true
   status?: true
   isHome?: true
+  seoTitle?: true
+  seoDescription?: true
+  seoKeywords?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -186,6 +204,9 @@ export type PageGroupByOutputType = {
   content: string
   status: string
   isHome: boolean
+  seoTitle: string | null
+  seoDescription: string | null
+  seoKeywords: string | null
   createdAt: Date
   updatedAt: Date
   _count: PageCountAggregateOutputType | null
@@ -220,11 +241,15 @@ export type PageWhereInput = {
   content?: Prisma.StringFilter<"Page"> | string
   status?: Prisma.StringFilter<"Page"> | string
   isHome?: Prisma.BoolFilter<"Page"> | boolean
+  seoTitle?: Prisma.StringNullableFilter<"Page"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Page"> | string | null
+  seoKeywords?: Prisma.StringNullableFilter<"Page"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Page"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Page"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   website?: Prisma.XOR<Prisma.WebsiteScalarRelationFilter, Prisma.WebsiteWhereInput>
   funnelSteps?: Prisma.FunnelStepListRelationFilter
+  revisions?: Prisma.PageRevisionListRelationFilter
 }
 
 export type PageOrderByWithRelationInput = {
@@ -236,11 +261,15 @@ export type PageOrderByWithRelationInput = {
   content?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
   website?: Prisma.WebsiteOrderByWithRelationInput
   funnelSteps?: Prisma.FunnelStepOrderByRelationAggregateInput
+  revisions?: Prisma.PageRevisionOrderByRelationAggregateInput
 }
 
 export type PageWhereUniqueInput = Prisma.AtLeast<{
@@ -256,11 +285,15 @@ export type PageWhereUniqueInput = Prisma.AtLeast<{
   content?: Prisma.StringFilter<"Page"> | string
   status?: Prisma.StringFilter<"Page"> | string
   isHome?: Prisma.BoolFilter<"Page"> | boolean
+  seoTitle?: Prisma.StringNullableFilter<"Page"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Page"> | string | null
+  seoKeywords?: Prisma.StringNullableFilter<"Page"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Page"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Page"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   website?: Prisma.XOR<Prisma.WebsiteScalarRelationFilter, Prisma.WebsiteWhereInput>
   funnelSteps?: Prisma.FunnelStepListRelationFilter
+  revisions?: Prisma.PageRevisionListRelationFilter
 }, "id" | "websiteId_slug">
 
 export type PageOrderByWithAggregationInput = {
@@ -272,6 +305,9 @@ export type PageOrderByWithAggregationInput = {
   content?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoDescription?: Prisma.SortOrderInput | Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PageCountOrderByAggregateInput
@@ -291,6 +327,9 @@ export type PageScalarWhereWithAggregatesInput = {
   content?: Prisma.StringWithAggregatesFilter<"Page"> | string
   status?: Prisma.StringWithAggregatesFilter<"Page"> | string
   isHome?: Prisma.BoolWithAggregatesFilter<"Page"> | boolean
+  seoTitle?: Prisma.StringNullableWithAggregatesFilter<"Page"> | string | null
+  seoDescription?: Prisma.StringNullableWithAggregatesFilter<"Page"> | string | null
+  seoKeywords?: Prisma.StringNullableWithAggregatesFilter<"Page"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Page"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Page"> | Date | string
 }
@@ -302,11 +341,15 @@ export type PageCreateInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutPagesInput
   website: Prisma.WebsiteCreateNestedOneWithoutPagesInput
   funnelSteps?: Prisma.FunnelStepCreateNestedManyWithoutPageInput
+  revisions?: Prisma.PageRevisionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateInput = {
@@ -318,9 +361,13 @@ export type PageUncheckedCreateInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   funnelSteps?: Prisma.FunnelStepUncheckedCreateNestedManyWithoutPageInput
+  revisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageUpdateInput = {
@@ -330,11 +377,15 @@ export type PageUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPagesNestedInput
   website?: Prisma.WebsiteUpdateOneRequiredWithoutPagesNestedInput
   funnelSteps?: Prisma.FunnelStepUpdateManyWithoutPageNestedInput
+  revisions?: Prisma.PageRevisionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateInput = {
@@ -346,9 +397,13 @@ export type PageUncheckedUpdateInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   funnelSteps?: Prisma.FunnelStepUncheckedUpdateManyWithoutPageNestedInput
+  revisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageCreateManyInput = {
@@ -360,6 +415,9 @@ export type PageCreateManyInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -371,6 +429,9 @@ export type PageUpdateManyMutationInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -384,6 +445,9 @@ export type PageUncheckedUpdateManyInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -412,6 +476,9 @@ export type PageCountOrderByAggregateInput = {
   content?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -425,6 +492,9 @@ export type PageMaxOrderByAggregateInput = {
   content?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -438,6 +508,9 @@ export type PageMinOrderByAggregateInput = {
   content?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
+  seoTitle?: Prisma.SortOrder
+  seoDescription?: Prisma.SortOrder
+  seoKeywords?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -445,6 +518,11 @@ export type PageMinOrderByAggregateInput = {
 export type PageNullableScalarRelationFilter = {
   is?: Prisma.PageWhereInput | null
   isNot?: Prisma.PageWhereInput | null
+}
+
+export type PageScalarRelationFilter = {
+  is?: Prisma.PageWhereInput
+  isNot?: Prisma.PageWhereInput
 }
 
 export type PageCreateNestedManyWithoutTenantInput = {
@@ -547,6 +625,20 @@ export type PageUpdateOneWithoutFunnelStepsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PageUpdateToOneWithWhereWithoutFunnelStepsInput, Prisma.PageUpdateWithoutFunnelStepsInput>, Prisma.PageUncheckedUpdateWithoutFunnelStepsInput>
 }
 
+export type PageCreateNestedOneWithoutRevisionsInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutRevisionsInput, Prisma.PageUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutRevisionsInput
+  connect?: Prisma.PageWhereUniqueInput
+}
+
+export type PageUpdateOneRequiredWithoutRevisionsNestedInput = {
+  create?: Prisma.XOR<Prisma.PageCreateWithoutRevisionsInput, Prisma.PageUncheckedCreateWithoutRevisionsInput>
+  connectOrCreate?: Prisma.PageCreateOrConnectWithoutRevisionsInput
+  upsert?: Prisma.PageUpsertWithoutRevisionsInput
+  connect?: Prisma.PageWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PageUpdateToOneWithWhereWithoutRevisionsInput, Prisma.PageUpdateWithoutRevisionsInput>, Prisma.PageUncheckedUpdateWithoutRevisionsInput>
+}
+
 export type PageCreateWithoutTenantInput = {
   id?: string
   slug: string
@@ -554,10 +646,14 @@ export type PageCreateWithoutTenantInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   website: Prisma.WebsiteCreateNestedOneWithoutPagesInput
   funnelSteps?: Prisma.FunnelStepCreateNestedManyWithoutPageInput
+  revisions?: Prisma.PageRevisionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateWithoutTenantInput = {
@@ -568,9 +664,13 @@ export type PageUncheckedCreateWithoutTenantInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   funnelSteps?: Prisma.FunnelStepUncheckedCreateNestedManyWithoutPageInput
+  revisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageCreateOrConnectWithoutTenantInput = {
@@ -610,6 +710,9 @@ export type PageScalarWhereInput = {
   content?: Prisma.StringFilter<"Page"> | string
   status?: Prisma.StringFilter<"Page"> | string
   isHome?: Prisma.BoolFilter<"Page"> | boolean
+  seoTitle?: Prisma.StringNullableFilter<"Page"> | string | null
+  seoDescription?: Prisma.StringNullableFilter<"Page"> | string | null
+  seoKeywords?: Prisma.StringNullableFilter<"Page"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Page"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Page"> | Date | string
 }
@@ -621,10 +724,14 @@ export type PageCreateWithoutWebsiteInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutPagesInput
   funnelSteps?: Prisma.FunnelStepCreateNestedManyWithoutPageInput
+  revisions?: Prisma.PageRevisionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateWithoutWebsiteInput = {
@@ -635,9 +742,13 @@ export type PageUncheckedCreateWithoutWebsiteInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   funnelSteps?: Prisma.FunnelStepUncheckedCreateNestedManyWithoutPageInput
+  revisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageCreateOrConnectWithoutWebsiteInput = {
@@ -672,10 +783,14 @@ export type PageCreateWithoutFunnelStepsInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutPagesInput
   website: Prisma.WebsiteCreateNestedOneWithoutPagesInput
+  revisions?: Prisma.PageRevisionCreateNestedManyWithoutPageInput
 }
 
 export type PageUncheckedCreateWithoutFunnelStepsInput = {
@@ -687,8 +802,12 @@ export type PageUncheckedCreateWithoutFunnelStepsInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  revisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutPageInput
 }
 
 export type PageCreateOrConnectWithoutFunnelStepsInput = {
@@ -714,10 +833,14 @@ export type PageUpdateWithoutFunnelStepsInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPagesNestedInput
   website?: Prisma.WebsiteUpdateOneRequiredWithoutPagesNestedInput
+  revisions?: Prisma.PageRevisionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateWithoutFunnelStepsInput = {
@@ -729,8 +852,96 @@ export type PageUncheckedUpdateWithoutFunnelStepsInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  revisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutPageNestedInput
+}
+
+export type PageCreateWithoutRevisionsInput = {
+  id?: string
+  slug: string
+  title: string
+  content?: string
+  status?: string
+  isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutPagesInput
+  website: Prisma.WebsiteCreateNestedOneWithoutPagesInput
+  funnelSteps?: Prisma.FunnelStepCreateNestedManyWithoutPageInput
+}
+
+export type PageUncheckedCreateWithoutRevisionsInput = {
+  id?: string
+  tenantId: string
+  websiteId: string
+  slug: string
+  title: string
+  content?: string
+  status?: string
+  isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  funnelSteps?: Prisma.FunnelStepUncheckedCreateNestedManyWithoutPageInput
+}
+
+export type PageCreateOrConnectWithoutRevisionsInput = {
+  where: Prisma.PageWhereUniqueInput
+  create: Prisma.XOR<Prisma.PageCreateWithoutRevisionsInput, Prisma.PageUncheckedCreateWithoutRevisionsInput>
+}
+
+export type PageUpsertWithoutRevisionsInput = {
+  update: Prisma.XOR<Prisma.PageUpdateWithoutRevisionsInput, Prisma.PageUncheckedUpdateWithoutRevisionsInput>
+  create: Prisma.XOR<Prisma.PageCreateWithoutRevisionsInput, Prisma.PageUncheckedCreateWithoutRevisionsInput>
+  where?: Prisma.PageWhereInput
+}
+
+export type PageUpdateToOneWithWhereWithoutRevisionsInput = {
+  where?: Prisma.PageWhereInput
+  data: Prisma.XOR<Prisma.PageUpdateWithoutRevisionsInput, Prisma.PageUncheckedUpdateWithoutRevisionsInput>
+}
+
+export type PageUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutPagesNestedInput
+  website?: Prisma.WebsiteUpdateOneRequiredWithoutPagesNestedInput
+  funnelSteps?: Prisma.FunnelStepUpdateManyWithoutPageNestedInput
+}
+
+export type PageUncheckedUpdateWithoutRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  websiteId?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  funnelSteps?: Prisma.FunnelStepUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageCreateManyTenantInput = {
@@ -741,6 +952,9 @@ export type PageCreateManyTenantInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -752,10 +966,14 @@ export type PageUpdateWithoutTenantInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   website?: Prisma.WebsiteUpdateOneRequiredWithoutPagesNestedInput
   funnelSteps?: Prisma.FunnelStepUpdateManyWithoutPageNestedInput
+  revisions?: Prisma.PageRevisionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateWithoutTenantInput = {
@@ -766,9 +984,13 @@ export type PageUncheckedUpdateWithoutTenantInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   funnelSteps?: Prisma.FunnelStepUncheckedUpdateManyWithoutPageNestedInput
+  revisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateManyWithoutTenantInput = {
@@ -779,6 +1001,9 @@ export type PageUncheckedUpdateManyWithoutTenantInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -791,6 +1016,9 @@ export type PageCreateManyWebsiteInput = {
   content?: string
   status?: string
   isHome?: boolean
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoKeywords?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -802,10 +1030,14 @@ export type PageUpdateWithoutWebsiteInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPagesNestedInput
   funnelSteps?: Prisma.FunnelStepUpdateManyWithoutPageNestedInput
+  revisions?: Prisma.PageRevisionUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateWithoutWebsiteInput = {
@@ -816,9 +1048,13 @@ export type PageUncheckedUpdateWithoutWebsiteInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   funnelSteps?: Prisma.FunnelStepUncheckedUpdateManyWithoutPageNestedInput
+  revisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutPageNestedInput
 }
 
 export type PageUncheckedUpdateManyWithoutWebsiteInput = {
@@ -829,6 +1065,9 @@ export type PageUncheckedUpdateManyWithoutWebsiteInput = {
   content?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoDescription?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seoKeywords?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -840,10 +1079,12 @@ export type PageUncheckedUpdateManyWithoutWebsiteInput = {
 
 export type PageCountOutputType = {
   funnelSteps: number
+  revisions: number
 }
 
 export type PageCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   funnelSteps?: boolean | PageCountOutputTypeCountFunnelStepsArgs
+  revisions?: boolean | PageCountOutputTypeCountRevisionsArgs
 }
 
 /**
@@ -863,6 +1104,13 @@ export type PageCountOutputTypeCountFunnelStepsArgs<ExtArgs extends runtime.Type
   where?: Prisma.FunnelStepWhereInput
 }
 
+/**
+ * PageCountOutputType without action
+ */
+export type PageCountOutputTypeCountRevisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PageRevisionWhereInput
+}
+
 
 export type PageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -873,11 +1121,15 @@ export type PageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   content?: boolean
   status?: boolean
   isHome?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  seoKeywords?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   website?: boolean | Prisma.WebsiteDefaultArgs<ExtArgs>
   funnelSteps?: boolean | Prisma.Page$funnelStepsArgs<ExtArgs>
+  revisions?: boolean | Prisma.Page$revisionsArgs<ExtArgs>
   _count?: boolean | Prisma.PageCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["page"]>
 
@@ -890,6 +1142,9 @@ export type PageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   content?: boolean
   status?: boolean
   isHome?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  seoKeywords?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -905,6 +1160,9 @@ export type PageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   content?: boolean
   status?: boolean
   isHome?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  seoKeywords?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -920,15 +1178,19 @@ export type PageSelectScalar = {
   content?: boolean
   status?: boolean
   isHome?: boolean
+  seoTitle?: boolean
+  seoDescription?: boolean
+  seoKeywords?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "websiteId" | "slug" | "title" | "content" | "status" | "isHome" | "createdAt" | "updatedAt", ExtArgs["result"]["page"]>
+export type PageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "websiteId" | "slug" | "title" | "content" | "status" | "isHome" | "seoTitle" | "seoDescription" | "seoKeywords" | "createdAt" | "updatedAt", ExtArgs["result"]["page"]>
 export type PageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   website?: boolean | Prisma.WebsiteDefaultArgs<ExtArgs>
   funnelSteps?: boolean | Prisma.Page$funnelStepsArgs<ExtArgs>
+  revisions?: boolean | Prisma.Page$revisionsArgs<ExtArgs>
   _count?: boolean | Prisma.PageCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PageIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -946,6 +1208,7 @@ export type $PagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     tenant: Prisma.$TenantPayload<ExtArgs>
     website: Prisma.$WebsitePayload<ExtArgs>
     funnelSteps: Prisma.$FunnelStepPayload<ExtArgs>[]
+    revisions: Prisma.$PageRevisionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -956,6 +1219,9 @@ export type $PagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     content: string
     status: string
     isHome: boolean
+    seoTitle: string | null
+    seoDescription: string | null
+    seoKeywords: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["page"]>
@@ -1355,6 +1621,7 @@ export interface Prisma__PageClient<T, Null = never, ExtArgs extends runtime.Typ
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   website<T extends Prisma.WebsiteDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.WebsiteDefaultArgs<ExtArgs>>): Prisma.Prisma__WebsiteClient<runtime.Types.Result.GetResult<Prisma.$WebsitePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   funnelSteps<T extends Prisma.Page$funnelStepsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$funnelStepsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FunnelStepPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  revisions<T extends Prisma.Page$revisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Page$revisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PageRevisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1392,6 +1659,9 @@ export interface PageFieldRefs {
   readonly content: Prisma.FieldRef<"Page", 'String'>
   readonly status: Prisma.FieldRef<"Page", 'String'>
   readonly isHome: Prisma.FieldRef<"Page", 'Boolean'>
+  readonly seoTitle: Prisma.FieldRef<"Page", 'String'>
+  readonly seoDescription: Prisma.FieldRef<"Page", 'String'>
+  readonly seoKeywords: Prisma.FieldRef<"Page", 'String'>
   readonly createdAt: Prisma.FieldRef<"Page", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Page", 'DateTime'>
 }
@@ -1814,6 +2084,30 @@ export type Page$funnelStepsArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.FunnelStepScalarFieldEnum | Prisma.FunnelStepScalarFieldEnum[]
+}
+
+/**
+ * Page.revisions
+ */
+export type Page$revisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PageRevision
+   */
+  select?: Prisma.PageRevisionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PageRevision
+   */
+  omit?: Prisma.PageRevisionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageRevisionInclude<ExtArgs> | null
+  where?: Prisma.PageRevisionWhereInput
+  orderBy?: Prisma.PageRevisionOrderByWithRelationInput | Prisma.PageRevisionOrderByWithRelationInput[]
+  cursor?: Prisma.PageRevisionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PageRevisionScalarFieldEnum | Prisma.PageRevisionScalarFieldEnum[]
 }
 
 /**

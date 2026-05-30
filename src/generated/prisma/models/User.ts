@@ -222,6 +222,7 @@ export type UserWhereInput = {
   mobilePushTokens?: Prisma.MobilePushTokenListRelationFilter
   branchLeaderAssignments?: Prisma.BranchLeaderListRelationFilter
   agentPresence?: Prisma.XOR<Prisma.AgentPresenceNullableScalarRelationFilter, Prisma.AgentPresenceWhereInput> | null
+  pageRevisions?: Prisma.PageRevisionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -249,6 +250,7 @@ export type UserOrderByWithRelationInput = {
   mobilePushTokens?: Prisma.MobilePushTokenOrderByRelationAggregateInput
   branchLeaderAssignments?: Prisma.BranchLeaderOrderByRelationAggregateInput
   agentPresence?: Prisma.AgentPresenceOrderByWithRelationInput
+  pageRevisions?: Prisma.PageRevisionOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -280,6 +282,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   mobilePushTokens?: Prisma.MobilePushTokenListRelationFilter
   branchLeaderAssignments?: Prisma.BranchLeaderListRelationFilter
   agentPresence?: Prisma.XOR<Prisma.AgentPresenceNullableScalarRelationFilter, Prisma.AgentPresenceWhereInput> | null
+  pageRevisions?: Prisma.PageRevisionListRelationFilter
 }, "id" | "tenantId_email">
 
 export type UserOrderByWithAggregationInput = {
@@ -334,6 +337,7 @@ export type UserCreateInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -360,6 +364,7 @@ export type UserUncheckedCreateInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
@@ -386,6 +391,7 @@ export type UserUpdateInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -412,6 +418,7 @@ export type UserUncheckedUpdateInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -770,6 +777,22 @@ export type UserUpdateOneRequiredWithoutAgentPresenceNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAgentPresenceInput, Prisma.UserUpdateWithoutAgentPresenceInput>, Prisma.UserUncheckedUpdateWithoutAgentPresenceInput>
 }
 
+export type UserCreateNestedOneWithoutPageRevisionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPageRevisionsInput, Prisma.UserUncheckedCreateWithoutPageRevisionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPageRevisionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutPageRevisionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPageRevisionsInput, Prisma.UserUncheckedCreateWithoutPageRevisionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPageRevisionsInput
+  upsert?: Prisma.UserUpsertWithoutPageRevisionsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPageRevisionsInput, Prisma.UserUpdateWithoutPageRevisionsInput>, Prisma.UserUncheckedUpdateWithoutPageRevisionsInput>
+}
+
 export type UserCreateWithoutTenantInput = {
   id?: string
   email: string
@@ -793,6 +816,7 @@ export type UserCreateWithoutTenantInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutTenantInput = {
@@ -818,6 +842,7 @@ export type UserUncheckedCreateWithoutTenantInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutTenantInput = {
@@ -882,6 +907,7 @@ export type UserCreateWithoutBranchLeaderAssignmentsInput = {
   approvedPromotions?: Prisma.GroupPromotionCreateNestedManyWithoutApprovedByInput
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutBranchLeaderAssignmentsInput = {
@@ -907,6 +933,7 @@ export type UserUncheckedCreateWithoutBranchLeaderAssignmentsInput = {
   approvedPromotions?: Prisma.GroupPromotionUncheckedCreateNestedManyWithoutApprovedByInput
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutBranchLeaderAssignmentsInput = {
@@ -948,6 +975,7 @@ export type UserUpdateWithoutBranchLeaderAssignmentsInput = {
   approvedPromotions?: Prisma.GroupPromotionUpdateManyWithoutApprovedByNestedInput
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBranchLeaderAssignmentsInput = {
@@ -973,6 +1001,7 @@ export type UserUncheckedUpdateWithoutBranchLeaderAssignmentsInput = {
   approvedPromotions?: Prisma.GroupPromotionUncheckedUpdateManyWithoutApprovedByNestedInput
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutMemberInput = {
@@ -998,6 +1027,7 @@ export type UserCreateWithoutMemberInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutMemberInput = {
@@ -1023,6 +1053,7 @@ export type UserUncheckedCreateWithoutMemberInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutMemberInput = {
@@ -1064,6 +1095,7 @@ export type UserUpdateWithoutMemberInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMemberInput = {
@@ -1089,6 +1121,7 @@ export type UserUncheckedUpdateWithoutMemberInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutUserRolesInput = {
@@ -1114,6 +1147,7 @@ export type UserCreateWithoutUserRolesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutUserRolesInput = {
@@ -1139,6 +1173,7 @@ export type UserUncheckedCreateWithoutUserRolesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutUserRolesInput = {
@@ -1180,6 +1215,7 @@ export type UserUpdateWithoutUserRolesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserRolesInput = {
@@ -1205,6 +1241,7 @@ export type UserUncheckedUpdateWithoutUserRolesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCrmStagesInput = {
@@ -1230,6 +1267,7 @@ export type UserCreateWithoutCrmStagesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCrmStagesInput = {
@@ -1255,6 +1293,7 @@ export type UserUncheckedCreateWithoutCrmStagesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCrmStagesInput = {
@@ -1296,6 +1335,7 @@ export type UserUpdateWithoutCrmStagesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCrmStagesInput = {
@@ -1321,6 +1361,7 @@ export type UserUncheckedUpdateWithoutCrmStagesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutDeveloperProfileInput = {
@@ -1346,6 +1387,7 @@ export type UserCreateWithoutDeveloperProfileInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutDeveloperProfileInput = {
@@ -1371,6 +1413,7 @@ export type UserUncheckedCreateWithoutDeveloperProfileInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutDeveloperProfileInput = {
@@ -1412,6 +1455,7 @@ export type UserUpdateWithoutDeveloperProfileInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDeveloperProfileInput = {
@@ -1437,6 +1481,7 @@ export type UserUncheckedUpdateWithoutDeveloperProfileInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutBlogCommentsInput = {
@@ -1462,6 +1507,7 @@ export type UserCreateWithoutBlogCommentsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutBlogCommentsInput = {
@@ -1487,6 +1533,7 @@ export type UserUncheckedCreateWithoutBlogCommentsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutBlogCommentsInput = {
@@ -1528,6 +1575,7 @@ export type UserUpdateWithoutBlogCommentsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlogCommentsInput = {
@@ -1553,6 +1601,7 @@ export type UserUncheckedUpdateWithoutBlogCommentsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutLibraryPurchasesInput = {
@@ -1578,6 +1627,7 @@ export type UserCreateWithoutLibraryPurchasesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutLibraryPurchasesInput = {
@@ -1603,6 +1653,7 @@ export type UserUncheckedCreateWithoutLibraryPurchasesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutLibraryPurchasesInput = {
@@ -1644,6 +1695,7 @@ export type UserUpdateWithoutLibraryPurchasesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutLibraryPurchasesInput = {
@@ -1669,6 +1721,7 @@ export type UserUncheckedUpdateWithoutLibraryPurchasesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutMemberNotesInput = {
@@ -1694,6 +1747,7 @@ export type UserCreateWithoutMemberNotesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutMemberNotesInput = {
@@ -1719,6 +1773,7 @@ export type UserUncheckedCreateWithoutMemberNotesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutMemberNotesInput = {
@@ -1760,6 +1815,7 @@ export type UserUpdateWithoutMemberNotesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMemberNotesInput = {
@@ -1785,6 +1841,7 @@ export type UserUncheckedUpdateWithoutMemberNotesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutVolunteerAnnouncementsInput = {
@@ -1810,6 +1867,7 @@ export type UserCreateWithoutVolunteerAnnouncementsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutVolunteerAnnouncementsInput = {
@@ -1835,6 +1893,7 @@ export type UserUncheckedCreateWithoutVolunteerAnnouncementsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutVolunteerAnnouncementsInput = {
@@ -1876,6 +1935,7 @@ export type UserUpdateWithoutVolunteerAnnouncementsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVolunteerAnnouncementsInput = {
@@ -1901,6 +1961,7 @@ export type UserUncheckedUpdateWithoutVolunteerAnnouncementsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutApprovedSubmissionsInput = {
@@ -1926,6 +1987,7 @@ export type UserCreateWithoutApprovedSubmissionsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutApprovedSubmissionsInput = {
@@ -1951,6 +2013,7 @@ export type UserUncheckedCreateWithoutApprovedSubmissionsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutApprovedSubmissionsInput = {
@@ -1992,6 +2055,7 @@ export type UserUpdateWithoutApprovedSubmissionsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApprovedSubmissionsInput = {
@@ -2017,6 +2081,7 @@ export type UserUncheckedUpdateWithoutApprovedSubmissionsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutCheckedInAttendancesInput = {
@@ -2042,6 +2107,7 @@ export type UserCreateWithoutCheckedInAttendancesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutCheckedInAttendancesInput = {
@@ -2067,6 +2133,7 @@ export type UserUncheckedCreateWithoutCheckedInAttendancesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutCheckedInAttendancesInput = {
@@ -2108,6 +2175,7 @@ export type UserUpdateWithoutCheckedInAttendancesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCheckedInAttendancesInput = {
@@ -2133,6 +2201,7 @@ export type UserUncheckedUpdateWithoutCheckedInAttendancesInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutGroupNoticePostsInput = {
@@ -2158,6 +2227,7 @@ export type UserCreateWithoutGroupNoticePostsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutGroupNoticePostsInput = {
@@ -2183,6 +2253,7 @@ export type UserUncheckedCreateWithoutGroupNoticePostsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutGroupNoticePostsInput = {
@@ -2224,6 +2295,7 @@ export type UserUpdateWithoutGroupNoticePostsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupNoticePostsInput = {
@@ -2249,6 +2321,7 @@ export type UserUncheckedUpdateWithoutGroupNoticePostsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutApprovedPromotionsInput = {
@@ -2274,6 +2347,7 @@ export type UserCreateWithoutApprovedPromotionsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutApprovedPromotionsInput = {
@@ -2299,6 +2373,7 @@ export type UserUncheckedCreateWithoutApprovedPromotionsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutApprovedPromotionsInput = {
@@ -2340,6 +2415,7 @@ export type UserUpdateWithoutApprovedPromotionsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApprovedPromotionsInput = {
@@ -2365,6 +2441,7 @@ export type UserUncheckedUpdateWithoutApprovedPromotionsInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutMobilePushTokensInput = {
@@ -2390,6 +2467,7 @@ export type UserCreateWithoutMobilePushTokensInput = {
   approvedPromotions?: Prisma.GroupPromotionCreateNestedManyWithoutApprovedByInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutMobilePushTokensInput = {
@@ -2415,6 +2493,7 @@ export type UserUncheckedCreateWithoutMobilePushTokensInput = {
   approvedPromotions?: Prisma.GroupPromotionUncheckedCreateNestedManyWithoutApprovedByInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
   agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutMobilePushTokensInput = {
@@ -2456,6 +2535,7 @@ export type UserUpdateWithoutMobilePushTokensInput = {
   approvedPromotions?: Prisma.GroupPromotionUpdateManyWithoutApprovedByNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMobilePushTokensInput = {
@@ -2481,6 +2561,7 @@ export type UserUncheckedUpdateWithoutMobilePushTokensInput = {
   approvedPromotions?: Prisma.GroupPromotionUncheckedUpdateManyWithoutApprovedByNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutAgentPresenceInput = {
@@ -2506,6 +2587,7 @@ export type UserCreateWithoutAgentPresenceInput = {
   approvedPromotions?: Prisma.GroupPromotionCreateNestedManyWithoutApprovedByInput
   mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutAgentPresenceInput = {
@@ -2531,6 +2613,7 @@ export type UserUncheckedCreateWithoutAgentPresenceInput = {
   approvedPromotions?: Prisma.GroupPromotionUncheckedCreateNestedManyWithoutApprovedByInput
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
+  pageRevisions?: Prisma.PageRevisionUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutAgentPresenceInput = {
@@ -2572,6 +2655,7 @@ export type UserUpdateWithoutAgentPresenceInput = {
   approvedPromotions?: Prisma.GroupPromotionUpdateManyWithoutApprovedByNestedInput
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAgentPresenceInput = {
@@ -2597,6 +2681,127 @@ export type UserUncheckedUpdateWithoutAgentPresenceInput = {
   approvedPromotions?: Prisma.GroupPromotionUncheckedUpdateManyWithoutApprovedByNestedInput
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
+}
+
+export type UserCreateWithoutPageRevisionsInput = {
+  id?: string
+  email: string
+  passwordHash: string
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferredLanguage?: string
+  tenant: Prisma.TenantCreateNestedOneWithoutUsersInput
+  member?: Prisma.MemberCreateNestedOneWithoutUserInput
+  userRoles?: Prisma.UserRoleCreateNestedManyWithoutUserInput
+  crmStages?: Prisma.MemberCrmStageCreateNestedManyWithoutAssignedUserInput
+  developerProfile?: Prisma.DeveloperProfileCreateNestedOneWithoutUserInput
+  blogComments?: Prisma.BlogPostCommentCreateNestedManyWithoutUserInput
+  libraryPurchases?: Prisma.LibraryPurchaseCreateNestedManyWithoutUserInput
+  memberNotes?: Prisma.MemberNoteCreateNestedManyWithoutAuthorInput
+  volunteerAnnouncements?: Prisma.VolunteerAnnouncementCreateNestedManyWithoutSenderInput
+  approvedSubmissions?: Prisma.FormSubmissionCreateNestedManyWithoutApproverInput
+  checkedInAttendances?: Prisma.GroupAttendanceCreateNestedManyWithoutCheckedInInput
+  groupNoticePosts?: Prisma.GroupNoticePostCreateNestedManyWithoutUserInput
+  approvedPromotions?: Prisma.GroupPromotionCreateNestedManyWithoutApprovedByInput
+  mobilePushTokens?: Prisma.MobilePushTokenCreateNestedManyWithoutUserInput
+  branchLeaderAssignments?: Prisma.BranchLeaderCreateNestedManyWithoutUserInput
+  agentPresence?: Prisma.AgentPresenceCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPageRevisionsInput = {
+  id?: string
+  tenantId: string
+  email: string
+  passwordHash: string
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  preferredLanguage?: string
+  member?: Prisma.MemberUncheckedCreateNestedOneWithoutUserInput
+  userRoles?: Prisma.UserRoleUncheckedCreateNestedManyWithoutUserInput
+  crmStages?: Prisma.MemberCrmStageUncheckedCreateNestedManyWithoutAssignedUserInput
+  developerProfile?: Prisma.DeveloperProfileUncheckedCreateNestedOneWithoutUserInput
+  blogComments?: Prisma.BlogPostCommentUncheckedCreateNestedManyWithoutUserInput
+  libraryPurchases?: Prisma.LibraryPurchaseUncheckedCreateNestedManyWithoutUserInput
+  memberNotes?: Prisma.MemberNoteUncheckedCreateNestedManyWithoutAuthorInput
+  volunteerAnnouncements?: Prisma.VolunteerAnnouncementUncheckedCreateNestedManyWithoutSenderInput
+  approvedSubmissions?: Prisma.FormSubmissionUncheckedCreateNestedManyWithoutApproverInput
+  checkedInAttendances?: Prisma.GroupAttendanceUncheckedCreateNestedManyWithoutCheckedInInput
+  groupNoticePosts?: Prisma.GroupNoticePostUncheckedCreateNestedManyWithoutUserInput
+  approvedPromotions?: Prisma.GroupPromotionUncheckedCreateNestedManyWithoutApprovedByInput
+  mobilePushTokens?: Prisma.MobilePushTokenUncheckedCreateNestedManyWithoutUserInput
+  branchLeaderAssignments?: Prisma.BranchLeaderUncheckedCreateNestedManyWithoutUserInput
+  agentPresence?: Prisma.AgentPresenceUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPageRevisionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPageRevisionsInput, Prisma.UserUncheckedCreateWithoutPageRevisionsInput>
+}
+
+export type UserUpsertWithoutPageRevisionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPageRevisionsInput, Prisma.UserUncheckedUpdateWithoutPageRevisionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPageRevisionsInput, Prisma.UserUncheckedCreateWithoutPageRevisionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPageRevisionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPageRevisionsInput, Prisma.UserUncheckedUpdateWithoutPageRevisionsInput>
+}
+
+export type UserUpdateWithoutPageRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutUsersNestedInput
+  member?: Prisma.MemberUpdateOneWithoutUserNestedInput
+  userRoles?: Prisma.UserRoleUpdateManyWithoutUserNestedInput
+  crmStages?: Prisma.MemberCrmStageUpdateManyWithoutAssignedUserNestedInput
+  developerProfile?: Prisma.DeveloperProfileUpdateOneWithoutUserNestedInput
+  blogComments?: Prisma.BlogPostCommentUpdateManyWithoutUserNestedInput
+  libraryPurchases?: Prisma.LibraryPurchaseUpdateManyWithoutUserNestedInput
+  memberNotes?: Prisma.MemberNoteUpdateManyWithoutAuthorNestedInput
+  volunteerAnnouncements?: Prisma.VolunteerAnnouncementUpdateManyWithoutSenderNestedInput
+  approvedSubmissions?: Prisma.FormSubmissionUpdateManyWithoutApproverNestedInput
+  checkedInAttendances?: Prisma.GroupAttendanceUpdateManyWithoutCheckedInNestedInput
+  groupNoticePosts?: Prisma.GroupNoticePostUpdateManyWithoutUserNestedInput
+  approvedPromotions?: Prisma.GroupPromotionUpdateManyWithoutApprovedByNestedInput
+  mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
+  branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
+  agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPageRevisionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  preferredLanguage?: Prisma.StringFieldUpdateOperationsInput | string
+  member?: Prisma.MemberUncheckedUpdateOneWithoutUserNestedInput
+  userRoles?: Prisma.UserRoleUncheckedUpdateManyWithoutUserNestedInput
+  crmStages?: Prisma.MemberCrmStageUncheckedUpdateManyWithoutAssignedUserNestedInput
+  developerProfile?: Prisma.DeveloperProfileUncheckedUpdateOneWithoutUserNestedInput
+  blogComments?: Prisma.BlogPostCommentUncheckedUpdateManyWithoutUserNestedInput
+  libraryPurchases?: Prisma.LibraryPurchaseUncheckedUpdateManyWithoutUserNestedInput
+  memberNotes?: Prisma.MemberNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  volunteerAnnouncements?: Prisma.VolunteerAnnouncementUncheckedUpdateManyWithoutSenderNestedInput
+  approvedSubmissions?: Prisma.FormSubmissionUncheckedUpdateManyWithoutApproverNestedInput
+  checkedInAttendances?: Prisma.GroupAttendanceUncheckedUpdateManyWithoutCheckedInNestedInput
+  groupNoticePosts?: Prisma.GroupNoticePostUncheckedUpdateManyWithoutUserNestedInput
+  approvedPromotions?: Prisma.GroupPromotionUncheckedUpdateManyWithoutApprovedByNestedInput
+  mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
+  branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
+  agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateManyTenantInput = {
@@ -2632,6 +2837,7 @@ export type UserUpdateWithoutTenantInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTenantInput = {
@@ -2657,6 +2863,7 @@ export type UserUncheckedUpdateWithoutTenantInput = {
   mobilePushTokens?: Prisma.MobilePushTokenUncheckedUpdateManyWithoutUserNestedInput
   branchLeaderAssignments?: Prisma.BranchLeaderUncheckedUpdateManyWithoutUserNestedInput
   agentPresence?: Prisma.AgentPresenceUncheckedUpdateOneWithoutUserNestedInput
+  pageRevisions?: Prisma.PageRevisionUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutTenantInput = {
@@ -2687,6 +2894,7 @@ export type UserCountOutputType = {
   approvedPromotions: number
   mobilePushTokens: number
   branchLeaderAssignments: number
+  pageRevisions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2702,6 +2910,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   approvedPromotions?: boolean | UserCountOutputTypeCountApprovedPromotionsArgs
   mobilePushTokens?: boolean | UserCountOutputTypeCountMobilePushTokensArgs
   branchLeaderAssignments?: boolean | UserCountOutputTypeCountBranchLeaderAssignmentsArgs
+  pageRevisions?: boolean | UserCountOutputTypeCountPageRevisionsArgs
 }
 
 /**
@@ -2798,6 +3007,13 @@ export type UserCountOutputTypeCountBranchLeaderAssignmentsArgs<ExtArgs extends 
   where?: Prisma.BranchLeaderWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPageRevisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PageRevisionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2824,6 +3040,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   mobilePushTokens?: boolean | Prisma.User$mobilePushTokensArgs<ExtArgs>
   branchLeaderAssignments?: boolean | Prisma.User$branchLeaderAssignmentsArgs<ExtArgs>
   agentPresence?: boolean | Prisma.User$agentPresenceArgs<ExtArgs>
+  pageRevisions?: boolean | Prisma.User$pageRevisionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2880,6 +3097,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   mobilePushTokens?: boolean | Prisma.User$mobilePushTokensArgs<ExtArgs>
   branchLeaderAssignments?: boolean | Prisma.User$branchLeaderAssignmentsArgs<ExtArgs>
   agentPresence?: boolean | Prisma.User$agentPresenceArgs<ExtArgs>
+  pageRevisions?: boolean | Prisma.User$pageRevisionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2908,6 +3126,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     mobilePushTokens: Prisma.$MobilePushTokenPayload<ExtArgs>[]
     branchLeaderAssignments: Prisma.$BranchLeaderPayload<ExtArgs>[]
     agentPresence: Prisma.$AgentPresencePayload<ExtArgs> | null
+    pageRevisions: Prisma.$PageRevisionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3328,6 +3547,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   mobilePushTokens<T extends Prisma.User$mobilePushTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mobilePushTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MobilePushTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   branchLeaderAssignments<T extends Prisma.User$branchLeaderAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$branchLeaderAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BranchLeaderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   agentPresence<T extends Prisma.User$agentPresenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$agentPresenceArgs<ExtArgs>>): Prisma.Prisma__AgentPresenceClient<runtime.Types.Result.GetResult<Prisma.$AgentPresencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  pageRevisions<T extends Prisma.User$pageRevisionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pageRevisionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PageRevisionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4106,6 +4326,30 @@ export type User$agentPresenceArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.AgentPresenceInclude<ExtArgs> | null
   where?: Prisma.AgentPresenceWhereInput
+}
+
+/**
+ * User.pageRevisions
+ */
+export type User$pageRevisionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PageRevision
+   */
+  select?: Prisma.PageRevisionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PageRevision
+   */
+  omit?: Prisma.PageRevisionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PageRevisionInclude<ExtArgs> | null
+  where?: Prisma.PageRevisionWhereInput
+  orderBy?: Prisma.PageRevisionOrderByWithRelationInput | Prisma.PageRevisionOrderByWithRelationInput[]
+  cursor?: Prisma.PageRevisionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PageRevisionScalarFieldEnum | Prisma.PageRevisionScalarFieldEnum[]
 }
 
 /**

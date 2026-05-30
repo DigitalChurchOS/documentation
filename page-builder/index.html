@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChurchOS Page Builder</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Tailwind Config for Charcoal Grace UI Theme Mapping -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: 'var(--bg)',
+            surface: 'var(--surface)',
+            'surface-elevated': 'var(--surface-elevated)',
+            'surface-soft': 'var(--surface-soft)',
+            border: 'var(--border-color)',
+            text: 'var(--text)',
+            muted: 'var(--text-muted)',
+            sidebar: 'var(--sidebar)',
+            topbar: 'var(--topbar)',
+            accent: 'var(--accent)',
+          },
+          fontFamily: {
+            sans: ['Outfit', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- ES Import Map for Browser Native Modules -->
+  <script type="importmap">
+  {
+    "imports": {
+      "react": "https://esm.sh/react@18.2.0",
+      "react-dom": "https://esm.sh/react-dom@18.2.0",
+      "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+      "./components/SidebarLeft": "/page-builder/components/SidebarLeft.js",
+      "./components/Canvas": "/page-builder/components/Canvas.js",
+      "./components/InspectorRight": "/page-builder/components/InspectorRight.js",
+      "./components/Icon": "/page-builder/components/Icon.js",
+      "../components/Icon": "/page-builder/components/Icon.js",
+      "./types": "/page-builder/types.js",
+      "./utils": "/page-builder/utils.js",
+      "../types": "/page-builder/types.js",
+      "../utils": "/page-builder/utils.js",
+      "./InlineTextEditor": "/page-builder/components/InlineTextEditor.js",
+      "../../types": "/page-builder/types.js",
+      "../../utils": "/page-builder/utils.js"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      /* Charcoal Grace UI: Soft Charcoal Dark Theme (Default) */
+      --bg: #111318;
+      --surface: #181B22;
+      --surface-elevated: #20242C;
+      --surface-soft: #252A33;
+      --border-color: #303642;
+      --text: #F4F6F8;
+      --text-muted: #A7AFBC;
+      --sidebar: #151820;
+      --topbar: rgba(21, 24, 32, 0.85);
+      
+      --accent: #7C3AED; /* Brand Accent: Purple Default */
+      --border-color-raw: rgba(255, 255, 255, 0.08);
+    }
+
+    body.light-mode {
+      /* Charcoal Grace UI: Clean Off-White Light Theme */
+      --bg: #F7F8FA;
+      --surface: #FFFFFF;
+      --surface-elevated: #FFFFFF;
+      --surface-soft: #F1F3F6;
+      --border-color: #E3E6EA;
+      --text: #171A1F;
+      --text-muted: #68707D;
+      --sidebar: #FFFFFF;
+      --topbar: rgba(255, 255, 255, 0.85);
+      
+      --border-color-raw: rgba(15, 23, 42, 0.06);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: background-color 0.25s, color 0.25s;
+    }
+
+    /* Scrollbars Custom Styling */
+    .thin-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .thin-scroll::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    .thin-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    .thin-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    body.light-mode .thin-scroll::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    body.light-mode .thin-scroll::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+
+    /* Sidebar and Glass Panel Presets */
+    .sidebar {
+      width: 280px;
+      height: 100%;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border-color);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+      transition: background-color 0.25s, border-color 0.25s;
+    }
+    body.light-mode .sidebar {
+      box-shadow: 4px 0 16px rgba(0, 0, 0, 0.02);
+    }
+    
+    .sidebar:last-child {
+      width: 320px;
+      border-right: none;
+      border-left: 1px solid var(--border-color);
+    }
+
+    .block-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(124, 58, 237, 0.15);
+      background: rgba(124, 58, 237, 0.05) !important;
+      border-color: var(--accent) !important;
+    }
+
+    .tab-btn {
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+      font-weight: 600;
+    }
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Glass Panels */
+    .glass-panel {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: background-color 0.25s, border-color 0.25s;
+    }
+
+    /* Form Styling */
+    .form-group {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .form-group label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+    }
+    .form-control {
+      background: var(--surface-soft);
+      border: 1px solid var(--border-color);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 12px;
+      transition: all 0.2s;
+      outline: none;
+      width: 100%;
+    }
+    .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+    }
+
+    /* Outline Outline on Canvas */
+    .canvas-node-wrapper {
+      outline-offset: -1px;
+    }
+
+    /* Base Buttons */
+    .btn {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      text-align: center;
+    }
+    .btn-sm {
+      padding: 5px 8px;
+      font-size: 11px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+    }
+    .btn-secondary {
+      background: var(--surface-soft);
+      color: var(--text);
+      border-color: var(--border-color);
+    }
+    .btn-secondary:hover {
+      background: var(--surface);
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+</head>
+<body class="light-mode bg-bg text-text font-sans antialiased overflow-hidden select-none">
+
+  <!-- Root mount node -->
+  <div id="root" class="w-screen h-screen"></div>
+
+  <!-- React Mount Connection Script -->
+  <script type="module">
+    import React from 'react';
+    import ReactDOM from 'react-dom/client';
+    import { App } from './app.js';
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App));
+  </script>
+
+</body>
+</html>

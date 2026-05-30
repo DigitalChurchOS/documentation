@@ -50,6 +50,8 @@ import whiteLabelRoutes from './routes/whiteLabel';
 import multiBranchRoutes from './routes/multiBranch';
 import aiCopilotRoutes from './routes/aiCopilot';
 import settingsRoutes from './routes/settings';
+import themeEngineRoutes from './routes/themeEngine';
+
 
 // Load .env before anything else
 dotenv.config();
@@ -61,6 +63,14 @@ app.use(express.json());
 
 // ── Serve static files ──────────────────────────────────────
 app.use(express.static(path.join(__dirname, '..')));
+
+app.get('/cms', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'cms.html'));
+});
+
+app.get('/page-builder', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'page-builder', 'index.html'));
+});
 
 // ── Health check (no tenant required) ──────────────────────
 app.get('/health', (_req, res) => {
@@ -117,6 +127,7 @@ app.use('/api/mobile', mobileRoutes);
 app.use('/api/whitelabel', whiteLabelRoutes);
 app.use('/api/branches', multiBranchRoutes);
 app.use('/api/settings', settingsRoutes);
+app.use('/api/theme-engine', themeEngineRoutes);
 
 // ── 404 fallback ──────────────────────────────────────────
 app.use((_req, res) => {
