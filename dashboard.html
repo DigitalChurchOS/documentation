@@ -539,10 +539,20 @@
     }
 
     .sidebar-a-btn.active {
-      color: var(--accent);
-      background: var(--panel-2);
-      border-color: color-mix(in srgb, var(--accent) 20%, transparent);
       font-weight: 600;
+    }
+
+    body.light .sidebar-a-btn.active {
+      color: var(--accent) !important;
+      background: #FFFFFF !important;
+      border-color: rgba(0, 0, 0, 0.05) !important;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    body:not(.light) .sidebar-a-btn.active {
+      color: #FFFFFF !important;
+      background: var(--panel-2) !important;
+      border-color: color-mix(in srgb, var(--accent) 20%, transparent) !important;
     }
 
     .sidebar-a-btn.active::before {
@@ -10242,10 +10252,10 @@
 
     function renderSidebarModules() {
       const categoriesMap = {
-        'churchfront': { name: 'Churchfront', icon: 'monitor' },
+        'churchfront': { name: 'Site', icon: 'monitor' },
         'connect': { name: 'Connect', icon: 'users' },
         'outreach': { name: 'Outreach', icon: 'megaphone' },
-        'discipleship': { name: 'Discipleship', icon: 'graduation-cap' },
+        'discipleship': { name: 'Grow', icon: 'graduation-cap' },
         'media': { name: 'Media', icon: 'film' },
         'giving': { name: 'Giving', icon: 'hand-coins' },
         'sales': { name: 'Sales', icon: 'shopping-cart' },
