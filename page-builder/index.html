@@ -79,6 +79,10 @@
       
       --accent: #7C3AED; /* Brand Accent: Purple Default */
       --border-color-raw: rgba(255, 255, 255, 0.08);
+      
+      --success: #16A34A;
+      --danger: #DC2626;
+      --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23A7AFBC' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     }
 
     body.light-mode {
@@ -94,6 +98,10 @@
       --topbar: rgba(255, 255, 255, 0.85);
       
       --border-color-raw: rgba(15, 23, 42, 0.06);
+      
+      --success: #16A34A;
+      --danger: #DC2626;
+      --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%2368707D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
     }
 
     body {
@@ -140,6 +148,19 @@
       flex-direction: column;
       box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
       transition: background-color 0.25s, border-color 0.25s;
+      overflow-y: auto;
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+    
+    .sidebar::-webkit-scrollbar,
+    .sidebar *::-webkit-scrollbar {
+      display: none !important;
+    }
+
+    .sidebar * {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
     }
     body.light-mode .sidebar {
       box-shadow: 4px 0 16px rgba(0, 0, 0, 0.02);
@@ -203,9 +224,141 @@
       outline: none;
       width: 100%;
     }
+    
+    select.form-control, select {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      background-image: var(--select-arrow) !important;
+      background-repeat: no-repeat !important;
+      background-position: right 10px center !important;
+      background-size: 12px !important;
+      padding-right: 28px !important;
+      cursor: pointer !important;
+    }
+    
+    select option {
+      background: var(--surface-soft) !important;
+      color: var(--text) !important;
+    }
+
     .form-control:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+    }
+
+    .floating-field {
+      position: relative;
+      margin-bottom: 14px;
+      gap: 0;
+    }
+
+    .floating-field .form-control {
+      min-height: 44px;
+      padding: 16px 11px 7px;
+      background: rgba(24, 27, 34, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .floating-field textarea.form-control {
+      min-height: 92px;
+      padding-top: 18px;
+      resize: vertical;
+    }
+
+    .floating-field .form-control::placeholder {
+      color: transparent;
+      opacity: 0;
+      transition: color 0.16s ease, opacity 0.16s ease;
+    }
+
+    .floating-field .form-control:focus::placeholder {
+      color: var(--text-muted);
+      opacity: 0.55;
+    }
+
+    .floating-field label {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      opacity: 0.92;
+      transition: top 0.16s ease, transform 0.16s ease, color 0.16s ease, font-size 0.16s ease, letter-spacing 0.16s ease;
+    }
+
+    .floating-field textarea.form-control ~ label {
+      top: 18px;
+      transform: none;
+    }
+
+    .floating-field .form-control:focus ~ label,
+    .floating-field .form-control:not(:placeholder-shown) ~ label {
+      top: 5px;
+      transform: none;
+      color: var(--accent);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .floating-field .form-control:focus {
+      border-color: rgba(124, 58, 237, 0.78);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.22), 0 0 24px rgba(124, 58, 237, 0.14);
+    }
+
+    .floating-submit {
+      width: 100%;
+      min-height: 42px;
+      border: 0;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), #6366f1);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 12px 26px rgba(99, 102, 241, 0.24);
+      transition: transform 0.16s ease, filter 0.16s ease;
+    }
+
+    .floating-submit:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .builder-sidebar select.form-control,
+    .builder-sidebar select {
+      appearance: none !important;
+      -webkit-appearance: none !important;
+      -moz-appearance: none !important;
+      min-height: 36px;
+      background-color: rgba(24, 27, 34, 0.58) !important;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 11px;
+      padding: 8px 30px 8px 10px !important;
+    }
+
+    .builder-sidebar select.form-control:focus,
+    .builder-sidebar select:focus {
+      border-color: rgba(124, 58, 237, 0.78);
+      box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.16);
+    }
+
+    body.light-mode .floating-field .form-control {
+      background: rgba(255, 255, 255, 0.76);
+      border-color: rgba(15, 23, 42, 0.16);
     }
 
     /* Outline Outline on Canvas */
@@ -248,12 +401,266 @@
       display: flex;
       flex-direction: column;
     }
+
+    /* Scoped Canvas Themes */
+    .canvas-theme-light {
+      --bg: #F7F8FA;
+      --surface: #FFFFFF;
+      --surface-elevated: #FFFFFF;
+      --surface-soft: #F1F3F6;
+      --border-color: #E3E6EA;
+      --text: #171A1F;
+      --text-muted: #68707D;
+      --border-color-raw: rgba(15, 23, 42, 0.06);
+      color-scheme: light;
+    }
+
+    .canvas-theme-dark {
+      --bg: #111318;
+      --surface: #181B22;
+      --surface-elevated: #20242C;
+      --surface-soft: #252A33;
+      --border-color: #303642;
+      --text: #F4F6F8;
+      --text-muted: #A7AFBC;
+      --border-color-raw: rgba(255, 255, 255, 0.08);
+      color-scheme: dark;
+    }
+
+    /* System Dialog Modals */
+    .system-dialog-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: dialogFadeIn 0.2s ease-out;
+    }
+
+    .system-dialog-card {
+      background: var(--surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.16);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: translateY(0);
+      animation: dialogSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .system-dialog-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      margin-bottom: 16px;
+    }
+
+    .system-dialog-icon.success {
+      background: color-mix(in srgb, var(--success) 14%, transparent);
+      color: var(--success);
+    }
+
+    .system-dialog-icon.error,
+    .system-dialog-icon.danger {
+      background: color-mix(in srgb, var(--danger) 14%, transparent);
+      color: var(--danger);
+    }
+
+    .system-dialog-icon.info,
+    .system-dialog-icon.prompt,
+    .system-dialog-icon.confirm {
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+      color: var(--accent);
+    }
+
+    .system-dialog-icon svg,
+    .system-dialog-icon i {
+      width: 24px !important;
+      height: 24px !important;
+      stroke-width: 2 !important;
+    }
+
+    .system-dialog-card h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .system-dialog-card p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .system-dialog-input {
+      margin-top: 16px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .system-dialog-footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .system-dialog-footer .btn {
+      min-width: 100px;
+      margin: 0;
+    }
+
+    @keyframes dialogFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes dialogSlideUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
   </style>
 </head>
 <body class="light-mode bg-bg text-text font-sans antialiased overflow-hidden select-none">
 
   <!-- Root mount node -->
   <div id="root" class="w-screen h-screen"></div>
+
+  <!-- Custom System Modal Dialog Logic -->
+  <script>
+    function showSystemModal({ type = 'info', title = '', message = '', defaultValue = '', showCancel = false }) {
+      return new Promise((resolve) => {
+        const existing = document.querySelector('.system-dialog-overlay');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.className = 'system-dialog-overlay';
+
+        let iconName = 'info';
+        if (type === 'success') iconName = 'check';
+        else if (type === 'error' || type === 'danger') iconName = 'alert-triangle';
+        else if (type === 'confirm') iconName = 'help-circle';
+        else if (type === 'prompt') iconName = 'keyboard';
+
+        if (!title) {
+          if (type === 'success') title = 'Success';
+          else if (type === 'error' || type === 'danger') title = 'Error';
+          else if (type === 'confirm') title = 'Confirm';
+          else if (type === 'prompt') title = 'Input Required';
+          else title = 'Notification';
+        }
+
+        const hasPrompt = type === 'prompt';
+
+        overlay.innerHTML = `
+          <div class="system-dialog-card">
+            <div class="system-dialog-icon ${type === 'danger' || type === 'error' ? 'danger' : type}">
+              <i data-lucide="${iconName}"></i>
+            </div>
+            <h3>${title}</h3>
+            <p>${message}</p>
+            ${hasPrompt ? `<input type="text" class="form-control system-dialog-input" value="${defaultValue}" style="margin-top: 16px; width: 100%;" />` : ''}
+            <div class="system-dialog-footer">
+              ${showCancel ? `<button class="btn btn-secondary cancel-btn">Cancel</button>` : ''}
+              <button class="btn btn-primary confirm-btn">OK</button>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(overlay);
+        if (window.lucide) window.lucide.createIcons();
+
+        const card = overlay.querySelector('.system-dialog-card');
+        const confirmBtn = overlay.querySelector('.confirm-btn');
+        const cancelBtn = overlay.querySelector('.cancel-btn');
+        const inputField = overlay.querySelector('.system-dialog-input');
+
+        if (hasPrompt && inputField) {
+          inputField.focus();
+          inputField.select();
+          inputField.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              confirmBtn.click();
+            }
+          });
+        }
+
+        function close(val) {
+          card.style.transform = 'translateY(16px)';
+          card.style.opacity = '0';
+          overlay.style.opacity = '0';
+          overlay.style.transition = 'opacity 0.2s ease';
+          setTimeout(() => {
+            overlay.remove();
+            resolve(val);
+          }, 200);
+        }
+
+        confirmBtn.addEventListener('click', () => {
+          if (hasPrompt && inputField) {
+            close(inputField.value);
+          } else {
+            close(true);
+          }
+        });
+
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', () => {
+            close(null);
+          });
+        }
+
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            close(null);
+          }
+        });
+      });
+    }
+
+    window.showSystemAlert = (message, title = '', type = 'info') => {
+      return showSystemModal({ type, title, message });
+    };
+
+    window.showSystemConfirm = (message, title = '') => {
+      return showSystemModal({ type: 'confirm', title, message, showCancel: true });
+    };
+
+    window.showSystemPrompt = (message, defaultValue = '', title = '') => {
+      return showSystemModal({ type: 'prompt', title, message, defaultValue, showCancel: true });
+    };
+
+    // Override native alert
+    window.alert = (message) => {
+      let type = 'info';
+      if (typeof message !== 'string') message = String(message);
+      const lower = message.toLowerCase();
+      if (lower.includes('error') || lower.includes('failed') || lower.includes('invalid') || lower.includes('required')) {
+        type = 'danger';
+      } else if (lower.includes('success') || lower.includes('saved') || lower.includes('created')) {
+        type = 'success';
+      }
+      window.showSystemAlert(message, '', type);
+    };
+  </script>
 
   <!-- React Mount Connection Script -->
   <script type="module">

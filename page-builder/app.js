@@ -309,6 +309,29 @@ export const App = () => {
     const initialTitle = pageContext.get('title') || 'Sunday Experience Landing Page';
     const initialSlug = pageContext.get('slug') || '';
     const initialStatus = pageContext.get('status') || 'draft';
+    
+    let queryTheme = pageContext.get('theme');
+    let queryAccent = pageContext.get('accent');
+
+    if (!queryTheme || !queryAccent) {
+        try {
+            const savedState = localStorage.getItem('churchos.unifiedDashboard.v1');
+            if (savedState) {
+                const parsed = JSON.parse(savedState);
+                if (parsed && parsed.theme) {
+                    if (!queryTheme) queryTheme = parsed.theme.mode;
+                    if (!queryAccent) queryAccent = parsed.theme.accent;
+                }
+            }
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+
+    const initialTheme = queryTheme || 'light';
+    const initialAccent = queryAccent || '#7C3AED';
+
     const [elements, setElements] = useState([]);
     const [selectedElementId, setSelectedElementId] = useState(null);
     const [activeDevice, setActiveDevice] = useState('desktop');
@@ -318,14 +341,27 @@ export const App = () => {
     const [pageDesc, setPageDesc] = useState('Minimal ChurchOS CMS page with dynamic sections, reusable blocks, and responsive layouts.');
     const [canvasBg, setCanvasBg] = useState('#ffffff');
     // Dynamic theme & accent state (Charcoal Grace UI)
-    const [themeMode, setThemeMode] = useState('light');
-    const [brandAccent, setBrandAccent] = useState('#7C3AED');
+    const [themeMode, setThemeMode] = useState(initialTheme);
+    const [brandAccent, setBrandAccent] = useState(initialAccent);
+    const [canvasThemeMode, setCanvasThemeMode] = useState('light');
     useEffect(() => {
-        document.body.className = themeMode === 'light' ? 'light-mode' : '';
+        document.body.classList.toggle('light-mode', themeMode === 'light');
     }, [themeMode]);
     useEffect(() => {
         document.documentElement.style.setProperty('--accent', brandAccent);
     }, [brandAccent]);
+    // Listen for message events for real-time theme updates
+    useEffect(() => {
+        const handleMessage = (event) => {
+            if (event.data && event.data.type === 'themeChange') {
+                const { theme: nextTheme, accent: nextAccent } = event.data;
+                if (nextTheme) setThemeMode(nextTheme);
+                if (nextAccent) setBrandAccent(nextAccent);
+            }
+        };
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, []);
     // History states for undo/redo
     const [history, setHistory] = useState([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
@@ -495,6 +531,14 @@ export const App = () => {
             showToastNotification('Schema compiled successfully!');
         }, 1500);
     };
+    const handleBackToCms = () => {
+        const params = new URLSearchParams({
+            module: 'cms',
+            theme: themeMode,
+            accent: brandAccent
+        });
+        window.location.href = `/dashboard.html?${params.toString()}`;
+    };
     // Breadcrumbs path calculations
     const breadcrumbs = selectedElementId ? getBreadcrumbPath(elements, selectedElementId) : [];
     const selectedElement = selectedElementId ? findElementById(elements, selectedElementId) : null;
@@ -502,6 +546,9 @@ export const App = () => {
     return (React.createElement("div", { className: "w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200" },
         React.createElement("header", { className: "h-16 flex items-center justify-between px-5 bg-surface border-b border-border z-30 select-none transition-colors duration-200" },
             React.createElement("div", { className: "flex items-center gap-6" },
+                React.createElement("button", { onClick: handleBackToCms, className: "flex items-center gap-1.5 px-3 py-1.5 bg-surface-soft hover:bg-border/30 border border-border rounded-xl text-xs font-bold text-text hover:text-accent transition-all duration-150 cursor-pointer" },
+                    React.createElement(Icon, { name: "arrow-left", className: "w-4 h-4" }),
+                    React.createElement("span", null, "Back to CMS")),
                 React.createElement("div", { className: "flex items-center gap-2" },
                     React.createElement("div", { className: "bg-accent text-white p-2 rounded-xl flex items-center justify-center shadow-md shadow-accent/20" },
                         React.createElement(Icon, { name: "panel-left", className: "w-5 h-5" })),
@@ -543,8 +590,8 @@ export const App = () => {
                     isPublishing ? (React.createElement("div", { className: "w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" })) : (React.createElement(Icon, { name: "rocket", className: "w-3.5 h-3.5" })),
                     "Publish"))),
         React.createElement("div", { className: "flex-1 flex overflow-hidden" },
-            React.createElement(SidebarLeft, { elements: elements, selectedElementId: selectedElementId, onSelectElement: handleSelectElement, onDeleteElement: handleDeleteElement, onLoadTemplate: (key) => loadTemplate(key), pageTitle: pageTitle, setPageTitle: setPageTitle, pageDesc: pageDesc, setPageDesc: setPageDesc, canvasBg: canvasBg, setCanvasBg: setCanvasBg, brandAccent: brandAccent, setBrandAccent: setBrandAccent, themeMode: themeMode, setThemeMode: setThemeMode }),
-            React.createElement(Canvas, { elements: elements, activeDevice: activeDevice, selectedElementId: selectedElementId, onSelectElement: handleSelectElement, onUpdateElement: handleUpdateElement, onDeleteElement: handleDeleteElement, onDuplicateElement: handleDuplicateElement, onAddElement: handleAddElement, onMoveElement: handleMoveElement, canvasBg: canvasBg }),
+            React.createElement(SidebarLeft, { elements: elements, selectedElementId: selectedElementId, onSelectElement: handleSelectElement, onDeleteElement: handleDeleteElement, onLoadTemplate: (key) => loadTemplate(key), pageTitle: pageTitle, setPageTitle: setPageTitle, pageDesc: pageDesc, setPageDesc: setPageDesc, canvasBg: canvasBg, setCanvasBg: setCanvasBg, brandAccent: brandAccent, setBrandAccent: setBrandAccent, canvasThemeMode: canvasThemeMode, setCanvasThemeMode: setCanvasThemeMode }),
+            React.createElement(Canvas, { elements: elements, activeDevice: activeDevice, selectedElementId: selectedElementId, onSelectElement: handleSelectElement, onUpdateElement: handleUpdateElement, onDeleteElement: handleDeleteElement, onDuplicateElement: handleDuplicateElement, onAddElement: handleAddElement, onMoveElement: handleMoveElement, canvasBg: canvasBg, canvasThemeMode: canvasThemeMode }),
             React.createElement("div", { className: `${inspectorVisibilityClass} h-full shrink-0` },
                 React.createElement(InspectorBoundary, { resetKey: selectedElementId || 'empty' },
                     React.createElement(InspectorRight, { selectedElement: selectedElement, activeDevice: activeDevice, onUpdateElement: (updater) => {

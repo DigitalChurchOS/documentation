@@ -15,8 +15,11 @@ export const InlineTextEditor = ({ text, onChange, onBlur, tagName, style, class
         document.execCommand(command, false, value);
         handleInput();
     };
-    const promptLink = () => {
-        const url = prompt('Enter link URL (e.g. https://example.com):', 'https://');
+    const promptLink = async () => {
+        const showSystemPrompt = window.showSystemPrompt;
+        const url = showSystemPrompt
+            ? await showSystemPrompt('Enter link URL (e.g. https://example.com):', 'https://')
+            : prompt('Enter link URL (e.g. https://example.com):', 'https://');
         if (url) {
             format('createLink', url);
         }

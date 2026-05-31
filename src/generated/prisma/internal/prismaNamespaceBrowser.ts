@@ -264,6 +264,9 @@ export const ModelName = {
   ChatKbArticle: 'ChatKbArticle',
   AltarCallResponse: 'AltarCallResponse',
   ModuleSettings: 'ModuleSettings',
+  CentralizedSettingsEngineModule: 'CentralizedSettingsEngineModule',
+  CentralizedSettingsEngineModuleActivity: 'CentralizedSettingsEngineModuleActivity',
+  CentralizedSettingsEngineModuleSettings: 'CentralizedSettingsEngineModuleSettings',
   PageRevision: 'PageRevision',
   NavigationMenu: 'NavigationMenu',
   CmsFooter: 'CmsFooter',
@@ -3537,6 +3540,48 @@ export const ModuleSettingsScalarFieldEnum = {
 } as const
 
 export type ModuleSettingsScalarFieldEnum = (typeof ModuleSettingsScalarFieldEnum)[keyof typeof ModuleSettingsScalarFieldEnum]
+
+
+export const CentralizedSettingsEngineModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CentralizedSettingsEngineModuleScalarFieldEnum = (typeof CentralizedSettingsEngineModuleScalarFieldEnum)[keyof typeof CentralizedSettingsEngineModuleScalarFieldEnum]
+
+
+export const CentralizedSettingsEngineModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type CentralizedSettingsEngineModuleActivityScalarFieldEnum = (typeof CentralizedSettingsEngineModuleActivityScalarFieldEnum)[keyof typeof CentralizedSettingsEngineModuleActivityScalarFieldEnum]
+
+
+export const CentralizedSettingsEngineModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CentralizedSettingsEngineModuleSettingsScalarFieldEnum = (typeof CentralizedSettingsEngineModuleSettingsScalarFieldEnum)[keyof typeof CentralizedSettingsEngineModuleSettingsScalarFieldEnum]
 
 
 export const PageRevisionScalarFieldEnum = {

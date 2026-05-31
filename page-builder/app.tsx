@@ -341,6 +341,28 @@ export const App: React.FC = () => {
   const initialTitle = pageContext.get('title') || 'Sunday Experience Landing Page';
   const initialSlug = pageContext.get('slug') || '';
   const initialStatus = pageContext.get('status') || 'draft';
+  
+  let queryTheme = pageContext.get('theme');
+  let queryAccent = pageContext.get('accent');
+
+  if (!queryTheme || !queryAccent) {
+    try {
+      const savedState = localStorage.getItem('churchos.unifiedDashboard.v1');
+      if (savedState) {
+        const parsed = JSON.parse(savedState);
+        if (parsed && parsed.theme) {
+          if (!queryTheme) queryTheme = parsed.theme.mode;
+          if (!queryAccent) queryAccent = parsed.theme.accent;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const initialTheme = (queryTheme as 'dark' | 'light') || 'light';
+  const initialAccent = queryAccent || '#7C3AED';
+
   const [elements, setElements] = useState<ElementSchema[]>([]);
   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
   const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
@@ -352,16 +374,32 @@ export const App: React.FC = () => {
   const [canvasBg, setCanvasBg] = useState('#ffffff');
 
   // Dynamic theme & accent state (Charcoal Grace UI)
-  const [themeMode, setThemeMode] = useState<'dark' | 'light'>('light');
-  const [brandAccent, setBrandAccent] = useState('#7C3AED');
+  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(initialTheme);
+  const [brandAccent, setBrandAccent] = useState(initialAccent);
+
+  // Scoped canvas preview theme (only toggles content simulation)
+  const [canvasThemeMode, setCanvasThemeMode] = useState<'dark' | 'light'>('light');
 
   useEffect(() => {
-    document.body.className = themeMode === 'light' ? 'light-mode' : '';
+    document.body.classList.toggle('light-mode', themeMode === 'light');
   }, [themeMode]);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--accent', brandAccent);
   }, [brandAccent]);
+
+  // Listen for message events for real-time theme updates
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data && event.data.type === 'themeChange') {
+        const { theme: nextTheme, accent: nextAccent } = event.data;
+        if (nextTheme) setThemeMode(nextTheme);
+        if (nextAccent) setBrandAccent(nextAccent);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   // History states for undo/redo
   const [history, setHistory] = useState<HistoryState[]>([]);
@@ -557,6 +595,15 @@ export const App: React.FC = () => {
     }, 1500);
   };
 
+  const handleBackToCms = () => {
+    const params = new URLSearchParams({
+      module: 'cms',
+      theme: themeMode,
+      accent: brandAccent
+    });
+    window.location.href = `/dashboard.html?${params.toString()}`;
+  };
+
   // Breadcrumbs path calculations
   const breadcrumbs = selectedElementId ? getBreadcrumbPath(elements, selectedElementId) : [];
 
@@ -571,6 +618,14 @@ export const App: React.FC = () => {
         
         {/* Left Section: Logo & Preset Templates selector */}
         <div className="flex items-center gap-6">
+          <button
+            onClick={handleBackToCms}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-soft hover:bg-border/30 border border-border rounded-xl text-xs font-bold text-text hover:text-accent transition-all duration-150 cursor-pointer"
+          >
+            <Icon name="arrow-left" className="w-4 h-4" />
+            <span>Back to CMS</span>
+          </button>
+
           <div className="flex items-center gap-2">
             <div className="bg-accent text-white p-2 rounded-xl flex items-center justify-center shadow-md shadow-accent/20">
               <Icon name="panel-left" className="w-5 h-5" />
@@ -696,8 +751,8 @@ export const App: React.FC = () => {
           setCanvasBg={setCanvasBg}
           brandAccent={brandAccent}
           setBrandAccent={setBrandAccent}
-          themeMode={themeMode}
-          setThemeMode={setThemeMode}
+          canvasThemeMode={canvasThemeMode}
+          setCanvasThemeMode={setCanvasThemeMode}
         />
 
         {/* Center Workspace Canvas panel */}
@@ -712,6 +767,7 @@ export const App: React.FC = () => {
           onAddElement={handleAddElement}
           onMoveElement={handleMoveElement}
           canvasBg={canvasBg}
+          canvasThemeMode={canvasThemeMode}
         />
 
         {/* Right Side Styles / Properties Inspector panel */}

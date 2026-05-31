@@ -223,6 +223,10 @@ model Tenant {
   themeEngineActivities  ThemeEngineModuleActivity[]
   themeEngineSettings    ThemeEngineModuleSettings[]
 
+  centralizedSettingsEngineModules    CentralizedSettingsEngineModule[]
+  centralizedSettingsEngineActivities CentralizedSettingsEngineModuleActivity[]
+  centralizedSettingsEngineSettings   CentralizedSettingsEngineModuleSettings[]
+
   @@map("tenants")
 }
 
@@ -5106,6 +5110,58 @@ model ModuleSettings {
   @@unique([tenantId, moduleKey])
   @@index([tenantId])
   @@map("module_settings")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 50. CENTRALIZED SETTINGS ENGINE MODULE
+// ─────────────────────────────────────────────────────────────
+model CentralizedSettingsEngineModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String
+  description  String?
+  status       String   @default("active") // active | suspended
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("private") // private | public
+  createdById  String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("centralized_settings_engine_module")
+}
+
+model CentralizedSettingsEngineModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type")
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("centralized_settings_engine_module_activity")
+}
+
+model CentralizedSettingsEngineModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key")
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan")
+  providerMode String   @default("bring_your_own") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@map("centralized_settings_engine_module_settings")
 }
 
 // ─────────────────────────────────────────────────────────────

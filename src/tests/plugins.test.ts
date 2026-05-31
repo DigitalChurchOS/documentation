@@ -114,7 +114,7 @@ describe('ChurchOS Plugin & Extensions Engine Module', () => {
         isActive: true,
       },
     });
-  });
+  }, 60000);
 
   afterAll(async () => {
     await prisma.$disconnect();

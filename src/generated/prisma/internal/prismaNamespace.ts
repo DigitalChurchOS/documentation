@@ -597,6 +597,9 @@ export const ModelName = {
   ChatKbArticle: 'ChatKbArticle',
   AltarCallResponse: 'AltarCallResponse',
   ModuleSettings: 'ModuleSettings',
+  CentralizedSettingsEngineModule: 'CentralizedSettingsEngineModule',
+  CentralizedSettingsEngineModuleActivity: 'CentralizedSettingsEngineModuleActivity',
+  CentralizedSettingsEngineModuleSettings: 'CentralizedSettingsEngineModuleSettings',
   PageRevision: 'PageRevision',
   NavigationMenu: 'NavigationMenu',
   CmsFooter: 'CmsFooter',
@@ -620,7 +623,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "tenant" | "branch" | "branchRegion" | "branchLeader" | "user" | "member" | "role" | "permission" | "rolePermission" | "userRole" | "providerCategory" | "provider" | "tenantConnectedService" | "moduleProviderOverride" | "moduleDefinition" | "tenantModule" | "theme" | "website" | "page" | "family" | "crmPipeline" | "crmStage" | "memberCrmStage" | "crmContact" | "crmTimelineEvent" | "crmFollowUpTask" | "consentRecord" | "communicationTemplate" | "communicationLog" | "notificationPreference" | "scheduledMessage" | "automationWorkflow" | "followUpSequence" | "followUpStep" | "subscriptionPlan" | "tenantSubscription" | "usageMeter" | "invoice" | "analyticsEvent" | "pluginDefinition" | "tenantPlugin" | "pluginWebhook" | "developerProfile" | "marketplaceAsset" | "assetSubmission" | "submissionReview" | "assetFeedback" | "assetPurchase" | "sandboxTenant" | "languageRegistry" | "translationKey" | "mediaCategory" | "mediaTag" | "speaker" | "mediaSeries" | "mediaAsset" | "mediaAssetTag" | "mediaPlaylist" | "mediaPlaylistItem" | "livestream" | "livestreamChat" | "livestreamViewer" | "livestreamInteraction" | "churchService" | "serviceScripture" | "serviceAttachment" | "blogCategory" | "blogTag" | "blogPost" | "blogPostTag" | "blogPostScripture" | "blogPostComment" | "libraryCategory" | "libraryResource" | "libraryPurchase" | "podcastShow" | "podcastEpisode" | "aiMediaJob" | "displayScreen" | "signagePlaylist" | "signageSlide" | "signagePlaylistItem" | "worshipSong" | "worshipPlaylist" | "worshipPlaylistItem" | "worshipSession" | "givingCategory" | "donation" | "recurringGiving" | "partnershipCategory" | "partnership" | "recurringPartnership" | "campaign" | "campaignUpdate" | "productCategory" | "product" | "productVariant" | "storeCoupon" | "storeOrder" | "orderItem" | "financialAccount" | "financialBudget" | "financialTransaction" | "expenseRequest" | "reconciliationRecord" | "ministryFunnel" | "funnelStep" | "funnelSubmission" | "funnelAnalytics" | "memberCheckIn" | "memberNote" | "memberTag" | "memberTagAssignment" | "communityPost" | "prayerRequest" | "testimony" | "communityComment" | "communityReaction" | "chatConversation" | "chatMessage" | "careRequest" | "savedReply" | "chatFollowUpTask" | "outreachCampaign" | "inviteAsset" | "personalizedInvitePage" | "inviteLinkClick" | "shareEvent" | "volunteerProfile" | "volunteerDepartment" | "volunteerTeam" | "volunteerTeamAssignment" | "volunteerAvailability" | "volunteerShift" | "volunteerAssignment" | "volunteerAnnouncement" | "customForm" | "formSubmission" | "formWorkflowTrigger" | "formWorkflowAction" | "prayerSession" | "prayerSessionParticipation" | "prayerPoint" | "prayerSessionReaction" | "prayerMedia" | "newBelieverProfile" | "newBelieverReminder" | "lmsCourse" | "lmsModule" | "lmsLesson" | "lmsQuiz" | "lmsAssignment" | "lmsEnrollment" | "lmsLessonProgress" | "lmsQuizAnswer" | "lmsAssignmentSubmission" | "bibleTranslation" | "bibleBook" | "bibleVerse" | "bibleReadingPlan" | "bibleReadingPlanDay" | "bibleReadingPlanEnrollment" | "bibleBookmark" | "bibleVerseNote" | "dailyDevotional" | "bibleVerseHighlight" | "bibleAudioTrack" | "groupType" | "group" | "groupMember" | "groupMeeting" | "groupAttendance" | "groupInviteLink" | "groupInviteConversion" | "groupNoticeBoard" | "groupNoticePost" | "groupPromotion" | "groupSettings" | "childProfile" | "childGuardian" | "pickupAuthorization" | "childrenClass" | "childrenClassEnrollment" | "childrenClassResource" | "childrenCheckIn" | "eventCategory" | "event" | "eventRegistration" | "eventTicket" | "eventRsvp" | "eventReminder" | "liveMeeting" | "liveMeetingParticipant" | "liveMeetingChat" | "liveMeetingAttendance" | "liveMeetingReminder" | "appointmentType" | "staffAvailability" | "appointment" | "appointmentReminder" | "mobilePushToken" | "whiteLabelApp" | "whiteLabelBuild" | "translationJob" | "translatedContent" | "liveTranslationFeed" | "mediaCaption" | "aiAssistantJob" | "agentPresence" | "communityChannel" | "chatKbArticle" | "altarCallResponse" | "moduleSettings" | "pageRevision" | "navigationMenu" | "cmsFooter" | "reusableBlock" | "cmsActivityLog" | "themeEngineModule" | "themeEngineModuleActivity" | "themeEngineModuleSettings"
+    modelProps: "tenant" | "branch" | "branchRegion" | "branchLeader" | "user" | "member" | "role" | "permission" | "rolePermission" | "userRole" | "providerCategory" | "provider" | "tenantConnectedService" | "moduleProviderOverride" | "moduleDefinition" | "tenantModule" | "theme" | "website" | "page" | "family" | "crmPipeline" | "crmStage" | "memberCrmStage" | "crmContact" | "crmTimelineEvent" | "crmFollowUpTask" | "consentRecord" | "communicationTemplate" | "communicationLog" | "notificationPreference" | "scheduledMessage" | "automationWorkflow" | "followUpSequence" | "followUpStep" | "subscriptionPlan" | "tenantSubscription" | "usageMeter" | "invoice" | "analyticsEvent" | "pluginDefinition" | "tenantPlugin" | "pluginWebhook" | "developerProfile" | "marketplaceAsset" | "assetSubmission" | "submissionReview" | "assetFeedback" | "assetPurchase" | "sandboxTenant" | "languageRegistry" | "translationKey" | "mediaCategory" | "mediaTag" | "speaker" | "mediaSeries" | "mediaAsset" | "mediaAssetTag" | "mediaPlaylist" | "mediaPlaylistItem" | "livestream" | "livestreamChat" | "livestreamViewer" | "livestreamInteraction" | "churchService" | "serviceScripture" | "serviceAttachment" | "blogCategory" | "blogTag" | "blogPost" | "blogPostTag" | "blogPostScripture" | "blogPostComment" | "libraryCategory" | "libraryResource" | "libraryPurchase" | "podcastShow" | "podcastEpisode" | "aiMediaJob" | "displayScreen" | "signagePlaylist" | "signageSlide" | "signagePlaylistItem" | "worshipSong" | "worshipPlaylist" | "worshipPlaylistItem" | "worshipSession" | "givingCategory" | "donation" | "recurringGiving" | "partnershipCategory" | "partnership" | "recurringPartnership" | "campaign" | "campaignUpdate" | "productCategory" | "product" | "productVariant" | "storeCoupon" | "storeOrder" | "orderItem" | "financialAccount" | "financialBudget" | "financialTransaction" | "expenseRequest" | "reconciliationRecord" | "ministryFunnel" | "funnelStep" | "funnelSubmission" | "funnelAnalytics" | "memberCheckIn" | "memberNote" | "memberTag" | "memberTagAssignment" | "communityPost" | "prayerRequest" | "testimony" | "communityComment" | "communityReaction" | "chatConversation" | "chatMessage" | "careRequest" | "savedReply" | "chatFollowUpTask" | "outreachCampaign" | "inviteAsset" | "personalizedInvitePage" | "inviteLinkClick" | "shareEvent" | "volunteerProfile" | "volunteerDepartment" | "volunteerTeam" | "volunteerTeamAssignment" | "volunteerAvailability" | "volunteerShift" | "volunteerAssignment" | "volunteerAnnouncement" | "customForm" | "formSubmission" | "formWorkflowTrigger" | "formWorkflowAction" | "prayerSession" | "prayerSessionParticipation" | "prayerPoint" | "prayerSessionReaction" | "prayerMedia" | "newBelieverProfile" | "newBelieverReminder" | "lmsCourse" | "lmsModule" | "lmsLesson" | "lmsQuiz" | "lmsAssignment" | "lmsEnrollment" | "lmsLessonProgress" | "lmsQuizAnswer" | "lmsAssignmentSubmission" | "bibleTranslation" | "bibleBook" | "bibleVerse" | "bibleReadingPlan" | "bibleReadingPlanDay" | "bibleReadingPlanEnrollment" | "bibleBookmark" | "bibleVerseNote" | "dailyDevotional" | "bibleVerseHighlight" | "bibleAudioTrack" | "groupType" | "group" | "groupMember" | "groupMeeting" | "groupAttendance" | "groupInviteLink" | "groupInviteConversion" | "groupNoticeBoard" | "groupNoticePost" | "groupPromotion" | "groupSettings" | "childProfile" | "childGuardian" | "pickupAuthorization" | "childrenClass" | "childrenClassEnrollment" | "childrenClassResource" | "childrenCheckIn" | "eventCategory" | "event" | "eventRegistration" | "eventTicket" | "eventRsvp" | "eventReminder" | "liveMeeting" | "liveMeetingParticipant" | "liveMeetingChat" | "liveMeetingAttendance" | "liveMeetingReminder" | "appointmentType" | "staffAvailability" | "appointment" | "appointmentReminder" | "mobilePushToken" | "whiteLabelApp" | "whiteLabelBuild" | "translationJob" | "translatedContent" | "liveTranslationFeed" | "mediaCaption" | "aiAssistantJob" | "agentPresence" | "communityChannel" | "chatKbArticle" | "altarCallResponse" | "moduleSettings" | "centralizedSettingsEngineModule" | "centralizedSettingsEngineModuleActivity" | "centralizedSettingsEngineModuleSettings" | "pageRevision" | "navigationMenu" | "cmsFooter" | "reusableBlock" | "cmsActivityLog" | "themeEngineModule" | "themeEngineModuleActivity" | "themeEngineModuleSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -16386,6 +16389,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    CentralizedSettingsEngineModule: {
+      payload: Prisma.$CentralizedSettingsEngineModulePayload<ExtArgs>
+      fields: Prisma.CentralizedSettingsEngineModuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CentralizedSettingsEngineModuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CentralizedSettingsEngineModuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>
+        }
+        findFirst: {
+          args: Prisma.CentralizedSettingsEngineModuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CentralizedSettingsEngineModuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>
+        }
+        findMany: {
+          args: Prisma.CentralizedSettingsEngineModuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>[]
+        }
+        create: {
+          args: Prisma.CentralizedSettingsEngineModuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>
+        }
+        createMany: {
+          args: Prisma.CentralizedSettingsEngineModuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CentralizedSettingsEngineModuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>[]
+        }
+        delete: {
+          args: Prisma.CentralizedSettingsEngineModuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>
+        }
+        update: {
+          args: Prisma.CentralizedSettingsEngineModuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>
+        }
+        deleteMany: {
+          args: Prisma.CentralizedSettingsEngineModuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CentralizedSettingsEngineModuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CentralizedSettingsEngineModuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>[]
+        }
+        upsert: {
+          args: Prisma.CentralizedSettingsEngineModuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModulePayload>
+        }
+        aggregate: {
+          args: Prisma.CentralizedSettingsEngineModuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCentralizedSettingsEngineModule>
+        }
+        groupBy: {
+          args: Prisma.CentralizedSettingsEngineModuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CentralizedSettingsEngineModuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CentralizedSettingsEngineModuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CentralizedSettingsEngineModuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    CentralizedSettingsEngineModuleActivity: {
+      payload: Prisma.$CentralizedSettingsEngineModuleActivityPayload<ExtArgs>
+      fields: Prisma.CentralizedSettingsEngineModuleActivityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>
+        }
+        findFirst: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>
+        }
+        findMany: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>[]
+        }
+        create: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>
+        }
+        createMany: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>[]
+        }
+        delete: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>
+        }
+        update: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>
+        }
+        deleteMany: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>[]
+        }
+        upsert: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleActivityPayload>
+        }
+        aggregate: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCentralizedSettingsEngineModuleActivity>
+        }
+        groupBy: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CentralizedSettingsEngineModuleActivityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CentralizedSettingsEngineModuleActivityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CentralizedSettingsEngineModuleActivityCountAggregateOutputType> | number
+        }
+      }
+    }
+    CentralizedSettingsEngineModuleSettings: {
+      payload: Prisma.$CentralizedSettingsEngineModuleSettingsPayload<ExtArgs>
+      fields: Prisma.CentralizedSettingsEngineModuleSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>
+        }
+        update: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CentralizedSettingsEngineModuleSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCentralizedSettingsEngineModuleSettings>
+        }
+        groupBy: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CentralizedSettingsEngineModuleSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CentralizedSettingsEngineModuleSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CentralizedSettingsEngineModuleSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
     PageRevision: {
       payload: Prisma.$PageRevisionPayload<ExtArgs>
       fields: Prisma.PageRevisionFieldRefs
@@ -20266,6 +20491,48 @@ export const ModuleSettingsScalarFieldEnum = {
 export type ModuleSettingsScalarFieldEnum = (typeof ModuleSettingsScalarFieldEnum)[keyof typeof ModuleSettingsScalarFieldEnum]
 
 
+export const CentralizedSettingsEngineModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CentralizedSettingsEngineModuleScalarFieldEnum = (typeof CentralizedSettingsEngineModuleScalarFieldEnum)[keyof typeof CentralizedSettingsEngineModuleScalarFieldEnum]
+
+
+export const CentralizedSettingsEngineModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type CentralizedSettingsEngineModuleActivityScalarFieldEnum = (typeof CentralizedSettingsEngineModuleActivityScalarFieldEnum)[keyof typeof CentralizedSettingsEngineModuleActivityScalarFieldEnum]
+
+
+export const CentralizedSettingsEngineModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CentralizedSettingsEngineModuleSettingsScalarFieldEnum = (typeof CentralizedSettingsEngineModuleSettingsScalarFieldEnum)[keyof typeof CentralizedSettingsEngineModuleSettingsScalarFieldEnum]
+
+
 export const PageRevisionScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -20754,6 +21021,9 @@ export type GlobalOmitConfig = {
   chatKbArticle?: Prisma.ChatKbArticleOmit
   altarCallResponse?: Prisma.AltarCallResponseOmit
   moduleSettings?: Prisma.ModuleSettingsOmit
+  centralizedSettingsEngineModule?: Prisma.CentralizedSettingsEngineModuleOmit
+  centralizedSettingsEngineModuleActivity?: Prisma.CentralizedSettingsEngineModuleActivityOmit
+  centralizedSettingsEngineModuleSettings?: Prisma.CentralizedSettingsEngineModuleSettingsOmit
   pageRevision?: Prisma.PageRevisionOmit
   navigationMenu?: Prisma.NavigationMenuOmit
   cmsFooter?: Prisma.CmsFooterOmit

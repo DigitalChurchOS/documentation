@@ -196,4 +196,128 @@ router.post('/:pluginId/webhooks', requirePermission('tenant.settings'), async (
   }
 });
 
+// ─────────────────────────────────────────────────────────────
+// GET /api/plugins/definitions
+// ─────────────────────────────────────────────────────────────
+// Get all platform-approved plugin definitions
+// ─────────────────────────────────────────────────────────────
+router.get('/definitions', async (req: Request, res: Response) => {
+  try {
+    const definitions = await prisma.pluginDefinition.findMany();
+    res.json({ data: definitions });
+  } catch (err: any) {
+    console.error('List definitions error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// GET /api/plugins/installed
+// ─────────────────────────────────────────────────────────────
+// Get all installed plugins in the tenant workspace
+// ─────────────────────────────────────────────────────────────
+router.get('/installed', async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const installed = await prisma.tenantPlugin.findMany({
+      where: { tenantId },
+      include: {
+        plugin: true,
+        webhooks: true,
+      },
+    });
+    res.json({ data: installed });
+  } catch (err: any) {
+    console.error('List installed error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// GET /api/plugins/webhooks
+// ─────────────────────────────────────────────────────────────
+// Get all registered webhooks for the tenant workspace
+// ─────────────────────────────────────────────────────────────
+router.get('/webhooks', async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const webhooks = await prisma.pluginWebhook.findMany({
+      where: { tenantId },
+      include: {
+        plugin: {
+          include: {
+            plugin: true,
+          },
+        },
+      },
+    });
+    res.json({ data: webhooks });
+  } catch (err: any) {
+    console.error('List webhooks error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// DELETE /api/plugins/webhooks/:webhookId
+// ─────────────────────────────────────────────────────────────
+// Unregister/delete a webhook subscription
+// ─────────────────────────────────────────────────────────────
+router.delete('/webhooks/:webhookId', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+  try {
+    const webhookId = req.params.webhookId as string;
+    const tenantId = req.tenantId!;
+
+    const webhook = await prisma.pluginWebhook.findUnique({
+      where: { id: webhookId },
+    });
+
+    if (!webhook || webhook.tenantId !== tenantId) {
+      res.status(404).json({ error: 'Webhook not found' });
+      return;
+    }
+
+    await prisma.pluginWebhook.delete({
+      where: { id: webhookId },
+    });
+
+    res.json({ success: true, message: 'Webhook deleted successfully' });
+  } catch (err: any) {
+    console.error('Delete webhook error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// PATCH /api/plugins/webhooks/:webhookId
+// ─────────────────────────────────────────────────────────────
+// Toggle webhook active/inactive status
+// ─────────────────────────────────────────────────────────────
+router.patch('/webhooks/:webhookId', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+  try {
+    const webhookId = req.params.webhookId as string;
+    const { isActive } = req.body;
+    const tenantId = req.tenantId!;
+
+    const webhook = await prisma.pluginWebhook.findUnique({
+      where: { id: webhookId },
+    });
+
+    if (!webhook || webhook.tenantId !== tenantId) {
+      res.status(404).json({ error: 'Webhook not found' });
+      return;
+    }
+
+    const updated = await prisma.pluginWebhook.update({
+      where: { id: webhookId },
+      data: { isActive: !!isActive },
+    });
+
+    res.json({ data: updated });
+  } catch (err: any) {
+    console.error('Toggle webhook status error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;

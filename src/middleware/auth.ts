@@ -2,7 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is not defined.');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 /**
  * JWT token payload shape stored inside access tokens.

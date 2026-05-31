@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { compileStyles } from '../utils.js';
 import { InlineTextEditor } from './InlineTextEditor.js';
 import { Icon } from './Icon.js';
-export const Canvas = ({ elements, activeDevice, selectedElementId, onSelectElement, onUpdateElement, onDeleteElement, onDuplicateElement, onAddElement, onMoveElement, canvasBg }) => {
+export const Canvas = ({ elements, activeDevice, selectedElementId, onSelectElement, onUpdateElement, onDeleteElement, onDuplicateElement, onAddElement, onMoveElement, canvasBg, canvasThemeMode }) => {
     const [dropIndicator, setDropIndicator] = useState(null);
     // Resize state for legacy columns
     const handleColumnResize = (colId, newRatio, siblingId, newSiblingRatio) => {
@@ -56,7 +56,7 @@ export const Canvas = ({ elements, activeDevice, selectedElementId, onSelectElem
                 border: activeDevice !== 'desktop' ? '12px solid var(--border-color)' : '1px solid var(--border-color)',
                 borderRadius: activeDevice !== 'desktop' ? '28px' : '16px',
                 position: 'relative'
-            }, className: "flex flex-col" },
+            }, className: "flex flex-col " + (canvasThemeMode === 'light' ? 'canvas-theme-light' : 'canvas-theme-dark') },
             activeDevice !== 'desktop' && (React.createElement("div", { style: {
                     position: 'absolute',
                     top: '-12px',

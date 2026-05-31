@@ -16,8 +16,8 @@ interface SidebarLeftProps {
   setCanvasBg: (bg: string) => void;
   brandAccent: string;
   setBrandAccent: (acc: string) => void;
-  themeMode: 'dark' | 'light';
-  setThemeMode: (mode: 'dark' | 'light') => void;
+  canvasThemeMode: 'dark' | 'light';
+  setCanvasThemeMode: (mode: 'dark' | 'light') => void;
 }
 
 export const SidebarLeft: React.FC<SidebarLeftProps> = ({
@@ -34,8 +34,8 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = ({
   setCanvasBg,
   brandAccent,
   setBrandAccent,
-  themeMode,
-  setThemeMode
+  canvasThemeMode,
+  setCanvasThemeMode
 }) => {
   const [activePanel, setActivePanel] = useState<'elements' | 'outline' | 'templates' | 'settings'>('elements');
   const [activeCategory, setActiveCategory] = useState<string>('layout');
@@ -449,7 +449,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = ({
   };
 
   return (
-    <div className="h-full flex overflow-hidden border-r border-border bg-sidebar select-none">
+    <div className="builder-sidebar h-full flex overflow-hidden border-r border-border bg-sidebar select-none">
       
       {/* 1. Left vertical icon strip */}
       <div 
@@ -478,11 +478,11 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = ({
 
         <div className="w-7 h-px bg-border my-1"></div>
         <button
-          onClick={() => setThemeMode(themeMode === 'light' ? 'dark' : 'light')}
+          onClick={() => setCanvasThemeMode(canvasThemeMode === 'light' ? 'dark' : 'light')}
           className="w-10 h-10 rounded-xl flex items-center justify-center text-muted hover:text-text hover:bg-surface-soft transition-all"
-          title={themeMode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+          title={canvasThemeMode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
         >
-          <Icon name={themeMode === 'light' ? 'moon' : 'sun'} className="w-5 h-5" />
+          <Icon name={canvasThemeMode === 'light' ? 'moon' : 'sun'} className="w-5 h-5" />
         </button>
       </div>
 
@@ -579,8 +579,7 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = ({
           <div className="flex-grow flex flex-col h-full gap-3 text-xs">
             <h3 className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Page Settings</h3>
             
-            <div className="form-group">
-              <label>Page Title</label>
+            <div className="form-group floating-field">
               <input
                 type="text"
                 className="form-control"
@@ -588,16 +587,17 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = ({
                 onChange={(e) => setPageTitle(e.target.value)}
                 placeholder="My Custom Landing Page"
               />
+              <label>Page Title</label>
             </div>
 
-            <div className="form-group">
-              <label>SEO Meta Description</label>
+            <div className="form-group floating-field">
               <textarea
                 className="form-control h-20 resize-none thin-scroll"
                 value={pageDesc}
                 onChange={(e) => setPageDesc(e.target.value)}
                 placeholder="Responsive church page with SEO, ministry content, and dynamic module blocks."
               />
+              <label>SEO Meta Description</label>
             </div>
 
             <div className="form-group">

@@ -323,6 +323,14 @@ export async function getTranslationJob(tenantId: string, jobId: string) {
   return job;
 }
 
+export async function listTranslationJobs(tenantId: string) {
+  return await prisma.translationJob.findMany({
+    where: { tenantId },
+    orderBy: { createdAt: 'desc' },
+    take: 50,
+  });
+}
+
 export async function approveTranslationJob(tenantId: string, jobId: string) {
   const job = await getTranslationJob(tenantId, jobId);
   if (job.status !== 'completed' || !job.translatedContent) {

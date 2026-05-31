@@ -36,8 +36,12 @@ export const InlineTextEditor: React.FC<InlineTextEditorProps> = ({
     handleInput();
   };
 
-  const promptLink = () => {
-    const url = prompt('Enter link URL (e.g. https://example.com):', 'https://');
+  const promptLink = async () => {
+    const showSystemPrompt = (window as any).showSystemPrompt;
+    const url = showSystemPrompt
+      ? await showSystemPrompt('Enter link URL (e.g. https://example.com):', 'https://')
+      : prompt('Enter link URL (e.g. https://example.com):', 'https://');
+      
     if (url) {
       format('createLink', url);
     }

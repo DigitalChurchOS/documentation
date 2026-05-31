@@ -10,6 +10,7 @@ import {
   createTranslationJob,
   runTranslationJob,
   getTranslationJob,
+  listTranslationJobs,
   approveTranslationJob,
   createOrUpdateTranslation,
   getTranslation,
@@ -126,6 +127,16 @@ router.put('/user/preferred-language', async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────
 // AI TRANSLATION WORKFLOWS (tenant.settings for writes)
 // ─────────────────────────────────────────────────────────────
+
+// GET /api/localization/jobs — List all translation jobs for the tenant
+router.get('/jobs', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const jobs = await listTranslationJobs(req.tenantId!);
+    res.json({ data: jobs });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // POST /api/localization/jobs — Trigger AI content translation job
 router.post('/jobs', requirePermission('tenant.settings'), async (req: Request, res: Response): Promise<void> => {
@@ -302,6 +313,48 @@ router.get('/media/:mediaAssetId/captions', async (req: Request, res: Response):
   try {
     const captions = await listMediaCaptions(req.tenantId!, req.params.mediaAssetId as string);
     res.json({ data: captions });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// ACTIVITY LOGS (aggregated from translation jobs)
+// ─────────────────────────────────────────────────────────────
+
+// GET /api/localization/activity-logs — List recent localization activity
+router.get('/activity-logs', async (req: Request, res: Response): Promise<void> => {
+  try {
+    // Aggregate recent translation job activities as audit log entries
+    const jobs = await prisma.translationJob.findMany({
+      where: { tenantId: req.tenantId! },
+      orderBy: { createdAt: 'desc' },
+      take: 30,
+    });
+
+    const logs = jobs.map(job => ({
+      actionType: `ai_translate_${job.status}`,
+      metadataJson: JSON.stringify({
+        summary: `AI translation job for ${job.entityType} (${job.entityId}) → ${job.targetLanguage}: ${job.status}`,
+        entityType: job.entityType,
+        entityId: job.entityId,
+        targetLanguage: job.targetLanguage,
+      }),
+      createdAt: job.createdAt.toISOString(),
+    }));
+
+    res.json({ data: logs });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/localization/jobs/:id/retry — Retry a failed or pending job
+router.post('/jobs/:id/retry', requirePermission('tenant.settings'), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const job = await getTranslationJob(req.tenantId!, req.params.id as string);
+    const processed = await runTranslationJob(req.tenantId!, job.id);
+    res.json({ data: processed });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }

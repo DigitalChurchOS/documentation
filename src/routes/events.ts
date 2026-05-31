@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { requirePermission } from '../middleware/rbac';
+import prisma from '../lib/prisma';
 import {
   createEventCategory,
   listEventCategories,
@@ -71,6 +72,20 @@ router.post('/registrations/:id/payment-webhook', async (req: Request, res: Resp
 // AUTHENTICATED ENDPOINTS
 // ─────────────────────────────────────────────────────────────
 router.use(authMiddleware);
+
+// GET /api/events/registrations (member.read)
+router.get('/registrations', requirePermission('member.read'), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const list = await prisma.eventRegistration.findMany({
+      where: { tenantId: req.tenantId! },
+      include: { event: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ data: list });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // GET /api/events/categories (member.read)
 router.get('/categories', requirePermission('member.read'), async (req: Request, res: Response): Promise<void> => {

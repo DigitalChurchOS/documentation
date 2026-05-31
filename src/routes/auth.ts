@@ -1,9 +1,13 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import prisma from '../lib/prisma';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+if (!process.env.JWT_SECRET) {
+  throw new Error('FATAL: JWT_SECRET environment variable is not defined.');
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 const router = Router();
 
 // ─────────────────────────────────────────────────────────────
@@ -150,6 +154,326 @@ router.post('/login', async (req: Request, res: Response) => {
     });
   } catch (err) {
     console.error('Login error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+// SECURE USER & ROLE MANAGEMENT API ENDPOINTS (Tenant Isolated)
+// ─────────────────────────────────────────────────────────────
+import { authMiddleware } from '../middleware/auth';
+
+// 1. GET /api/auth/users - Retrieve active users in the tenant
+router.get('/users', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const users = await prisma.user.findMany({
+      where: { tenantId, status: { not: 'invited' } },
+      include: {
+        member: true,
+        userRoles: {
+          include: { role: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({ data: users });
+  } catch (err: any) {
+    console.error('Get users error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 2. DELETE /api/auth/users/:id - Delete a user from the tenant
+router.delete('/users/:id', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const id = req.params.id as string;
+
+    // Verify user belongs to tenant
+    const targetUser = await prisma.user.findUnique({
+      where: { id }
+    });
+    if (!targetUser || targetUser.tenantId !== tenantId) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    // Do not allow deleting yourself
+    if (targetUser.id === req.user?.userId) {
+      res.status(400).json({ error: 'Cannot delete the currently logged-in user account' });
+      return;
+    }
+
+    await prisma.$transaction([
+      prisma.userRole.deleteMany({ where: { userId: id } }),
+      prisma.member.deleteMany({ where: { userId: id } }),
+      prisma.user.delete({ where: { id } })
+    ]);
+
+    res.json({ message: 'User deleted successfully' });
+  } catch (err: any) {
+    console.error('Delete user error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 3. POST /api/auth/invitations - Invite a staff member
+router.post('/invitations', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const { email, roleName } = req.body;
+
+    if (!email || !roleName) {
+      res.status(400).json({ error: 'email and roleName are required' });
+      return;
+    }
+
+    // Check if user already exists
+    const existing = await prisma.user.findUnique({
+      where: { tenantId_email: { tenantId, email } }
+    });
+    if (existing) {
+      res.status(409).json({ error: 'Email already exists in this church tenant' });
+      return;
+    }
+
+    // Find the role or create a default if missing
+    let role = await prisma.role.findFirst({
+      where: { tenantId, name: roleName }
+    });
+    if (!role) {
+      role = await prisma.role.create({
+        data: { tenantId, name: roleName, description: `${roleName} level staff role`, isCustom: true }
+      });
+    }
+
+    const randomPassword = crypto.randomBytes(32).toString('hex');
+    const passwordPlaceholder = await bcrypt.hash(randomPassword, 12);
+    
+    // Create invited user
+    const result = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
+        data: {
+          tenantId,
+          email,
+          passwordHash: passwordPlaceholder,
+          status: 'invited'
+        }
+      });
+
+      // Create dummy placeholder member profile
+      const names = email.split('@')[0].split('.');
+      const firstName = names[0] ? names[0].charAt(0).toUpperCase() + names[0].slice(1) : 'Invited';
+      const lastName = names[1] ? names[1].charAt(0).toUpperCase() + names[1].slice(1) : 'Staff';
+
+      await tx.member.create({
+        data: {
+          tenantId,
+          userId: user.id,
+          firstName,
+          lastName,
+          email,
+          membershipStatus: 'visitor'
+        }
+      });
+
+      await tx.userRole.create({
+        data: { userId: user.id, roleId: role!.id }
+      });
+
+      return user;
+    });
+
+    res.status(201).json({ data: result });
+  } catch (err: any) {
+    console.error('Invite staff error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 4. GET /api/auth/invitations - List pending invitations
+router.get('/invitations', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const invitations = await prisma.user.findMany({
+      where: { tenantId, status: 'invited' },
+      include: {
+        userRoles: {
+          include: { role: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({ data: invitations });
+  } catch (err: any) {
+    console.error('List invitations error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 5. DELETE /api/auth/invitations/:id - Revoke staff invitation
+router.delete('/invitations/:id', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const id = req.params.id as string;
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id }
+    });
+    if (!targetUser || targetUser.tenantId !== tenantId || targetUser.status !== 'invited') {
+      res.status(404).json({ error: 'Invitation not found' });
+      return;
+    }
+
+    await prisma.$transaction([
+      prisma.userRole.deleteMany({ where: { userId: id } }),
+      prisma.member.deleteMany({ where: { userId: id } }),
+      prisma.user.delete({ where: { id } })
+    ]);
+
+    res.json({ message: 'Invitation revoked successfully' });
+  } catch (err: any) {
+    console.error('Revoke invitation error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 6. GET /api/auth/roles - Retrieve roles and permission matrices for the tenant
+router.get('/roles', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const roles = await prisma.role.findMany({
+      where: {
+        OR: [
+          { tenantId },
+          { tenantId: null } // System-wide default roles
+        ]
+      },
+      include: {
+        rolePermissions: {
+          include: { permission: true }
+        }
+      }
+    });
+
+    res.json({ data: roles });
+  } catch (err: any) {
+    console.error('Get roles error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 7. PATCH /api/auth/roles/:id - Update permissions or information on a role
+router.patch('/roles/:id', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const id = req.params.id as string;
+    const { name, description, permissionNames } = req.body;
+
+    const targetRole = await prisma.role.findUnique({
+      where: { id }
+    });
+    if (!targetRole || (targetRole.tenantId && targetRole.tenantId !== tenantId)) {
+      res.status(404).json({ error: 'Role not found or access denied' });
+      return;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // Update basic fields if provided
+      if (name || description) {
+        await tx.role.update({
+          where: { id },
+          data: {
+            name: name ?? undefined,
+            description: description ?? undefined
+          }
+        });
+      }
+
+      // Update permissions if provided
+      if (permissionNames && Array.isArray(permissionNames)) {
+        // Clear current permissions
+        await tx.rolePermission.deleteMany({
+          where: { roleId: id }
+        });
+
+        // Resolve permission ids, creating permission definitions if they don't exist
+        for (const permName of permissionNames) {
+          let permission = await tx.permission.findUnique({
+            where: { name: permName }
+          });
+          if (!permission) {
+            permission = await tx.permission.create({
+              data: { name: permName, description: `Autogenerated permission for ${permName}` }
+            });
+          }
+
+          await tx.rolePermission.create({
+            data: {
+              roleId: id,
+              permissionId: permission.id
+            }
+          });
+        }
+      }
+    });
+
+    const updatedRole = await prisma.role.findUnique({
+      where: { id },
+      include: {
+        rolePermissions: {
+          include: { permission: true }
+        }
+      }
+    });
+
+    res.json({ data: updatedRole });
+  } catch (err: any) {
+    console.error('Update role error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 8. PUT /api/auth/users/:id/role - Update a user's assigned role
+router.put('/users/:id/role', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const id = req.params.id as string;
+    const { roleId } = req.body;
+
+    if (!roleId) {
+      res.status(400).json({ error: 'roleId is required' });
+      return;
+    }
+
+    const [targetUser, targetRole] = await Promise.all([
+      prisma.user.findUnique({ where: { id } }),
+      prisma.role.findUnique({ where: { id: roleId } })
+    ]);
+
+    if (!targetUser || targetUser.tenantId !== tenantId) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    if (!targetRole || (targetRole.tenantId && targetRole.tenantId !== tenantId)) {
+      res.status(404).json({ error: 'Role not found' });
+      return;
+    }
+
+    await prisma.$transaction([
+      prisma.userRole.deleteMany({ where: { userId: id } }),
+      prisma.userRole.create({
+        data: { userId: id, roleId }
+      })
+    ]);
+
+    res.json({ message: 'User role updated successfully' });
+  } catch (err: any) {
+    console.error('Update user role error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

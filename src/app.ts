@@ -1,6 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { tenantMiddleware } from './middleware/tenant';
 import { requireModule } from './middleware/entitlements';
 import authRoutes from './routes/auth';
@@ -51,15 +53,31 @@ import multiBranchRoutes from './routes/multiBranch';
 import aiCopilotRoutes from './routes/aiCopilot';
 import settingsRoutes from './routes/settings';
 import themeEngineRoutes from './routes/themeEngine';
+import tenantRoutes from './routes/tenant';
+import centralizedSettingsEngineRoutes from './routes/centralizedSettingsEngine';
 
 
 // Load .env before anything else
 dotenv.config();
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const app = express();
 
 // ── Global middleware ──────────────────────────────────────
+app.use(helmet({
+  hsts: isProd, // Only enforce HTTPS in production
+  contentSecurityPolicy: isProd ? undefined : false, // Disable CSP in local development
+}));
 app.use(express.json());
+
+// Rate limiting: 100 requests per 15 minutes in production; high limits/bypass locally
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: isProd ? 100 : 999999,
+  message: { error: 'Too many requests, please try again later' },
+  skip: () => !isProd,
+});
 
 // ── Serve static files ──────────────────────────────────────
 app.use(express.static(path.join(__dirname, '..')));
@@ -78,7 +96,7 @@ app.get('/health', (_req, res) => {
 });
 
 // ── Tenant gate — everything below requires x-tenant-id ───
-app.use('/api', tenantMiddleware, localeMiddleware);
+app.use('/api', apiLimiter, tenantMiddleware, localeMiddleware);
 
 // ── Route mounts ──────────────────────────────────────────
 app.use('/api/auth', authRoutes);
@@ -128,6 +146,8 @@ app.use('/api/whitelabel', whiteLabelRoutes);
 app.use('/api/branches', multiBranchRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/theme-engine', themeEngineRoutes);
+app.use('/api/tenant', tenantRoutes);
+app.use('/api/centralized-settings-engine', centralizedSettingsEngineRoutes);
 
 // ── 404 fallback ──────────────────────────────────────────
 app.use((_req, res) => {

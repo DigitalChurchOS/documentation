@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { requirePermission } from '../middleware/rbac';
+import prisma from '../lib/prisma';
 import {
   createGivingCategory,
   listGivingCategories,
@@ -56,6 +57,20 @@ router.patch('/categories/:id', authMiddleware, requirePermission('tenant.settin
 // DONATIONS / ONE-TIME GIVING (Public & Admin Webhook)
 // ─────────────────────────────────────────────────────────────
 
+// GET /api/giving/donations - List donations (Admin/Staff Only)
+router.get('/donations', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const donations = await prisma.donation.findMany({
+      where: { tenantId: req.tenantId! },
+      include: { category: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ data: donations });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/giving/donations - Initiate donation
 router.post('/donations', async (req: Request, res: Response) => {
   try {
@@ -108,6 +123,20 @@ router.post('/webhook', authMiddleware, requirePermission('tenant.settings'), as
 // ─────────────────────────────────────────────────────────────
 // RECURRING GIVING (Authenticated Users & Admin Process)
 // ─────────────────────────────────────────────────────────────
+
+// GET /api/giving/recurring - List recurring schedules
+router.get('/recurring', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const recurring = await prisma.recurringGiving.findMany({
+      where: { tenantId: req.tenantId! },
+      include: { category: true },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json({ data: recurring });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // POST /api/giving/recurring - Setup recurring giving
 router.post('/recurring', authMiddleware, async (req: Request, res: Response) => {

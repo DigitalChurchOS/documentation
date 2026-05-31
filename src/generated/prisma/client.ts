@@ -1105,6 +1105,21 @@ export type AltarCallResponse = Prisma.AltarCallResponseModel
  */
 export type ModuleSettings = Prisma.ModuleSettingsModel
 /**
+ * Model CentralizedSettingsEngineModule
+ * 
+ */
+export type CentralizedSettingsEngineModule = Prisma.CentralizedSettingsEngineModuleModel
+/**
+ * Model CentralizedSettingsEngineModuleActivity
+ * 
+ */
+export type CentralizedSettingsEngineModuleActivity = Prisma.CentralizedSettingsEngineModuleActivityModel
+/**
+ * Model CentralizedSettingsEngineModuleSettings
+ * 
+ */
+export type CentralizedSettingsEngineModuleSettings = Prisma.CentralizedSettingsEngineModuleSettingsModel
+/**
  * Model PageRevision
  * 
  */

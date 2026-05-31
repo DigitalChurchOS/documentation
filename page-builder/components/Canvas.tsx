@@ -15,6 +15,7 @@ interface CanvasProps {
   onAddElement: (schema: any, targetId: string, position: 'above' | 'below' | 'inside') => void;
   onMoveElement: (sourceId: string, targetId: string, position: 'above' | 'below' | 'inside') => void;
   canvasBg?: string;
+  canvasThemeMode: 'dark' | 'light';
 }
 
 export const Canvas: React.FC<CanvasProps> = ({
@@ -27,7 +28,8 @@ export const Canvas: React.FC<CanvasProps> = ({
   onDuplicateElement,
   onAddElement,
   onMoveElement,
-  canvasBg
+  canvasBg,
+  canvasThemeMode
 }) => {
   const [dropIndicator, setDropIndicator] = useState<{
     targetId: string;
@@ -106,7 +108,7 @@ export const Canvas: React.FC<CanvasProps> = ({
           borderRadius: activeDevice !== 'desktop' ? '28px' : '16px',
           position: 'relative'
         }}
-        className="flex flex-col"
+        className={`flex flex-col ${canvasThemeMode === 'light' ? 'canvas-theme-light' : 'canvas-theme-dark'}`}
       >
         {/* Device Notch / Camera for Mobile & Tablet */}
         {activeDevice !== 'desktop' && (
@@ -526,7 +528,7 @@ const CanvasNode: React.FC<CanvasNodeProps> = ({
           if (el.props.onExpire === 'redirect') {
             return (
               <div style={style} className="text-center p-4 border border-rose-500/20 bg-rose-950/10 rounded-lg text-rose-400 text-xs">
-                âš ï¸ Timer Expired. Page will redirect to: <code className="bg-black/30 px-1 py-0.5 rounded">{el.props.expireRedirect || '#'}</code>
+                ⚠️ Timer Expired. Page will redirect to: <code className="bg-black/30 px-1 py-0.5 rounded">{el.props.expireRedirect || '#'}</code>
               </div>
             );
           }
@@ -547,7 +549,7 @@ const CanvasNode: React.FC<CanvasNodeProps> = ({
         return (
           <div style={style} className="flex gap-4 justify-center items-center">
             {blocks.map((b, i) => (
-              <div key={i} className="flex flex-col items-center p-3 rounded-lg bg-white border border-slate-200 min-w-[64px] shadow-sm">
+              <div key={i} className="flex flex-col items-center p-3 rounded-lg bg-white border border-slate-200 min-w-[64px] shadow-sm font-sans">
                 <span className="text-2xl font-bold text-slate-950 font-mono leading-none">{String(b.val).padStart(2, '0')}</span>
                 <span className="text-[10px] text-slate-500 uppercase tracking-wider mt-1.5">{b.label}</span>
               </div>

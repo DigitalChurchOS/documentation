@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Icon } from './Icon.js';
-export const SidebarLeft = ({ elements, selectedElementId, onSelectElement, onDeleteElement, onLoadTemplate, pageTitle, setPageTitle, pageDesc, setPageDesc, canvasBg, setCanvasBg, brandAccent, setBrandAccent, themeMode, setThemeMode }) => {
+export const SidebarLeft = ({ elements, selectedElementId, onSelectElement, onDeleteElement, onLoadTemplate, pageTitle, setPageTitle, pageDesc, setPageDesc, canvasBg, setCanvasBg, brandAccent, setBrandAccent, canvasThemeMode, setCanvasThemeMode }) => {
     const [activePanel, setActivePanel] = useState('elements');
     const [activeCategory, setActiveCategory] = useState('layout');
     const categories = [
@@ -386,7 +386,7 @@ export const SidebarLeft = ({ elements, selectedElementId, onSelectElement, onDe
                 node.children && node.children.length > 0 && (React.createElement("div", { className: "flex flex-col border-l border-border ml-[18px]" }, renderOutlineTree(node.children, depth + 1)))));
         });
     };
-    return (React.createElement("div", { className: "h-full flex overflow-hidden border-r border-border bg-sidebar select-none" },
+    return (React.createElement("div", { className: "builder-sidebar h-full flex overflow-hidden border-r border-border bg-sidebar select-none" },
         React.createElement("div", { className: "w-14 h-full flex flex-col items-center py-4 gap-4 bg-bg border-r border-border/60", style: { zIndex: 10 } },
             [
                 { id: 'elements', icon: 'plus-circle', tooltip: 'Add Elements' },
@@ -398,8 +398,8 @@ export const SidebarLeft = ({ elements, selectedElementId, onSelectElement, onDe
                     : 'text-muted hover:text-text hover:bg-surface-soft'}`, title: tab.tooltip },
                 React.createElement(Icon, { name: tab.icon, className: "w-5 h-5" })))),
             React.createElement("div", { className: "w-7 h-px bg-border my-1" }),
-            React.createElement("button", { onClick: () => setThemeMode(themeMode === 'light' ? 'dark' : 'light'), className: "w-10 h-10 rounded-xl flex items-center justify-center text-muted hover:text-text hover:bg-surface-soft transition-all", title: themeMode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode' },
-                React.createElement(Icon, { name: themeMode === 'light' ? 'moon' : 'sun', className: "w-5 h-5" }))),
+            React.createElement("button", { onClick: () => setCanvasThemeMode(canvasThemeMode === 'light' ? 'dark' : 'light'), className: "w-10 h-10 rounded-xl flex items-center justify-center text-muted hover:text-text hover:bg-surface-soft transition-all", title: canvasThemeMode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode' },
+                React.createElement(Icon, { name: canvasThemeMode === 'light' ? 'moon' : 'sun', className: "w-5 h-5" }))),
         React.createElement("div", { className: "w-[240px] h-full flex flex-col p-4 bg-surface", style: { overflowY: 'auto' } },
             activePanel === 'elements' && (React.createElement("div", { className: "flex-1 flex flex-col h-full" },
                 React.createElement("h3", { className: "text-xs font-bold text-muted uppercase tracking-wider mb-3" }, "Add Elements"),
@@ -424,12 +424,12 @@ export const SidebarLeft = ({ elements, selectedElementId, onSelectElement, onDe
                     React.createElement("span", { className: "text-[9px] text-muted mt-1 leading-relaxed" }, "Two-column ministry page with event countdown and dynamic church module block.")))),
             activePanel === 'settings' && (React.createElement("div", { className: "flex-grow flex flex-col h-full gap-3 text-xs" },
                 React.createElement("h3", { className: "text-xs font-bold text-muted uppercase tracking-wider mb-2" }, "Page Settings"),
-                React.createElement("div", { className: "form-group" },
-                    React.createElement("label", null, "Page Title"),
-                    React.createElement("input", { type: "text", className: "form-control", value: pageTitle, onChange: (e) => setPageTitle(e.target.value), placeholder: "My Custom Landing Page" })),
-                React.createElement("div", { className: "form-group" },
-                    React.createElement("label", null, "SEO Meta Description"),
-                    React.createElement("textarea", { className: "form-control h-20 resize-none thin-scroll", value: pageDesc, onChange: (e) => setPageDesc(e.target.value), placeholder: "Responsive church page with SEO, ministry content, and dynamic module blocks." })),
+                React.createElement("div", { className: "form-group floating-field" },
+                    React.createElement("input", { type: "text", className: "form-control", value: pageTitle, onChange: (e) => setPageTitle(e.target.value), placeholder: "My Custom Landing Page" }),
+                    React.createElement("label", null, "Page Title")),
+                React.createElement("div", { className: "form-group floating-field" },
+                    React.createElement("textarea", { className: "form-control h-20 resize-none thin-scroll", value: pageDesc, onChange: (e) => setPageDesc(e.target.value), placeholder: "Responsive church page with SEO, ministry content, and dynamic module blocks." }),
+                    React.createElement("label", null, "SEO Meta Description")),
                 React.createElement("div", { className: "form-group" },
                     React.createElement("label", null, "Canvas Background Styling"),
                     React.createElement("select", { className: "form-control", value: canvasBg, onChange: (e) => setCanvasBg(e.target.value) },

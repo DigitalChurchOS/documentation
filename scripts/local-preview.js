@@ -564,8 +564,12 @@ http
     let urlPath = (req.url || '/').split('?')[0];
     if (urlPath === '/') {
       urlPath = '/index.html';
+    } else if (urlPath === '/dashboard') {
+      urlPath = '/dashboard.html';
     } else if (urlPath === '/cms') {
-      urlPath = '/cms.html';
+      res.writeHead(302, { Location: '/dashboard.html?module=cms' });
+      res.end();
+      return;
     } else if (urlPath === '/page-builder') {
       urlPath = '/page-builder/';
     }

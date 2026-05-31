@@ -48,7 +48,7 @@ export async function tenantMiddleware(
       return;
     }
 
-    if (tenant.status !== 'active' && !req.originalUrl.startsWith('/api/billing/webhook')) {
+    if (tenant.status !== 'active' && !req.originalUrl.startsWith('/api/billing/')) {
       res.status(403).json({ error: `Tenant is ${tenant.status}` });
       return;
     }
