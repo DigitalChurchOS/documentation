@@ -28,8 +28,8 @@ build/
 *.db-journal
 *.db-shm
 *.db-wal
-prisma/dev.db
-dev.db
+/dev.db
+!prisma/dev.db
 
 # Logs and system files
 npm-debug.log*
