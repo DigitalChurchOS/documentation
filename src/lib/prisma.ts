@@ -29,14 +29,12 @@ if (isCloudflare) {
   if (rawUrl.startsWith('libsql://') || rawUrl.startsWith('https://') || rawUrl.startsWith('http://')) {
     // Turso / LibSQL deployment (common on Vercel Serverless SQLite setups)
     try {
-      const { createClient } = require('@libsql/client');
-      const { PrismaLibSQL } = require('@prisma/adapter-libsql');
+      const { PrismaLibSql } = require('@prisma/adapter-libsql');
 
-      const client = createClient({
+      const adapter = new PrismaLibSql({
         url: rawUrl,
         authToken: process.env.TURSO_AUTH_TOKEN,
       });
-      const adapter = new PrismaLibSQL(client);
       prisma = new PrismaClient({ adapter });
     } catch (err) {
       console.error('Failed to initialize LibSQL adapter:', err);
@@ -46,9 +44,18 @@ if (isCloudflare) {
     // Local SQLite file database (Local dev / testing)
     try {
       if (process.env.VERCEL === '1') {
-        // In Vercel serverless environment, native modules like better-sqlite3 are not supported.
-        // We use standard Prisma Client without adapter.
-        prisma = new (PrismaClient as any)({ datasourceUrl: rawUrl });
+        // In Vercel serverless environment, native better-sqlite3 is not supported.
+        // We use PrismaLibSql adapter which is fully supported on Vercel without native binaries.
+        const { PrismaLibSql } = require('@prisma/adapter-libsql');
+        
+        const relativePath = rawUrl.replace(/^file:/, '');
+        const dbPath = path.isAbsolute(relativePath)
+          ? relativePath
+          : path.resolve(process.cwd(), relativePath);
+        const absoluteUrl = `file:${dbPath.replace(/\\/g, '/')}`;
+
+        const adapter = new PrismaLibSql({ url: absoluteUrl });
+        prisma = new PrismaClient({ adapter });
       } else {
         try {
           // Verify better-sqlite3 native dependency works before loading adapter
@@ -68,7 +75,6 @@ if (isCloudflare) {
         } catch (loaderErr) {
           console.warn('better-sqlite3 native driver failed. Falling back to PrismaLibSql:', loaderErr);
           try {
-            const { createClient } = require('@libsql/client');
             const { PrismaLibSql } = require('@prisma/adapter-libsql');
             
             const relativePath = rawUrl.replace(/^file:/, '');
@@ -77,8 +83,7 @@ if (isCloudflare) {
               : path.resolve(process.cwd(), relativePath);
             const absoluteUrl = `file:${dbPath.replace(/\\/g, '/')}`;
 
-            const client = createClient({ url: absoluteUrl });
-            const adapter = new PrismaLibSql(client);
+            const adapter = new PrismaLibSql({ url: absoluteUrl });
             prisma = new PrismaClient({ adapter });
           } catch (libsqlErr) {
             console.error('Failed to initialize both better-sqlite3 and LibSQL client:', libsqlErr);
