@@ -4,6 +4,7 @@
 node_modules/
 jspm_packages/
 web_modules/
+.npm-cache/
 
 # Production/Distribution builds
 dist/

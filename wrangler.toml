@@ -1,9 +1,14 @@
-name = "churchos"
-main = "dist/server.js"
+name = "thechurch"
+main = "src/worker.ts"
 compatibility_date = "2026-05-28"
 compatibility_flags = [
   "nodejs_compat"
 ]
+
+[assets]
+directory = "./dist/public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
 
 [[d1_databases]]
 binding = "DB"
