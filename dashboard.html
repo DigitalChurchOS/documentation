@@ -445,152 +445,323 @@
     .app-shell {
       min-height: 100vh;
       display: grid;
-      grid-template-columns: 286px minmax(0, 1fr);
+      grid-template-columns: 316px minmax(0, 1fr);
     }
 
-    .sidebar {
+    /* Refactored Sidebar CSS (Hostinger inspired dual-column) */
+    .sidebar-wrapper {
       position: sticky;
       top: 0;
       height: 100vh;
+      display: grid;
+      grid-template-columns: 76px 240px;
+      z-index: 50;
+      border-right: 1px solid var(--line);
+    }
+    
+    .sidebar-column-a {
+      background: #0C0E14;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0;
+      border-right: 1px solid var(--line);
+      height: 100%;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .sidebar-column-a::-webkit-scrollbar {
+      display: none;
+    }
+
+    body.light .sidebar-column-a {
+      background: #F0F2F5;
+    }
+    
+    .sidebar-a-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: white;
+      display: grid;
+      place-items: center;
+      margin-bottom: 24px;
+      transition: transform 0.2s;
+    }
+    .sidebar-a-logo:hover {
+      transform: scale(1.05);
+    }
+    .sidebar-a-logo i, .sidebar-a-logo svg {
+      width: 22px !important;
+      height: 22px !important;
+    }
+
+    .sidebar-a-nav {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-a-footer {
+      margin-top: auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .sidebar-a-btn {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-a-btn:hover {
+      color: var(--text);
+      background: var(--soft-surface);
+    }
+
+    .sidebar-a-btn.active {
+      color: var(--accent);
+      background: var(--panel-2);
+      border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+      font-weight: 600;
+    }
+
+    .sidebar-a-btn.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 15%;
+      height: 70%;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .sidebar-a-btn i, .sidebar-a-btn svg {
+      width: 22px !important;
+      height: 22px !important;
+      transition: transform 0.2s;
+    }
+
+    .sidebar-a-btn:hover i, .sidebar-a-btn:hover svg {
+      transform: translateY(-1px);
+    }
+
+    .sidebar-a-btn span {
+      font-size: 9px;
+      font-weight: 500;
+      text-transform: capitalize;
+      letter-spacing: 0.02em;
+      max-width: 56px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Column B Styles */
+    .sidebar-column-b {
+      background: #151820;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .sidebar-column-b::-webkit-scrollbar {
+      display: none;
+    }
+
+    body.light .sidebar-column-b {
+      background: #FFFFFF;
+    }
+
+    .sidebar-b-header {
+      padding: 20px 16px;
+      border-bottom: 1px solid var(--line);
       display: flex;
       flex-direction: column;
       gap: 16px;
-      padding: 20px 16px;
-      border-right: 1px solid var(--line);
-      background: var(--sidebar);
-      overflow-y: auto;
-      -ms-overflow-style: none !important;
-      scrollbar-width: none !important;
     }
 
-    .sidebar::-webkit-scrollbar,
-    .sidebar *::-webkit-scrollbar {
-      display: none !important;
-    }
-
-    .sidebar * {
-      -ms-overflow-style: none !important;
-      scrollbar-width: none !important;
-    }
-
-    .nav-section-title {
-      margin: 6px 8px;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .nav-button {
-      width: 100%;
+    .website-selector {
       display: flex;
       align-items: center;
-      gap: 12px;
-      min-height: 36px;
-      padding: 0 10px;
-      border: 1px solid transparent;
-      border-radius: var(--radius);
-      color: var(--muted);
-      background: transparent;
-      text-align: left;
-      font-size: 14px;
-      font-weight: 400;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-
-    .nav-button.active, .nav-button:hover {
-      color: var(--text);
-      background: var(--accent-soft);
+    .website-selector:hover {
+      background: var(--soft-surface);
       border-color: color-mix(in srgb, var(--accent) 30%, transparent);
-      font-weight: 500;
     }
 
-    .module-nav-list {
-      display: grid;
-      gap: 4px;
-      max-height: 65vh;
-      overflow: auto;
-      padding-right: 4px;
+    .website-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
     }
 
-    .sidebar-category {
-      margin-bottom: 4px;
-      border-radius: var(--radius);
+    .website-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .website-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
       overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .sidebar-category-header {
+
+    .chevron-select {
+      width: 14px !important;
+      height: 14px !important;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+
+    .sidebar-search-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .sidebar-search-container input {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px 0 36px;
+      font-size: 13px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .sidebar-search-container input:focus {
+      border-color: var(--accent);
+      background: var(--panel);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 15%, transparent);
+    }
+
+    .sidebar-search-container .search-icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px !important;
+      height: 14px !important;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .sidebar-b-content {
+      flex: 1;
+      padding: 16px 8px;
+    }
+
+    .sidebar-b-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+      padding-left: 8px;
+    }
+
+    /* Column B Dynamic List Items */
+    .sidebar-b-item {
+      width: 100%;
+      min-height: 38px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 6px 8px;
-      cursor: pointer;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      border-radius: var(--radius);
-      transition: background 0.2s, color 0.2s;
-    }
-    .sidebar-category-header:hover {
-      background: var(--accent-soft);
-      color: var(--text);
-    }
-    .sidebar-category-header .chevron {
-      margin-left: auto;
-      width: 14px !important;
-      height: 14px !important;
-      transition: transform 0.2s;
-    }
-    .sidebar-category.active .sidebar-category-header {
-      color: var(--text);
-    }
-    .sidebar-category-modules {
-      padding-left: 12px;
-      margin-top: 2px;
-      display: grid;
-      gap: 2px;
-      border-left: 1.5px solid var(--line);
-      margin-left: 16px;
-    }
-
-    .module-nav-button {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-height: 34px;
-      padding: 0 10px;
       border: 1px solid transparent;
-      border-radius: var(--radius);
-      color: var(--muted);
+      border-radius: 6px;
       background: transparent;
+      color: var(--muted);
       text-align: left;
-      font-size: 14px;
+      cursor: pointer;
+      font-size: 13px;
       font-weight: 400;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-bottom: 4px;
     }
 
-    .module-nav-button:hover,
-    .module-nav-button.active {
+    .sidebar-b-item:hover {
+      color: var(--text);
+      background: var(--panel-2);
+    }
+
+    .sidebar-b-item.active {
       color: var(--text);
       background: var(--accent-soft);
-      border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+      border-color: color-mix(in srgb, var(--accent) 25%, transparent);
       font-weight: 500;
     }
 
-    .module-nav-button svg, .module-nav-button i,
-    .nav-button svg, .nav-button i {
-      width: 15px !important;
-      height: 15px !important;
-      stroke-width: 1.5 !important;
+    .sidebar-b-item i, .sidebar-b-item svg {
+      width: 18px !important;
+      height: 18px !important;
       color: inherit;
-      flex: 0 0 auto;
+      flex-shrink: 0;
     }
 
-    .module-nav-button small {
+    .sidebar-b-item .chevron-right {
       margin-left: auto;
+      width: 12px !important;
+      height: 12px !important;
+      opacity: 0.5;
+      transition: all 0.2s;
+    }
+
+    .sidebar-b-item:hover .chevron-right {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+
+    .sidebar-b-item.active .chevron-right {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    .no-results-msg {
+      padding: 16px;
+      text-align: center;
       color: var(--muted);
-      font-size: 9px;
-      font-weight: 600;
-      text-transform: uppercase;
+      font-size: 12px;
     }
 
     .btn svg, .btn i,
@@ -1093,9 +1264,23 @@
 
     .settings-view-layout {
       display: grid;
-      grid-template-columns: 240px 1fr;
+      grid-template-columns: 1fr;
       gap: 24px;
       align-items: start;
+    }
+
+    .settings-nav-panel {
+      display: none !important;
+    }
+
+    #centralizedSettingsEngineConsoleContainer .cms-nav-panel,
+    #billingSubscriptionConsoleContainer .cms-nav-panel {
+      display: none !important;
+    }
+
+    #centralizedSettingsEngineConsoleContainer .cms-view-layout,
+    #billingSubscriptionConsoleContainer .cms-view-layout {
+      grid-template-columns: 1fr !important;
     }
 
     .settings-nav-panel {
@@ -2052,12 +2237,84 @@
     @media (max-width: 820px) {
       .login-wall, .app-shell { grid-template-columns: 1fr; }
       .login-brand { display: none; }
-      .sidebar {
+      
+      .sidebar-wrapper {
         position: static;
         height: auto;
-        border-right: 0;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        border-right: none;
+      }
+
+      .sidebar-column-a {
+        flex-direction: row;
+        height: 64px;
+        width: 100%;
+        padding: 0 8px;
+        border-right: none;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+        overflow-x: auto;
+        white-space: nowrap;
+        gap: 6px;
+      }
+
+      .sidebar-a-logo {
+        margin-bottom: 0;
+        margin-right: 12px;
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+      }
+
+      .sidebar-a-nav {
+        flex-direction: row;
+        width: auto;
+        align-items: center;
+      }
+
+      .sidebar-a-footer {
+        flex-direction: row;
+        width: auto;
+        margin-top: 0;
+        margin-left: auto;
+        padding-top: 0;
+        border-top: none;
+      }
+
+      .sidebar-a-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+
+      .sidebar-a-btn span {
+        display: none;
+      }
+
+      .sidebar-a-btn.active::before {
+        left: 15%;
+        top: auto;
+        bottom: 0;
+        height: 3px;
+        width: 70%;
+        border-radius: 4px 4px 0 0;
+      }
+
+      .sidebar-column-b {
+        width: 100%;
+        height: auto;
+        border-right: none;
         border-bottom: 1px solid var(--line);
       }
+
+      .sidebar-b-header {
+        padding: 12px 16px;
+        gap: 12px;
+      }
+
       .workspace { min-height: 100vh; }
       .topbar { position: static; align-items: flex-start; flex-direction: column; }
       .top-actions { justify-content: flex-start; }
@@ -2233,31 +2490,45 @@
   </main>
 
   <main id="appShell" class="app-shell hidden">
-    <aside class="sidebar">
-      <div class="brand-lockup">
-        <div class="brand-mark"><i data-lucide="church"></i></div>
-        <div class="brand-copy">
-          <strong>ChurchOS</strong>
-          <span id="tenantName">Next Church</span>
+    <div class="sidebar-wrapper">
+      <!-- Column A: Module Category Sidebar (thin vertical bar on the left) -->
+      <aside class="sidebar-column-a">
+        <div class="sidebar-a-logo" onclick="switchView('overview')" style="cursor: pointer;" title="ChurchOS">
+          <i data-lucide="church"></i>
         </div>
-      </div>
+        <div class="sidebar-a-nav" id="sidebarCategoriesA">
+          <!-- Dynamically populated categories -->
+        </div>
+        <div class="sidebar-a-footer" id="sidebarFooterA">
+          <!-- Dynamically populated footer (Settings & Profile) -->
+        </div>
+      </aside>
 
-      <nav>
-        <div class="nav-section-title">Workspace</div>
-        <button class="nav-button active" data-view="overview"><i data-lucide="layout-dashboard"></i>Dashboard</button>
-        <button class="nav-button" data-view="settings"><i data-lucide="settings"></i>Settings</button>
+      <!-- Column B: Modules list & settings (wider strip) -->
+      <aside class="sidebar-column-b">
+        <div class="sidebar-b-header">
+          <div class="website-selector" onclick="switchView('overview')">
+            <div class="website-info">
+              <span class="website-label">Church Context</span>
+              <strong id="tenantName" class="website-name">Next Church</strong>
+            </div>
+            <i data-lucide="chevron-right" class="chevron-select" style="width: 14px; height: 14px;"></i>
+          </div>
+          
+          <div class="sidebar-search-container">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="sidebarSearchInput" placeholder="Search modules..." oninput="handleSidebarSearch(this.value)">
+          </div>
+        </div>
 
-      </nav>
-
-      <nav>
-        <div class="nav-section-title">Modules</div>
-        <div id="sidebarModules" class="module-nav-list"></div>
-      </nav>
-
-
-
-
-    </aside>
+        <div class="sidebar-b-content">
+          <div id="sidebarBTitle" class="sidebar-b-title">Home</div>
+          <div id="sidebarModules" class="module-nav-list">
+            <!-- Dynamically populated sub-items/modules -->
+          </div>
+        </div>
+      </aside>
+    </div>
 
     <section class="workspace">
       <header class="topbar">
@@ -9534,7 +9805,6 @@
     }
 
     function setLocalLoginDefaults() {
-      if (!isLocalTestingHost()) return;
       const emailInput = document.getElementById('email');
       const passwordInput = document.getElementById('password');
       if (emailInput) emailInput.value = LOCAL_TEST_EMAIL;
@@ -9553,7 +9823,7 @@
       { key: 'giving', name: 'Giving', icon: 'hand-coins', category: 'Giving', desc: 'Manage donations, recurring gifts, campaigns, and receipts.', settings: [{ key: 'coverFees', label: 'Ask donors to cover fees', type: 'toggle' }, { key: 'receiptDelay', label: 'Receipt delay minutes', type: 'range', min: 0, max: 60, value: 5 }] },
       { key: 'events', name: 'Events', icon: 'calendar-days', category: 'Connect', desc: 'Publish events, registrations, reminders, capacity, and tickets.', settings: [{ key: 'autoReminders', label: 'Automatic reminders', type: 'toggle' }, { key: 'capacityWarning', label: 'Capacity warning percent', type: 'range', min: 50, max: 100, value: 85 }] },
       { key: 'livestream', name: 'Livestream', icon: 'radio', category: 'Connect', desc: 'Run live services, chat, prayer prompts, and replays.', settings: [{ key: 'showChat', label: 'Show live chat', type: 'toggle' }, { key: 'prayerPrompt', label: 'Prayer prompt interval', type: 'range', min: 5, max: 30, value: 12 }] },
-      { key: 'members', name: 'Members CRM', icon: 'users-round', category: 'Growth', desc: 'Track members, families, notes, pipelines, and follow-ups.', settings: [{ key: 'duplicateCheck', label: 'Duplicate member checks', type: 'toggle' }, { key: 'followUpDays', label: 'Follow-up SLA days', type: 'range', min: 1, max: 14, value: 3 }] },
+      { key: 'members', name: 'Members CRM', icon: 'users-round', category: 'Outreach', desc: 'Track members, families, notes, pipelines, and follow-ups.', settings: [{ key: 'duplicateCheck', label: 'Duplicate member checks', type: 'toggle' }, { key: 'followUpDays', label: 'Follow-up SLA days', type: 'range', min: 1, max: 14, value: 3 }] },
       { key: 'groups', name: 'Cell Groups', icon: 'network', category: 'Connect', desc: 'Manage groups, leaders, attendance, invites, and hierarchy.', settings: [{ key: 'autoNaming', label: 'Automatic cell naming', type: 'toggle' }, { key: 'depthLimit', label: 'Hierarchy depth limit', type: 'range', min: 1, max: 8, value: 4 }] },
       { key: 'media', name: 'Media Library', icon: 'clapperboard', category: 'Media', desc: 'Organize sermons, playlists, captions, podcasts, and downloads.', settings: [{ key: 'autoCaption', label: 'Auto-generate captions', type: 'toggle' }, { key: 'clipLength', label: 'Default clip length', type: 'range', min: 15, max: 180, value: 60 }] },
       { key: 'prayer', name: 'Prayer & Testimony', icon: 'heart-handshake', category: 'Discipleship', desc: 'Moderate prayers, testimonies, sessions, and pastoral responses.', settings: [{ key: 'moderation', label: 'Require moderation', type: 'toggle' }, { key: 'responseSla', label: 'Response SLA hours', type: 'range', min: 1, max: 72, value: 24 }] },
@@ -9567,24 +9837,24 @@
       { key: 'podcast-broadcasting', name: 'Podcast Center', icon: 'mic', category: 'Media', desc: 'Distribute audio teachings, sermon tracks, and podcasts with Apple/Spotify RSS feeds.', settings: [] },
       { key: 'ai-media', name: 'AI Media Studio', icon: 'sparkles', category: 'Outreach', desc: 'Repurpose sermons into AI clips, text transcript summaries, and dispatch AI assistant drafts.', settings: [] },
       { key: 'store', name: 'E-Commerce Store', icon: 'shopping-cart', category: 'Sales', desc: 'Allows churches to sell physical and digital products such as apparel, books, courses, and resources.', settings: [] },
-      { key: 'bookings', name: 'Booking & Appointments', icon: 'clock', category: 'Care', desc: 'Schedule counseling sessions, pastoral care appointments, and staff availability calendars.', settings: [] },
-      { key: 'attendance', name: 'Check-In & Attendance', icon: 'calendar-check', category: 'Care', desc: 'Track attendance for services, groups, events, and kids using touchless QR and manual kiosks.', settings: [] },
-      { key: 'children', name: 'Children & Family', icon: 'baby', category: 'Care', desc: 'Manage child profiles, classrooms, pickup authorizations, secure checkout matching, and alerts.', settings: [] },
-      { key: 'funnels', name: 'Ministry Funnels', icon: 'filter', category: 'Growth', desc: 'Build landing pages and guided conversion funnels for salvation calls, visitors, and events.', settings: [] },
+      { key: 'bookings', name: 'Booking & Appointments', icon: 'clock', category: 'Connect', desc: 'Schedule counseling sessions, pastoral care appointments, and staff availability calendars.', settings: [] },
+      { key: 'attendance', name: 'Check-In & Attendance', icon: 'calendar-check', category: 'Connect', desc: 'Track attendance for services, groups, events, and kids using touchless QR and manual kiosks.', settings: [] },
+      { key: 'children', name: 'Children & Family', icon: 'baby', category: 'Connect', desc: 'Manage child profiles, classrooms, pickup authorizations, secure checkout matching, and alerts.', settings: [] },
+      { key: 'funnels', name: 'Ministry Funnels', icon: 'filter', category: 'Outreach', desc: 'Build landing pages and guided conversion funnels for salvation calls, visitors, and events.', settings: [] },
       { key: 'bible', name: 'Scripture Engagement', icon: 'book', category: 'Discipleship', desc: 'Read scriptures, setup daily reading plans, create verse widgets, and log study notes.', settings: [] },
       { key: 'signage', name: 'Digital Signage', icon: 'tv', category: 'Media', desc: 'Manage TV slides, lobby sign displays, schedules, and active lobbies devices.', settings: [] },
       { key: 'worship', name: 'Worship Experience', icon: 'music', category: 'Media', desc: 'Organize worship service run-sheets, song lyrics catalog, keys setup, and cue displays.', settings: [] },
       { key: 'finance', name: 'Financial Ledger', icon: 'wallet', category: 'Church Admin', desc: 'Steward church bookkeeping, expenses, billing invoices, and tax reporting statements.', settings: [] },
-      { key: 'forms', name: 'Forms & Workflows', icon: 'form-input', category: 'Growth', desc: 'Create custom forms, surveys, check-in questionnaires, and automate workflow tasks.', settings: [] },
+      { key: 'forms', name: 'Forms & Workflows', icon: 'form-input', category: 'Outreach', desc: 'Create custom forms, surveys, check-in questionnaires, and automate workflow tasks.', settings: [] },
       { key: 'liveMeetings', name: 'Live Meetings', icon: 'video', category: 'Connect', desc: 'Host video conference calls, virtual webinars, and private counseling rooms.', settings: [] },
       { key: 'multiBranch', name: 'Multi-Campus CRM', icon: 'map', category: 'Church Admin', desc: 'Coordinate campus locations, leaders role scopes, activities, and campus revenue splits.', settings: [] },
       { key: 'outreach', name: 'Outreach Campaigns', icon: 'megaphone', category: 'Outreach', desc: 'AI outreach content draft generator, Meta/Instagram social promotions, custom invite cards, and leads referral analytics.', settings: [] },
       { key: 'salvation', name: 'Salvation Journeys', icon: 'heart', category: 'Discipleship', desc: 'Monitor salvation decision logs, assign mentors, and track newcomer assimilation.', settings: [] },
       { key: 'whiteLabel', name: 'White-Label App', icon: 'smartphone', category: 'Media', desc: 'Compile white-label iOS and Android apps, customize splash pages, and draft listings.', settings: [] },
       { key: 'community', name: 'Notice & Forums', icon: 'messages-square', category: 'Connect', desc: 'Configure public notice boards, forum rooms threads, and user profiles directories.', settings: [] },
-      { key: 'liveChat', name: 'Pastoral Live Chat', icon: 'message-circle', category: 'Care', desc: 'Real-time pastoral care live chat support desk, handling tickets and response SLAs.', settings: [] },
-      { key: 'communication', name: 'Automated Broadcasts', icon: 'send', category: 'Growth', desc: 'Broadcast automated email newsletters, queue SMS messages, and schedule notification sequences.', settings: [] },
-      { key: 'crm', name: 'Ministry CRM Pipelines', icon: 'kanban', category: 'Growth', desc: 'Manage newcomer follow-up checklists, pipelines, and tasks in a Kanban layout.', settings: [] }
+      { key: 'liveChat', name: 'Pastoral Live Chat', icon: 'message-circle', category: 'Connect', desc: 'Real-time pastoral care live chat support desk, handling tickets and response SLAs.', settings: [] },
+      { key: 'communication', name: 'Automated Broadcasts', icon: 'send', category: 'Outreach', desc: 'Broadcast automated email newsletters, queue SMS messages, and schedule notification sequences.', settings: [] },
+      { key: 'crm', name: 'Ministry CRM Pipelines', icon: 'kanban', category: 'Outreach', desc: 'Manage newcomer follow-up checklists, pipelines, and tasks in a Kanban layout.', settings: [] }
     ];
  
      const defaultData = {
@@ -9808,10 +10078,12 @@
       });
 
       if (view === 'settings') {
-        if (selectedModule && modules.some(m => m.key === selectedModule)) {
-          activeSettingsTab = selectedModule;
-        } else {
-          activeSettingsTab = 'general';
+        if (!activeSettingsTab) {
+          if (selectedModule && modules.some(m => m.key === selectedModule)) {
+            activeSettingsTab = selectedModule;
+          } else {
+            activeSettingsTab = 'general';
+          }
         }
       }
 
@@ -9892,100 +10164,328 @@
         </article>
       `;
     }
+    // Active sidebar category tracking (default 'home')
+    window.activeSidebarCategory = window.activeSidebarCategory || 'home';
+    window.sidebarSearchQuery = '';
 
-    // Global sidebar category collapse state
-    window.sidebarCategoryStates = window.sidebarCategoryStates || {
-      churchfront: true,
-      connect: true,
-      outreach: true,
-      growth: true,
-      care: true,
-      discipleship: true,
-      media: true,
-      giving: true,
-      sales: true,
-      admin: true,
-      settings: false
+    window.selectSettingsTab = function(tabKey) {
+      activeSettingsTab = tabKey;
+      if (tabKey !== 'general') {
+        selectedModule = tabKey;
+      } else {
+        selectedModule = null;
+      }
+      switchView('settings');
+      renderSidebarModules();
     };
 
-    window.toggleSidebarCategory = function(catKey) {
-      window.sidebarCategoryStates[catKey] = !window.sidebarCategoryStates[catKey];
+    window.selectSettingsEngineTab = function(tabName) {
+      selectedModule = 'centralized-settings-engine';
+      activeSettingsTab = null;
+      switchView('modules');
+      if (window.switchCentralizedSettingsEngineTab) {
+        window.switchCentralizedSettingsEngineTab(tabName);
+      }
+      renderSidebarModules();
+    };
+
+    window.selectBillingTab = function(tabName) {
+      selectedModule = 'billing-subscription-management';
+      activeSettingsTab = null;
+      switchView('modules');
+      if (window.switchBillingTab) {
+        window.switchBillingTab(tabName);
+      }
+      renderSidebarModules();
+    };
+
+    window.selectSidebarCategory = function(catKey) {
+      window.activeSidebarCategory = catKey;
+      window.sidebarSearchQuery = '';
+      const searchInput = document.getElementById('sidebarSearchInput');
+      if (searchInput) searchInput.value = '';
+      
+      if (catKey === 'home') {
+        switchView('overview');
+      } else if (catKey === 'settings') {
+        selectSettingsTab('general');
+      } else if (catKey === 'profile') {
+        switchView('profile');
+      } else {
+        const categoriesMap = {
+          'churchfront': 'Churchfront',
+          'connect': 'Connect',
+          'outreach': 'Outreach',
+          'discipleship': 'Discipleship',
+          'media': 'Media',
+          'giving': 'Giving',
+          'sales': 'Sales',
+          'admin': 'Church Admin'
+        };
+        const catName = categoriesMap[catKey];
+        const catModules = modules.filter(m => m.category === catName);
+        
+        // Auto-select the first module if the currently selected module is not in this category
+        const activeModule = modules.find(m => m.key === selectedModule);
+        if (catModules.length > 0 && (!activeModule || activeModule.category !== catName)) {
+          selectedModule = catModules[0].key;
+        }
+        switchView('modules');
+      }
+      renderSidebarModules();
+    };
+
+    window.handleSidebarSearch = function(query) {
+      window.sidebarSearchQuery = query.toLowerCase().trim();
       renderSidebarModules();
     };
 
     function renderSidebarModules() {
       const categoriesMap = {
-        'Churchfront': { key: 'churchfront', name: 'Churchfront', icon: 'monitor', desc: 'CMS, themes, and public tools' },
-        'Connect': { key: 'connect', name: 'Connect', icon: 'heart-handshake', desc: 'Worship and fellowship channels' },
-        'Outreach': { key: 'outreach', name: 'Outreach', icon: 'megaphone', desc: 'Growth and social promotions' },
-        'Growth': { key: 'growth', name: 'Growth', icon: 'trending-up', desc: 'CRM and automated funnels' },
-        'Care': { key: 'care', name: 'Care', icon: 'smile', desc: 'Pastoral care and children' },
-        'Discipleship': { key: 'discipleship', name: 'Discipleship', icon: 'graduation-cap', desc: 'LMS and spiritual tracks' },
-        'Media': { key: 'media', name: 'Media & Apps', icon: 'film', desc: 'Sermons library and dynamic apps' },
-        'Giving': { key: 'giving', name: 'Giving', icon: 'hand-coins', desc: 'Stewardship and offerings' },
-        'Sales': { key: 'sales', name: 'Sales', icon: 'shopping-cart', desc: 'E-commerce store' },
-        'Church Admin': { key: 'admin', name: 'Church Admin', icon: 'briefcase', desc: 'Financial ledgers and logs' },
-        'Settings': { key: 'settings', name: 'Settings', icon: 'sliders-horizontal', desc: 'Access roles and plans' }
+        'churchfront': { name: 'Churchfront', icon: 'monitor' },
+        'connect': { name: 'Connect', icon: 'users' },
+        'outreach': { name: 'Outreach', icon: 'megaphone' },
+        'discipleship': { name: 'Discipleship', icon: 'graduation-cap' },
+        'media': { name: 'Media', icon: 'film' },
+        'giving': { name: 'Giving', icon: 'hand-coins' },
+        'sales': { name: 'Sales', icon: 'shopping-cart' },
+        'admin': { name: 'Admin', icon: 'briefcase' }
       };
 
-      // Group modules by category
+      // Group modules by category key
       const grouped = {};
-      Object.keys(categoriesMap).forEach(catName => grouped[catName] = []);
+      Object.keys(categoriesMap).forEach(key => grouped[key] = []);
       modules.forEach(m => {
-        if (grouped[m.category]) {
-          grouped[m.category].push(m);
-        } else {
-          if (!grouped['Settings']) grouped['Settings'] = [];
-          grouped['Settings'].push(m);
+        const catNameMap = {
+          'Churchfront': 'churchfront',
+          'Connect': 'connect',
+          'Outreach': 'outreach',
+          'Discipleship': 'discipleship',
+          'Media': 'media',
+          'Giving': 'giving',
+          'Sales': 'sales',
+          'Church Admin': 'admin',
+          'Settings': 'settings'
+        };
+        const key = catNameMap[m.category] || 'admin';
+        if (grouped[key]) {
+          grouped[key].push(m);
         }
       });
 
-      // Find the category of the selected module and auto-expand it!
+      // Synchronize activeSidebarCategory based on the current view/module
       const activeModule = modules.find(m => m.key === selectedModule);
-      if (activeModule && categoriesMap[activeModule.category]) {
-        const activeCatKey = categoriesMap[activeModule.category].key;
-        window.sidebarCategoryStates[activeCatKey] = true;
+      if (currentView === 'overview') {
+        window.activeSidebarCategory = 'home';
+      } else if (currentView === 'settings') {
+        window.activeSidebarCategory = 'settings';
+      } else if (currentView === 'profile') {
+        window.activeSidebarCategory = 'profile';
+      } else if (currentView === 'modules' && activeModule) {
+        const catNameMap = {
+          'Churchfront': 'churchfront',
+          'Connect': 'connect',
+          'Outreach': 'outreach',
+          'Discipleship': 'discipleship',
+          'Media': 'media',
+          'Giving': 'giving',
+          'Sales': 'sales',
+          'Church Admin': 'admin',
+          'Settings': 'settings'
+        };
+        window.activeSidebarCategory = catNameMap[activeModule.category] || 'churchfront';
       }
 
-      const sidebarContainer = document.getElementById('sidebarModules');
-      if (!sidebarContainer) return;
+      // 1. Render Column A Categories
+      const categoriesContainer = document.getElementById('sidebarCategoriesA');
+      if (categoriesContainer) {
+        const homeActive = window.activeSidebarCategory === 'home' ? 'active' : '';
+        let categoriesHtml = `
+          <button class="sidebar-a-btn ${homeActive}" onclick="selectSidebarCategory('home')" title="Dashboard">
+            <i data-lucide="home"></i>
+            <span>Home</span>
+          </button>
+        `;
 
-      sidebarContainer.innerHTML = Object.entries(categoriesMap).map(([catName, cat]) => {
-        const catModules = grouped[catName] || [];
-        if (catModules.length === 0) return '';
-        const isOpen = window.sidebarCategoryStates[cat.key];
-        const isActiveCat = activeModule && activeModule.category === catName;
-        
-        const moduleButtonsHtml = catModules.map(module => {
-          return `
-            <button class="module-nav-button ${currentView === 'modules' && selectedModule === module.key ? 'active' : ''}" data-module-nav="${module.key}" style="padding-left:12px; margin-left:8px; border-left:1.5px solid var(--line); border-radius:0 4px 4px 0; min-height:30px; font-size:13px; margin-top:2px;">
-              <i data-lucide="${module.icon}" style="width:13px !important; height:13px !important;"></i>
-              <span>${module.name}</span>
+        Object.entries(categoriesMap).forEach(([key, cat]) => {
+          const isActive = window.activeSidebarCategory === key ? 'active' : '';
+          categoriesHtml += `
+            <button class="sidebar-a-btn ${isActive}" onclick="selectSidebarCategory('${key}')" title="${cat.name}">
+              <i data-lucide="${cat.icon}"></i>
+              <span>${cat.name}</span>
             </button>
           `;
-        }).join('');
-
-        return `
-          <div class="sidebar-category ${isActiveCat ? 'active' : ''} ${isOpen ? 'open' : ''}" style="margin-bottom:8px;">
-            <div class="sidebar-category-header" onclick="toggleSidebarCategory('${cat.key}')" style="display:flex; align-items:center; gap:10px; padding:6px 8px; cursor:pointer; color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; border-radius:var(--radius); transition: background 0.2s, color 0.2s;">
-              <i data-lucide="${cat.icon}" style="width:14px !important; height:14px !important;"></i>
-              <span style="letter-spacing:0.05em;">${cat.name}</span>
-              <i data-lucide="chevron-down" class="chevron" style="margin-left:auto; width:12px !important; height:12px !important; transition: transform 0.2s; ${isOpen ? 'transform:rotate(180deg);' : ''}"></i>
-            </div>
-            <div class="sidebar-category-modules ${isOpen ? '' : 'hidden'}" style="display:grid; gap:2px; margin-top:2px;">
-              ${moduleButtonsHtml}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      document.querySelectorAll('[data-module-nav]').forEach((button) => {
-        button.addEventListener('click', (e) => {
-          e.stopPropagation();
-          selectedModule = button.dataset.moduleNav;
-          switchView('modules');
         });
-      });
+
+        categoriesContainer.innerHTML = categoriesHtml;
+      }
+
+      // 2. Render Column A Footer
+      const footerContainer = document.getElementById('sidebarFooterA');
+      if (footerContainer) {
+        const settingsActive = window.activeSidebarCategory === 'settings' ? 'active' : '';
+        footerContainer.innerHTML = `
+          <button class="sidebar-a-btn ${settingsActive}" onclick="selectSidebarCategory('settings')" title="Settings">
+            <i data-lucide="settings"></i>
+            <span>Settings</span>
+          </button>
+        `;
+      }
+
+      // 3. Render Column B Title
+      const bTitleEl = document.getElementById('sidebarBTitle');
+      if (bTitleEl) {
+        if (window.activeSidebarCategory === 'home') {
+          bTitleEl.textContent = 'Workspace';
+        } else if (window.activeSidebarCategory === 'settings') {
+          bTitleEl.textContent = 'Settings';
+        } else if (window.activeSidebarCategory === 'profile') {
+          bTitleEl.textContent = 'Account';
+        } else if (categoriesMap[window.activeSidebarCategory]) {
+          bTitleEl.textContent = categoriesMap[window.activeSidebarCategory].name;
+        }
+      }
+
+      // 4. Render Column B Content
+      const modulesBContainer = document.getElementById('sidebarModules');
+      if (modulesBContainer) {
+        let contentHtml = '';
+
+        if (window.activeSidebarCategory === 'home') {
+          const overviewActive = currentView === 'overview' ? 'active' : '';
+          contentHtml = `
+            <button class="sidebar-b-item ${overviewActive}" onclick="switchView('overview')">
+              <i data-lucide="layout-dashboard"></i>
+              <span>Dashboard Overview</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item" onclick="switchView('settings')">
+              <i data-lucide="sliders-horizontal"></i>
+              <span>Global Settings</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item" onclick="switchView('profile')">
+              <i data-lucide="user"></i>
+              <span>Admin Profile</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+          `;
+        } else if (window.activeSidebarCategory === 'settings') {
+          const generalActive = currentView === 'settings' && activeSettingsTab === 'general' ? 'active' : '';
+          contentHtml = `
+            <button class="sidebar-b-item ${generalActive}" onclick="selectSettingsTab('general')">
+              <i data-lucide="sliders-horizontal"></i>
+              <span>General Settings</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+          `;
+
+          // Settings Engine Tabs
+          const seProfilesActive = currentView === 'modules' && selectedModule === 'centralized-settings-engine' && (centralizedSettingsEngineState.activeTab === 'profiles') ? 'active' : '';
+          const seSchemasActive = currentView === 'modules' && selectedModule === 'centralized-settings-engine' && (centralizedSettingsEngineState.activeTab === 'schemas') ? 'active' : '';
+          const seLogsActive = currentView === 'modules' && selectedModule === 'centralized-settings-engine' && (centralizedSettingsEngineState.activeTab === 'logs') ? 'active' : '';
+
+          contentHtml += `
+            <button class="sidebar-b-item ${seProfilesActive}" onclick="selectSettingsEngineTab('profiles')">
+              <i data-lucide="folder-git-2"></i>
+              <span>Settings Profiles</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item ${seSchemasActive}" onclick="selectSettingsEngineTab('schemas')">
+              <i data-lucide="sliders-horizontal"></i>
+              <span>Dynamic Schemas</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item ${seLogsActive}" onclick="selectSettingsEngineTab('logs')">
+              <i data-lucide="scroll"></i>
+              <span>Audit Trails</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+          `;
+
+          // Billing Tabs
+          const billPlansActive = currentView === 'modules' && selectedModule === 'billing-subscription-management' && (billingState.activeTab === 'plans') ? 'active' : '';
+          const billUsageActive = currentView === 'modules' && selectedModule === 'billing-subscription-management' && (billingState.activeTab === 'usage') ? 'active' : '';
+          const billInvoicesActive = currentView === 'modules' && selectedModule === 'billing-subscription-management' && (billingState.activeTab === 'invoices') ? 'active' : '';
+
+          contentHtml += `
+            <button class="sidebar-b-item ${billPlansActive}" onclick="selectBillingTab('plans')">
+              <i data-lucide="credit-card"></i>
+              <span>Subscription Plan</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item ${billUsageActive}" onclick="selectBillingTab('usage')">
+              <i data-lucide="gauge"></i>
+              <span>Metered Usage</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item ${billInvoicesActive}" onclick="selectBillingTab('invoices')">
+              <i data-lucide="receipt"></i>
+              <span>Invoices & Webhooks</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+          `;
+          
+          contentHtml += modules.filter(m => m.settings && m.settings.length > 0).map(module => {
+            const isActive = currentView === 'settings' && activeSettingsTab === module.key ? 'active' : '';
+            return `
+              <button class="sidebar-b-item ${isActive}" onclick="selectSettingsTab('${module.key}')">
+                <i data-lucide="${module.icon}"></i>
+                <span>${module.name} Settings</span>
+                <i data-lucide="chevron-right" class="chevron-right"></i>
+              </button>
+            `;
+          }).join('');
+        } else if (window.activeSidebarCategory === 'profile') {
+          const profileActive = currentView === 'profile' ? 'active' : '';
+          contentHtml = `
+            <button class="sidebar-b-item ${profileActive}" onclick="switchView('profile')">
+              <i data-lucide="user"></i>
+              <span>View Profile</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item" onclick="switchView('overview')">
+              <i data-lucide="arrow-left"></i>
+              <span>Back to Overview</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+          `;
+        } else {
+          let catModules = grouped[window.activeSidebarCategory] || [];
+          
+          if (window.sidebarSearchQuery) {
+            catModules = catModules.filter(m => 
+              m.name.toLowerCase().includes(window.sidebarSearchQuery) || 
+              m.desc.toLowerCase().includes(window.sidebarSearchQuery)
+            );
+          }
+
+          if (catModules.length === 0) {
+            contentHtml = `<div class="no-results-msg">No matching modules</div>`;
+          } else {
+            contentHtml = catModules.map(module => {
+              const isActive = currentView === 'modules' && selectedModule === module.key ? 'active' : '';
+              return `
+                <button class="sidebar-b-item ${isActive}" data-module-nav="${module.key}">
+                  <i data-lucide="${module.icon}"></i>
+                  <span>${module.name}</span>
+                  <i data-lucide="chevron-right" class="chevron-right"></i>
+                </button>
+              `;
+            }).join('');
+          }
+        }
+
+        modulesBContainer.innerHTML = contentHtml;
+
+        document.querySelectorAll('[data-module-nav]').forEach((button) => {
+          button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectedModule = button.dataset.moduleNav;
+            switchView('modules');
+          });
+        });
+      }
       refreshIcons();
     }
 
@@ -10347,7 +10847,12 @@
             </div>
           </div>
           <div class="settings-list" style="margin-top:20px;">
-            ${module.settings.map((setting) => {
+            ${module.settings.length === 0 ? `
+              <div class="empty-state" style="padding: 24px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: var(--radius); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+                <i data-lucide="info" style="width: 20px; height: 20px;"></i>
+                <span>No configuration settings required for this module.</span>
+              </div>
+            ` : module.settings.map((setting) => {
               const value = saved[setting.key] ?? setting.value ?? true;
               if (setting.type === 'toggle') {
                 return `
