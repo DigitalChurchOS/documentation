@@ -208,6 +208,36 @@ export type UsageMeter = Prisma.UsageMeterModel
  */
 export type Invoice = Prisma.InvoiceModel
 /**
+ * Model BillingSubscriptionManagementModule
+ * 
+ */
+export type BillingSubscriptionManagementModule = Prisma.BillingSubscriptionManagementModuleModel
+/**
+ * Model BillingSubscriptionManagementModuleActivity
+ * 
+ */
+export type BillingSubscriptionManagementModuleActivity = Prisma.BillingSubscriptionManagementModuleActivityModel
+/**
+ * Model BillingSubscriptionManagementModuleSettings
+ * 
+ */
+export type BillingSubscriptionManagementModuleSettings = Prisma.BillingSubscriptionManagementModuleSettingsModel
+/**
+ * Model BillingAddOn
+ * 
+ */
+export type BillingAddOn = Prisma.BillingAddOnModel
+/**
+ * Model TenantSubscriptionAddOn
+ * 
+ */
+export type TenantSubscriptionAddOn = Prisma.TenantSubscriptionAddOnModel
+/**
+ * Model BillingCoupon
+ * 
+ */
+export type BillingCoupon = Prisma.BillingCouponModel
+/**
  * Model AnalyticsEvent
  * 
  */

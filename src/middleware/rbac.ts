@@ -31,3 +31,25 @@ export function requirePermission(...requiredPermissions: string[]) {
     next();
   };
 }
+
+export function requireAnyPermission(...allowedPermissions: string[]) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      res.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+
+    const userPerms = new Set(req.user.permissions);
+    const allowed = allowedPermissions.some((permission) => userPerms.has(permission));
+
+    if (!allowed) {
+      res.status(403).json({
+        error: 'Insufficient permissions',
+        requiredAny: allowedPermissions,
+      });
+      return;
+    }
+
+    next();
+  };
+}

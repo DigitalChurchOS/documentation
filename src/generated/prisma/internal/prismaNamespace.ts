@@ -422,6 +422,12 @@ export const ModelName = {
   TenantSubscription: 'TenantSubscription',
   UsageMeter: 'UsageMeter',
   Invoice: 'Invoice',
+  BillingSubscriptionManagementModule: 'BillingSubscriptionManagementModule',
+  BillingSubscriptionManagementModuleActivity: 'BillingSubscriptionManagementModuleActivity',
+  BillingSubscriptionManagementModuleSettings: 'BillingSubscriptionManagementModuleSettings',
+  BillingAddOn: 'BillingAddOn',
+  TenantSubscriptionAddOn: 'TenantSubscriptionAddOn',
+  BillingCoupon: 'BillingCoupon',
   AnalyticsEvent: 'AnalyticsEvent',
   PluginDefinition: 'PluginDefinition',
   TenantPlugin: 'TenantPlugin',
@@ -623,7 +629,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "tenant" | "branch" | "branchRegion" | "branchLeader" | "user" | "member" | "role" | "permission" | "rolePermission" | "userRole" | "providerCategory" | "provider" | "tenantConnectedService" | "moduleProviderOverride" | "moduleDefinition" | "tenantModule" | "theme" | "website" | "page" | "family" | "crmPipeline" | "crmStage" | "memberCrmStage" | "crmContact" | "crmTimelineEvent" | "crmFollowUpTask" | "consentRecord" | "communicationTemplate" | "communicationLog" | "notificationPreference" | "scheduledMessage" | "automationWorkflow" | "followUpSequence" | "followUpStep" | "subscriptionPlan" | "tenantSubscription" | "usageMeter" | "invoice" | "analyticsEvent" | "pluginDefinition" | "tenantPlugin" | "pluginWebhook" | "developerProfile" | "marketplaceAsset" | "assetSubmission" | "submissionReview" | "assetFeedback" | "assetPurchase" | "sandboxTenant" | "languageRegistry" | "translationKey" | "mediaCategory" | "mediaTag" | "speaker" | "mediaSeries" | "mediaAsset" | "mediaAssetTag" | "mediaPlaylist" | "mediaPlaylistItem" | "livestream" | "livestreamChat" | "livestreamViewer" | "livestreamInteraction" | "churchService" | "serviceScripture" | "serviceAttachment" | "blogCategory" | "blogTag" | "blogPost" | "blogPostTag" | "blogPostScripture" | "blogPostComment" | "libraryCategory" | "libraryResource" | "libraryPurchase" | "podcastShow" | "podcastEpisode" | "aiMediaJob" | "displayScreen" | "signagePlaylist" | "signageSlide" | "signagePlaylistItem" | "worshipSong" | "worshipPlaylist" | "worshipPlaylistItem" | "worshipSession" | "givingCategory" | "donation" | "recurringGiving" | "partnershipCategory" | "partnership" | "recurringPartnership" | "campaign" | "campaignUpdate" | "productCategory" | "product" | "productVariant" | "storeCoupon" | "storeOrder" | "orderItem" | "financialAccount" | "financialBudget" | "financialTransaction" | "expenseRequest" | "reconciliationRecord" | "ministryFunnel" | "funnelStep" | "funnelSubmission" | "funnelAnalytics" | "memberCheckIn" | "memberNote" | "memberTag" | "memberTagAssignment" | "communityPost" | "prayerRequest" | "testimony" | "communityComment" | "communityReaction" | "chatConversation" | "chatMessage" | "careRequest" | "savedReply" | "chatFollowUpTask" | "outreachCampaign" | "inviteAsset" | "personalizedInvitePage" | "inviteLinkClick" | "shareEvent" | "volunteerProfile" | "volunteerDepartment" | "volunteerTeam" | "volunteerTeamAssignment" | "volunteerAvailability" | "volunteerShift" | "volunteerAssignment" | "volunteerAnnouncement" | "customForm" | "formSubmission" | "formWorkflowTrigger" | "formWorkflowAction" | "prayerSession" | "prayerSessionParticipation" | "prayerPoint" | "prayerSessionReaction" | "prayerMedia" | "newBelieverProfile" | "newBelieverReminder" | "lmsCourse" | "lmsModule" | "lmsLesson" | "lmsQuiz" | "lmsAssignment" | "lmsEnrollment" | "lmsLessonProgress" | "lmsQuizAnswer" | "lmsAssignmentSubmission" | "bibleTranslation" | "bibleBook" | "bibleVerse" | "bibleReadingPlan" | "bibleReadingPlanDay" | "bibleReadingPlanEnrollment" | "bibleBookmark" | "bibleVerseNote" | "dailyDevotional" | "bibleVerseHighlight" | "bibleAudioTrack" | "groupType" | "group" | "groupMember" | "groupMeeting" | "groupAttendance" | "groupInviteLink" | "groupInviteConversion" | "groupNoticeBoard" | "groupNoticePost" | "groupPromotion" | "groupSettings" | "childProfile" | "childGuardian" | "pickupAuthorization" | "childrenClass" | "childrenClassEnrollment" | "childrenClassResource" | "childrenCheckIn" | "eventCategory" | "event" | "eventRegistration" | "eventTicket" | "eventRsvp" | "eventReminder" | "liveMeeting" | "liveMeetingParticipant" | "liveMeetingChat" | "liveMeetingAttendance" | "liveMeetingReminder" | "appointmentType" | "staffAvailability" | "appointment" | "appointmentReminder" | "mobilePushToken" | "whiteLabelApp" | "whiteLabelBuild" | "translationJob" | "translatedContent" | "liveTranslationFeed" | "mediaCaption" | "aiAssistantJob" | "agentPresence" | "communityChannel" | "chatKbArticle" | "altarCallResponse" | "moduleSettings" | "centralizedSettingsEngineModule" | "centralizedSettingsEngineModuleActivity" | "centralizedSettingsEngineModuleSettings" | "pageRevision" | "navigationMenu" | "cmsFooter" | "reusableBlock" | "cmsActivityLog" | "themeEngineModule" | "themeEngineModuleActivity" | "themeEngineModuleSettings"
+    modelProps: "tenant" | "branch" | "branchRegion" | "branchLeader" | "user" | "member" | "role" | "permission" | "rolePermission" | "userRole" | "providerCategory" | "provider" | "tenantConnectedService" | "moduleProviderOverride" | "moduleDefinition" | "tenantModule" | "theme" | "website" | "page" | "family" | "crmPipeline" | "crmStage" | "memberCrmStage" | "crmContact" | "crmTimelineEvent" | "crmFollowUpTask" | "consentRecord" | "communicationTemplate" | "communicationLog" | "notificationPreference" | "scheduledMessage" | "automationWorkflow" | "followUpSequence" | "followUpStep" | "subscriptionPlan" | "tenantSubscription" | "usageMeter" | "invoice" | "billingSubscriptionManagementModule" | "billingSubscriptionManagementModuleActivity" | "billingSubscriptionManagementModuleSettings" | "billingAddOn" | "tenantSubscriptionAddOn" | "billingCoupon" | "analyticsEvent" | "pluginDefinition" | "tenantPlugin" | "pluginWebhook" | "developerProfile" | "marketplaceAsset" | "assetSubmission" | "submissionReview" | "assetFeedback" | "assetPurchase" | "sandboxTenant" | "languageRegistry" | "translationKey" | "mediaCategory" | "mediaTag" | "speaker" | "mediaSeries" | "mediaAsset" | "mediaAssetTag" | "mediaPlaylist" | "mediaPlaylistItem" | "livestream" | "livestreamChat" | "livestreamViewer" | "livestreamInteraction" | "churchService" | "serviceScripture" | "serviceAttachment" | "blogCategory" | "blogTag" | "blogPost" | "blogPostTag" | "blogPostScripture" | "blogPostComment" | "libraryCategory" | "libraryResource" | "libraryPurchase" | "podcastShow" | "podcastEpisode" | "aiMediaJob" | "displayScreen" | "signagePlaylist" | "signageSlide" | "signagePlaylistItem" | "worshipSong" | "worshipPlaylist" | "worshipPlaylistItem" | "worshipSession" | "givingCategory" | "donation" | "recurringGiving" | "partnershipCategory" | "partnership" | "recurringPartnership" | "campaign" | "campaignUpdate" | "productCategory" | "product" | "productVariant" | "storeCoupon" | "storeOrder" | "orderItem" | "financialAccount" | "financialBudget" | "financialTransaction" | "expenseRequest" | "reconciliationRecord" | "ministryFunnel" | "funnelStep" | "funnelSubmission" | "funnelAnalytics" | "memberCheckIn" | "memberNote" | "memberTag" | "memberTagAssignment" | "communityPost" | "prayerRequest" | "testimony" | "communityComment" | "communityReaction" | "chatConversation" | "chatMessage" | "careRequest" | "savedReply" | "chatFollowUpTask" | "outreachCampaign" | "inviteAsset" | "personalizedInvitePage" | "inviteLinkClick" | "shareEvent" | "volunteerProfile" | "volunteerDepartment" | "volunteerTeam" | "volunteerTeamAssignment" | "volunteerAvailability" | "volunteerShift" | "volunteerAssignment" | "volunteerAnnouncement" | "customForm" | "formSubmission" | "formWorkflowTrigger" | "formWorkflowAction" | "prayerSession" | "prayerSessionParticipation" | "prayerPoint" | "prayerSessionReaction" | "prayerMedia" | "newBelieverProfile" | "newBelieverReminder" | "lmsCourse" | "lmsModule" | "lmsLesson" | "lmsQuiz" | "lmsAssignment" | "lmsEnrollment" | "lmsLessonProgress" | "lmsQuizAnswer" | "lmsAssignmentSubmission" | "bibleTranslation" | "bibleBook" | "bibleVerse" | "bibleReadingPlan" | "bibleReadingPlanDay" | "bibleReadingPlanEnrollment" | "bibleBookmark" | "bibleVerseNote" | "dailyDevotional" | "bibleVerseHighlight" | "bibleAudioTrack" | "groupType" | "group" | "groupMember" | "groupMeeting" | "groupAttendance" | "groupInviteLink" | "groupInviteConversion" | "groupNoticeBoard" | "groupNoticePost" | "groupPromotion" | "groupSettings" | "childProfile" | "childGuardian" | "pickupAuthorization" | "childrenClass" | "childrenClassEnrollment" | "childrenClassResource" | "childrenCheckIn" | "eventCategory" | "event" | "eventRegistration" | "eventTicket" | "eventRsvp" | "eventReminder" | "liveMeeting" | "liveMeetingParticipant" | "liveMeetingChat" | "liveMeetingAttendance" | "liveMeetingReminder" | "appointmentType" | "staffAvailability" | "appointment" | "appointmentReminder" | "mobilePushToken" | "whiteLabelApp" | "whiteLabelBuild" | "translationJob" | "translatedContent" | "liveTranslationFeed" | "mediaCaption" | "aiAssistantJob" | "agentPresence" | "communityChannel" | "chatKbArticle" | "altarCallResponse" | "moduleSettings" | "centralizedSettingsEngineModule" | "centralizedSettingsEngineModuleActivity" | "centralizedSettingsEngineModuleSettings" | "pageRevision" | "navigationMenu" | "cmsFooter" | "reusableBlock" | "cmsActivityLog" | "themeEngineModule" | "themeEngineModuleActivity" | "themeEngineModuleSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3436,6 +3442,450 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.InvoiceCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.InvoiceCountAggregateOutputType> | number
+        }
+      }
+    }
+    BillingSubscriptionManagementModule: {
+      payload: Prisma.$BillingSubscriptionManagementModulePayload<ExtArgs>
+      fields: Prisma.BillingSubscriptionManagementModuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BillingSubscriptionManagementModuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BillingSubscriptionManagementModuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>
+        }
+        findFirst: {
+          args: Prisma.BillingSubscriptionManagementModuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BillingSubscriptionManagementModuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>
+        }
+        findMany: {
+          args: Prisma.BillingSubscriptionManagementModuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>[]
+        }
+        create: {
+          args: Prisma.BillingSubscriptionManagementModuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>
+        }
+        createMany: {
+          args: Prisma.BillingSubscriptionManagementModuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BillingSubscriptionManagementModuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>[]
+        }
+        delete: {
+          args: Prisma.BillingSubscriptionManagementModuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>
+        }
+        update: {
+          args: Prisma.BillingSubscriptionManagementModuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>
+        }
+        deleteMany: {
+          args: Prisma.BillingSubscriptionManagementModuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BillingSubscriptionManagementModuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BillingSubscriptionManagementModuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>[]
+        }
+        upsert: {
+          args: Prisma.BillingSubscriptionManagementModuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModulePayload>
+        }
+        aggregate: {
+          args: Prisma.BillingSubscriptionManagementModuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBillingSubscriptionManagementModule>
+        }
+        groupBy: {
+          args: Prisma.BillingSubscriptionManagementModuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingSubscriptionManagementModuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BillingSubscriptionManagementModuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingSubscriptionManagementModuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    BillingSubscriptionManagementModuleActivity: {
+      payload: Prisma.$BillingSubscriptionManagementModuleActivityPayload<ExtArgs>
+      fields: Prisma.BillingSubscriptionManagementModuleActivityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>
+        }
+        findFirst: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>
+        }
+        findMany: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>[]
+        }
+        create: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>
+        }
+        createMany: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>[]
+        }
+        delete: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>
+        }
+        update: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>
+        }
+        deleteMany: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>[]
+        }
+        upsert: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleActivityPayload>
+        }
+        aggregate: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBillingSubscriptionManagementModuleActivity>
+        }
+        groupBy: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingSubscriptionManagementModuleActivityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BillingSubscriptionManagementModuleActivityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingSubscriptionManagementModuleActivityCountAggregateOutputType> | number
+        }
+      }
+    }
+    BillingSubscriptionManagementModuleSettings: {
+      payload: Prisma.$BillingSubscriptionManagementModuleSettingsPayload<ExtArgs>
+      fields: Prisma.BillingSubscriptionManagementModuleSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>[]
+        }
+        delete: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>
+        }
+        update: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>[]
+        }
+        upsert: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingSubscriptionManagementModuleSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBillingSubscriptionManagementModuleSettings>
+        }
+        groupBy: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingSubscriptionManagementModuleSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BillingSubscriptionManagementModuleSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingSubscriptionManagementModuleSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
+    BillingAddOn: {
+      payload: Prisma.$BillingAddOnPayload<ExtArgs>
+      fields: Prisma.BillingAddOnFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BillingAddOnFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BillingAddOnFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>
+        }
+        findFirst: {
+          args: Prisma.BillingAddOnFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BillingAddOnFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>
+        }
+        findMany: {
+          args: Prisma.BillingAddOnFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>[]
+        }
+        create: {
+          args: Prisma.BillingAddOnCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>
+        }
+        createMany: {
+          args: Prisma.BillingAddOnCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BillingAddOnCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>[]
+        }
+        delete: {
+          args: Prisma.BillingAddOnDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>
+        }
+        update: {
+          args: Prisma.BillingAddOnUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>
+        }
+        deleteMany: {
+          args: Prisma.BillingAddOnDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BillingAddOnUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BillingAddOnUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>[]
+        }
+        upsert: {
+          args: Prisma.BillingAddOnUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingAddOnPayload>
+        }
+        aggregate: {
+          args: Prisma.BillingAddOnAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBillingAddOn>
+        }
+        groupBy: {
+          args: Prisma.BillingAddOnGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingAddOnGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BillingAddOnCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingAddOnCountAggregateOutputType> | number
+        }
+      }
+    }
+    TenantSubscriptionAddOn: {
+      payload: Prisma.$TenantSubscriptionAddOnPayload<ExtArgs>
+      fields: Prisma.TenantSubscriptionAddOnFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TenantSubscriptionAddOnFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TenantSubscriptionAddOnFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>
+        }
+        findFirst: {
+          args: Prisma.TenantSubscriptionAddOnFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TenantSubscriptionAddOnFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>
+        }
+        findMany: {
+          args: Prisma.TenantSubscriptionAddOnFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>[]
+        }
+        create: {
+          args: Prisma.TenantSubscriptionAddOnCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>
+        }
+        createMany: {
+          args: Prisma.TenantSubscriptionAddOnCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TenantSubscriptionAddOnCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>[]
+        }
+        delete: {
+          args: Prisma.TenantSubscriptionAddOnDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>
+        }
+        update: {
+          args: Prisma.TenantSubscriptionAddOnUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>
+        }
+        deleteMany: {
+          args: Prisma.TenantSubscriptionAddOnDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TenantSubscriptionAddOnUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TenantSubscriptionAddOnUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>[]
+        }
+        upsert: {
+          args: Prisma.TenantSubscriptionAddOnUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TenantSubscriptionAddOnPayload>
+        }
+        aggregate: {
+          args: Prisma.TenantSubscriptionAddOnAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTenantSubscriptionAddOn>
+        }
+        groupBy: {
+          args: Prisma.TenantSubscriptionAddOnGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TenantSubscriptionAddOnGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TenantSubscriptionAddOnCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TenantSubscriptionAddOnCountAggregateOutputType> | number
+        }
+      }
+    }
+    BillingCoupon: {
+      payload: Prisma.$BillingCouponPayload<ExtArgs>
+      fields: Prisma.BillingCouponFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.BillingCouponFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.BillingCouponFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>
+        }
+        findFirst: {
+          args: Prisma.BillingCouponFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.BillingCouponFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>
+        }
+        findMany: {
+          args: Prisma.BillingCouponFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>[]
+        }
+        create: {
+          args: Prisma.BillingCouponCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>
+        }
+        createMany: {
+          args: Prisma.BillingCouponCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.BillingCouponCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>[]
+        }
+        delete: {
+          args: Prisma.BillingCouponDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>
+        }
+        update: {
+          args: Prisma.BillingCouponUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>
+        }
+        deleteMany: {
+          args: Prisma.BillingCouponDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.BillingCouponUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.BillingCouponUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>[]
+        }
+        upsert: {
+          args: Prisma.BillingCouponUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$BillingCouponPayload>
+        }
+        aggregate: {
+          args: Prisma.BillingCouponAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateBillingCoupon>
+        }
+        groupBy: {
+          args: Prisma.BillingCouponGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingCouponGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.BillingCouponCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.BillingCouponCountAggregateOutputType> | number
         }
       }
     }
@@ -17737,13 +18187,27 @@ export type FollowUpStepScalarFieldEnum = (typeof FollowUpStepScalarFieldEnum)[k
 export const SubscriptionPlanScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  slug: 'slug',
+  description: 'description',
+  currency: 'currency',
+  billingInterval: 'billingInterval',
   basePrice: 'basePrice',
   includedMembers: 'includedMembers',
   includedSms: 'includedSms',
+  includedEmail: 'includedEmail',
   includedStorageGb: 'includedStorageGb',
+  includedVideoBandwidthGb: 'includedVideoBandwidthGb',
+  includedAiTokens: 'includedAiTokens',
+  includedMeetingParticipantHours: 'includedMeetingParticipantHours',
   memberOverageRate: 'memberOverageRate',
   smsOverageRate: 'smsOverageRate',
+  emailOverageRate: 'emailOverageRate',
   storageOverageRate: 'storageOverageRate',
+  videoBandwidthOverageRate: 'videoBandwidthOverageRate',
+  aiTokenOverageRate: 'aiTokenOverageRate',
+  meetingParticipantHourRate: 'meetingParticipantHourRate',
+  featuresJson: 'featuresJson',
+  modulesJson: 'modulesJson',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -17757,6 +18221,10 @@ export const TenantSubscriptionScalarFieldEnum = {
   tenantId: 'tenantId',
   planId: 'planId',
   status: 'status',
+  provider: 'provider',
+  providerMode: 'providerMode',
+  externalSubscriptionId: 'externalSubscriptionId',
+  couponCode: 'couponCode',
   trialEndsAt: 'trialEndsAt',
   currentPeriodStart: 'currentPeriodStart',
   currentPeriodEnd: 'currentPeriodEnd',
@@ -17784,8 +18252,14 @@ export type UsageMeterScalarFieldEnum = (typeof UsageMeterScalarFieldEnum)[keyof
 export const InvoiceScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  invoiceNumber: 'invoiceNumber',
+  currency: 'currency',
+  subtotal: 'subtotal',
+  discount: 'discount',
   amount: 'amount',
   status: 'status',
+  lineItemsJson: 'lineItemsJson',
+  pdfUrl: 'pdfUrl',
   billingPeriodStart: 'billingPeriodStart',
   billingPeriodEnd: 'billingPeriodEnd',
   createdAt: 'createdAt',
@@ -17793,6 +18267,105 @@ export const InvoiceScalarFieldEnum = {
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const BillingSubscriptionManagementModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillingSubscriptionManagementModuleScalarFieldEnum = (typeof BillingSubscriptionManagementModuleScalarFieldEnum)[keyof typeof BillingSubscriptionManagementModuleScalarFieldEnum]
+
+
+export const BillingSubscriptionManagementModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type BillingSubscriptionManagementModuleActivityScalarFieldEnum = (typeof BillingSubscriptionManagementModuleActivityScalarFieldEnum)[keyof typeof BillingSubscriptionManagementModuleActivityScalarFieldEnum]
+
+
+export const BillingSubscriptionManagementModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillingSubscriptionManagementModuleSettingsScalarFieldEnum = (typeof BillingSubscriptionManagementModuleSettingsScalarFieldEnum)[keyof typeof BillingSubscriptionManagementModuleSettingsScalarFieldEnum]
+
+
+export const BillingAddOnScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  moduleKey: 'moduleKey',
+  price: 'price',
+  billingMode: 'billingMode',
+  usageMetricKey: 'usageMetricKey',
+  includedQuantity: 'includedQuantity',
+  overageRate: 'overageRate',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillingAddOnScalarFieldEnum = (typeof BillingAddOnScalarFieldEnum)[keyof typeof BillingAddOnScalarFieldEnum]
+
+
+export const TenantSubscriptionAddOnScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  subscriptionId: 'subscriptionId',
+  addOnId: 'addOnId',
+  status: 'status',
+  quantity: 'quantity',
+  metadataJson: 'metadataJson',
+  startedAt: 'startedAt',
+  endsAt: 'endsAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TenantSubscriptionAddOnScalarFieldEnum = (typeof TenantSubscriptionAddOnScalarFieldEnum)[keyof typeof TenantSubscriptionAddOnScalarFieldEnum]
+
+
+export const BillingCouponScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  code: 'code',
+  description: 'description',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  maxRedemptions: 'maxRedemptions',
+  redeemedCount: 'redeemedCount',
+  startsAt: 'startsAt',
+  expiresAt: 'expiresAt',
+  isActive: 'isActive',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillingCouponScalarFieldEnum = (typeof BillingCouponScalarFieldEnum)[keyof typeof BillingCouponScalarFieldEnum]
 
 
 export const AnalyticsEventScalarFieldEnum = {
@@ -20846,6 +21419,12 @@ export type GlobalOmitConfig = {
   tenantSubscription?: Prisma.TenantSubscriptionOmit
   usageMeter?: Prisma.UsageMeterOmit
   invoice?: Prisma.InvoiceOmit
+  billingSubscriptionManagementModule?: Prisma.BillingSubscriptionManagementModuleOmit
+  billingSubscriptionManagementModuleActivity?: Prisma.BillingSubscriptionManagementModuleActivityOmit
+  billingSubscriptionManagementModuleSettings?: Prisma.BillingSubscriptionManagementModuleSettingsOmit
+  billingAddOn?: Prisma.BillingAddOnOmit
+  tenantSubscriptionAddOn?: Prisma.TenantSubscriptionAddOnOmit
+  billingCoupon?: Prisma.BillingCouponOmit
   analyticsEvent?: Prisma.AnalyticsEventOmit
   pluginDefinition?: Prisma.PluginDefinitionOmit
   tenantPlugin?: Prisma.TenantPluginOmit

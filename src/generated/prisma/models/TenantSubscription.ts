@@ -29,6 +29,10 @@ export type TenantSubscriptionMinAggregateOutputType = {
   tenantId: string | null
   planId: string | null
   status: string | null
+  provider: string | null
+  providerMode: string | null
+  externalSubscriptionId: string | null
+  couponCode: string | null
   trialEndsAt: Date | null
   currentPeriodStart: Date | null
   currentPeriodEnd: Date | null
@@ -41,6 +45,10 @@ export type TenantSubscriptionMaxAggregateOutputType = {
   tenantId: string | null
   planId: string | null
   status: string | null
+  provider: string | null
+  providerMode: string | null
+  externalSubscriptionId: string | null
+  couponCode: string | null
   trialEndsAt: Date | null
   currentPeriodStart: Date | null
   currentPeriodEnd: Date | null
@@ -53,6 +61,10 @@ export type TenantSubscriptionCountAggregateOutputType = {
   tenantId: number
   planId: number
   status: number
+  provider: number
+  providerMode: number
+  externalSubscriptionId: number
+  couponCode: number
   trialEndsAt: number
   currentPeriodStart: number
   currentPeriodEnd: number
@@ -67,6 +79,10 @@ export type TenantSubscriptionMinAggregateInputType = {
   tenantId?: true
   planId?: true
   status?: true
+  provider?: true
+  providerMode?: true
+  externalSubscriptionId?: true
+  couponCode?: true
   trialEndsAt?: true
   currentPeriodStart?: true
   currentPeriodEnd?: true
@@ -79,6 +95,10 @@ export type TenantSubscriptionMaxAggregateInputType = {
   tenantId?: true
   planId?: true
   status?: true
+  provider?: true
+  providerMode?: true
+  externalSubscriptionId?: true
+  couponCode?: true
   trialEndsAt?: true
   currentPeriodStart?: true
   currentPeriodEnd?: true
@@ -91,6 +111,10 @@ export type TenantSubscriptionCountAggregateInputType = {
   tenantId?: true
   planId?: true
   status?: true
+  provider?: true
+  providerMode?: true
+  externalSubscriptionId?: true
+  couponCode?: true
   trialEndsAt?: true
   currentPeriodStart?: true
   currentPeriodEnd?: true
@@ -176,6 +200,10 @@ export type TenantSubscriptionGroupByOutputType = {
   tenantId: string
   planId: string
   status: string
+  provider: string
+  providerMode: string
+  externalSubscriptionId: string | null
+  couponCode: string | null
   trialEndsAt: Date | null
   currentPeriodStart: Date
   currentPeriodEnd: Date
@@ -209,6 +237,10 @@ export type TenantSubscriptionWhereInput = {
   tenantId?: Prisma.StringFilter<"TenantSubscription"> | string
   planId?: Prisma.StringFilter<"TenantSubscription"> | string
   status?: Prisma.StringFilter<"TenantSubscription"> | string
+  provider?: Prisma.StringFilter<"TenantSubscription"> | string
+  providerMode?: Prisma.StringFilter<"TenantSubscription"> | string
+  externalSubscriptionId?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
+  couponCode?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
   trialEndsAt?: Prisma.DateTimeNullableFilter<"TenantSubscription"> | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
   currentPeriodEnd?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
@@ -216,6 +248,7 @@ export type TenantSubscriptionWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   plan?: Prisma.XOR<Prisma.SubscriptionPlanScalarRelationFilter, Prisma.SubscriptionPlanWhereInput>
+  addOns?: Prisma.TenantSubscriptionAddOnListRelationFilter
 }
 
 export type TenantSubscriptionOrderByWithRelationInput = {
@@ -223,6 +256,10 @@ export type TenantSubscriptionOrderByWithRelationInput = {
   tenantId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  providerMode?: Prisma.SortOrder
+  externalSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  couponCode?: Prisma.SortOrderInput | Prisma.SortOrder
   trialEndsAt?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrder
@@ -230,6 +267,7 @@ export type TenantSubscriptionOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
   plan?: Prisma.SubscriptionPlanOrderByWithRelationInput
+  addOns?: Prisma.TenantSubscriptionAddOnOrderByRelationAggregateInput
 }
 
 export type TenantSubscriptionWhereUniqueInput = Prisma.AtLeast<{
@@ -240,6 +278,10 @@ export type TenantSubscriptionWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.TenantSubscriptionWhereInput | Prisma.TenantSubscriptionWhereInput[]
   planId?: Prisma.StringFilter<"TenantSubscription"> | string
   status?: Prisma.StringFilter<"TenantSubscription"> | string
+  provider?: Prisma.StringFilter<"TenantSubscription"> | string
+  providerMode?: Prisma.StringFilter<"TenantSubscription"> | string
+  externalSubscriptionId?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
+  couponCode?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
   trialEndsAt?: Prisma.DateTimeNullableFilter<"TenantSubscription"> | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
   currentPeriodEnd?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
@@ -247,6 +289,7 @@ export type TenantSubscriptionWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   plan?: Prisma.XOR<Prisma.SubscriptionPlanScalarRelationFilter, Prisma.SubscriptionPlanWhereInput>
+  addOns?: Prisma.TenantSubscriptionAddOnListRelationFilter
 }, "id" | "tenantId">
 
 export type TenantSubscriptionOrderByWithAggregationInput = {
@@ -254,6 +297,10 @@ export type TenantSubscriptionOrderByWithAggregationInput = {
   tenantId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  providerMode?: Prisma.SortOrder
+  externalSubscriptionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  couponCode?: Prisma.SortOrderInput | Prisma.SortOrder
   trialEndsAt?: Prisma.SortOrderInput | Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrder
@@ -272,6 +319,10 @@ export type TenantSubscriptionScalarWhereWithAggregatesInput = {
   tenantId?: Prisma.StringWithAggregatesFilter<"TenantSubscription"> | string
   planId?: Prisma.StringWithAggregatesFilter<"TenantSubscription"> | string
   status?: Prisma.StringWithAggregatesFilter<"TenantSubscription"> | string
+  provider?: Prisma.StringWithAggregatesFilter<"TenantSubscription"> | string
+  providerMode?: Prisma.StringWithAggregatesFilter<"TenantSubscription"> | string
+  externalSubscriptionId?: Prisma.StringNullableWithAggregatesFilter<"TenantSubscription"> | string | null
+  couponCode?: Prisma.StringNullableWithAggregatesFilter<"TenantSubscription"> | string | null
   trialEndsAt?: Prisma.DateTimeNullableWithAggregatesFilter<"TenantSubscription"> | Date | string | null
   currentPeriodStart?: Prisma.DateTimeWithAggregatesFilter<"TenantSubscription"> | Date | string
   currentPeriodEnd?: Prisma.DateTimeWithAggregatesFilter<"TenantSubscription"> | Date | string
@@ -282,6 +333,10 @@ export type TenantSubscriptionScalarWhereWithAggregatesInput = {
 export type TenantSubscriptionCreateInput = {
   id?: string
   status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
   trialEndsAt?: Date | string | null
   currentPeriodStart: Date | string
   currentPeriodEnd: Date | string
@@ -289,6 +344,7 @@ export type TenantSubscriptionCreateInput = {
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutSubscriptionInput
   plan: Prisma.SubscriptionPlanCreateNestedOneWithoutSubscriptionsInput
+  addOns?: Prisma.TenantSubscriptionAddOnCreateNestedManyWithoutSubscriptionInput
 }
 
 export type TenantSubscriptionUncheckedCreateInput = {
@@ -296,16 +352,25 @@ export type TenantSubscriptionUncheckedCreateInput = {
   tenantId: string
   planId: string
   status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
   trialEndsAt?: Date | string | null
   currentPeriodStart: Date | string
   currentPeriodEnd: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  addOns?: Prisma.TenantSubscriptionAddOnUncheckedCreateNestedManyWithoutSubscriptionInput
 }
 
 export type TenantSubscriptionUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -313,6 +378,7 @@ export type TenantSubscriptionUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutSubscriptionNestedInput
   plan?: Prisma.SubscriptionPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
+  addOns?: Prisma.TenantSubscriptionAddOnUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type TenantSubscriptionUncheckedUpdateInput = {
@@ -320,11 +386,16 @@ export type TenantSubscriptionUncheckedUpdateInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   planId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addOns?: Prisma.TenantSubscriptionAddOnUncheckedUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type TenantSubscriptionCreateManyInput = {
@@ -332,6 +403,10 @@ export type TenantSubscriptionCreateManyInput = {
   tenantId: string
   planId: string
   status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
   trialEndsAt?: Date | string | null
   currentPeriodStart: Date | string
   currentPeriodEnd: Date | string
@@ -342,6 +417,10 @@ export type TenantSubscriptionCreateManyInput = {
 export type TenantSubscriptionUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -354,6 +433,10 @@ export type TenantSubscriptionUncheckedUpdateManyInput = {
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   planId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -381,6 +464,10 @@ export type TenantSubscriptionCountOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  providerMode?: Prisma.SortOrder
+  externalSubscriptionId?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
   trialEndsAt?: Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrder
@@ -393,6 +480,10 @@ export type TenantSubscriptionMaxOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  providerMode?: Prisma.SortOrder
+  externalSubscriptionId?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
   trialEndsAt?: Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrder
@@ -405,11 +496,20 @@ export type TenantSubscriptionMinOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   planId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  providerMode?: Prisma.SortOrder
+  externalSubscriptionId?: Prisma.SortOrder
+  couponCode?: Prisma.SortOrder
   trialEndsAt?: Prisma.SortOrder
   currentPeriodStart?: Prisma.SortOrder
   currentPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type TenantSubscriptionScalarRelationFilter = {
+  is?: Prisma.TenantSubscriptionWhereInput
+  isNot?: Prisma.TenantSubscriptionWhereInput
 }
 
 export type TenantSubscriptionCreateNestedOneWithoutTenantInput = {
@@ -486,26 +586,50 @@ export type TenantSubscriptionUncheckedUpdateManyWithoutPlanNestedInput = {
   deleteMany?: Prisma.TenantSubscriptionScalarWhereInput | Prisma.TenantSubscriptionScalarWhereInput[]
 }
 
+export type TenantSubscriptionCreateNestedOneWithoutAddOnsInput = {
+  create?: Prisma.XOR<Prisma.TenantSubscriptionCreateWithoutAddOnsInput, Prisma.TenantSubscriptionUncheckedCreateWithoutAddOnsInput>
+  connectOrCreate?: Prisma.TenantSubscriptionCreateOrConnectWithoutAddOnsInput
+  connect?: Prisma.TenantSubscriptionWhereUniqueInput
+}
+
+export type TenantSubscriptionUpdateOneRequiredWithoutAddOnsNestedInput = {
+  create?: Prisma.XOR<Prisma.TenantSubscriptionCreateWithoutAddOnsInput, Prisma.TenantSubscriptionUncheckedCreateWithoutAddOnsInput>
+  connectOrCreate?: Prisma.TenantSubscriptionCreateOrConnectWithoutAddOnsInput
+  upsert?: Prisma.TenantSubscriptionUpsertWithoutAddOnsInput
+  connect?: Prisma.TenantSubscriptionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.TenantSubscriptionUpdateToOneWithWhereWithoutAddOnsInput, Prisma.TenantSubscriptionUpdateWithoutAddOnsInput>, Prisma.TenantSubscriptionUncheckedUpdateWithoutAddOnsInput>
+}
+
 export type TenantSubscriptionCreateWithoutTenantInput = {
   id?: string
   status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
   trialEndsAt?: Date | string | null
   currentPeriodStart: Date | string
   currentPeriodEnd: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   plan: Prisma.SubscriptionPlanCreateNestedOneWithoutSubscriptionsInput
+  addOns?: Prisma.TenantSubscriptionAddOnCreateNestedManyWithoutSubscriptionInput
 }
 
 export type TenantSubscriptionUncheckedCreateWithoutTenantInput = {
   id?: string
   planId: string
   status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
   trialEndsAt?: Date | string | null
   currentPeriodStart: Date | string
   currentPeriodEnd: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  addOns?: Prisma.TenantSubscriptionAddOnUncheckedCreateNestedManyWithoutSubscriptionInput
 }
 
 export type TenantSubscriptionCreateOrConnectWithoutTenantInput = {
@@ -527,45 +651,65 @@ export type TenantSubscriptionUpdateToOneWithWhereWithoutTenantInput = {
 export type TenantSubscriptionUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   plan?: Prisma.SubscriptionPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
+  addOns?: Prisma.TenantSubscriptionAddOnUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type TenantSubscriptionUncheckedUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   planId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addOns?: Prisma.TenantSubscriptionAddOnUncheckedUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type TenantSubscriptionCreateWithoutPlanInput = {
   id?: string
   status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
   trialEndsAt?: Date | string | null
   currentPeriodStart: Date | string
   currentPeriodEnd: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutSubscriptionInput
+  addOns?: Prisma.TenantSubscriptionAddOnCreateNestedManyWithoutSubscriptionInput
 }
 
 export type TenantSubscriptionUncheckedCreateWithoutPlanInput = {
   id?: string
   tenantId: string
   status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
   trialEndsAt?: Date | string | null
   currentPeriodStart: Date | string
   currentPeriodEnd: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
+  addOns?: Prisma.TenantSubscriptionAddOnUncheckedCreateNestedManyWithoutSubscriptionInput
 }
 
 export type TenantSubscriptionCreateOrConnectWithoutPlanInput = {
@@ -601,6 +745,10 @@ export type TenantSubscriptionScalarWhereInput = {
   tenantId?: Prisma.StringFilter<"TenantSubscription"> | string
   planId?: Prisma.StringFilter<"TenantSubscription"> | string
   status?: Prisma.StringFilter<"TenantSubscription"> | string
+  provider?: Prisma.StringFilter<"TenantSubscription"> | string
+  providerMode?: Prisma.StringFilter<"TenantSubscription"> | string
+  externalSubscriptionId?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
+  couponCode?: Prisma.StringNullableFilter<"TenantSubscription"> | string | null
   trialEndsAt?: Prisma.DateTimeNullableFilter<"TenantSubscription"> | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
   currentPeriodEnd?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
@@ -608,10 +756,94 @@ export type TenantSubscriptionScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"TenantSubscription"> | Date | string
 }
 
+export type TenantSubscriptionCreateWithoutAddOnsInput = {
+  id?: string
+  status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
+  trialEndsAt?: Date | string | null
+  currentPeriodStart: Date | string
+  currentPeriodEnd: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutSubscriptionInput
+  plan: Prisma.SubscriptionPlanCreateNestedOneWithoutSubscriptionsInput
+}
+
+export type TenantSubscriptionUncheckedCreateWithoutAddOnsInput = {
+  id?: string
+  tenantId: string
+  planId: string
+  status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
+  trialEndsAt?: Date | string | null
+  currentPeriodStart: Date | string
+  currentPeriodEnd: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type TenantSubscriptionCreateOrConnectWithoutAddOnsInput = {
+  where: Prisma.TenantSubscriptionWhereUniqueInput
+  create: Prisma.XOR<Prisma.TenantSubscriptionCreateWithoutAddOnsInput, Prisma.TenantSubscriptionUncheckedCreateWithoutAddOnsInput>
+}
+
+export type TenantSubscriptionUpsertWithoutAddOnsInput = {
+  update: Prisma.XOR<Prisma.TenantSubscriptionUpdateWithoutAddOnsInput, Prisma.TenantSubscriptionUncheckedUpdateWithoutAddOnsInput>
+  create: Prisma.XOR<Prisma.TenantSubscriptionCreateWithoutAddOnsInput, Prisma.TenantSubscriptionUncheckedCreateWithoutAddOnsInput>
+  where?: Prisma.TenantSubscriptionWhereInput
+}
+
+export type TenantSubscriptionUpdateToOneWithWhereWithoutAddOnsInput = {
+  where?: Prisma.TenantSubscriptionWhereInput
+  data: Prisma.XOR<Prisma.TenantSubscriptionUpdateWithoutAddOnsInput, Prisma.TenantSubscriptionUncheckedUpdateWithoutAddOnsInput>
+}
+
+export type TenantSubscriptionUpdateWithoutAddOnsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutSubscriptionNestedInput
+  plan?: Prisma.SubscriptionPlanUpdateOneRequiredWithoutSubscriptionsNestedInput
+}
+
+export type TenantSubscriptionUncheckedUpdateWithoutAddOnsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  planId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type TenantSubscriptionCreateManyPlanInput = {
   id?: string
   tenantId: string
   status?: string
+  provider?: string
+  providerMode?: string
+  externalSubscriptionId?: string | null
+  couponCode?: string | null
   trialEndsAt?: Date | string | null
   currentPeriodStart: Date | string
   currentPeriodEnd: Date | string
@@ -622,29 +854,43 @@ export type TenantSubscriptionCreateManyPlanInput = {
 export type TenantSubscriptionUpdateWithoutPlanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutSubscriptionNestedInput
+  addOns?: Prisma.TenantSubscriptionAddOnUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type TenantSubscriptionUncheckedUpdateWithoutPlanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addOns?: Prisma.TenantSubscriptionAddOnUncheckedUpdateManyWithoutSubscriptionNestedInput
 }
 
 export type TenantSubscriptionUncheckedUpdateManyWithoutPlanInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  provider?: Prisma.StringFieldUpdateOperationsInput | string
+  providerMode?: Prisma.StringFieldUpdateOperationsInput | string
+  externalSubscriptionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  couponCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   trialEndsAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   currentPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   currentPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -652,6 +898,35 @@ export type TenantSubscriptionUncheckedUpdateManyWithoutPlanInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type TenantSubscriptionCountOutputType
+ */
+
+export type TenantSubscriptionCountOutputType = {
+  addOns: number
+}
+
+export type TenantSubscriptionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  addOns?: boolean | TenantSubscriptionCountOutputTypeCountAddOnsArgs
+}
+
+/**
+ * TenantSubscriptionCountOutputType without action
+ */
+export type TenantSubscriptionCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TenantSubscriptionCountOutputType
+   */
+  select?: Prisma.TenantSubscriptionCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * TenantSubscriptionCountOutputType without action
+ */
+export type TenantSubscriptionCountOutputTypeCountAddOnsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TenantSubscriptionAddOnWhereInput
+}
 
 
 export type TenantSubscriptionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -659,6 +934,10 @@ export type TenantSubscriptionSelect<ExtArgs extends runtime.Types.Extensions.In
   tenantId?: boolean
   planId?: boolean
   status?: boolean
+  provider?: boolean
+  providerMode?: boolean
+  externalSubscriptionId?: boolean
+  couponCode?: boolean
   trialEndsAt?: boolean
   currentPeriodStart?: boolean
   currentPeriodEnd?: boolean
@@ -666,6 +945,8 @@ export type TenantSubscriptionSelect<ExtArgs extends runtime.Types.Extensions.In
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.SubscriptionPlanDefaultArgs<ExtArgs>
+  addOns?: boolean | Prisma.TenantSubscription$addOnsArgs<ExtArgs>
+  _count?: boolean | Prisma.TenantSubscriptionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["tenantSubscription"]>
 
 export type TenantSubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -673,6 +954,10 @@ export type TenantSubscriptionSelectCreateManyAndReturn<ExtArgs extends runtime.
   tenantId?: boolean
   planId?: boolean
   status?: boolean
+  provider?: boolean
+  providerMode?: boolean
+  externalSubscriptionId?: boolean
+  couponCode?: boolean
   trialEndsAt?: boolean
   currentPeriodStart?: boolean
   currentPeriodEnd?: boolean
@@ -687,6 +972,10 @@ export type TenantSubscriptionSelectUpdateManyAndReturn<ExtArgs extends runtime.
   tenantId?: boolean
   planId?: boolean
   status?: boolean
+  provider?: boolean
+  providerMode?: boolean
+  externalSubscriptionId?: boolean
+  couponCode?: boolean
   trialEndsAt?: boolean
   currentPeriodStart?: boolean
   currentPeriodEnd?: boolean
@@ -701,6 +990,10 @@ export type TenantSubscriptionSelectScalar = {
   tenantId?: boolean
   planId?: boolean
   status?: boolean
+  provider?: boolean
+  providerMode?: boolean
+  externalSubscriptionId?: boolean
+  couponCode?: boolean
   trialEndsAt?: boolean
   currentPeriodStart?: boolean
   currentPeriodEnd?: boolean
@@ -708,10 +1001,12 @@ export type TenantSubscriptionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type TenantSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "planId" | "status" | "trialEndsAt" | "currentPeriodStart" | "currentPeriodEnd" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantSubscription"]>
+export type TenantSubscriptionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "planId" | "status" | "provider" | "providerMode" | "externalSubscriptionId" | "couponCode" | "trialEndsAt" | "currentPeriodStart" | "currentPeriodEnd" | "createdAt" | "updatedAt", ExtArgs["result"]["tenantSubscription"]>
 export type TenantSubscriptionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   plan?: boolean | Prisma.SubscriptionPlanDefaultArgs<ExtArgs>
+  addOns?: boolean | Prisma.TenantSubscription$addOnsArgs<ExtArgs>
+  _count?: boolean | Prisma.TenantSubscriptionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type TenantSubscriptionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -727,12 +1022,17 @@ export type $TenantSubscriptionPayload<ExtArgs extends runtime.Types.Extensions.
   objects: {
     tenant: Prisma.$TenantPayload<ExtArgs>
     plan: Prisma.$SubscriptionPlanPayload<ExtArgs>
+    addOns: Prisma.$TenantSubscriptionAddOnPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     tenantId: string
     planId: string
     status: string
+    provider: string
+    providerMode: string
+    externalSubscriptionId: string | null
+    couponCode: string | null
     trialEndsAt: Date | null
     currentPeriodStart: Date
     currentPeriodEnd: Date
@@ -1134,6 +1434,7 @@ export interface Prisma__TenantSubscriptionClient<T, Null = never, ExtArgs exten
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   plan<T extends Prisma.SubscriptionPlanDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SubscriptionPlanDefaultArgs<ExtArgs>>): Prisma.Prisma__SubscriptionPlanClient<runtime.Types.Result.GetResult<Prisma.$SubscriptionPlanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  addOns<T extends Prisma.TenantSubscription$addOnsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantSubscription$addOnsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TenantSubscriptionAddOnPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1167,6 +1468,10 @@ export interface TenantSubscriptionFieldRefs {
   readonly tenantId: Prisma.FieldRef<"TenantSubscription", 'String'>
   readonly planId: Prisma.FieldRef<"TenantSubscription", 'String'>
   readonly status: Prisma.FieldRef<"TenantSubscription", 'String'>
+  readonly provider: Prisma.FieldRef<"TenantSubscription", 'String'>
+  readonly providerMode: Prisma.FieldRef<"TenantSubscription", 'String'>
+  readonly externalSubscriptionId: Prisma.FieldRef<"TenantSubscription", 'String'>
+  readonly couponCode: Prisma.FieldRef<"TenantSubscription", 'String'>
   readonly trialEndsAt: Prisma.FieldRef<"TenantSubscription", 'DateTime'>
   readonly currentPeriodStart: Prisma.FieldRef<"TenantSubscription", 'DateTime'>
   readonly currentPeriodEnd: Prisma.FieldRef<"TenantSubscription", 'DateTime'>
@@ -1568,6 +1873,30 @@ export type TenantSubscriptionDeleteManyArgs<ExtArgs extends runtime.Types.Exten
    * Limit how many TenantSubscriptions to delete.
    */
   limit?: number
+}
+
+/**
+ * TenantSubscription.addOns
+ */
+export type TenantSubscription$addOnsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TenantSubscriptionAddOn
+   */
+  select?: Prisma.TenantSubscriptionAddOnSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TenantSubscriptionAddOn
+   */
+  omit?: Prisma.TenantSubscriptionAddOnOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TenantSubscriptionAddOnInclude<ExtArgs> | null
+  where?: Prisma.TenantSubscriptionAddOnWhereInput
+  orderBy?: Prisma.TenantSubscriptionAddOnOrderByWithRelationInput | Prisma.TenantSubscriptionAddOnOrderByWithRelationInput[]
+  cursor?: Prisma.TenantSubscriptionAddOnWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TenantSubscriptionAddOnScalarFieldEnum | Prisma.TenantSubscriptionAddOnScalarFieldEnum[]
 }
 
 /**

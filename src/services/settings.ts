@@ -228,6 +228,122 @@ export const SETTINGS_REGISTRY: Record<string, ModuleSettingsSchema> = {
       }
     ]
   },
+  'theme-engine': {
+    moduleKey: 'theme-engine',
+    moduleName: 'Theme Engine',
+    category: 'core',
+    fields: [
+      {
+        key: 'allowMarketplaceThemes',
+        label: 'Theme Marketplace',
+        description: 'Allows admins to browse and install approved free or purchased themes.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'allowCustomCss',
+        label: 'Custom CSS',
+        description: 'Enables advanced stylesheet overrides for trusted tenant admins.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'publicPublishingRequiresActiveEntitlement',
+        label: 'Publishing Gate',
+        description: 'Keeps disabled or unpaid theme features out of the public church site.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'defaultHeaderStyle',
+        label: 'Default Header Layout',
+        description: 'Default header structure used when a theme does not define one.',
+        type: 'select',
+        default: 'default',
+        options: [
+          { label: 'Default', value: 'default' },
+          { label: 'Transparent', value: 'transparent' },
+          { label: 'Centered', value: 'centered' }
+        ]
+      },
+      {
+        key: 'defaultFooterStyle',
+        label: 'Default Footer Layout',
+        description: 'Default footer structure used by new website themes.',
+        type: 'select',
+        default: 'simple',
+        options: [
+          { label: 'Simple', value: 'simple' },
+          { label: 'Detailed', value: 'detailed' },
+          { label: 'Centered', value: 'centered' }
+        ]
+      },
+      {
+        key: 'mobileLayout',
+        label: 'Mobile Layout',
+        description: 'Default small-screen stacking behavior for theme sections.',
+        type: 'select',
+        default: 'stacked',
+        options: [
+          { label: 'Stacked', value: 'stacked' },
+          { label: 'Compact', value: 'compact' },
+          { label: 'Editorial', value: 'editorial' }
+        ]
+      }
+    ]
+  },
+  'billing-subscription-management': {
+    moduleKey: 'billing-subscription-management',
+    moduleName: 'Billing & Subscription Management',
+    category: 'core',
+    fields: [
+      {
+        key: 'enableUsageBilling',
+        label: 'Usage Billing',
+        description: 'Meters usage such as storage, SMS, email, video bandwidth, AI tokens, and meeting participant-hours.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'providerMode',
+        label: 'Payment Provider Mode',
+        description: 'Chooses whether billing uses the platform-managed gateway or a connected church provider.',
+        type: 'select',
+        default: 'platform_managed',
+        options: [
+          { label: 'Platform Managed', value: 'platform_managed' },
+          { label: 'Bring Your Own Provider', value: 'bring_your_own' }
+        ]
+      },
+      {
+        key: 'trialDays',
+        label: 'Default Trial Days',
+        description: 'Number of trial days granted when a church starts a new subscription.',
+        type: 'number',
+        default: 14,
+        min: 0,
+        max: 90,
+        step: 1
+      },
+      {
+        key: 'invoiceGraceDays',
+        label: 'Invoice Grace Days',
+        description: 'Days before unpaid invoices should move an account toward suspension.',
+        type: 'number',
+        default: 7,
+        min: 0,
+        max: 30,
+        step: 1
+      },
+      {
+        key: 'publicPublishingRequiresPaidAccess',
+        label: 'Paid Public Publishing',
+        description: 'Keeps unpaid or disabled module features hidden from the public church site.',
+        type: 'boolean',
+        default: true
+      }
+    ]
+  },
   settings: {
     moduleKey: 'settings',
     moduleName: 'Platform Central Settings',

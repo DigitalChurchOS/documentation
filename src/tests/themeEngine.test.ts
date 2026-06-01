@@ -12,6 +12,8 @@ describe('ChurchOS Theme Engine Module', () => {
   let memberToken: string;
   let adminUserId: string;
   let memberUserId: string;
+  let otherTenantId: string;
+  let otherAdminToken: string;
   let websiteId: string;
   let globalThemeId: string;
   let marketplaceThemeAssetId: string;
@@ -44,6 +46,34 @@ describe('ChurchOS Theme Engine Module', () => {
     });
     tenantId = tenant.id;
 
+    await prisma.moduleDefinition.upsert({
+      where: { key: 'theme-engine' },
+      update: { name: 'Theme Engine', category: 'Core', dependencies: '[]' },
+      create: { key: 'theme-engine', name: 'Theme Engine', category: 'Core', dependencies: '[]' },
+    });
+
+    await prisma.moduleDefinition.upsert({
+      where: { key: 'website-cms' },
+      update: { name: 'Core Website & CMS', category: 'Core', dependencies: '[]' },
+      create: { key: 'website-cms', name: 'Core Website & CMS', category: 'Core', dependencies: '[]' },
+    });
+
+    await prisma.tenantModule.createMany({
+      data: [
+        { tenantId, moduleKey: 'theme-engine', status: 'active', billingRule: 'free' },
+        { tenantId, moduleKey: 'website-cms', status: 'active', billingRule: 'free' },
+      ],
+    });
+
+    const otherTenant = await prisma.tenant.create({
+      data: { name: 'Other Theme Church', subdomain: 'other-theme-test', status: 'active' },
+    });
+    otherTenantId = otherTenant.id;
+
+    await prisma.tenantModule.create({
+      data: { tenantId: otherTenantId, moduleKey: 'theme-engine', status: 'active', billingRule: 'free' },
+    });
+
     // 3. Register standard and engine-specific permissions
     const permKeys = [
       'member.read',
@@ -69,6 +99,10 @@ describe('ChurchOS Theme Engine Module', () => {
       data: { tenantId, name: 'Counsellor', isCustom: true },
     });
 
+    const otherAdminRole = await prisma.role.create({
+      data: { tenantId: otherTenantId, name: 'Admin', isCustom: false },
+    });
+
     // Seed any missing permissions dynamically to prevent test failures
     const missingPerms = permKeys.filter(k => !permissions.some(p => p.name === k));
     for (const key of missingPerms) {
@@ -78,6 +112,10 @@ describe('ChurchOS Theme Engine Module', () => {
 
     await prisma.rolePermission.createMany({
       data: permissions.map((p) => ({ roleId: adminRole.id, permissionId: p.id })),
+    });
+
+    await prisma.rolePermission.createMany({
+      data: permissions.map((p) => ({ roleId: otherAdminRole.id, permissionId: p.id })),
     });
 
     // Member gets read-only theme engine permissions
@@ -98,6 +136,10 @@ describe('ChurchOS Theme Engine Module', () => {
     });
     memberUserId = memberUser.id;
 
+    const otherAdminUser = await prisma.user.create({
+      data: { tenantId: otherTenantId, email: 'admin@other-theme-test.com', passwordHash: passHash },
+    });
+
     await prisma.userRole.create({
       data: { userId: adminUser.id, roleId: adminRole.id },
     });
@@ -106,8 +148,13 @@ describe('ChurchOS Theme Engine Module', () => {
       data: { userId: memberUser.id, roleId: memberRole.id },
     });
 
+    await prisma.userRole.create({
+      data: { userId: otherAdminUser.id, roleId: otherAdminRole.id },
+    });
+
     adminToken = jwt.sign({ userId: adminUser.id, tenantId, email: adminUser.email }, JWT_SECRET);
     memberToken = jwt.sign({ userId: memberUser.id, tenantId, email: memberUser.email }, JWT_SECRET);
+    otherAdminToken = jwt.sign({ userId: otherAdminUser.id, tenantId: otherTenantId, email: otherAdminUser.email }, JWT_SECRET);
 
     // 5. Register Developer token
     const developerProfile = await prisma.developerProfile.create({
@@ -222,6 +269,26 @@ describe('ChurchOS Theme Engine Module', () => {
       expect(res.status).toBe(200);
       expect(res.body.data.title).toBe('Grace Visual Customize Module Updated');
       expect(res.body.data.visibility).toBe('private');
+    });
+
+    it('should not allow another tenant to read this tenant theme engine record', async () => {
+      const res = await request(app)
+        .get(`/api/theme-engine/${moduleId}`)
+        .set('x-tenant-id', otherTenantId)
+        .set('Authorization', `Bearer ${otherAdminToken}`);
+
+      expect(res.status).toBe(404);
+    });
+
+    it('should return overview metrics for the theme dashboard', async () => {
+      const res = await request(app)
+        .get('/api/theme-engine/overview')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.moduleKey).toBe('theme-engine');
+      expect(res.body.data.counts.installedThemes).toBeGreaterThanOrEqual(0);
     });
 
     it('should retrieve activity audit trail for reports', async () => {
@@ -414,6 +481,45 @@ describe('ChurchOS Theme Engine Module', () => {
       const keys = res.body.data.map((s: any) => s.key);
       expect(keys).toContain('hero-banner'); // default
       expect(keys).toContain('altar-call-widget'); // registered by dev
+    });
+
+    it('should allow developer/admin to register custom page templates', async () => {
+      const res = await request(app)
+        .post('/api/theme-engine/page-templates')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${developerToken}`)
+        .send({
+          name: 'Youth Ministry Landing',
+          key: 'youth-ministry-landing',
+          structureJson: {
+            sections: ['hero-banner', 'feature-grid'],
+          },
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.data.key).toBe('youth-ministry-landing');
+    });
+
+    it('should return default and developer-registered page templates', async () => {
+      const res = await request(app)
+        .get('/api/theme-engine/page-templates')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${memberToken}`);
+
+      expect(res.status).toBe(200);
+      const keys = res.body.data.map((template: any) => template.key);
+      expect(keys).toContain('home-page');
+      expect(keys).toContain('youth-ministry-landing');
+    });
+
+    it('should expose theme engine in centralized dashboard settings', async () => {
+      const res = await request(app)
+        .get('/api/settings/theme-engine')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${memberToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.allowMarketplaceThemes).toBe(true);
     });
   });
 });

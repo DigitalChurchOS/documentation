@@ -89,6 +89,12 @@ export const ModelName = {
   TenantSubscription: 'TenantSubscription',
   UsageMeter: 'UsageMeter',
   Invoice: 'Invoice',
+  BillingSubscriptionManagementModule: 'BillingSubscriptionManagementModule',
+  BillingSubscriptionManagementModuleActivity: 'BillingSubscriptionManagementModuleActivity',
+  BillingSubscriptionManagementModuleSettings: 'BillingSubscriptionManagementModuleSettings',
+  BillingAddOn: 'BillingAddOn',
+  TenantSubscriptionAddOn: 'TenantSubscriptionAddOn',
+  BillingCoupon: 'BillingCoupon',
   AnalyticsEvent: 'AnalyticsEvent',
   PluginDefinition: 'PluginDefinition',
   TenantPlugin: 'TenantPlugin',
@@ -788,13 +794,27 @@ export type FollowUpStepScalarFieldEnum = (typeof FollowUpStepScalarFieldEnum)[k
 export const SubscriptionPlanScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  slug: 'slug',
+  description: 'description',
+  currency: 'currency',
+  billingInterval: 'billingInterval',
   basePrice: 'basePrice',
   includedMembers: 'includedMembers',
   includedSms: 'includedSms',
+  includedEmail: 'includedEmail',
   includedStorageGb: 'includedStorageGb',
+  includedVideoBandwidthGb: 'includedVideoBandwidthGb',
+  includedAiTokens: 'includedAiTokens',
+  includedMeetingParticipantHours: 'includedMeetingParticipantHours',
   memberOverageRate: 'memberOverageRate',
   smsOverageRate: 'smsOverageRate',
+  emailOverageRate: 'emailOverageRate',
   storageOverageRate: 'storageOverageRate',
+  videoBandwidthOverageRate: 'videoBandwidthOverageRate',
+  aiTokenOverageRate: 'aiTokenOverageRate',
+  meetingParticipantHourRate: 'meetingParticipantHourRate',
+  featuresJson: 'featuresJson',
+  modulesJson: 'modulesJson',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -808,6 +828,10 @@ export const TenantSubscriptionScalarFieldEnum = {
   tenantId: 'tenantId',
   planId: 'planId',
   status: 'status',
+  provider: 'provider',
+  providerMode: 'providerMode',
+  externalSubscriptionId: 'externalSubscriptionId',
+  couponCode: 'couponCode',
   trialEndsAt: 'trialEndsAt',
   currentPeriodStart: 'currentPeriodStart',
   currentPeriodEnd: 'currentPeriodEnd',
@@ -835,8 +859,14 @@ export type UsageMeterScalarFieldEnum = (typeof UsageMeterScalarFieldEnum)[keyof
 export const InvoiceScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
+  invoiceNumber: 'invoiceNumber',
+  currency: 'currency',
+  subtotal: 'subtotal',
+  discount: 'discount',
   amount: 'amount',
   status: 'status',
+  lineItemsJson: 'lineItemsJson',
+  pdfUrl: 'pdfUrl',
   billingPeriodStart: 'billingPeriodStart',
   billingPeriodEnd: 'billingPeriodEnd',
   createdAt: 'createdAt',
@@ -844,6 +874,105 @@ export const InvoiceScalarFieldEnum = {
 } as const
 
 export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
+
+
+export const BillingSubscriptionManagementModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillingSubscriptionManagementModuleScalarFieldEnum = (typeof BillingSubscriptionManagementModuleScalarFieldEnum)[keyof typeof BillingSubscriptionManagementModuleScalarFieldEnum]
+
+
+export const BillingSubscriptionManagementModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type BillingSubscriptionManagementModuleActivityScalarFieldEnum = (typeof BillingSubscriptionManagementModuleActivityScalarFieldEnum)[keyof typeof BillingSubscriptionManagementModuleActivityScalarFieldEnum]
+
+
+export const BillingSubscriptionManagementModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillingSubscriptionManagementModuleSettingsScalarFieldEnum = (typeof BillingSubscriptionManagementModuleSettingsScalarFieldEnum)[keyof typeof BillingSubscriptionManagementModuleSettingsScalarFieldEnum]
+
+
+export const BillingAddOnScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  key: 'key',
+  name: 'name',
+  description: 'description',
+  moduleKey: 'moduleKey',
+  price: 'price',
+  billingMode: 'billingMode',
+  usageMetricKey: 'usageMetricKey',
+  includedQuantity: 'includedQuantity',
+  overageRate: 'overageRate',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillingAddOnScalarFieldEnum = (typeof BillingAddOnScalarFieldEnum)[keyof typeof BillingAddOnScalarFieldEnum]
+
+
+export const TenantSubscriptionAddOnScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  subscriptionId: 'subscriptionId',
+  addOnId: 'addOnId',
+  status: 'status',
+  quantity: 'quantity',
+  metadataJson: 'metadataJson',
+  startedAt: 'startedAt',
+  endsAt: 'endsAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TenantSubscriptionAddOnScalarFieldEnum = (typeof TenantSubscriptionAddOnScalarFieldEnum)[keyof typeof TenantSubscriptionAddOnScalarFieldEnum]
+
+
+export const BillingCouponScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  code: 'code',
+  description: 'description',
+  discountType: 'discountType',
+  discountValue: 'discountValue',
+  maxRedemptions: 'maxRedemptions',
+  redeemedCount: 'redeemedCount',
+  startsAt: 'startsAt',
+  expiresAt: 'expiresAt',
+  isActive: 'isActive',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type BillingCouponScalarFieldEnum = (typeof BillingCouponScalarFieldEnum)[keyof typeof BillingCouponScalarFieldEnum]
 
 
 export const AnalyticsEventScalarFieldEnum = {

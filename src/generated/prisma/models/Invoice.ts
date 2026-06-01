@@ -27,18 +27,28 @@ export type AggregateInvoice = {
 }
 
 export type InvoiceAvgAggregateOutputType = {
+  subtotal: number | null
+  discount: number | null
   amount: number | null
 }
 
 export type InvoiceSumAggregateOutputType = {
+  subtotal: number | null
+  discount: number | null
   amount: number | null
 }
 
 export type InvoiceMinAggregateOutputType = {
   id: string | null
   tenantId: string | null
+  invoiceNumber: string | null
+  currency: string | null
+  subtotal: number | null
+  discount: number | null
   amount: number | null
   status: string | null
+  lineItemsJson: string | null
+  pdfUrl: string | null
   billingPeriodStart: Date | null
   billingPeriodEnd: Date | null
   createdAt: Date | null
@@ -48,8 +58,14 @@ export type InvoiceMinAggregateOutputType = {
 export type InvoiceMaxAggregateOutputType = {
   id: string | null
   tenantId: string | null
+  invoiceNumber: string | null
+  currency: string | null
+  subtotal: number | null
+  discount: number | null
   amount: number | null
   status: string | null
+  lineItemsJson: string | null
+  pdfUrl: string | null
   billingPeriodStart: Date | null
   billingPeriodEnd: Date | null
   createdAt: Date | null
@@ -59,8 +75,14 @@ export type InvoiceMaxAggregateOutputType = {
 export type InvoiceCountAggregateOutputType = {
   id: number
   tenantId: number
+  invoiceNumber: number
+  currency: number
+  subtotal: number
+  discount: number
   amount: number
   status: number
+  lineItemsJson: number
+  pdfUrl: number
   billingPeriodStart: number
   billingPeriodEnd: number
   createdAt: number
@@ -70,18 +92,28 @@ export type InvoiceCountAggregateOutputType = {
 
 
 export type InvoiceAvgAggregateInputType = {
+  subtotal?: true
+  discount?: true
   amount?: true
 }
 
 export type InvoiceSumAggregateInputType = {
+  subtotal?: true
+  discount?: true
   amount?: true
 }
 
 export type InvoiceMinAggregateInputType = {
   id?: true
   tenantId?: true
+  invoiceNumber?: true
+  currency?: true
+  subtotal?: true
+  discount?: true
   amount?: true
   status?: true
+  lineItemsJson?: true
+  pdfUrl?: true
   billingPeriodStart?: true
   billingPeriodEnd?: true
   createdAt?: true
@@ -91,8 +123,14 @@ export type InvoiceMinAggregateInputType = {
 export type InvoiceMaxAggregateInputType = {
   id?: true
   tenantId?: true
+  invoiceNumber?: true
+  currency?: true
+  subtotal?: true
+  discount?: true
   amount?: true
   status?: true
+  lineItemsJson?: true
+  pdfUrl?: true
   billingPeriodStart?: true
   billingPeriodEnd?: true
   createdAt?: true
@@ -102,8 +140,14 @@ export type InvoiceMaxAggregateInputType = {
 export type InvoiceCountAggregateInputType = {
   id?: true
   tenantId?: true
+  invoiceNumber?: true
+  currency?: true
+  subtotal?: true
+  discount?: true
   amount?: true
   status?: true
+  lineItemsJson?: true
+  pdfUrl?: true
   billingPeriodStart?: true
   billingPeriodEnd?: true
   createdAt?: true
@@ -200,8 +244,14 @@ export type InvoiceGroupByArgs<ExtArgs extends runtime.Types.Extensions.Internal
 export type InvoiceGroupByOutputType = {
   id: string
   tenantId: string
+  invoiceNumber: string | null
+  currency: string
+  subtotal: number
+  discount: number
   amount: number
   status: string
+  lineItemsJson: string
+  pdfUrl: string | null
   billingPeriodStart: Date
   billingPeriodEnd: Date
   createdAt: Date
@@ -234,8 +284,14 @@ export type InvoiceWhereInput = {
   NOT?: Prisma.InvoiceWhereInput | Prisma.InvoiceWhereInput[]
   id?: Prisma.StringFilter<"Invoice"> | string
   tenantId?: Prisma.StringFilter<"Invoice"> | string
+  invoiceNumber?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  currency?: Prisma.StringFilter<"Invoice"> | string
+  subtotal?: Prisma.FloatFilter<"Invoice"> | number
+  discount?: Prisma.FloatFilter<"Invoice"> | number
   amount?: Prisma.FloatFilter<"Invoice"> | number
   status?: Prisma.StringFilter<"Invoice"> | string
+  lineItemsJson?: Prisma.StringFilter<"Invoice"> | string
+  pdfUrl?: Prisma.StringNullableFilter<"Invoice"> | string | null
   billingPeriodStart?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   billingPeriodEnd?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
@@ -246,8 +302,14 @@ export type InvoiceWhereInput = {
 export type InvoiceOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrder
+  discount?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  lineItemsJson?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   billingPeriodStart?: Prisma.SortOrder
   billingPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -261,8 +323,14 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.InvoiceWhereInput[]
   NOT?: Prisma.InvoiceWhereInput | Prisma.InvoiceWhereInput[]
   tenantId?: Prisma.StringFilter<"Invoice"> | string
+  invoiceNumber?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  currency?: Prisma.StringFilter<"Invoice"> | string
+  subtotal?: Prisma.FloatFilter<"Invoice"> | number
+  discount?: Prisma.FloatFilter<"Invoice"> | number
   amount?: Prisma.FloatFilter<"Invoice"> | number
   status?: Prisma.StringFilter<"Invoice"> | string
+  lineItemsJson?: Prisma.StringFilter<"Invoice"> | string
+  pdfUrl?: Prisma.StringNullableFilter<"Invoice"> | string | null
   billingPeriodStart?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   billingPeriodEnd?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
@@ -273,8 +341,14 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
 export type InvoiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrder
+  discount?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  lineItemsJson?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   billingPeriodStart?: Prisma.SortOrder
   billingPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -292,8 +366,14 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   NOT?: Prisma.InvoiceScalarWhereWithAggregatesInput | Prisma.InvoiceScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
   tenantId?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
+  invoiceNumber?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
+  currency?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
+  subtotal?: Prisma.FloatWithAggregatesFilter<"Invoice"> | number
+  discount?: Prisma.FloatWithAggregatesFilter<"Invoice"> | number
   amount?: Prisma.FloatWithAggregatesFilter<"Invoice"> | number
   status?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
+  lineItemsJson?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
+  pdfUrl?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   billingPeriodStart?: Prisma.DateTimeWithAggregatesFilter<"Invoice"> | Date | string
   billingPeriodEnd?: Prisma.DateTimeWithAggregatesFilter<"Invoice"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Invoice"> | Date | string
@@ -302,8 +382,14 @@ export type InvoiceScalarWhereWithAggregatesInput = {
 
 export type InvoiceCreateInput = {
   id?: string
+  invoiceNumber?: string | null
+  currency?: string
+  subtotal?: number
+  discount?: number
   amount: number
   status?: string
+  lineItemsJson?: string
+  pdfUrl?: string | null
   billingPeriodStart: Date | string
   billingPeriodEnd: Date | string
   createdAt?: Date | string
@@ -314,8 +400,14 @@ export type InvoiceCreateInput = {
 export type InvoiceUncheckedCreateInput = {
   id?: string
   tenantId: string
+  invoiceNumber?: string | null
+  currency?: string
+  subtotal?: number
+  discount?: number
   amount: number
   status?: string
+  lineItemsJson?: string
+  pdfUrl?: string | null
   billingPeriodStart: Date | string
   billingPeriodEnd: Date | string
   createdAt?: Date | string
@@ -324,8 +416,14 @@ export type InvoiceUncheckedCreateInput = {
 
 export type InvoiceUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  discount?: Prisma.FloatFieldUpdateOperationsInput | number
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  lineItemsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billingPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -336,8 +434,14 @@ export type InvoiceUpdateInput = {
 export type InvoiceUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  discount?: Prisma.FloatFieldUpdateOperationsInput | number
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  lineItemsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billingPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -347,8 +451,14 @@ export type InvoiceUncheckedUpdateInput = {
 export type InvoiceCreateManyInput = {
   id?: string
   tenantId: string
+  invoiceNumber?: string | null
+  currency?: string
+  subtotal?: number
+  discount?: number
   amount: number
   status?: string
+  lineItemsJson?: string
+  pdfUrl?: string | null
   billingPeriodStart: Date | string
   billingPeriodEnd: Date | string
   createdAt?: Date | string
@@ -357,8 +467,14 @@ export type InvoiceCreateManyInput = {
 
 export type InvoiceUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  discount?: Prisma.FloatFieldUpdateOperationsInput | number
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  lineItemsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billingPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -368,8 +484,14 @@ export type InvoiceUpdateManyMutationInput = {
 export type InvoiceUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  discount?: Prisma.FloatFieldUpdateOperationsInput | number
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  lineItemsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billingPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -389,8 +511,14 @@ export type InvoiceOrderByRelationAggregateInput = {
 export type InvoiceCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrder
+  discount?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  lineItemsJson?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
   billingPeriodStart?: Prisma.SortOrder
   billingPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -398,14 +526,22 @@ export type InvoiceCountOrderByAggregateInput = {
 }
 
 export type InvoiceAvgOrderByAggregateInput = {
+  subtotal?: Prisma.SortOrder
+  discount?: Prisma.SortOrder
   amount?: Prisma.SortOrder
 }
 
 export type InvoiceMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrder
+  discount?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  lineItemsJson?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
   billingPeriodStart?: Prisma.SortOrder
   billingPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -415,8 +551,14 @@ export type InvoiceMaxOrderByAggregateInput = {
 export type InvoiceMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tenantId?: Prisma.SortOrder
+  invoiceNumber?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  subtotal?: Prisma.SortOrder
+  discount?: Prisma.SortOrder
   amount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  lineItemsJson?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
   billingPeriodStart?: Prisma.SortOrder
   billingPeriodEnd?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -424,6 +566,8 @@ export type InvoiceMinOrderByAggregateInput = {
 }
 
 export type InvoiceSumOrderByAggregateInput = {
+  subtotal?: Prisma.SortOrder
+  discount?: Prisma.SortOrder
   amount?: Prisma.SortOrder
 }
 
@@ -471,8 +615,14 @@ export type InvoiceUncheckedUpdateManyWithoutTenantNestedInput = {
 
 export type InvoiceCreateWithoutTenantInput = {
   id?: string
+  invoiceNumber?: string | null
+  currency?: string
+  subtotal?: number
+  discount?: number
   amount: number
   status?: string
+  lineItemsJson?: string
+  pdfUrl?: string | null
   billingPeriodStart: Date | string
   billingPeriodEnd: Date | string
   createdAt?: Date | string
@@ -481,8 +631,14 @@ export type InvoiceCreateWithoutTenantInput = {
 
 export type InvoiceUncheckedCreateWithoutTenantInput = {
   id?: string
+  invoiceNumber?: string | null
+  currency?: string
+  subtotal?: number
+  discount?: number
   amount: number
   status?: string
+  lineItemsJson?: string
+  pdfUrl?: string | null
   billingPeriodStart: Date | string
   billingPeriodEnd: Date | string
   createdAt?: Date | string
@@ -520,8 +676,14 @@ export type InvoiceScalarWhereInput = {
   NOT?: Prisma.InvoiceScalarWhereInput | Prisma.InvoiceScalarWhereInput[]
   id?: Prisma.StringFilter<"Invoice"> | string
   tenantId?: Prisma.StringFilter<"Invoice"> | string
+  invoiceNumber?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  currency?: Prisma.StringFilter<"Invoice"> | string
+  subtotal?: Prisma.FloatFilter<"Invoice"> | number
+  discount?: Prisma.FloatFilter<"Invoice"> | number
   amount?: Prisma.FloatFilter<"Invoice"> | number
   status?: Prisma.StringFilter<"Invoice"> | string
+  lineItemsJson?: Prisma.StringFilter<"Invoice"> | string
+  pdfUrl?: Prisma.StringNullableFilter<"Invoice"> | string | null
   billingPeriodStart?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   billingPeriodEnd?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
@@ -530,8 +692,14 @@ export type InvoiceScalarWhereInput = {
 
 export type InvoiceCreateManyTenantInput = {
   id?: string
+  invoiceNumber?: string | null
+  currency?: string
+  subtotal?: number
+  discount?: number
   amount: number
   status?: string
+  lineItemsJson?: string
+  pdfUrl?: string | null
   billingPeriodStart: Date | string
   billingPeriodEnd: Date | string
   createdAt?: Date | string
@@ -540,8 +708,14 @@ export type InvoiceCreateManyTenantInput = {
 
 export type InvoiceUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  discount?: Prisma.FloatFieldUpdateOperationsInput | number
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  lineItemsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billingPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -550,8 +724,14 @@ export type InvoiceUpdateWithoutTenantInput = {
 
 export type InvoiceUncheckedUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  discount?: Prisma.FloatFieldUpdateOperationsInput | number
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  lineItemsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billingPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -560,8 +740,14 @@ export type InvoiceUncheckedUpdateWithoutTenantInput = {
 
 export type InvoiceUncheckedUpdateManyWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  invoiceNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  subtotal?: Prisma.FloatFieldUpdateOperationsInput | number
+  discount?: Prisma.FloatFieldUpdateOperationsInput | number
   amount?: Prisma.FloatFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  lineItemsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   billingPeriodStart?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   billingPeriodEnd?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -573,8 +759,14 @@ export type InvoiceUncheckedUpdateManyWithoutTenantInput = {
 export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tenantId?: boolean
+  invoiceNumber?: boolean
+  currency?: boolean
+  subtotal?: boolean
+  discount?: boolean
   amount?: boolean
   status?: boolean
+  lineItemsJson?: boolean
+  pdfUrl?: boolean
   billingPeriodStart?: boolean
   billingPeriodEnd?: boolean
   createdAt?: boolean
@@ -585,8 +777,14 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
 export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tenantId?: boolean
+  invoiceNumber?: boolean
+  currency?: boolean
+  subtotal?: boolean
+  discount?: boolean
   amount?: boolean
   status?: boolean
+  lineItemsJson?: boolean
+  pdfUrl?: boolean
   billingPeriodStart?: boolean
   billingPeriodEnd?: boolean
   createdAt?: boolean
@@ -597,8 +795,14 @@ export type InvoiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tenantId?: boolean
+  invoiceNumber?: boolean
+  currency?: boolean
+  subtotal?: boolean
+  discount?: boolean
   amount?: boolean
   status?: boolean
+  lineItemsJson?: boolean
+  pdfUrl?: boolean
   billingPeriodStart?: boolean
   billingPeriodEnd?: boolean
   createdAt?: boolean
@@ -609,15 +813,21 @@ export type InvoiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type InvoiceSelectScalar = {
   id?: boolean
   tenantId?: boolean
+  invoiceNumber?: boolean
+  currency?: boolean
+  subtotal?: boolean
+  discount?: boolean
   amount?: boolean
   status?: boolean
+  lineItemsJson?: boolean
+  pdfUrl?: boolean
   billingPeriodStart?: boolean
   billingPeriodEnd?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "amount" | "status" | "billingPeriodStart" | "billingPeriodEnd" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "invoiceNumber" | "currency" | "subtotal" | "discount" | "amount" | "status" | "lineItemsJson" | "pdfUrl" | "billingPeriodStart" | "billingPeriodEnd" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
 export type InvoiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
 }
@@ -636,8 +846,14 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     tenantId: string
+    invoiceNumber: string | null
+    currency: string
+    subtotal: number
+    discount: number
     amount: number
     status: string
+    lineItemsJson: string
+    pdfUrl: string | null
     billingPeriodStart: Date
     billingPeriodEnd: Date
     createdAt: Date
@@ -1068,8 +1284,14 @@ export interface Prisma__InvoiceClient<T, Null = never, ExtArgs extends runtime.
 export interface InvoiceFieldRefs {
   readonly id: Prisma.FieldRef<"Invoice", 'String'>
   readonly tenantId: Prisma.FieldRef<"Invoice", 'String'>
+  readonly invoiceNumber: Prisma.FieldRef<"Invoice", 'String'>
+  readonly currency: Prisma.FieldRef<"Invoice", 'String'>
+  readonly subtotal: Prisma.FieldRef<"Invoice", 'Float'>
+  readonly discount: Prisma.FieldRef<"Invoice", 'Float'>
   readonly amount: Prisma.FieldRef<"Invoice", 'Float'>
   readonly status: Prisma.FieldRef<"Invoice", 'String'>
+  readonly lineItemsJson: Prisma.FieldRef<"Invoice", 'String'>
+  readonly pdfUrl: Prisma.FieldRef<"Invoice", 'String'>
   readonly billingPeriodStart: Prisma.FieldRef<"Invoice", 'DateTime'>
   readonly billingPeriodEnd: Prisma.FieldRef<"Invoice", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Invoice", 'DateTime'>

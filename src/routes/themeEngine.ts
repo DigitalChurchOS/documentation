@@ -1,18 +1,23 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import { requirePermission } from '../middleware/rbac';
+import { requireAnyPermission } from '../middleware/rbac';
+import { requireModule } from '../middleware/entitlements';
 import { ThemeEngineService } from '../services/themeEngine';
 
 const router = Router();
 
 // Apply authentication to all theme-engine routes
 router.use(authMiddleware);
+router.use(requireModule('theme-engine'));
+
+const requireThemeEnginePermission = (...permissions: string[]) =>
+  requireAnyPermission('tenant.settings', ...permissions);
 
 /**
  * GET /api/theme-engine
  * List all theme engine module configuration profiles for the tenant.
  */
-router.get('/', requirePermission('theme-engine.read'), async (req: Request, res: Response) => {
+router.get('/', requireThemeEnginePermission('theme-engine.read'), async (req: Request, res: Response) => {
   try {
     const list = await ThemeEngineService.listThemeEngineModules(req.tenantId!);
     res.json({ data: list });
@@ -25,16 +30,11 @@ router.get('/', requirePermission('theme-engine.read'), async (req: Request, res
  * POST /api/theme-engine
  * Activate and save module registration details.
  */
-router.post('/', requirePermission('theme-engine.create'), async (req: Request, res: Response) => {
+router.post('/', requireThemeEnginePermission('theme-engine.create'), async (req: Request, res: Response) => {
   try {
     const { title, description, visibility } = req.body;
     const userId = req.user?.userId;
     
-    if (!title) {
-      res.status(400).json({ error: 'title is required' });
-      return;
-    }
-
     const moduleRecord = await ThemeEngineService.createThemeEngineModule(req.tenantId!, {
       title,
       description,
@@ -54,10 +54,23 @@ router.post('/', requirePermission('theme-engine.create'), async (req: Request, 
 });
 
 /**
+ * GET /api/theme-engine/overview
+ * Dashboard summary for active theme, templates, settings, and activity.
+ */
+router.get('/overview', requireThemeEnginePermission('theme-engine.read'), async (req: Request, res: Response) => {
+  try {
+    const overview = await ThemeEngineService.getOverview(req.tenantId!);
+    res.json({ data: overview });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
  * GET /api/theme-engine/settings
  * Fetch settings configurations of the theme engine.
  */
-router.get('/settings', requirePermission('theme-engine.read'), async (req: Request, res: Response) => {
+router.get('/settings', requireThemeEnginePermission('theme-engine.read'), async (req: Request, res: Response) => {
   try {
     const settings = await ThemeEngineService.getSettings(req.tenantId!);
     res.json({ data: settings });
@@ -70,7 +83,7 @@ router.get('/settings', requirePermission('theme-engine.read'), async (req: Requ
  * PATCH /api/theme-engine/settings
  * Update billing plan/configurations (Super Admin).
  */
-router.patch('/settings', requirePermission('theme-engine.manage_settings'), async (req: Request, res: Response) => {
+router.patch('/settings', requireThemeEnginePermission('theme-engine.manage_settings'), async (req: Request, res: Response) => {
   try {
     const settings = await ThemeEngineService.updateSettings(req.tenantId!, req.body);
     res.json({ data: settings });
@@ -83,7 +96,7 @@ router.patch('/settings', requirePermission('theme-engine.manage_settings'), asy
  * GET /api/theme-engine/reports
  * Fetch activity audit logs for reports.
  */
-router.get('/reports', requirePermission('theme-engine.view_reports'), async (req: Request, res: Response) => {
+router.get('/reports', requireThemeEnginePermission('theme-engine.view_reports'), async (req: Request, res: Response) => {
   try {
     const logs = await ThemeEngineService.listActivities(req.tenantId!);
     res.json({ data: logs });
@@ -96,7 +109,7 @@ router.get('/reports', requirePermission('theme-engine.view_reports'), async (re
  * GET /api/theme-engine/sections
  * List available layout blocks and section templates.
  */
-router.get('/sections', requirePermission('theme-engine.read'), async (req: Request, res: Response) => {
+router.get('/sections', requireThemeEnginePermission('theme-engine.read'), async (req: Request, res: Response) => {
   try {
     const sections = await ThemeEngineService.listSectionTemplates(req.tenantId!);
     res.json({ data: sections });
@@ -109,14 +122,9 @@ router.get('/sections', requirePermission('theme-engine.read'), async (req: Requ
  * POST /api/theme-engine/sections
  * Developer registers a custom section template.
  */
-router.post('/sections', requirePermission('theme-engine.create'), async (req: Request, res: Response) => {
+router.post('/sections', requireThemeEnginePermission('theme-engine.create'), async (req: Request, res: Response) => {
   try {
     const { name, key, structureJson } = req.body;
-    if (!name || !key || !structureJson) {
-      res.status(400).json({ error: 'name, key, and structureJson are required' });
-      return;
-    }
-
     const section = await ThemeEngineService.registerSectionTemplate(req.tenantId!, {
       name,
       key,
@@ -132,10 +140,44 @@ router.post('/sections', requirePermission('theme-engine.create'), async (req: R
 });
 
 /**
+ * GET /api/theme-engine/page-templates
+ * List page structures supplied by themes and developers.
+ */
+router.get('/page-templates', requireThemeEnginePermission('theme-engine.read'), async (req: Request, res: Response) => {
+  try {
+    const templates = await ThemeEngineService.listPageTemplates(req.tenantId!);
+    res.json({ data: templates });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/theme-engine/page-templates
+ * Register a custom page template for the tenant theme workspace.
+ */
+router.post('/page-templates', requireThemeEnginePermission('theme-engine.create'), async (req: Request, res: Response) => {
+  try {
+    const { name, key, structureJson } = req.body;
+    const template = await ThemeEngineService.registerPageTemplate(req.tenantId!, {
+      name,
+      key,
+      structureJson,
+    });
+
+    await ThemeEngineService.logActivity(req.tenantId!, req.user!.userId, 'register_page_template', { name, key });
+
+    res.status(201).json({ data: template });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+/**
  * GET /api/theme-engine/themes
  * Fetch list of custom and system themes available.
  */
-router.get('/themes', requirePermission('theme-engine.read'), async (req: Request, res: Response) => {
+router.get('/themes', requireThemeEnginePermission('theme-engine.read'), async (req: Request, res: Response) => {
   try {
     const list = await ThemeEngineService.listTenantThemes(req.tenantId!);
     res.json({ data: list });
@@ -148,7 +190,7 @@ router.get('/themes', requirePermission('theme-engine.read'), async (req: Reques
  * POST /api/theme-engine/themes/install
  * Install theme template copy from marketplace.
  */
-router.post('/themes/install', requirePermission('theme-engine.create'), async (req: Request, res: Response) => {
+router.post('/themes/install', requireThemeEnginePermission('theme-engine.create'), async (req: Request, res: Response) => {
   try {
     const { assetId } = req.body;
     if (!assetId) {
@@ -173,7 +215,7 @@ router.post('/themes/install', requirePermission('theme-engine.create'), async (
  * GET /api/theme-engine/themes/:themeId
  * Fetch module record details.
  */
-router.get('/:id', requirePermission('theme-engine.read'), async (req: Request, res: Response) => {
+router.get('/:id', requireThemeEnginePermission('theme-engine.read'), async (req: Request, res: Response) => {
   try {
     const details = await ThemeEngineService.getThemeEngineModule(req.params.id as string, req.tenantId!);
     res.json({ data: details });
@@ -186,7 +228,7 @@ router.get('/:id', requirePermission('theme-engine.read'), async (req: Request, 
  * PATCH /api/theme-engine/:id
  * Edit config settings details.
  */
-router.patch('/:id', requirePermission('theme-engine.update'), async (req: Request, res: Response) => {
+router.patch('/:id', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {
   try {
     const record = await ThemeEngineService.updateThemeEngineModule(req.params.id as string, req.tenantId!, req.body);
     
@@ -205,7 +247,7 @@ router.patch('/:id', requirePermission('theme-engine.update'), async (req: Reque
  * DELETE /api/theme-engine/:id
  * Delete theme engine module registration.
  */
-router.delete('/:id', requirePermission('theme-engine.delete'), async (req: Request, res: Response) => {
+router.delete('/:id', requireThemeEnginePermission('theme-engine.delete'), async (req: Request, res: Response) => {
   try {
     await ThemeEngineService.deleteThemeEngineModule(req.params.id as string, req.tenantId!);
     
@@ -223,7 +265,7 @@ router.delete('/:id', requirePermission('theme-engine.delete'), async (req: Requ
  * POST /api/theme-engine/themes/:themeId/activate
  * Set active website domain style theme mapping.
  */
-router.post('/themes/:themeId/activate', requirePermission('theme-engine.update'), async (req: Request, res: Response) => {
+router.post('/themes/:themeId/activate', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {
   try {
     const { websiteId } = req.body;
     if (!websiteId) {
@@ -248,7 +290,7 @@ router.post('/themes/:themeId/activate', requirePermission('theme-engine.update'
  * PATCH /api/theme-engine/themes/:themeId/customize
  * Modify palette variables, fonts typography, branding, logo urls or custom CSS blocks.
  */
-router.patch('/themes/:themeId/customize', requirePermission('theme-engine.update'), async (req: Request, res: Response) => {
+router.patch('/themes/:themeId/customize', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {
   try {
     const updatedTheme = await ThemeEngineService.customizeTheme(req.tenantId!, req.params.themeId as string, req.body);
     
@@ -267,7 +309,7 @@ router.patch('/themes/:themeId/customize', requirePermission('theme-engine.updat
  * GET /api/theme-engine/themes/:themeId/preview
  * Staging mock layout stylesheet styles generator.
  */
-router.get('/themes/:themeId/preview', requirePermission('theme-engine.read'), async (req: Request, res: Response) => {
+router.get('/themes/:themeId/preview', requireThemeEnginePermission('theme-engine.read'), async (req: Request, res: Response) => {
   try {
     const previewData = await ThemeEngineService.previewTheme(req.tenantId!, req.params.themeId as string);
     res.json({ data: previewData });
@@ -280,7 +322,7 @@ router.get('/themes/:themeId/preview', requirePermission('theme-engine.read'), a
  * POST /api/theme-engine/themes/:themeId/preview/customize
  * Temp staging visual styling merge preview (doesn't modify actual theme DB record).
  */
-router.post('/themes/:themeId/preview/customize', requirePermission('theme-engine.update'), async (req: Request, res: Response) => {
+router.post('/themes/:themeId/preview/customize', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {
   try {
     const previewResult = await ThemeEngineService.customizePreview(req.tenantId!, req.params.themeId as string, req.body);
     res.json({ data: previewResult });

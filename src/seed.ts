@@ -34,6 +34,30 @@ const PERMISSIONS = [
 
   // Tenant administration
   { name: 'tenant.settings', description: 'Manage church/tenant settings' },
+
+  // Core Website & CMS module
+  { name: 'core-website-cms.read', description: 'View Core Website & CMS pages, menus, reusable sections, and settings' },
+  { name: 'core-website-cms.create', description: 'Create Core Website & CMS pages and reusable sections' },
+  { name: 'core-website-cms.update', description: 'Edit Core Website & CMS pages, navigation, footers, and reusable sections' },
+  { name: 'core-website-cms.delete', description: 'Delete or deactivate Core Website & CMS records' },
+  { name: 'core-website-cms.manage_settings', description: 'Manage Core Website & CMS module configuration' },
+  { name: 'core-website-cms.view_reports', description: 'View Core Website & CMS analytics and activity reports' },
+
+  // Theme Engine module
+  { name: 'theme-engine.read', description: 'View Theme Engine themes, templates, previews, and settings' },
+  { name: 'theme-engine.create', description: 'Install themes and create Theme Engine templates or records' },
+  { name: 'theme-engine.update', description: 'Customize, preview, and activate Theme Engine themes' },
+  { name: 'theme-engine.delete', description: 'Delete or deactivate Theme Engine records' },
+  { name: 'theme-engine.manage_settings', description: 'Manage Theme Engine billing, provider, and publishing settings' },
+  { name: 'theme-engine.view_reports', description: 'View Theme Engine activity and analytics reports' },
+
+  // Billing & Subscription Management module
+  { name: 'billing-subscription-management.read', description: 'View billing plans, usage, invoices, coupons, and add-ons' },
+  { name: 'billing-subscription-management.create', description: 'Create billing records, coupons, add-ons, usage records, and invoices' },
+  { name: 'billing-subscription-management.update', description: 'Update subscriptions, billing records, coupons, add-ons, and payment status' },
+  { name: 'billing-subscription-management.delete', description: 'Delete or deactivate billing records' },
+  { name: 'billing-subscription-management.manage_settings', description: 'Manage billing module settings, providers, and entitlements' },
+  { name: 'billing-subscription-management.view_reports', description: 'View billing activity and financial reports' },
 ];
 
 const PROVIDER_CATEGORIES = [
@@ -92,6 +116,7 @@ async function seed() {
   const MODULES = [
     { key: 'website-cms', name: 'Core Website & CMS', category: 'Core', dependencies: '[]' },
     { key: 'theme-engine', name: 'Theme Engine', category: 'Core', dependencies: '[]' },
+    { key: 'billing-subscription-management', name: 'Billing & Subscription Management', category: 'Admin', dependencies: '[]' },
     { key: 'member-crm', name: 'Member CRM', category: 'Engagement', dependencies: '[]' },
     { key: 'media-sermons', name: 'Media Streaming & Sermons', category: 'Content', dependencies: '["website-cms"]' },
     { key: 'giving-donations', name: 'Tithes & Offerings', category: 'Finance', dependencies: '[]' },

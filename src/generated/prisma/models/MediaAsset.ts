@@ -1065,14 +1065,6 @@ export type MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput = {
   connect?: Prisma.MediaAssetWhereUniqueInput | Prisma.MediaAssetWhereUniqueInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type MediaAssetUpdateOneWithoutClipsNestedInput = {
   create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutClipsInput, Prisma.MediaAssetUncheckedCreateWithoutClipsInput>
   connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutClipsInput

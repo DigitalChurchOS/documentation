@@ -48,7 +48,11 @@ export async function tenantMiddleware(
       return;
     }
 
-    if (tenant.status !== 'active' && !req.originalUrl.startsWith('/api/billing/')) {
+    if (
+      tenant.status !== 'active' &&
+      !req.originalUrl.startsWith('/api/billing/') &&
+      !req.originalUrl.startsWith('/api/billing-subscription-management/')
+    ) {
       res.status(403).json({ error: `Tenant is ${tenant.status}` });
       return;
     }

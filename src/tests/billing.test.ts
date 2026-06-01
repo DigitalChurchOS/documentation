@@ -9,11 +9,19 @@ const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 describe('ChurchOS Billing & Subscription Management Module', () => {
   let tenantId: string;
   let adminToken: string;
+  let readOnlyToken: string;
   let freePlanId: string;
   let growthPlanId: string;
 
   beforeAll(async () => {
     // 1. Clean up database records
+    await prisma.billingSubscriptionManagementModuleActivity.deleteMany({});
+    await prisma.billingSubscriptionManagementModuleSettings.deleteMany({});
+    await prisma.billingSubscriptionManagementModule.deleteMany({});
+    await prisma.tenantSubscriptionAddOn.deleteMany({});
+    await prisma.billingAddOn.deleteMany({});
+    await prisma.billingCoupon.deleteMany({});
+    await prisma.analyticsEvent.deleteMany({});
     await prisma.invoice.deleteMany({});
     await prisma.usageMeter.deleteMany({});
     await prisma.tenantSubscription.deleteMany({});
@@ -32,18 +40,41 @@ describe('ChurchOS Billing & Subscription Management Module', () => {
     tenantId = tenant.id;
 
     // 3. Create Admin Role & Permissions
-    const permissions = await prisma.permission.findMany({
-      where: {
-        name: { in: ['member.create', 'member.read', 'tenant.settings', 'member.update'] },
-      },
-    });
+    const permKeys = [
+      'member.create',
+      'member.read',
+      'member.update',
+      'tenant.settings',
+      'billing-subscription-management.read',
+      'billing-subscription-management.create',
+      'billing-subscription-management.update',
+      'billing-subscription-management.delete',
+      'billing-subscription-management.manage_settings',
+      'billing-subscription-management.view_reports',
+    ];
+
+    const permissions = [];
+    for (const key of permKeys) {
+      permissions.push(await prisma.permission.upsert({
+        where: { name: key },
+        update: {},
+        create: { name: key, description: `Billing test permission ${key}` },
+      }));
+    }
 
     const adminRole = await prisma.role.create({
       data: { tenantId, name: 'Admin', isCustom: false },
     });
+    const billingReaderRole = await prisma.role.create({
+      data: { tenantId, name: 'Billing Reader', isCustom: true },
+    });
 
     await prisma.rolePermission.createMany({
       data: permissions.map((p) => ({ roleId: adminRole.id, permissionId: p.id })),
+    });
+    const readPermission = permissions.find((p) => p.name === 'billing-subscription-management.read')!;
+    await prisma.rolePermission.create({
+      data: { roleId: billingReaderRole.id, permissionId: readPermission.id },
     });
 
     // 4. Create Admin User
@@ -57,6 +88,17 @@ describe('ChurchOS Billing & Subscription Management Module', () => {
 
     adminToken = jwt.sign(
       { userId: adminUser.id, tenantId, email: adminUser.email },
+      JWT_SECRET
+    );
+
+    const readerUser = await prisma.user.create({
+      data: { tenantId, email: 'reader@billing-test.com', passwordHash: passHash },
+    });
+    await prisma.userRole.create({
+      data: { userId: readerUser.id, roleId: billingReaderRole.id },
+    });
+    readOnlyToken = jwt.sign(
+      { userId: readerUser.id, tenantId, email: readerUser.email },
       JWT_SECRET
     );
 
@@ -131,6 +173,38 @@ describe('ChurchOS Billing & Subscription Management Module', () => {
       expect(res.status).toBe(201);
       expect(res.body.data.planId).toBe(freePlanId);
       expect(res.body.data.status).toBe('active');
+    });
+
+    it('should expose the documented module overview and alias route', async () => {
+      const overview = await request(app)
+        .get('/api/billing/overview')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(overview.status).toBe(200);
+      expect(overview.body.data.plans.length).toBe(2);
+      expect(overview.body.data.subscription.planId).toBe(freePlanId);
+      expect(overview.body.data.settings.moduleKey).toBe('billing-subscription-management');
+
+      const alias = await request(app)
+        .post('/api/billing-subscription-management')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ title: 'Billing control profile', visibility: 'private' });
+
+      expect(alias.status).toBe(201);
+      expect(alias.body.data.tenantId).toBe(tenantId);
+    });
+
+    it('should enforce granular billing permissions on write endpoints', async () => {
+      const res = await request(app)
+        .post('/api/billing/coupons')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${readOnlyToken}`)
+        .send({ code: 'READONLY', discountType: 'percent', discountValue: 10 });
+
+      expect(res.status).toBe(403);
+      expect(res.body.missing).toContain('billing-subscription-management.create');
     });
   });
 
@@ -316,6 +390,133 @@ describe('ChurchOS Billing & Subscription Management Module', () => {
 
       expect(membersQuery.status).toBe(200);
       expect(membersQuery.body.data.length).toBe(3);
+    });
+  });
+
+  describe('Add-ons, Coupons, Settings, and Reports', () => {
+    let couponId: string;
+    let addOnId: string;
+    let activeAddOnId: string;
+
+    it('should create a coupon and apply it to the active subscription', async () => {
+      const createRes = await request(app)
+        .post('/api/billing/coupons')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          code: 'WELCOME10',
+          discountType: 'percent',
+          discountValue: 10,
+          maxRedemptions: 5,
+        });
+
+      expect(createRes.status).toBe(201);
+      expect(createRes.body.data.code).toBe('WELCOME10');
+      couponId = createRes.body.data.id;
+
+      const applyRes = await request(app)
+        .post('/api/billing/coupons/apply')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ code: 'WELCOME10' });
+
+      expect(applyRes.status).toBe(200);
+      expect(applyRes.body.data.couponCode).toBe('WELCOME10');
+    });
+
+    it('should create and activate an add-on with tenant-scoped entitlement sync', async () => {
+      const createRes = await request(app)
+        .post('/api/billing/add-ons')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          key: 'test-live-meetings',
+          name: 'Test Live Meetings',
+          moduleKey: 'live-meetings',
+          price: 20,
+          billingMode: 'monthly',
+          usageMetricKey: 'meeting_participant_hours',
+          includedQuantity: 50,
+          overageRate: 1,
+        });
+
+      expect(createRes.status).toBe(201);
+      addOnId = createRes.body.data.id;
+
+      const activateRes = await request(app)
+        .post(`/api/billing/add-ons/${addOnId}/activate`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ quantity: 2 });
+
+      expect(activateRes.status).toBe(201);
+      expect(activateRes.body.data.quantity).toBe(2);
+      activeAddOnId = activateRes.body.data.id;
+
+      const entitlement = await prisma.tenantModule.findUnique({
+        where: { tenantId_moduleKey: { tenantId, moduleKey: 'live-meetings' } },
+      });
+      expect(entitlement?.status).toBe('active');
+      expect(entitlement?.billingRule).toBe('add_on');
+    });
+
+    it('should update billing settings and expose reports/activity', async () => {
+      const settingsRes = await request(app)
+        .patch('/api/billing/settings')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          providerMode: 'bring_your_own',
+          configJson: { invoicePrefix: 'TEST', publicPublishingRequiresPaidAccess: true },
+        });
+
+      expect(settingsRes.status).toBe(200);
+      expect(settingsRes.body.data.providerMode).toBe('bring_your_own');
+      expect(JSON.parse(settingsRes.body.data.configJson).invoicePrefix).toBe('TEST');
+
+      const reportsRes = await request(app)
+        .get('/api/billing/reports')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(reportsRes.status).toBe(200);
+      expect(reportsRes.body.data.activeCoupons).toBe(1);
+      expect(reportsRes.body.data.activeAddOns).toBeGreaterThanOrEqual(1);
+
+      const activityRes = await request(app)
+        .get('/api/billing/activity')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(activityRes.status).toBe(200);
+      expect(activityRes.body.data.length).toBeGreaterThan(0);
+    });
+
+    it('should generate a discounted invoice with add-on line items after coupon application', async () => {
+      const res = await request(app)
+        .post('/api/billing/invoice/trigger')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(201);
+      expect(res.body.data.invoiceNumber).toContain('TEST-');
+      expect(res.body.data.subtotal).toBe(94.0);
+      expect(res.body.data.discount).toBe(9.4);
+      expect(res.body.data.amount).toBe(84.6);
+      expect(JSON.parse(res.body.data.lineItemsJson).some((item: any) => item.type === 'add_on')).toBe(true);
+
+      const coupon = await prisma.billingCoupon.findUnique({ where: { id: couponId } });
+      expect(coupon?.redeemedCount).toBe(1);
+    });
+
+    it('should deactivate an active add-on', async () => {
+      const res = await request(app)
+        .post(`/api/billing/subscription-add-ons/${activeAddOnId}/deactivate`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.status).toBe('inactive');
     });
   });
 });

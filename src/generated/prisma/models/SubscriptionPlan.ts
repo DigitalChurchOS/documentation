@@ -30,32 +30,62 @@ export type SubscriptionPlanAvgAggregateOutputType = {
   basePrice: number | null
   includedMembers: number | null
   includedSms: number | null
+  includedEmail: number | null
   includedStorageGb: number | null
+  includedVideoBandwidthGb: number | null
+  includedAiTokens: number | null
+  includedMeetingParticipantHours: number | null
   memberOverageRate: number | null
   smsOverageRate: number | null
+  emailOverageRate: number | null
   storageOverageRate: number | null
+  videoBandwidthOverageRate: number | null
+  aiTokenOverageRate: number | null
+  meetingParticipantHourRate: number | null
 }
 
 export type SubscriptionPlanSumAggregateOutputType = {
   basePrice: number | null
   includedMembers: number | null
   includedSms: number | null
+  includedEmail: number | null
   includedStorageGb: number | null
+  includedVideoBandwidthGb: number | null
+  includedAiTokens: number | null
+  includedMeetingParticipantHours: number | null
   memberOverageRate: number | null
   smsOverageRate: number | null
+  emailOverageRate: number | null
   storageOverageRate: number | null
+  videoBandwidthOverageRate: number | null
+  aiTokenOverageRate: number | null
+  meetingParticipantHourRate: number | null
 }
 
 export type SubscriptionPlanMinAggregateOutputType = {
   id: string | null
   name: string | null
+  slug: string | null
+  description: string | null
+  currency: string | null
+  billingInterval: string | null
   basePrice: number | null
   includedMembers: number | null
   includedSms: number | null
+  includedEmail: number | null
   includedStorageGb: number | null
+  includedVideoBandwidthGb: number | null
+  includedAiTokens: number | null
+  includedMeetingParticipantHours: number | null
   memberOverageRate: number | null
   smsOverageRate: number | null
+  emailOverageRate: number | null
   storageOverageRate: number | null
+  videoBandwidthOverageRate: number | null
+  aiTokenOverageRate: number | null
+  meetingParticipantHourRate: number | null
+  featuresJson: string | null
+  modulesJson: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -64,13 +94,27 @@ export type SubscriptionPlanMinAggregateOutputType = {
 export type SubscriptionPlanMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  slug: string | null
+  description: string | null
+  currency: string | null
+  billingInterval: string | null
   basePrice: number | null
   includedMembers: number | null
   includedSms: number | null
+  includedEmail: number | null
   includedStorageGb: number | null
+  includedVideoBandwidthGb: number | null
+  includedAiTokens: number | null
+  includedMeetingParticipantHours: number | null
   memberOverageRate: number | null
   smsOverageRate: number | null
+  emailOverageRate: number | null
   storageOverageRate: number | null
+  videoBandwidthOverageRate: number | null
+  aiTokenOverageRate: number | null
+  meetingParticipantHourRate: number | null
+  featuresJson: string | null
+  modulesJson: string | null
   isActive: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -79,13 +123,27 @@ export type SubscriptionPlanMaxAggregateOutputType = {
 export type SubscriptionPlanCountAggregateOutputType = {
   id: number
   name: number
+  slug: number
+  description: number
+  currency: number
+  billingInterval: number
   basePrice: number
   includedMembers: number
   includedSms: number
+  includedEmail: number
   includedStorageGb: number
+  includedVideoBandwidthGb: number
+  includedAiTokens: number
+  includedMeetingParticipantHours: number
   memberOverageRate: number
   smsOverageRate: number
+  emailOverageRate: number
   storageOverageRate: number
+  videoBandwidthOverageRate: number
+  aiTokenOverageRate: number
+  meetingParticipantHourRate: number
+  featuresJson: number
+  modulesJson: number
   isActive: number
   createdAt: number
   updatedAt: number
@@ -97,32 +155,62 @@ export type SubscriptionPlanAvgAggregateInputType = {
   basePrice?: true
   includedMembers?: true
   includedSms?: true
+  includedEmail?: true
   includedStorageGb?: true
+  includedVideoBandwidthGb?: true
+  includedAiTokens?: true
+  includedMeetingParticipantHours?: true
   memberOverageRate?: true
   smsOverageRate?: true
+  emailOverageRate?: true
   storageOverageRate?: true
+  videoBandwidthOverageRate?: true
+  aiTokenOverageRate?: true
+  meetingParticipantHourRate?: true
 }
 
 export type SubscriptionPlanSumAggregateInputType = {
   basePrice?: true
   includedMembers?: true
   includedSms?: true
+  includedEmail?: true
   includedStorageGb?: true
+  includedVideoBandwidthGb?: true
+  includedAiTokens?: true
+  includedMeetingParticipantHours?: true
   memberOverageRate?: true
   smsOverageRate?: true
+  emailOverageRate?: true
   storageOverageRate?: true
+  videoBandwidthOverageRate?: true
+  aiTokenOverageRate?: true
+  meetingParticipantHourRate?: true
 }
 
 export type SubscriptionPlanMinAggregateInputType = {
   id?: true
   name?: true
+  slug?: true
+  description?: true
+  currency?: true
+  billingInterval?: true
   basePrice?: true
   includedMembers?: true
   includedSms?: true
+  includedEmail?: true
   includedStorageGb?: true
+  includedVideoBandwidthGb?: true
+  includedAiTokens?: true
+  includedMeetingParticipantHours?: true
   memberOverageRate?: true
   smsOverageRate?: true
+  emailOverageRate?: true
   storageOverageRate?: true
+  videoBandwidthOverageRate?: true
+  aiTokenOverageRate?: true
+  meetingParticipantHourRate?: true
+  featuresJson?: true
+  modulesJson?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -131,13 +219,27 @@ export type SubscriptionPlanMinAggregateInputType = {
 export type SubscriptionPlanMaxAggregateInputType = {
   id?: true
   name?: true
+  slug?: true
+  description?: true
+  currency?: true
+  billingInterval?: true
   basePrice?: true
   includedMembers?: true
   includedSms?: true
+  includedEmail?: true
   includedStorageGb?: true
+  includedVideoBandwidthGb?: true
+  includedAiTokens?: true
+  includedMeetingParticipantHours?: true
   memberOverageRate?: true
   smsOverageRate?: true
+  emailOverageRate?: true
   storageOverageRate?: true
+  videoBandwidthOverageRate?: true
+  aiTokenOverageRate?: true
+  meetingParticipantHourRate?: true
+  featuresJson?: true
+  modulesJson?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -146,13 +248,27 @@ export type SubscriptionPlanMaxAggregateInputType = {
 export type SubscriptionPlanCountAggregateInputType = {
   id?: true
   name?: true
+  slug?: true
+  description?: true
+  currency?: true
+  billingInterval?: true
   basePrice?: true
   includedMembers?: true
   includedSms?: true
+  includedEmail?: true
   includedStorageGb?: true
+  includedVideoBandwidthGb?: true
+  includedAiTokens?: true
+  includedMeetingParticipantHours?: true
   memberOverageRate?: true
   smsOverageRate?: true
+  emailOverageRate?: true
   storageOverageRate?: true
+  videoBandwidthOverageRate?: true
+  aiTokenOverageRate?: true
+  meetingParticipantHourRate?: true
+  featuresJson?: true
+  modulesJson?: true
   isActive?: true
   createdAt?: true
   updatedAt?: true
@@ -248,13 +364,27 @@ export type SubscriptionPlanGroupByArgs<ExtArgs extends runtime.Types.Extensions
 export type SubscriptionPlanGroupByOutputType = {
   id: string
   name: string
+  slug: string
+  description: string | null
+  currency: string
+  billingInterval: string
   basePrice: number
   includedMembers: number
   includedSms: number
+  includedEmail: number
   includedStorageGb: number
+  includedVideoBandwidthGb: number
+  includedAiTokens: number
+  includedMeetingParticipantHours: number
   memberOverageRate: number
   smsOverageRate: number
+  emailOverageRate: number
   storageOverageRate: number
+  videoBandwidthOverageRate: number
+  aiTokenOverageRate: number
+  meetingParticipantHourRate: number
+  featuresJson: string
+  modulesJson: string
   isActive: boolean
   createdAt: Date
   updatedAt: Date
@@ -286,13 +416,27 @@ export type SubscriptionPlanWhereInput = {
   NOT?: Prisma.SubscriptionPlanWhereInput | Prisma.SubscriptionPlanWhereInput[]
   id?: Prisma.StringFilter<"SubscriptionPlan"> | string
   name?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  slug?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  description?: Prisma.StringNullableFilter<"SubscriptionPlan"> | string | null
+  currency?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  billingInterval?: Prisma.StringFilter<"SubscriptionPlan"> | string
   basePrice?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   includedMembers?: Prisma.IntFilter<"SubscriptionPlan"> | number
   includedSms?: Prisma.IntFilter<"SubscriptionPlan"> | number
+  includedEmail?: Prisma.IntFilter<"SubscriptionPlan"> | number
   includedStorageGb?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  includedVideoBandwidthGb?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  includedAiTokens?: Prisma.IntFilter<"SubscriptionPlan"> | number
+  includedMeetingParticipantHours?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   memberOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   smsOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  emailOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   storageOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  videoBandwidthOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  aiTokenOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  meetingParticipantHourRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  featuresJson?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  modulesJson?: Prisma.StringFilter<"SubscriptionPlan"> | string
   isActive?: Prisma.BoolFilter<"SubscriptionPlan"> | boolean
   createdAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
@@ -302,13 +446,27 @@ export type SubscriptionPlanWhereInput = {
 export type SubscriptionPlanOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  billingInterval?: Prisma.SortOrder
   basePrice?: Prisma.SortOrder
   includedMembers?: Prisma.SortOrder
   includedSms?: Prisma.SortOrder
+  includedEmail?: Prisma.SortOrder
   includedStorageGb?: Prisma.SortOrder
+  includedVideoBandwidthGb?: Prisma.SortOrder
+  includedAiTokens?: Prisma.SortOrder
+  includedMeetingParticipantHours?: Prisma.SortOrder
   memberOverageRate?: Prisma.SortOrder
   smsOverageRate?: Prisma.SortOrder
+  emailOverageRate?: Prisma.SortOrder
   storageOverageRate?: Prisma.SortOrder
+  videoBandwidthOverageRate?: Prisma.SortOrder
+  aiTokenOverageRate?: Prisma.SortOrder
+  meetingParticipantHourRate?: Prisma.SortOrder
+  featuresJson?: Prisma.SortOrder
+  modulesJson?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -321,13 +479,27 @@ export type SubscriptionPlanWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.SubscriptionPlanWhereInput[]
   NOT?: Prisma.SubscriptionPlanWhereInput | Prisma.SubscriptionPlanWhereInput[]
   name?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  slug?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  description?: Prisma.StringNullableFilter<"SubscriptionPlan"> | string | null
+  currency?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  billingInterval?: Prisma.StringFilter<"SubscriptionPlan"> | string
   basePrice?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   includedMembers?: Prisma.IntFilter<"SubscriptionPlan"> | number
   includedSms?: Prisma.IntFilter<"SubscriptionPlan"> | number
+  includedEmail?: Prisma.IntFilter<"SubscriptionPlan"> | number
   includedStorageGb?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  includedVideoBandwidthGb?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  includedAiTokens?: Prisma.IntFilter<"SubscriptionPlan"> | number
+  includedMeetingParticipantHours?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   memberOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   smsOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  emailOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
   storageOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  videoBandwidthOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  aiTokenOverageRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  meetingParticipantHourRate?: Prisma.FloatFilter<"SubscriptionPlan"> | number
+  featuresJson?: Prisma.StringFilter<"SubscriptionPlan"> | string
+  modulesJson?: Prisma.StringFilter<"SubscriptionPlan"> | string
   isActive?: Prisma.BoolFilter<"SubscriptionPlan"> | boolean
   createdAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"SubscriptionPlan"> | Date | string
@@ -337,13 +509,27 @@ export type SubscriptionPlanWhereUniqueInput = Prisma.AtLeast<{
 export type SubscriptionPlanOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  billingInterval?: Prisma.SortOrder
   basePrice?: Prisma.SortOrder
   includedMembers?: Prisma.SortOrder
   includedSms?: Prisma.SortOrder
+  includedEmail?: Prisma.SortOrder
   includedStorageGb?: Prisma.SortOrder
+  includedVideoBandwidthGb?: Prisma.SortOrder
+  includedAiTokens?: Prisma.SortOrder
+  includedMeetingParticipantHours?: Prisma.SortOrder
   memberOverageRate?: Prisma.SortOrder
   smsOverageRate?: Prisma.SortOrder
+  emailOverageRate?: Prisma.SortOrder
   storageOverageRate?: Prisma.SortOrder
+  videoBandwidthOverageRate?: Prisma.SortOrder
+  aiTokenOverageRate?: Prisma.SortOrder
+  meetingParticipantHourRate?: Prisma.SortOrder
+  featuresJson?: Prisma.SortOrder
+  modulesJson?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -360,13 +546,27 @@ export type SubscriptionPlanScalarWhereWithAggregatesInput = {
   NOT?: Prisma.SubscriptionPlanScalarWhereWithAggregatesInput | Prisma.SubscriptionPlanScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
   name?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
+  slug?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
+  description?: Prisma.StringNullableWithAggregatesFilter<"SubscriptionPlan"> | string | null
+  currency?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
+  billingInterval?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
   basePrice?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
   includedMembers?: Prisma.IntWithAggregatesFilter<"SubscriptionPlan"> | number
   includedSms?: Prisma.IntWithAggregatesFilter<"SubscriptionPlan"> | number
+  includedEmail?: Prisma.IntWithAggregatesFilter<"SubscriptionPlan"> | number
   includedStorageGb?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
+  includedVideoBandwidthGb?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
+  includedAiTokens?: Prisma.IntWithAggregatesFilter<"SubscriptionPlan"> | number
+  includedMeetingParticipantHours?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
   memberOverageRate?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
   smsOverageRate?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
+  emailOverageRate?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
   storageOverageRate?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
+  videoBandwidthOverageRate?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
+  aiTokenOverageRate?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
+  meetingParticipantHourRate?: Prisma.FloatWithAggregatesFilter<"SubscriptionPlan"> | number
+  featuresJson?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
+  modulesJson?: Prisma.StringWithAggregatesFilter<"SubscriptionPlan"> | string
   isActive?: Prisma.BoolWithAggregatesFilter<"SubscriptionPlan"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"SubscriptionPlan"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"SubscriptionPlan"> | Date | string
@@ -375,13 +575,27 @@ export type SubscriptionPlanScalarWhereWithAggregatesInput = {
 export type SubscriptionPlanCreateInput = {
   id?: string
   name: string
+  slug?: string
+  description?: string | null
+  currency?: string
+  billingInterval?: string
   basePrice: number
   includedMembers: number
   includedSms: number
+  includedEmail?: number
   includedStorageGb: number
+  includedVideoBandwidthGb?: number
+  includedAiTokens?: number
+  includedMeetingParticipantHours?: number
   memberOverageRate: number
   smsOverageRate: number
+  emailOverageRate?: number
   storageOverageRate: number
+  videoBandwidthOverageRate?: number
+  aiTokenOverageRate?: number
+  meetingParticipantHourRate?: number
+  featuresJson?: string
+  modulesJson?: string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -391,13 +605,27 @@ export type SubscriptionPlanCreateInput = {
 export type SubscriptionPlanUncheckedCreateInput = {
   id?: string
   name: string
+  slug?: string
+  description?: string | null
+  currency?: string
+  billingInterval?: string
   basePrice: number
   includedMembers: number
   includedSms: number
+  includedEmail?: number
   includedStorageGb: number
+  includedVideoBandwidthGb?: number
+  includedAiTokens?: number
+  includedMeetingParticipantHours?: number
   memberOverageRate: number
   smsOverageRate: number
+  emailOverageRate?: number
   storageOverageRate: number
+  videoBandwidthOverageRate?: number
+  aiTokenOverageRate?: number
+  meetingParticipantHourRate?: number
+  featuresJson?: string
+  modulesJson?: string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -407,13 +635,27 @@ export type SubscriptionPlanUncheckedCreateInput = {
 export type SubscriptionPlanUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  billingInterval?: Prisma.StringFieldUpdateOperationsInput | string
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   includedMembers?: Prisma.IntFieldUpdateOperationsInput | number
   includedSms?: Prisma.IntFieldUpdateOperationsInput | number
+  includedEmail?: Prisma.IntFieldUpdateOperationsInput | number
   includedStorageGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedVideoBandwidthGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedAiTokens?: Prisma.IntFieldUpdateOperationsInput | number
+  includedMeetingParticipantHours?: Prisma.FloatFieldUpdateOperationsInput | number
   memberOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   smsOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  emailOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   storageOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  videoBandwidthOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  aiTokenOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  meetingParticipantHourRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  modulesJson?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -423,13 +665,27 @@ export type SubscriptionPlanUpdateInput = {
 export type SubscriptionPlanUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  billingInterval?: Prisma.StringFieldUpdateOperationsInput | string
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   includedMembers?: Prisma.IntFieldUpdateOperationsInput | number
   includedSms?: Prisma.IntFieldUpdateOperationsInput | number
+  includedEmail?: Prisma.IntFieldUpdateOperationsInput | number
   includedStorageGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedVideoBandwidthGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedAiTokens?: Prisma.IntFieldUpdateOperationsInput | number
+  includedMeetingParticipantHours?: Prisma.FloatFieldUpdateOperationsInput | number
   memberOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   smsOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  emailOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   storageOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  videoBandwidthOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  aiTokenOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  meetingParticipantHourRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  modulesJson?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -439,13 +695,27 @@ export type SubscriptionPlanUncheckedUpdateInput = {
 export type SubscriptionPlanCreateManyInput = {
   id?: string
   name: string
+  slug?: string
+  description?: string | null
+  currency?: string
+  billingInterval?: string
   basePrice: number
   includedMembers: number
   includedSms: number
+  includedEmail?: number
   includedStorageGb: number
+  includedVideoBandwidthGb?: number
+  includedAiTokens?: number
+  includedMeetingParticipantHours?: number
   memberOverageRate: number
   smsOverageRate: number
+  emailOverageRate?: number
   storageOverageRate: number
+  videoBandwidthOverageRate?: number
+  aiTokenOverageRate?: number
+  meetingParticipantHourRate?: number
+  featuresJson?: string
+  modulesJson?: string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -454,13 +724,27 @@ export type SubscriptionPlanCreateManyInput = {
 export type SubscriptionPlanUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  billingInterval?: Prisma.StringFieldUpdateOperationsInput | string
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   includedMembers?: Prisma.IntFieldUpdateOperationsInput | number
   includedSms?: Prisma.IntFieldUpdateOperationsInput | number
+  includedEmail?: Prisma.IntFieldUpdateOperationsInput | number
   includedStorageGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedVideoBandwidthGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedAiTokens?: Prisma.IntFieldUpdateOperationsInput | number
+  includedMeetingParticipantHours?: Prisma.FloatFieldUpdateOperationsInput | number
   memberOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   smsOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  emailOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   storageOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  videoBandwidthOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  aiTokenOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  meetingParticipantHourRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  modulesJson?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -469,13 +753,27 @@ export type SubscriptionPlanUpdateManyMutationInput = {
 export type SubscriptionPlanUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  billingInterval?: Prisma.StringFieldUpdateOperationsInput | string
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   includedMembers?: Prisma.IntFieldUpdateOperationsInput | number
   includedSms?: Prisma.IntFieldUpdateOperationsInput | number
+  includedEmail?: Prisma.IntFieldUpdateOperationsInput | number
   includedStorageGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedVideoBandwidthGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedAiTokens?: Prisma.IntFieldUpdateOperationsInput | number
+  includedMeetingParticipantHours?: Prisma.FloatFieldUpdateOperationsInput | number
   memberOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   smsOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  emailOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   storageOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  videoBandwidthOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  aiTokenOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  meetingParticipantHourRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  modulesJson?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -484,13 +782,27 @@ export type SubscriptionPlanUncheckedUpdateManyInput = {
 export type SubscriptionPlanCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  description?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  billingInterval?: Prisma.SortOrder
   basePrice?: Prisma.SortOrder
   includedMembers?: Prisma.SortOrder
   includedSms?: Prisma.SortOrder
+  includedEmail?: Prisma.SortOrder
   includedStorageGb?: Prisma.SortOrder
+  includedVideoBandwidthGb?: Prisma.SortOrder
+  includedAiTokens?: Prisma.SortOrder
+  includedMeetingParticipantHours?: Prisma.SortOrder
   memberOverageRate?: Prisma.SortOrder
   smsOverageRate?: Prisma.SortOrder
+  emailOverageRate?: Prisma.SortOrder
   storageOverageRate?: Prisma.SortOrder
+  videoBandwidthOverageRate?: Prisma.SortOrder
+  aiTokenOverageRate?: Prisma.SortOrder
+  meetingParticipantHourRate?: Prisma.SortOrder
+  featuresJson?: Prisma.SortOrder
+  modulesJson?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -500,22 +812,44 @@ export type SubscriptionPlanAvgOrderByAggregateInput = {
   basePrice?: Prisma.SortOrder
   includedMembers?: Prisma.SortOrder
   includedSms?: Prisma.SortOrder
+  includedEmail?: Prisma.SortOrder
   includedStorageGb?: Prisma.SortOrder
+  includedVideoBandwidthGb?: Prisma.SortOrder
+  includedAiTokens?: Prisma.SortOrder
+  includedMeetingParticipantHours?: Prisma.SortOrder
   memberOverageRate?: Prisma.SortOrder
   smsOverageRate?: Prisma.SortOrder
+  emailOverageRate?: Prisma.SortOrder
   storageOverageRate?: Prisma.SortOrder
+  videoBandwidthOverageRate?: Prisma.SortOrder
+  aiTokenOverageRate?: Prisma.SortOrder
+  meetingParticipantHourRate?: Prisma.SortOrder
 }
 
 export type SubscriptionPlanMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  description?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  billingInterval?: Prisma.SortOrder
   basePrice?: Prisma.SortOrder
   includedMembers?: Prisma.SortOrder
   includedSms?: Prisma.SortOrder
+  includedEmail?: Prisma.SortOrder
   includedStorageGb?: Prisma.SortOrder
+  includedVideoBandwidthGb?: Prisma.SortOrder
+  includedAiTokens?: Prisma.SortOrder
+  includedMeetingParticipantHours?: Prisma.SortOrder
   memberOverageRate?: Prisma.SortOrder
   smsOverageRate?: Prisma.SortOrder
+  emailOverageRate?: Prisma.SortOrder
   storageOverageRate?: Prisma.SortOrder
+  videoBandwidthOverageRate?: Prisma.SortOrder
+  aiTokenOverageRate?: Prisma.SortOrder
+  meetingParticipantHourRate?: Prisma.SortOrder
+  featuresJson?: Prisma.SortOrder
+  modulesJson?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -524,13 +858,27 @@ export type SubscriptionPlanMaxOrderByAggregateInput = {
 export type SubscriptionPlanMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
+  description?: Prisma.SortOrder
+  currency?: Prisma.SortOrder
+  billingInterval?: Prisma.SortOrder
   basePrice?: Prisma.SortOrder
   includedMembers?: Prisma.SortOrder
   includedSms?: Prisma.SortOrder
+  includedEmail?: Prisma.SortOrder
   includedStorageGb?: Prisma.SortOrder
+  includedVideoBandwidthGb?: Prisma.SortOrder
+  includedAiTokens?: Prisma.SortOrder
+  includedMeetingParticipantHours?: Prisma.SortOrder
   memberOverageRate?: Prisma.SortOrder
   smsOverageRate?: Prisma.SortOrder
+  emailOverageRate?: Prisma.SortOrder
   storageOverageRate?: Prisma.SortOrder
+  videoBandwidthOverageRate?: Prisma.SortOrder
+  aiTokenOverageRate?: Prisma.SortOrder
+  meetingParticipantHourRate?: Prisma.SortOrder
+  featuresJson?: Prisma.SortOrder
+  modulesJson?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -540,10 +888,18 @@ export type SubscriptionPlanSumOrderByAggregateInput = {
   basePrice?: Prisma.SortOrder
   includedMembers?: Prisma.SortOrder
   includedSms?: Prisma.SortOrder
+  includedEmail?: Prisma.SortOrder
   includedStorageGb?: Prisma.SortOrder
+  includedVideoBandwidthGb?: Prisma.SortOrder
+  includedAiTokens?: Prisma.SortOrder
+  includedMeetingParticipantHours?: Prisma.SortOrder
   memberOverageRate?: Prisma.SortOrder
   smsOverageRate?: Prisma.SortOrder
+  emailOverageRate?: Prisma.SortOrder
   storageOverageRate?: Prisma.SortOrder
+  videoBandwidthOverageRate?: Prisma.SortOrder
+  aiTokenOverageRate?: Prisma.SortOrder
+  meetingParticipantHourRate?: Prisma.SortOrder
 }
 
 export type SubscriptionPlanScalarRelationFilter = {
@@ -576,13 +932,27 @@ export type SubscriptionPlanUpdateOneRequiredWithoutSubscriptionsNestedInput = {
 export type SubscriptionPlanCreateWithoutSubscriptionsInput = {
   id?: string
   name: string
+  slug?: string
+  description?: string | null
+  currency?: string
+  billingInterval?: string
   basePrice: number
   includedMembers: number
   includedSms: number
+  includedEmail?: number
   includedStorageGb: number
+  includedVideoBandwidthGb?: number
+  includedAiTokens?: number
+  includedMeetingParticipantHours?: number
   memberOverageRate: number
   smsOverageRate: number
+  emailOverageRate?: number
   storageOverageRate: number
+  videoBandwidthOverageRate?: number
+  aiTokenOverageRate?: number
+  meetingParticipantHourRate?: number
+  featuresJson?: string
+  modulesJson?: string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -591,13 +961,27 @@ export type SubscriptionPlanCreateWithoutSubscriptionsInput = {
 export type SubscriptionPlanUncheckedCreateWithoutSubscriptionsInput = {
   id?: string
   name: string
+  slug?: string
+  description?: string | null
+  currency?: string
+  billingInterval?: string
   basePrice: number
   includedMembers: number
   includedSms: number
+  includedEmail?: number
   includedStorageGb: number
+  includedVideoBandwidthGb?: number
+  includedAiTokens?: number
+  includedMeetingParticipantHours?: number
   memberOverageRate: number
   smsOverageRate: number
+  emailOverageRate?: number
   storageOverageRate: number
+  videoBandwidthOverageRate?: number
+  aiTokenOverageRate?: number
+  meetingParticipantHourRate?: number
+  featuresJson?: string
+  modulesJson?: string
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -622,13 +1006,27 @@ export type SubscriptionPlanUpdateToOneWithWhereWithoutSubscriptionsInput = {
 export type SubscriptionPlanUpdateWithoutSubscriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  billingInterval?: Prisma.StringFieldUpdateOperationsInput | string
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   includedMembers?: Prisma.IntFieldUpdateOperationsInput | number
   includedSms?: Prisma.IntFieldUpdateOperationsInput | number
+  includedEmail?: Prisma.IntFieldUpdateOperationsInput | number
   includedStorageGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedVideoBandwidthGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedAiTokens?: Prisma.IntFieldUpdateOperationsInput | number
+  includedMeetingParticipantHours?: Prisma.FloatFieldUpdateOperationsInput | number
   memberOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   smsOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  emailOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   storageOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  videoBandwidthOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  aiTokenOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  meetingParticipantHourRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  modulesJson?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -637,13 +1035,27 @@ export type SubscriptionPlanUpdateWithoutSubscriptionsInput = {
 export type SubscriptionPlanUncheckedUpdateWithoutSubscriptionsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  currency?: Prisma.StringFieldUpdateOperationsInput | string
+  billingInterval?: Prisma.StringFieldUpdateOperationsInput | string
   basePrice?: Prisma.FloatFieldUpdateOperationsInput | number
   includedMembers?: Prisma.IntFieldUpdateOperationsInput | number
   includedSms?: Prisma.IntFieldUpdateOperationsInput | number
+  includedEmail?: Prisma.IntFieldUpdateOperationsInput | number
   includedStorageGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedVideoBandwidthGb?: Prisma.FloatFieldUpdateOperationsInput | number
+  includedAiTokens?: Prisma.IntFieldUpdateOperationsInput | number
+  includedMeetingParticipantHours?: Prisma.FloatFieldUpdateOperationsInput | number
   memberOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   smsOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  emailOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
   storageOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  videoBandwidthOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  aiTokenOverageRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  meetingParticipantHourRate?: Prisma.FloatFieldUpdateOperationsInput | number
+  featuresJson?: Prisma.StringFieldUpdateOperationsInput | string
+  modulesJson?: Prisma.StringFieldUpdateOperationsInput | string
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -683,13 +1095,27 @@ export type SubscriptionPlanCountOutputTypeCountSubscriptionsArgs<ExtArgs extend
 export type SubscriptionPlanSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  slug?: boolean
+  description?: boolean
+  currency?: boolean
+  billingInterval?: boolean
   basePrice?: boolean
   includedMembers?: boolean
   includedSms?: boolean
+  includedEmail?: boolean
   includedStorageGb?: boolean
+  includedVideoBandwidthGb?: boolean
+  includedAiTokens?: boolean
+  includedMeetingParticipantHours?: boolean
   memberOverageRate?: boolean
   smsOverageRate?: boolean
+  emailOverageRate?: boolean
   storageOverageRate?: boolean
+  videoBandwidthOverageRate?: boolean
+  aiTokenOverageRate?: boolean
+  meetingParticipantHourRate?: boolean
+  featuresJson?: boolean
+  modulesJson?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -700,13 +1126,27 @@ export type SubscriptionPlanSelect<ExtArgs extends runtime.Types.Extensions.Inte
 export type SubscriptionPlanSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  slug?: boolean
+  description?: boolean
+  currency?: boolean
+  billingInterval?: boolean
   basePrice?: boolean
   includedMembers?: boolean
   includedSms?: boolean
+  includedEmail?: boolean
   includedStorageGb?: boolean
+  includedVideoBandwidthGb?: boolean
+  includedAiTokens?: boolean
+  includedMeetingParticipantHours?: boolean
   memberOverageRate?: boolean
   smsOverageRate?: boolean
+  emailOverageRate?: boolean
   storageOverageRate?: boolean
+  videoBandwidthOverageRate?: boolean
+  aiTokenOverageRate?: boolean
+  meetingParticipantHourRate?: boolean
+  featuresJson?: boolean
+  modulesJson?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -715,13 +1155,27 @@ export type SubscriptionPlanSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
 export type SubscriptionPlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  slug?: boolean
+  description?: boolean
+  currency?: boolean
+  billingInterval?: boolean
   basePrice?: boolean
   includedMembers?: boolean
   includedSms?: boolean
+  includedEmail?: boolean
   includedStorageGb?: boolean
+  includedVideoBandwidthGb?: boolean
+  includedAiTokens?: boolean
+  includedMeetingParticipantHours?: boolean
   memberOverageRate?: boolean
   smsOverageRate?: boolean
+  emailOverageRate?: boolean
   storageOverageRate?: boolean
+  videoBandwidthOverageRate?: boolean
+  aiTokenOverageRate?: boolean
+  meetingParticipantHourRate?: boolean
+  featuresJson?: boolean
+  modulesJson?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -730,19 +1184,33 @@ export type SubscriptionPlanSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
 export type SubscriptionPlanSelectScalar = {
   id?: boolean
   name?: boolean
+  slug?: boolean
+  description?: boolean
+  currency?: boolean
+  billingInterval?: boolean
   basePrice?: boolean
   includedMembers?: boolean
   includedSms?: boolean
+  includedEmail?: boolean
   includedStorageGb?: boolean
+  includedVideoBandwidthGb?: boolean
+  includedAiTokens?: boolean
+  includedMeetingParticipantHours?: boolean
   memberOverageRate?: boolean
   smsOverageRate?: boolean
+  emailOverageRate?: boolean
   storageOverageRate?: boolean
+  videoBandwidthOverageRate?: boolean
+  aiTokenOverageRate?: boolean
+  meetingParticipantHourRate?: boolean
+  featuresJson?: boolean
+  modulesJson?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type SubscriptionPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "basePrice" | "includedMembers" | "includedSms" | "includedStorageGb" | "memberOverageRate" | "smsOverageRate" | "storageOverageRate" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["subscriptionPlan"]>
+export type SubscriptionPlanOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "description" | "currency" | "billingInterval" | "basePrice" | "includedMembers" | "includedSms" | "includedEmail" | "includedStorageGb" | "includedVideoBandwidthGb" | "includedAiTokens" | "includedMeetingParticipantHours" | "memberOverageRate" | "smsOverageRate" | "emailOverageRate" | "storageOverageRate" | "videoBandwidthOverageRate" | "aiTokenOverageRate" | "meetingParticipantHourRate" | "featuresJson" | "modulesJson" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["subscriptionPlan"]>
 export type SubscriptionPlanInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   subscriptions?: boolean | Prisma.SubscriptionPlan$subscriptionsArgs<ExtArgs>
   _count?: boolean | Prisma.SubscriptionPlanCountOutputTypeDefaultArgs<ExtArgs>
@@ -758,13 +1226,27 @@ export type $SubscriptionPlanPayload<ExtArgs extends runtime.Types.Extensions.In
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    slug: string
+    description: string | null
+    currency: string
+    billingInterval: string
     basePrice: number
     includedMembers: number
     includedSms: number
+    includedEmail: number
     includedStorageGb: number
+    includedVideoBandwidthGb: number
+    includedAiTokens: number
+    includedMeetingParticipantHours: number
     memberOverageRate: number
     smsOverageRate: number
+    emailOverageRate: number
     storageOverageRate: number
+    videoBandwidthOverageRate: number
+    aiTokenOverageRate: number
+    meetingParticipantHourRate: number
+    featuresJson: string
+    modulesJson: string
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -1194,13 +1676,27 @@ export interface Prisma__SubscriptionPlanClient<T, Null = never, ExtArgs extends
 export interface SubscriptionPlanFieldRefs {
   readonly id: Prisma.FieldRef<"SubscriptionPlan", 'String'>
   readonly name: Prisma.FieldRef<"SubscriptionPlan", 'String'>
+  readonly slug: Prisma.FieldRef<"SubscriptionPlan", 'String'>
+  readonly description: Prisma.FieldRef<"SubscriptionPlan", 'String'>
+  readonly currency: Prisma.FieldRef<"SubscriptionPlan", 'String'>
+  readonly billingInterval: Prisma.FieldRef<"SubscriptionPlan", 'String'>
   readonly basePrice: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
   readonly includedMembers: Prisma.FieldRef<"SubscriptionPlan", 'Int'>
   readonly includedSms: Prisma.FieldRef<"SubscriptionPlan", 'Int'>
+  readonly includedEmail: Prisma.FieldRef<"SubscriptionPlan", 'Int'>
   readonly includedStorageGb: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
+  readonly includedVideoBandwidthGb: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
+  readonly includedAiTokens: Prisma.FieldRef<"SubscriptionPlan", 'Int'>
+  readonly includedMeetingParticipantHours: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
   readonly memberOverageRate: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
   readonly smsOverageRate: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
+  readonly emailOverageRate: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
   readonly storageOverageRate: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
+  readonly videoBandwidthOverageRate: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
+  readonly aiTokenOverageRate: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
+  readonly meetingParticipantHourRate: Prisma.FieldRef<"SubscriptionPlan", 'Float'>
+  readonly featuresJson: Prisma.FieldRef<"SubscriptionPlan", 'String'>
+  readonly modulesJson: Prisma.FieldRef<"SubscriptionPlan", 'String'>
   readonly isActive: Prisma.FieldRef<"SubscriptionPlan", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"SubscriptionPlan", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"SubscriptionPlan", 'DateTime'>

@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { dnsMiddleware } from '../middleware/dns';
 import { authMiddleware } from '../middleware/auth';
-import { requirePermission } from '../middleware/rbac';
+import { requireAnyPermission } from '../middleware/rbac';
 import { requireModule } from '../middleware/entitlements';
 
 const router = Router();
@@ -101,10 +101,12 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────
 router.use(authMiddleware);
 router.use(requireModule('website-cms'));
-router.use(requirePermission('tenant.settings'));
+
+const requireCmsPermission = (...permissions: string[]) =>
+  requireAnyPermission('tenant.settings', ...permissions);
 
 // Create a new Website profile
-router.post('/websites', async (req: Request, res: Response) => {
+router.post('/websites', requireCmsPermission('core-website-cms.create', 'core-website-cms.manage_settings'), async (req: Request, res: Response) => {
   try {
     const { title, description, domain, themeId } = req.body;
     const tenantId = req.tenantId!;
@@ -146,7 +148,7 @@ router.post('/websites', async (req: Request, res: Response) => {
 });
 
 // Create a custom Theme configuration
-router.post('/themes', async (req: Request, res: Response) => {
+router.post('/themes', requireCmsPermission('core-website-cms.manage_settings'), async (req: Request, res: Response) => {
   try {
     const { name, settings } = req.body;
     const tenantId = req.tenantId!;
@@ -210,7 +212,7 @@ async function savePageRevision(tenantId: string, pageId: string, content: strin
 // ─────────────────────────────────────────────────────────────
 
 // Create a new CMS page
-router.post('/pages', async (req: Request, res: Response) => {
+router.post('/pages', requireCmsPermission('core-website-cms.create'), async (req: Request, res: Response) => {
   try {
     const { websiteId, slug, title, content, status, isHome, seoTitle, seoDescription, seoKeywords } = req.body;
     const tenantId = req.tenantId!;
@@ -276,7 +278,7 @@ router.post('/pages', async (req: Request, res: Response) => {
 });
 
 // List all pages (including drafts) for editing
-router.get('/pages', async (req: Request, res: Response) => {
+router.get('/pages', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const pages = await prisma.page.findMany({
@@ -292,7 +294,7 @@ router.get('/pages', async (req: Request, res: Response) => {
 });
 
 // Update page layout block content, slug, status, and SEO settings
-router.patch('/pages/:id', async (req: Request, res: Response) => {
+router.patch('/pages/:id', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const tenantId = req.tenantId!;
@@ -348,7 +350,7 @@ router.patch('/pages/:id', async (req: Request, res: Response) => {
 });
 
 // List all revisions for a specific page
-router.get('/pages/:id/revisions', async (req: Request, res: Response) => {
+router.get('/pages/:id/revisions', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const tenantId = req.tenantId!;
@@ -379,7 +381,7 @@ router.get('/pages/:id/revisions', async (req: Request, res: Response) => {
 });
 
 // Rollback page content to a specific revision
-router.post('/pages/:id/rollback', async (req: Request, res: Response) => {
+router.post('/pages/:id/rollback', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const { revisionId } = req.body;
@@ -440,7 +442,7 @@ router.post('/pages/:id/rollback', async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────
 
 // List navigation menus
-router.get('/navigation', async (req: Request, res: Response) => {
+router.get('/navigation', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const menus = await prisma.navigationMenu.findMany({
@@ -456,7 +458,7 @@ router.get('/navigation', async (req: Request, res: Response) => {
 });
 
 // Create or update a menu structure
-router.post('/navigation', async (req: Request, res: Response) => {
+router.post('/navigation', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
   try {
     const { id, websiteId, name, items, isActive } = req.body;
     const tenantId = req.tenantId!;
@@ -529,7 +531,7 @@ router.post('/navigation', async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────
 
 // Get footer configuration for website
-router.get('/footer', async (req: Request, res: Response) => {
+router.get('/footer', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
   try {
     const websiteId = req.query.websiteId as string;
     const tenantId = req.tenantId!;
@@ -551,7 +553,7 @@ router.get('/footer', async (req: Request, res: Response) => {
 });
 
 // Create or update website footer
-router.post('/footer', async (req: Request, res: Response) => {
+router.post('/footer', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
   try {
     const { websiteId, copyrightText, socialLinks, secondaryLinks } = req.body;
     const tenantId = req.tenantId!;
@@ -621,7 +623,7 @@ router.post('/footer', async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────
 
 // List reusable blocks
-router.get('/reusable-blocks', async (req: Request, res: Response) => {
+router.get('/reusable-blocks', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const blocks = await prisma.reusableBlock.findMany({
@@ -637,7 +639,7 @@ router.get('/reusable-blocks', async (req: Request, res: Response) => {
 });
 
 // Create reusable block
-router.post('/reusable-blocks', async (req: Request, res: Response) => {
+router.post('/reusable-blocks', requireCmsPermission('core-website-cms.create'), async (req: Request, res: Response) => {
   try {
     const { name, key, content } = req.body;
     const tenantId = req.tenantId!;
@@ -672,7 +674,7 @@ router.post('/reusable-blocks', async (req: Request, res: Response) => {
 });
 
 // Update reusable block
-router.patch('/reusable-blocks/:id', async (req: Request, res: Response) => {
+router.patch('/reusable-blocks/:id', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const tenantId = req.tenantId!;
@@ -717,7 +719,7 @@ router.patch('/reusable-blocks/:id', async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────
 
 // Get CMS activity logs
-router.get('/activity-logs', async (req: Request, res: Response) => {
+router.get('/activity-logs', requireCmsPermission('core-website-cms.view_reports'), async (req: Request, res: Response) => {
   try {
     const tenantId = req.tenantId!;
     const logs = await prisma.cmsActivityLog.findMany({
@@ -734,5 +736,3 @@ router.get('/activity-logs', async (req: Request, res: Response) => {
 });
 
 export default router;
-
-

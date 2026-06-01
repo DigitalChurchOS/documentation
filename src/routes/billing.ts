@@ -2,190 +2,122 @@ import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
 import { authMiddleware } from '../middleware/auth';
 import { requirePermission } from '../middleware/rbac';
-import {
-  recordUsage,
-  checkSubscriptionLimit,
-  generateInvoice,
-  handlePaymentWebhook,
-} from '../services/billing';
+import { BillingService } from '../services/billing';
 
 const router = Router();
 
-// All billing routes require authentication
 router.use(authMiddleware);
 
-// ─────────────────────────────────────────────────────────────
-// GET /api/billing/plans
-// ─────────────────────────────────────────────────────────────
-// Get all available subscription plans
-// ─────────────────────────────────────────────────────────────
-router.get('/plans', async (req: Request, res: Response) => {
+function sendRouteError(res: Response, err: any) {
+  const message = err?.message || 'Internal server error';
+  const status = message.toLowerCase().includes('not found') ? 404 : 400;
+  res.status(status).json({ error: message });
+}
+
+const readBilling = requirePermission('billing-subscription-management.read');
+const createBilling = requirePermission('billing-subscription-management.create');
+const updateBilling = requirePermission('billing-subscription-management.update');
+const deleteBilling = requirePermission('billing-subscription-management.delete');
+const manageBillingSettings = requirePermission('billing-subscription-management.manage_settings');
+const viewBillingReports = requirePermission('billing-subscription-management.view_reports');
+
+router.get('/overview', readBilling, async (req: Request, res: Response) => {
   try {
-    const plans = await prisma.subscriptionPlan.findMany({
-      where: { isActive: true },
-    });
+    const overview = await BillingService.getOverview(req.tenantId!);
+    res.json({ data: overview });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/plans', readBilling, async (_req: Request, res: Response) => {
+  try {
+    const plans = await BillingService.listPlans();
     res.json({ data: plans });
-  } catch (err) {
-    console.error('Get plans error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (err: any) {
+    sendRouteError(res, err);
   }
 });
 
-// ─────────────────────────────────────────────────────────────
-// POST /api/billing/subscribe
-// ─────────────────────────────────────────────────────────────
-// Subscribe tenant to a plan
-// Body: { planId }
-// ─────────────────────────────────────────────────────────────
-router.post('/subscribe', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.post('/plans', manageBillingSettings, async (req: Request, res: Response) => {
   try {
-    const { planId } = req.body;
-    const tenantId = req.tenantId!;
+    const plan = await BillingService.createPlan(req.user?.userId || null, req.tenantId!, req.body);
+    res.status(201).json({ data: plan });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
 
-    if (!planId) {
-      res.status(400).json({ error: 'planId is required' });
-      return;
-    }
+router.patch('/plans/:id', manageBillingSettings, async (req: Request, res: Response) => {
+  try {
+    const plan = await BillingService.updatePlan(req.user?.userId || null, req.tenantId!, req.params.id as string, req.body);
+    res.json({ data: plan });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
 
-    const plan = await prisma.subscriptionPlan.findUnique({
-      where: { id: planId },
-    });
-
-    if (!plan) {
-      res.status(404).json({ error: 'Plan not found' });
-      return;
-    }
-
-    const now = new Date();
-    const periodEnd = new Date(now);
-    periodEnd.setMonth(periodEnd.getMonth() + 1);
-
-    const subscription = await prisma.tenantSubscription.upsert({
-      where: { tenantId },
-      update: {
-        planId,
-        status: 'active',
-        currentPeriodStart: now,
-        currentPeriodEnd: periodEnd,
-      },
-      create: {
-        tenantId,
-        planId,
-        status: 'active',
-        currentPeriodStart: now,
-        currentPeriodEnd: periodEnd,
-      },
-    });
-
-    // Automatically make sure the tenant is active
-    await prisma.tenant.update({
-      where: { id: tenantId },
-      data: { status: 'active' },
-    });
-
+router.post('/subscribe', updateBilling, async (req: Request, res: Response) => {
+  try {
+    const subscription = await BillingService.subscribeTenant(req.tenantId!, req.user?.userId || null, req.body);
     res.status(201).json({ data: subscription });
-  } catch (err) {
-    console.error('Subscribe error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (err: any) {
+    sendRouteError(res, err);
   }
 });
 
-// ─────────────────────────────────────────────────────────────
-// GET /api/billing/usage
-// ─────────────────────────────────────────────────────────────
-// Get active subscription and metered usage stats
-// ─────────────────────────────────────────────────────────────
-router.get('/usage', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.get('/usage', readBilling, async (req: Request, res: Response) => {
   try {
-    const tenantId = req.tenantId!;
-
-    const sub = await prisma.tenantSubscription.findUnique({
-      where: { tenantId },
-      include: { plan: true },
-    });
-
-    if (!sub) {
+    const current = await BillingService.getCurrentUsage(req.tenantId!);
+    if (!current) {
       res.status(404).json({ error: 'No active subscription found' });
       return;
     }
-
-    const periodStart = sub.currentPeriodStart;
-    const periodEnd = sub.currentPeriodEnd;
-
-    const meters = await prisma.usageMeter.findMany({
-      where: {
-        tenantId,
-        billingPeriodStart: periodStart,
-        billingPeriodEnd: periodEnd,
-      },
-    });
-
-    const memberCount = await prisma.member.count({ where: { tenantId } });
-
-    res.json({
-      data: {
-        subscription: sub,
-        usage: {
-          active_members: memberCount,
-          sms_sent: meters.find((m) => m.metricKey === 'sms_sent')?.quantity || 0,
-          storage_gb: meters.find((m) => m.metricKey === 'storage_gb')?.quantity || 0,
-          ai_tokens: meters.find((m) => m.metricKey === 'ai_tokens')?.quantity || 0,
-          meeting_hours: meters.find((m) => m.metricKey === 'meeting_hours')?.quantity || 0,
-        },
-      },
-    });
-  } catch (err) {
-    console.error('Get usage stats error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.json({ data: current });
+  } catch (err: any) {
+    sendRouteError(res, err);
   }
 });
 
-// ─────────────────────────────────────────────────────────────
-// GET /api/billing/invoices
-// ─────────────────────────────────────────────────────────────
-// Get all billing invoices for tenant
-// ─────────────────────────────────────────────────────────────
-router.get('/invoices', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.post('/usage', createBilling, async (req: Request, res: Response) => {
   try {
-    const tenantId = req.tenantId!;
+    const { metricKey, quantity } = req.body;
+    if (!metricKey || quantity === undefined) {
+      res.status(400).json({ error: 'metricKey and quantity are required' });
+      return;
+    }
+    await BillingService.recordUsage(req.tenantId!, metricKey, Number(quantity), req.user?.userId || null);
+    const current = await BillingService.getCurrentUsage(req.tenantId!);
+    res.status(201).json({ data: current?.usage || null });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/invoices', readBilling, async (req: Request, res: Response) => {
+  try {
     const invoices = await prisma.invoice.findMany({
-      where: { tenantId },
+      where: { tenantId: req.tenantId! },
       orderBy: { createdAt: 'desc' },
     });
     res.json({ data: invoices });
-  } catch (err) {
-    console.error('Get invoices error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+  } catch (err: any) {
+    sendRouteError(res, err);
   }
 });
 
-// ─────────────────────────────────────────────────────────────
-// POST /api/billing/invoice/trigger
-// ─────────────────────────────────────────────────────────────
-// Manually trigger invoice generation for test purposes
-// ─────────────────────────────────────────────────────────────
-router.post('/invoice/trigger', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.post('/invoice/trigger', createBilling, async (req: Request, res: Response) => {
   try {
-    const tenantId = req.tenantId!;
-    const invoice = await generateInvoice(tenantId);
+    const invoice = await BillingService.generateInvoice(req.tenantId!, req.user?.userId || null);
     res.status(201).json({ data: invoice });
   } catch (err: any) {
-    console.error('Trigger invoice error:', err);
-    res.status(400).json({ error: err.message });
+    sendRouteError(res, err);
   }
 });
 
-// ─────────────────────────────────────────────────────────────
-// POST /api/billing/webhook
-// ─────────────────────────────────────────────────────────────
-// Simulate payment gateway webhook
-// Body: { invoiceId, event }
-// ─────────────────────────────────────────────────────────────
-router.post('/webhook', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.post('/webhook', updateBilling, async (req: Request, res: Response) => {
   try {
     const { invoiceId, event } = req.body;
-    const tenantId = req.tenantId!;
-
     if (!invoiceId || !event) {
       res.status(400).json({ error: 'invoiceId and event are required' });
       return;
@@ -196,11 +128,218 @@ router.post('/webhook', requirePermission('tenant.settings'), async (req: Reques
       return;
     }
 
-    await handlePaymentWebhook(tenantId, invoiceId, event);
+    await BillingService.handlePaymentWebhook(req.tenantId!, invoiceId, event, req.user?.userId || null);
     res.json({ success: true, message: 'Webhook handled successfully' });
   } catch (err: any) {
-    console.error('Handle webhook error:', err);
-    res.status(400).json({ error: err.message });
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/add-ons', readBilling, async (req: Request, res: Response) => {
+  try {
+    const addOns = await BillingService.listAddOns(req.tenantId!);
+    res.json({ data: addOns });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.post('/add-ons', manageBillingSettings, async (req: Request, res: Response) => {
+  try {
+    const addOn = await BillingService.createAddOn(req.tenantId!, req.user?.userId || null, req.body);
+    res.status(201).json({ data: addOn });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.patch('/add-ons/:id', manageBillingSettings, async (req: Request, res: Response) => {
+  try {
+    const addOn = await BillingService.updateAddOn(req.tenantId!, req.user?.userId || null, req.params.id as string, req.body);
+    res.json({ data: addOn });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.post('/add-ons/:id/activate', updateBilling, async (req: Request, res: Response) => {
+  try {
+    const active = await BillingService.activateAddOn(
+      req.tenantId!,
+      req.user?.userId || null,
+      req.params.id as string,
+      req.body.quantity || 1
+    );
+    res.status(201).json({ data: active });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.post('/subscription-add-ons/:id/deactivate', updateBilling, async (req: Request, res: Response) => {
+  try {
+    const active = await BillingService.deactivateAddOn(req.tenantId!, req.user?.userId || null, req.params.id as string);
+    res.json({ data: active });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/coupons', readBilling, async (req: Request, res: Response) => {
+  try {
+    const coupons = await BillingService.listCoupons(req.tenantId!);
+    res.json({ data: coupons });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.post('/coupons', createBilling, async (req: Request, res: Response) => {
+  try {
+    const coupon = await BillingService.createCoupon(req.tenantId!, req.user?.userId || null, req.body);
+    res.status(201).json({ data: coupon });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.patch('/coupons/:id', updateBilling, async (req: Request, res: Response) => {
+  try {
+    const coupon = await BillingService.updateCoupon(req.tenantId!, req.user?.userId || null, req.params.id as string, req.body);
+    res.json({ data: coupon });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.post('/coupons/apply', updateBilling, async (req: Request, res: Response) => {
+  try {
+    const subscription = await BillingService.applyCoupon(req.tenantId!, req.user?.userId || null, req.body.code);
+    res.json({ data: subscription });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/settings', readBilling, async (req: Request, res: Response) => {
+  try {
+    const settings = await BillingService.getSettings(req.tenantId!);
+    res.json({ data: settings });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.patch('/settings', manageBillingSettings, async (req: Request, res: Response) => {
+  try {
+    const settings = await BillingService.updateSettings(req.tenantId!, req.user?.userId || null, req.body);
+    res.json({ data: settings });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/entitlements', readBilling, async (req: Request, res: Response) => {
+  try {
+    const entitlements = await BillingService.listEntitlements(req.tenantId!);
+    res.json({ data: entitlements });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.patch('/entitlements/:moduleKey', manageBillingSettings, async (req: Request, res: Response) => {
+  try {
+    const entitlement = await BillingService.updateEntitlement(
+      req.tenantId!,
+      req.user?.userId || null,
+      req.params.moduleKey as string,
+      req.body
+    );
+    res.json({ data: entitlement });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/activity', viewBillingReports, async (req: Request, res: Response) => {
+  try {
+    const activities = await BillingService.listActivities(req.tenantId!);
+    res.json({ data: activities });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/reports', viewBillingReports, async (req: Request, res: Response) => {
+  try {
+    const reports = await BillingService.getReports(req.tenantId!);
+    res.json({ data: reports });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/records', readBilling, async (req: Request, res: Response) => {
+  try {
+    const records = await BillingService.listRecords(req.tenantId!);
+    res.json({ data: records });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.post('/records', createBilling, async (req: Request, res: Response) => {
+  try {
+    const record = await BillingService.createRecord(req.tenantId!, req.user?.userId || null, req.body);
+    res.status(201).json({ data: record });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/', readBilling, async (req: Request, res: Response) => {
+  try {
+    const records = await BillingService.listRecords(req.tenantId!);
+    res.json({ data: records });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.post('/', createBilling, async (req: Request, res: Response) => {
+  try {
+    const record = await BillingService.createRecord(req.tenantId!, req.user?.userId || null, req.body);
+    res.status(201).json({ data: record });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/:id', readBilling, async (req: Request, res: Response) => {
+  try {
+    const record = await BillingService.getRecord(req.tenantId!, req.params.id as string);
+    res.json({ data: record });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.patch('/:id', updateBilling, async (req: Request, res: Response) => {
+  try {
+    const record = await BillingService.updateRecord(req.tenantId!, req.user?.userId || null, req.params.id as string, req.body);
+    res.json({ data: record });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.delete('/:id', deleteBilling, async (req: Request, res: Response) => {
+  try {
+    const record = await BillingService.deleteRecord(req.tenantId!, req.user?.userId || null, req.params.id as string);
+    res.json({ data: record, message: 'Billing record deleted successfully' });
+  } catch (err: any) {
+    sendRouteError(res, err);
   }
 });
 
