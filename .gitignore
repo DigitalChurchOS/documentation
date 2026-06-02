@@ -5,6 +5,8 @@ node_modules/
 jspm_packages/
 web_modules/
 .npm-cache/
+.npm-cache*/
+.tmp.driveupload/
 
 # Production/Distribution builds
 dist/

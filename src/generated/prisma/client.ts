@@ -280,6 +280,31 @@ export type TenantPlugin = Prisma.TenantPluginModel
  */
 export type PluginWebhook = Prisma.PluginWebhookModel
 /**
+ * Model PluginEngine
+ * 
+ */
+export type PluginEngine = Prisma.PluginEngineModel
+/**
+ * Model PluginEnginePermission
+ * 
+ */
+export type PluginEnginePermission = Prisma.PluginEnginePermissionModel
+/**
+ * Model PluginExtensionsEngineModule
+ * 
+ */
+export type PluginExtensionsEngineModule = Prisma.PluginExtensionsEngineModuleModel
+/**
+ * Model PluginExtensionsEngineActivity
+ * 
+ */
+export type PluginExtensionsEngineActivity = Prisma.PluginExtensionsEngineActivityModel
+/**
+ * Model PluginExtensionsEngineSetting
+ * 
+ */
+export type PluginExtensionsEngineSetting = Prisma.PluginExtensionsEngineSettingModel
+/**
  * Model DeveloperProfile
  * 
  */
@@ -399,6 +424,36 @@ export type ServiceScripture = Prisma.ServiceScriptureModel
  * 
  */
 export type ServiceAttachment = Prisma.ServiceAttachmentModel
+/**
+ * Model ChurchServicesModule
+ * 
+ */
+export type ChurchServicesModule = Prisma.ChurchServicesModuleModel
+/**
+ * Model ChurchServicesModuleActivity
+ * 
+ */
+export type ChurchServicesModuleActivity = Prisma.ChurchServicesModuleActivityModel
+/**
+ * Model ChurchServicesModuleSettings
+ * 
+ */
+export type ChurchServicesModuleSettings = Prisma.ChurchServicesModuleSettingsModel
+/**
+ * Model LivestreamModule
+ * 
+ */
+export type LivestreamModule = Prisma.LivestreamModuleModel
+/**
+ * Model LivestreamModuleActivity
+ * 
+ */
+export type LivestreamModuleActivity = Prisma.LivestreamModuleActivityModel
+/**
+ * Model LivestreamModuleSettings
+ * 
+ */
+export type LivestreamModuleSettings = Prisma.LivestreamModuleSettingsModel
 /**
  * Model BlogCategory
  * 
@@ -1189,3 +1244,78 @@ export type ThemeEngineModuleActivity = Prisma.ThemeEngineModuleActivityModel
  * 
  */
 export type ThemeEngineModuleSettings = Prisma.ThemeEngineModuleSettingsModel
+/**
+ * Model DeveloperMarketplaceModule
+ * 
+ */
+export type DeveloperMarketplaceModule = Prisma.DeveloperMarketplaceModuleModel
+/**
+ * Model DeveloperMarketplaceModuleActivity
+ * 
+ */
+export type DeveloperMarketplaceModuleActivity = Prisma.DeveloperMarketplaceModuleActivityModel
+/**
+ * Model DeveloperMarketplaceModuleSettings
+ * 
+ */
+export type DeveloperMarketplaceModuleSettings = Prisma.DeveloperMarketplaceModuleSettingsModel
+/**
+ * Model DomainTenantManagementModule
+ * 
+ */
+export type DomainTenantManagementModule = Prisma.DomainTenantManagementModuleModel
+/**
+ * Model DomainTenantManagementModuleActivity
+ * 
+ */
+export type DomainTenantManagementModuleActivity = Prisma.DomainTenantManagementModuleActivityModel
+/**
+ * Model DomainTenantManagementModuleSettings
+ * 
+ */
+export type DomainTenantManagementModuleSettings = Prisma.DomainTenantManagementModuleSettingsModel
+/**
+ * Model DigitalLibraryResourceCenterModule
+ * 
+ */
+export type DigitalLibraryResourceCenterModule = Prisma.DigitalLibraryResourceCenterModuleModel
+/**
+ * Model DigitalLibraryResourceCenterModuleActivity
+ * 
+ */
+export type DigitalLibraryResourceCenterModuleActivity = Prisma.DigitalLibraryResourceCenterModuleActivityModel
+/**
+ * Model DigitalLibraryResourceCenterModuleSettings
+ * 
+ */
+export type DigitalLibraryResourceCenterModuleSettings = Prisma.DigitalLibraryResourceCenterModuleSettingsModel
+/**
+ * Model MediaModule
+ * 
+ */
+export type MediaModule = Prisma.MediaModuleModel
+/**
+ * Model MediaModuleActivity
+ * 
+ */
+export type MediaModuleActivity = Prisma.MediaModuleActivityModel
+/**
+ * Model MediaModuleSettings
+ * 
+ */
+export type MediaModuleSettings = Prisma.MediaModuleSettingsModel
+/**
+ * Model DynamicBlogPublishingEngineModule
+ * 
+ */
+export type DynamicBlogPublishingEngineModule = Prisma.DynamicBlogPublishingEngineModuleModel
+/**
+ * Model DynamicBlogPublishingEngineModuleActivity
+ * 
+ */
+export type DynamicBlogPublishingEngineModuleActivity = Prisma.DynamicBlogPublishingEngineModuleActivityModel
+/**
+ * Model DynamicBlogPublishingEngineModuleSettings
+ * 
+ */
+export type DynamicBlogPublishingEngineModuleSettings = Prisma.DynamicBlogPublishingEngineModuleSettingsModel

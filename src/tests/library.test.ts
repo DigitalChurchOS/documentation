@@ -32,15 +32,47 @@ describe('ChurchOS Digital Library Module', () => {
     await prisma.user.deleteMany({});
     await prisma.tenant.deleteMany({});
 
-    // 2. Create Tenant
+    // 2. Create Tenant & Entitlement
     const tenant = await prisma.tenant.create({
       data: { name: 'Library Test Church', subdomain: 'library-test', status: 'active' },
     });
     tenantId = tenant.id;
 
+    await prisma.moduleDefinition.upsert({
+      where: { key: 'digital-library-resource-center' },
+      update: {},
+      create: { key: 'digital-library-resource-center', name: 'Digital Library', category: 'Content' },
+    });
+
+    await prisma.tenantModule.create({
+      data: {
+        tenantId,
+        moduleKey: 'digital-library-resource-center',
+        status: 'active',
+      },
+    });
+
     // 3. Setup permissions & roles
+    const permNames = [
+      'member.read',
+      'tenant.settings',
+      'digital-library-resource-center.read',
+      'digital-library-resource-center.create',
+      'digital-library-resource-center.update',
+      'digital-library-resource-center.delete',
+      'digital-library-resource-center.view_reports',
+      'digital-library-resource-center.manage_settings',
+    ];
+    for (const pName of permNames) {
+      await prisma.permission.upsert({
+        where: { name: pName },
+        update: {},
+        create: { name: pName, description: pName },
+      });
+    }
+
     const permissions = await prisma.permission.findMany({
-      where: { name: { in: ['member.read', 'tenant.settings'] } },
+      where: { name: { in: permNames } },
     });
 
     const adminRole = await prisma.role.create({
@@ -53,12 +85,12 @@ describe('ChurchOS Digital Library Module', () => {
     const memberRole = await prisma.role.create({
       data: { tenantId, name: 'Member', isCustom: false },
     });
-    const memberReadPerm = permissions.find((p) => p.name === 'member.read');
-    if (memberReadPerm) {
-      await prisma.rolePermission.create({
-        data: { roleId: memberRole.id, permissionId: memberReadPerm.id },
-      });
-    }
+    const memberPerms = permissions.filter((p) =>
+      ['member.read', 'digital-library-resource-center.read'].includes(p.name)
+    );
+    await prisma.rolePermission.createMany({
+      data: memberPerms.map((p) => ({ roleId: memberRole.id, permissionId: p.id })),
+    });
 
     const passHash = await bcrypt.hash('password123', 12);
 

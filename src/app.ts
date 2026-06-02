@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { tenantMiddleware } from './middleware/tenant';
 import { requireModule } from './middleware/entitlements';
+import { localeMiddleware } from './middleware/locale';
 import authRoutes from './routes/auth';
 import memberRoutes from './routes/members';
 import servicesRoutes from './routes/services';
@@ -14,11 +15,12 @@ import commsRoutes from './routes/communication';
 import billingRoutes from './routes/billing';
 import analyticsRoutes from './routes/analytics';
 import pluginRoutes from './routes/plugin';
+import pluginEngineRoutes from './routes/pluginExtensionsEngine';
 import marketplaceRoutes from './routes/marketplace';
-import { localeMiddleware } from './middleware/locale';
 import localizationRoutes from './routes/localization';
 import mediaRoutes from './routes/media';
 import livestreamRoutes from './routes/livestream';
+import publicLivestreamRoutes from './routes/publicLivestream';
 import churchServicesRoutes from './routes/churchServices';
 import blogRoutes from './routes/blog';
 import libraryRoutes from './routes/library';
@@ -55,6 +57,10 @@ import settingsRoutes from './routes/settings';
 import themeEngineRoutes from './routes/themeEngine';
 import tenantRoutes from './routes/tenant';
 import centralizedSettingsEngineRoutes from './routes/centralizedSettingsEngine';
+import developerMarketplaceRoutes from './routes/developerMarketplace';
+import domainTenantManagementRoutes from './routes/domainTenantManagement';
+import digitalLibraryResourceCenterRoutes from './routes/digitalLibraryResourceCenter';
+import dynamicBlogPublishingEngineRoutes from './routes/dynamicBlogPublishingEngine';
 
 
 // Load .env before anything else
@@ -86,8 +92,20 @@ app.get('/cms', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'cms.html'));
 });
 
+app.get('/dashboard', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'dashboard.html'));
+});
+
+app.get('/marketplace', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'marketplace.html'));
+});
+
 app.get('/page-builder', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'page-builder', 'index.html'));
+});
+
+app.get('/live/:id', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'live.html'));
 });
 
 // ── Health check (no tenant required) ──────────────────────
@@ -110,10 +128,12 @@ app.use('/api/billing', billingRoutes);
 app.use('/api/billing-subscription-management', billingRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/plugins', pluginRoutes);
+app.use('/api/plugin-engine', pluginEngineRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/localization', localizationRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/livestream', livestreamRoutes);
+app.use('/api/public/livestream', publicLivestreamRoutes);
 app.use('/api/church-services', churchServicesRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/library', libraryRoutes);
@@ -150,12 +170,10 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/theme-engine', themeEngineRoutes);
 app.use('/api/tenant', tenantRoutes);
 app.use('/api/centralized-settings-engine', centralizedSettingsEngineRoutes);
-
-// ── 404 fallback ──────────────────────────────────────────
-app.use((_req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
-
+app.use('/api/developer-marketplace', developerMarketplaceRoutes);
+app.use('/api/domain-tenant-management', domainTenantManagementRoutes);
+app.use('/api/digital-library-resource-center', digitalLibraryResourceCenterRoutes);
+app.use('/api/dynamic-blog-publishing-engine', dynamicBlogPublishingEngineRoutes);
 // ── Global error handler ──────────────────────────────────
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Unhandled error:', err);

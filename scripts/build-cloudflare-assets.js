@@ -32,6 +32,7 @@ fs.mkdirSync(outputDir, { recursive: true });
 copyFile(path.join(root, 'dashboard.html'), path.join(outputDir, 'index.html'));
 copyFile(path.join(root, 'dashboard.html'), path.join(outputDir, 'dashboard.html'));
 copyFile(path.join(root, 'churchos.html'), path.join(outputDir, 'churchos.html'));
+copyFile(path.join(root, 'marketplace.html'), path.join(outputDir, 'marketplace.html'));
 copyFile(path.join(root, 'index.html'), path.join(outputDir, 'legacy-index.html'));
 copyFile(path.join(root, 'dark.png'), path.join(outputDir, 'dark.png'));
 copyFile(path.join(root, 'light.png'), path.join(outputDir, 'light.png'));

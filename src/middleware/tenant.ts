@@ -16,7 +16,8 @@ export async function tenantMiddleware(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  // Allow public CMS render endpoint, public podcast RSS feeds, and signage TV render/ping endpoints to bypass the X-Tenant-ID header check
+  // Allow public CMS render endpoint, public podcast RSS feeds, signage TV render/ping endpoints,
+  // and public livestream endpoints to bypass the X-Tenant-ID header check
   // Page context is dynamically resolved via dnsMiddleware, URL params, or resource lookups
   if (
     req.originalUrl.startsWith('/api/cms/render') ||
@@ -24,6 +25,7 @@ export async function tenantMiddleware(
     req.originalUrl.includes('/api/bible/graphics/render/') ||
     req.originalUrl.includes('/api/mobile/config/') ||
     req.originalUrl.includes('/api/mobile/deeplinks/') ||
+    req.originalUrl.includes('/api/public/livestream') ||
     (req.originalUrl.includes('/api/signage/screens/') && (req.originalUrl.endsWith('/render') || req.originalUrl.endsWith('/ping')))
   ) {
     next();

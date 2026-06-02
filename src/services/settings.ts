@@ -30,6 +30,182 @@ export interface ModuleSettingsSchema {
 // SETTINGS SCHEMAS REGISTRY FOR ALL MODULES
 // ─────────────────────────────────────────────────────────────
 export const SETTINGS_REGISTRY: Record<string, ModuleSettingsSchema> = {
+  livestream: {
+    moduleKey: 'livestream',
+    moduleName: 'Livestream Module',
+    category: 'media',
+    fields: [
+      {
+        key: 'enabled',
+        label: 'Enable Livestream Module',
+        description: 'Toggles activation of the Livestream module features.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'adminPreviewOnly',
+        label: 'Admin-Only Preview',
+        description: 'Allows tenant admins to configure and preview livestreams prior to public launch.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'publicPublishingEnabled',
+        label: 'Allow Public Publishing',
+        description: 'Enables streaming pages and replay archives to be visible on the public website.',
+        type: 'boolean',
+        default: false
+      },
+      {
+        key: 'billingPlan',
+        label: 'Active Billing Tier',
+        description: 'Specifies the current financial plan of the module.',
+        type: 'select',
+        default: 'free',
+        options: [
+          { label: 'Free Tier', value: 'free' },
+          { label: 'Pro Broadcast', value: 'pro' },
+          { label: 'Enterprise Ministry', value: 'enterprise' }
+        ]
+      },
+      {
+        key: 'providerMode',
+        label: 'Stream Infrastructure Mode',
+        description: 'Controls whether streaming is managed by the platform, by your own provider, or hybrid.',
+        type: 'select',
+        default: 'hybrid',
+        options: [
+          { label: 'Hybrid Ingest', value: 'hybrid' },
+          { label: 'Platform Managed Ingest', value: 'platform_managed' },
+          { label: 'Bring Your Own Provider Ingest', value: 'bring_your_own' }
+        ]
+      },
+      {
+        key: 'defaultProvider',
+        label: 'Default Ingest Provider',
+        description: 'Primary broadcast ingest and CDN source provider.',
+        type: 'select',
+        default: 'youtube',
+        options: [
+          { label: 'YouTube Live', value: 'youtube' },
+          { label: 'Vimeo Livestream', value: 'vimeo' },
+          { label: 'Mux Live', value: 'mux' },
+          { label: 'Cloudflare Stream', value: 'cloudflare' },
+          { label: 'AWS IVS', value: 'aws_ivs' },
+          { label: 'Bunny Stream', value: 'bunny' },
+          { label: 'Custom RTMP', value: 'custom' }
+        ]
+      },
+      {
+        key: 'embedWidth',
+        label: 'Embed Width (px)',
+        description: 'Default width for website player iframe embeds.',
+        type: 'number',
+        default: 560,
+        min: 200,
+        max: 1920
+      },
+      {
+        key: 'embedHeight',
+        label: 'Embed Height (px)',
+        description: 'Default height for website player iframe embeds.',
+        type: 'number',
+        default: 315,
+        min: 150,
+        max: 1080
+      },
+      {
+        key: 'chatEnabled',
+        label: 'Enable Live Chat Room',
+        description: 'Displays a live chat room widget alongside the video stream player.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'replayAutoArchive',
+        label: 'Auto-Archive Replays',
+        description: 'Automatically converts ended livestreams into on-demand sermon media assets.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'smsRemindersEnabled',
+        label: 'SMS Stream Reminders',
+        description: 'Sends automated SMS text notifications to subscribers 15 minutes before a broadcast.',
+        type: 'boolean',
+        default: false
+      },
+      {
+        key: 'givingButtonEnabled',
+        label: 'Display Offering Button',
+        description: 'Displays a call-to-action button linking directly to the giving form.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'prayerRequestEnabled',
+        label: 'Display Care Request Button',
+        description: 'Displays a call-to-action button linking directly to the intercessor prayer room.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'salvationResponseEnabled',
+        label: 'Display Salvation Decision Button',
+        description: 'Displays a prominent salvation call button to accept Christ during broadcasts.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'biblePanelEnabled',
+        label: 'Enable Bible Widget Panel',
+        description: 'Displays an interactive Scripture lookup widget panel next to the video player.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'notesPanelEnabled',
+        label: 'Enable Sermon Notes Panel',
+        description: 'Allows viewers to type personal notes and email them to themselves.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'multilingualAudioEnabled',
+        label: 'Enable Secondary Audio Feeds',
+        description: 'Enables selection of alternative translation channels during streams.',
+        type: 'boolean',
+        default: false
+      },
+      {
+        key: 'analyticsTrackingEnabled',
+        label: 'Real-Time Stream Analytics',
+        description: 'Tracks viewer counts, average watch time, and click metrics for reporting.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'autoAttachToServices',
+        label: 'Link Streams to Services',
+        description: 'Automatically links scheduled streams and replays to Sunday service logs.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'defaultVisibility',
+        label: 'Default Visibility',
+        description: 'Default target audience visibility for newly scheduled broadcasts.',
+        type: 'select',
+        default: 'public',
+        options: [
+          { label: 'Public', value: 'public' },
+          { label: 'Members Only', value: 'members_only' },
+          { label: 'Leaders Only', value: 'leaders_only' },
+          { label: 'Private', value: 'private' }
+        ]
+      }
+    ]
+  },
   liveChat: {
     moduleKey: 'liveChat',
     moduleName: 'Live Chat & Pastoral Care',
@@ -194,15 +370,77 @@ export const SETTINGS_REGISTRY: Record<string, ModuleSettingsSchema> = {
   },
   media: {
     moduleKey: 'media',
-    moduleName: 'Content & Media Hosting',
+    moduleName: 'Media Module',
     category: 'media',
     fields: [
+      {
+        key: 'enablePlatformHosting',
+        label: 'Platform-Managed Hosting',
+        description: 'Allows ChurchOS to host uploaded videos, audio files, images, and downloadable resources.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableExternalEmbeds',
+        label: 'External Media Embeds',
+        description: 'Allows staff to catalog YouTube, Vimeo, Cloudinary, Mux, or other provider links.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableShortClips',
+        label: 'Short Clips',
+        description: 'Enables vertical short-form media records for social sharing and sermon highlights.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableImageGalleries',
+        label: 'Image Galleries',
+        description: 'Allows staff to organize event images into galleries for public website display.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableDownloads',
+        label: 'Downloadable Resources',
+        description: 'Allows PDFs, slides, and notes to be attached to sermons and public media records.',
+        type: 'boolean',
+        default: true
+      },
       {
         key: 'enableAutoTranscripts',
         label: 'AI Auto-Transcription',
         description: 'Automatically generates AI subtitles, transcripts, and blog drafts for newly uploaded sermons.',
         type: 'boolean',
         default: true
+      },
+      {
+        key: 'providerMode',
+        label: 'Provider Mode',
+        description: 'Controls whether media uses ChurchOS hosting, church-owned providers, or both.',
+        type: 'select',
+        default: 'hybrid',
+        options: [
+          { label: 'Hybrid', value: 'hybrid' },
+          { label: 'Platform Managed', value: 'platform_managed' },
+          { label: 'Bring Your Own Provider', value: 'bring_your_own' }
+        ]
+      },
+      {
+        key: 'defaultStorageProvider',
+        label: 'Default Storage Provider',
+        description: 'Default destination for new uploads and generated thumbnails.',
+        type: 'select',
+        default: 'platform',
+        options: [
+          { label: 'ChurchOS Platform', value: 'platform' },
+          { label: 'Cloudinary', value: 'cloudinary' },
+          { label: 'AWS S3', value: 'aws_s3' },
+          { label: 'Cloudflare R2', value: 'cloudflare_r2' },
+          { label: 'Mux', value: 'mux' },
+          { label: 'Vimeo', value: 'vimeo' }
+        ]
       },
       {
         key: 'maxUploadSizeMb',
@@ -215,6 +453,16 @@ export const SETTINGS_REGISTRY: Record<string, ModuleSettingsSchema> = {
         step: 50
       },
       {
+        key: 'monthlyStorageGbLimit',
+        label: 'Monthly Storage Allowance (GB)',
+        description: 'Soft limit used for storage reports, billing, and upload routing warnings.',
+        type: 'number',
+        default: 100,
+        min: 1,
+        max: 10000,
+        step: 10
+      },
+      {
         key: 'defaultStreamingQuality',
         label: 'Default Streaming Resolution',
         description: 'Default player quality preset loaded for livestreams and sermon archives.',
@@ -225,6 +473,26 @@ export const SETTINGS_REGISTRY: Record<string, ModuleSettingsSchema> = {
           { label: '720p HD', value: '720p' },
           { label: '480p Standard', value: '480p' }
         ]
+      },
+      {
+        key: 'defaultVisibility',
+        label: 'Default Visibility',
+        description: 'Visibility used for new media records unless staff choose a different audience.',
+        type: 'select',
+        default: 'public',
+        options: [
+          { label: 'Public', value: 'public' },
+          { label: 'Members Only', value: 'members_only' },
+          { label: 'Leaders Only', value: 'leaders_only' },
+          { label: 'Private', value: 'private' }
+        ]
+      },
+      {
+        key: 'publishRequiresThumbnail',
+        label: 'Require Thumbnail Before Publishing',
+        description: 'Prevents public publishing until a thumbnail or cover image has been attached.',
+        type: 'boolean',
+        default: false
       }
     ]
   },
@@ -341,6 +609,139 @@ export const SETTINGS_REGISTRY: Record<string, ModuleSettingsSchema> = {
         description: 'Keeps unpaid or disabled module features hidden from the public church site.',
         type: 'boolean',
         default: true
+      }
+    ]
+  },
+  'developer-marketplace': {
+    moduleKey: 'developer-marketplace',
+    moduleName: 'Developer Marketplace',
+    category: 'core',
+    fields: [
+      {
+        key: 'allowThirdPartyDevelopers',
+        label: 'Allow Third-Party Developers',
+        description: 'Enables external software engineers to register profiles and submit extensions.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'requireReviewForAssets',
+        label: 'Require Asset Approval Review',
+        description: 'Requires all marketplace submissions to pass security and quality review.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'revenueShareSplit',
+        label: 'Platform Revenue Share (%)',
+        description: 'The percentage split retained by the church platform on premium asset sales.',
+        type: 'number',
+        default: 30,
+        min: 0,
+        max: 100,
+        step: 5
+      },
+      {
+        key: 'billingPlan',
+        label: 'Developer Payout Billing Tier',
+        description: 'Default financial billing rule for developer payouts (automatic Stripe / Manual payout).',
+        type: 'select',
+        default: 'stripe_connect',
+        options: [
+          { label: 'Stripe Connect Payouts', value: 'stripe_connect' },
+          { label: 'Manual Bank Transfer', value: 'manual' }
+        ]
+      }
+    ]
+  },
+  'digital-library-resource-center': {
+    moduleKey: 'digital-library-resource-center',
+    moduleName: 'Digital Library & Resource Center',
+    category: 'media',
+    fields: [
+      {
+        key: 'enablePdfUploads',
+        label: 'PDF Uploads',
+        description: 'Secure storage for distributing written documents, policies, or printable materials.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableEbookUploads',
+        label: 'eBook Uploads',
+        description: 'Hosting for digital books in ePub or PDF format.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableDevotionals',
+        label: 'Devotional Resources',
+        description: 'Organization for daily reading plans and short devotional guides.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableStudyGuides',
+        label: 'Study Guides & Workbooks',
+        description: 'Workbooks and discussion questions designed to be downloaded by cell group leaders.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableMemberOnlyRestriction',
+        label: 'Member-Only Access Gates',
+        description: 'Lock resources behind login screens restricting them to verified members.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableLeadMagnets',
+        label: 'Ministry Funnel Lead Magnets',
+        description: 'Allows using free library resources as conversion incentives for outreach landing pages.',
+        type: 'boolean',
+        default: false
+      }
+    ]
+  },
+  'dynamic-blog-publishing-engine': {
+    moduleKey: 'dynamic-blog-publishing-engine',
+    moduleName: 'Dynamic Blog & Publishing Engine',
+    category: 'media',
+    fields: [
+      {
+        key: 'enableMultipleBlogs',
+        label: 'Multiple Independent Blogs',
+        description: 'Allows setting up separate blogs (e.g. devotionals, news, youth updates) under the same tenant.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableComments',
+        label: 'Optional Public Comments',
+        description: 'Toggles a comment system section allowing readers to comment at the bottom of blog articles.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableScheduledPosts',
+        label: 'Scheduled Publishing',
+        description: 'Enables planning content in advance and scheduling articles to automatically go live at a future date and time.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableRevisions',
+        label: 'Article Revision Tracking',
+        description: 'Keeps previous drafts history and revisions backup for undoing editor errors.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'enableMemberOnlyAccess',
+        label: 'Member-Only Security Gate',
+        description: 'Restricts reading designated articles to logged-in portal portal members only.',
+        type: 'boolean',
+        default: false
       }
     ]
   },

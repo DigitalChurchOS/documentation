@@ -1,243 +1,202 @@
 import request from 'supertest';
-import app from '../app';
-import prisma from '../lib/prisma';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import app from '../app';
+import prisma from '../lib/prisma';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
 describe('ChurchOS Media Module', () => {
   let tenantId: string;
+  let otherTenantId: string;
+  let unentitledTenantId: string;
   let adminToken: string;
-
-  // Reusable entity IDs populated during tests
+  let viewerToken: string;
+  let otherAdminToken: string;
+  let unentitledAdminToken: string;
   let categoryId: string;
-  let childCategoryId: string;
-  let tagFaithId: string;
-  let tagGraceId: string;
-  let tagPrayerId: string;
+  let tagId: string;
   let speakerId: string;
   let seriesId: string;
+  let assetId: string;
   let platformAssetId: string;
-  let youtubeAssetId: string;
-  let audioAssetId: string;
   let playlistId: string;
+  let moduleRecordId: string;
+
+  async function ensurePermissions(keys: string[]) {
+    const permissions = [];
+    for (const key of keys) {
+      permissions.push(await prisma.permission.upsert({
+        where: { name: key },
+        update: { description: `Test permission ${key}` },
+        create: { name: key, description: `Test permission ${key}` },
+      }));
+    }
+    return permissions;
+  }
+
+  async function createUserWithRole(tenant: string, email: string, roleName: string, permissionKeys: string[]) {
+    const permissions = await ensurePermissions(permissionKeys);
+    const role = await prisma.role.create({ data: { tenantId: tenant, name: roleName, isCustom: roleName !== 'Admin' } });
+    await prisma.rolePermission.createMany({ data: permissions.map((permission) => ({ roleId: role.id, permissionId: permission.id })) });
+    const user = await prisma.user.create({ data: { tenantId: tenant, email, passwordHash: await bcrypt.hash('password123', 12) } });
+    await prisma.userRole.create({ data: { userId: user.id, roleId: role.id } });
+    await prisma.member.create({ data: { tenantId: tenant, userId: user.id, firstName: roleName, lastName: 'User', membershipStatus: 'leader' } });
+    return jwt.sign({ userId: user.id, tenantId: tenant, email: user.email }, JWT_SECRET);
+  }
 
   beforeAll(async () => {
-    // 1. Clean up media tables
     await prisma.mediaPlaylistItem.deleteMany({});
-    await prisma.mediaPlaylist.deleteMany({});
     await prisma.mediaAssetTag.deleteMany({});
+    await prisma.mediaCaption.deleteMany({});
     await prisma.mediaAsset.deleteMany({});
+    await prisma.mediaPlaylist.deleteMany({});
     await prisma.mediaSeries.deleteMany({});
     await prisma.speaker.deleteMany({});
     await prisma.mediaTag.deleteMany({});
     await prisma.mediaCategory.deleteMany({});
-
-    // 2. Clean up auth tables
+    await prisma.mediaModuleActivity.deleteMany({});
+    await prisma.mediaModuleSettings.deleteMany({});
+    await prisma.mediaModule.deleteMany({});
+    await prisma.analyticsEvent.deleteMany({});
+    await prisma.moduleSettings.deleteMany({});
+    await prisma.tenantModule.deleteMany({});
     await prisma.member.deleteMany({});
     await prisma.rolePermission.deleteMany({});
-    await prisma.role.deleteMany({});
     await prisma.userRole.deleteMany({});
+    await prisma.role.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.tenant.deleteMany({});
 
-    // 3. Create Tenant
-    const tenant = await prisma.tenant.create({
-      data: { name: 'Media Test Church', subdomain: 'media-test', status: 'active' },
+    await prisma.moduleDefinition.upsert({
+      where: { key: 'media' },
+      update: { name: 'Media Module', category: 'Content', dependencies: '["website-cms"]' },
+      create: { key: 'media', name: 'Media Module', category: 'Content', dependencies: '["website-cms"]' },
     });
+
+    const tenant = await prisma.tenant.create({ data: { name: 'Media Test Church', subdomain: 'media-test', status: 'active' } });
     tenantId = tenant.id;
+    const otherTenant = await prisma.tenant.create({ data: { name: 'Other Media Church', subdomain: 'other-media-test', status: 'active' } });
+    otherTenantId = otherTenant.id;
+    const unentitledTenant = await prisma.tenant.create({ data: { name: 'No Media Church', subdomain: 'no-media-test', status: 'active' } });
+    unentitledTenantId = unentitledTenant.id;
 
-    // 4. Create Admin Role & Permissions
-    const permissions = await prisma.permission.findMany({
-      where: { name: { in: ['member.create', 'member.read', 'tenant.settings'] } },
+    await prisma.tenantModule.createMany({
+      data: [
+        { tenantId, moduleKey: 'media', status: 'active', billingRule: 'included' },
+        { tenantId: otherTenantId, moduleKey: 'media', status: 'active', billingRule: 'included' },
+      ],
     });
 
-    const adminRole = await prisma.role.create({
-      data: { tenantId, name: 'Admin', isCustom: false },
-    });
-
-    await prisma.rolePermission.createMany({
-      data: permissions.map((p) => ({ roleId: adminRole.id, permissionId: p.id })),
-    });
-
-    // 5. Create Admin User
-    const passHash = await bcrypt.hash('password123', 12);
-    const adminUser = await prisma.user.create({
-      data: { tenantId, email: 'admin@media-test.com', passwordHash: passHash },
-    });
-
-    await prisma.userRole.create({
-      data: { userId: adminUser.id, roleId: adminRole.id },
-    });
-
-    await prisma.member.create({
-      data: {
-        tenantId,
-        userId: adminUser.id,
-        firstName: 'Media',
-        lastName: 'Admin',
-        membershipStatus: 'leader',
-      },
-    });
-
-    adminToken = jwt.sign(
-      { userId: adminUser.id, tenantId, email: adminUser.email },
-      JWT_SECRET
-    );
+    const adminPermissions = ['member.read', 'tenant.settings', 'media.read', 'media.create', 'media.update', 'media.delete', 'media.manage_settings', 'media.view_reports'];
+    adminToken = await createUserWithRole(tenantId, 'admin@media-test.com', 'Admin', adminPermissions);
+    viewerToken = await createUserWithRole(tenantId, 'viewer@media-test.com', 'Viewer', ['member.read', 'media.read']);
+    otherAdminToken = await createUserWithRole(otherTenantId, 'admin@other-media-test.com', 'Admin', adminPermissions);
+    unentitledAdminToken = await createUserWithRole(unentitledTenantId, 'admin@no-media-test.com', 'Admin', adminPermissions);
   });
 
   afterAll(async () => {
     await prisma.$disconnect();
   });
 
-  // ─────────────────────────────────────────────────────────────
-  // 1. CATEGORY CRUD
-  // ─────────────────────────────────────────────────────────────
-  describe('Categories', () => {
-    it('should create a parent category', async () => {
-      const res = await request(app)
-        .post('/api/media/categories')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ name: 'Sunday Messages' });
-
-      expect(res.status).toBe(201);
-      expect(res.body.data.name).toBe('Sunday Messages');
-      expect(res.body.data.slug).toBe('sunday-messages');
-      categoryId = res.body.data.id;
+  describe('Access control and entitlement', () => {
+    it('requires authentication for every media route', async () => {
+      const res = await request(app).get('/api/media/overview').set('x-tenant-id', tenantId);
+      expect(res.status).toBe(401);
     });
 
-    it('should create a nested child category', async () => {
-      const res = await request(app)
-        .post('/api/media/categories')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ name: 'Youth Camp', parentId: categoryId });
-
-      expect(res.status).toBe(201);
-      expect(res.body.data.parentId).toBe(categoryId);
-      childCategoryId = res.body.data.id;
+    it('requires an active media module entitlement', async () => {
+      const res = await request(app).get('/api/media/overview').set('x-tenant-id', unentitledTenantId).set('Authorization', `Bearer ${unentitledAdminToken}`);
+      expect(res.status).toBe(403);
+      expect(res.body.moduleKey).toBe('media');
     });
 
-    it('should list categories with children', async () => {
+    it('blocks write access for read-only users', async () => {
       const res = await request(app)
-        .get('/api/media/categories')
+        .post('/api/media/assets')
         .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
+        .set('Authorization', `Bearer ${viewerToken}`)
+        .send({ title: 'Blocked Upload', type: 'video', providerType: 'youtube', sourceUrl: 'https://youtu.be/dQw4w9WgXcQ' });
+      expect(res.status).toBe(403);
+    });
 
-      expect(res.status).toBe(200);
-      expect(res.body.data.length).toBe(2);
-
-      const parent = res.body.data.find((c: any) => c.id === categoryId);
-      expect(parent.children.length).toBe(1);
-      expect(parent.children[0].id).toBe(childCategoryId);
+    it('blocks report access without media.view_reports', async () => {
+      const res = await request(app).get('/api/media/reports').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${viewerToken}`);
+      expect(res.status).toBe(403);
     });
   });
 
-  // ─────────────────────────────────────────────────────────────
-  // 2. TAG CRUD
-  // ─────────────────────────────────────────────────────────────
-  describe('Tags', () => {
-    it('should create multiple tags', async () => {
-      const resFaith = await request(app)
-        .post('/api/media/tags')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ name: 'Faith' });
-      expect(resFaith.status).toBe(201);
-      tagFaithId = resFaith.body.data.id;
+  describe('Settings and module records', () => {
+    it('returns default settings and syncs updates into centralized settings', async () => {
+      const defaults = await request(app).get('/api/media/settings').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`);
+      expect(defaults.status).toBe(200);
+      expect(defaults.body.data.moduleKey).toBe('media');
+      expect(JSON.parse(defaults.body.data.configJson).enableExternalEmbeds).toBe(true);
 
-      const resGrace = await request(app)
-        .post('/api/media/tags')
+      const updated = await request(app)
+        .patch('/api/media/settings')
         .set('x-tenant-id', tenantId)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ name: 'Grace' });
-      expect(resGrace.status).toBe(201);
-      tagGraceId = resGrace.body.data.id;
+        .send({ enabled: true, billingPlan: 'premium', providerMode: 'hybrid', configJson: { maxUploadSizeMb: 25, defaultVisibility: 'members_only', publishRequiresThumbnail: true } });
+      expect(updated.status).toBe(200);
+      expect(updated.body.data.billingPlan).toBe('premium');
+      expect(JSON.parse(updated.body.data.configJson).publishRequiresThumbnail).toBe(true);
 
-      const resPrayer = await request(app)
-        .post('/api/media/tags')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ name: 'Prayer' });
-      expect(resPrayer.status).toBe(201);
-      tagPrayerId = resPrayer.body.data.id;
+      const centralized = await request(app).get('/api/settings/media').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${viewerToken}`);
+      expect(centralized.status).toBe(200);
+      expect(centralized.body.data.maxUploadSizeMb).toBe(25);
     });
 
-    it('should list tags for tenant', async () => {
-      const res = await request(app)
-        .get('/api/media/tags')
+    it('creates and updates tenant-scoped module records', async () => {
+      const created = await request(app)
+        .post('/api/media')
         .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ title: 'Grace Media Archive', description: 'Primary sermon, replay, and resource workspace.', visibility: 'private' });
+      expect(created.status).toBe(201);
+      expect(created.body.data.tenantId).toBe(tenantId);
+      moduleRecordId = created.body.data.id;
 
-      expect(res.status).toBe(200);
-      expect(res.body.data.length).toBe(3);
+      const updated = await request(app).patch(`/api/media/${moduleRecordId}`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ title: 'Grace Media Library' });
+      expect(updated.status).toBe(200);
+      expect(updated.body.data.title).toBe('Grace Media Library');
     });
   });
 
-  // ─────────────────────────────────────────────────────────────
-  // 3. SPEAKER MANAGEMENT
-  // ─────────────────────────────────────────────────────────────
-  describe('Speakers', () => {
-    it('should create a speaker with photo and bio', async () => {
-      const res = await request(app)
-        .post('/api/media/speakers')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({
-          name: 'Pastor David',
-          title: 'Senior Pastor',
-          bio: 'Founding pastor of Grace Community Church.',
-          photoUrl: 'https://cdn.church.com/pastors/david.jpg',
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body.data.name).toBe('Pastor David');
-      expect(res.body.data.title).toBe('Senior Pastor');
-      speakerId = res.body.data.id;
+  describe('Core library workflows', () => {
+    it('creates templates for categories, tags, speakers, and series', async () => {
+      const category = await request(app).post('/api/media/categories').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ name: 'Sunday Messages' });
+      expect(category.status).toBe(201);
+      categoryId = category.body.data.id;
+      const tag = await request(app).post('/api/media/tags').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ name: 'Faith' });
+      expect(tag.status).toBe(201);
+      tagId = tag.body.data.id;
+      const speaker = await request(app).post('/api/media/speakers').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ name: 'Pastor David', title: 'Senior Pastor', bio: 'Teaches weekly services.' });
+      expect(speaker.status).toBe(201);
+      speakerId = speaker.body.data.id;
+      const series = await request(app).post('/api/media/series').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ title: 'Walking in Faith', description: 'Four-part discipleship series.' });
+      expect(series.status).toBe(201);
+      seriesId = series.body.data.id;
+      const templates = await request(app).get('/api/media/templates').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${viewerToken}`);
+      expect(templates.status).toBe(200);
+      expect(templates.body.data.categories.length).toBe(1);
+      expect(templates.body.data.tags.length).toBe(1);
+      expect(templates.body.data.speakers.length).toBe(1);
+      expect(templates.body.data.series.length).toBe(1);
     });
 
-    it('should update speaker profile', async () => {
+    it('enforces publishing workflow rules from settings', async () => {
       const res = await request(app)
-        .put(`/api/media/speakers/${speakerId}`)
+        .post('/api/media/assets')
         .set('x-tenant-id', tenantId)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({ bio: 'Senior pastor for 15 years at Grace Community Church.' });
-
-      expect(res.status).toBe(200);
-      expect(res.body.data.bio).toContain('15 years');
+        .send({ title: 'No Thumbnail Published Sermon', type: 'video', providerType: 'youtube', sourceUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', status: 'published' });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toContain('thumbnail');
     });
-  });
 
-  // ─────────────────────────────────────────────────────────────
-  // 4. SERIES MANAGEMENT
-  // ─────────────────────────────────────────────────────────────
-  describe('Series', () => {
-    it('should create a series with cover image', async () => {
-      const res = await request(app)
-        .post('/api/media/series')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({
-          title: 'Walking in Faith',
-          description: 'A 4-part sermon series on faith foundations.',
-          coverImageUrl: 'https://cdn.church.com/series/faith-cover.jpg',
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body.data.title).toBe('Walking in Faith');
-      expect(res.body.data.coverImageUrl).toBeTruthy();
-      seriesId = res.body.data.id;
-    });
-  });
-
-  // ─────────────────────────────────────────────────────────────
-  // 5. ASSET REGISTRATION (Platform-managed)
-  // ─────────────────────────────────────────────────────────────
-  describe('Asset Registration', () => {
-    it('should create a platform-managed video asset', async () => {
-      const res = await request(app)
+    it('creates, filters, tags, embeds, and plays media assets', async () => {
+      const created = await request(app)
         .post('/api/media/assets')
         .set('x-tenant-id', tenantId)
         .set('Authorization', `Bearer ${adminToken}`)
@@ -245,9 +204,9 @@ describe('ChurchOS Media Module', () => {
           title: 'Sunday Sermon: Walking in Faith Part 1',
           description: 'The first message in the Walking in Faith series.',
           type: 'video',
-          providerType: 'platform_managed',
-          sourceUrl: 'https://cdn.churchos.io/media/sermon-001.mp4',
-          thumbnailUrl: 'https://cdn.churchos.io/thumbs/sermon-001.jpg',
+          providerType: 'youtube',
+          sourceUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+          thumbnailUrl: 'https://images.example.test/faith.jpg',
           durationSeconds: 2700,
           fileSizeBytes: 524288000,
           mimeType: 'video/mp4',
@@ -255,283 +214,89 @@ describe('ChurchOS Media Module', () => {
           seriesId,
           seriesOrder: 1,
           speakerId,
-          visibility: 'public',
           status: 'published',
         });
+      expect(created.status).toBe(201);
+      expect(created.body.data.providerType).toBe('external_link');
+      expect(created.body.data.providerKey).toBe('youtube');
+      expect(created.body.data.visibility).toBe('members_only');
+      expect(created.body.data.publishedAt).toBeTruthy();
+      assetId = created.body.data.id;
 
-      expect(res.status).toBe(201);
-      expect(res.body.data.providerType).toBe('platform_managed');
-      expect(res.body.data.status).toBe('published');
-      expect(res.body.data.publishedAt).toBeTruthy();
-      expect(res.body.data.category.id).toBe(categoryId);
-      expect(res.body.data.series.id).toBe(seriesId);
-      expect(res.body.data.speaker.id).toBe(speakerId);
-      platformAssetId = res.body.data.id;
+      const tagRes = await request(app).post(`/api/media/assets/${assetId}/tags`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ tagIds: [tagId] });
+      expect(tagRes.status).toBe(200);
+      expect(tagRes.body.data.length).toBe(1);
+
+      const filtered = await request(app).get(`/api/media/assets?seriesId=${seriesId}&tagIds=${tagId}&search=Walking`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${viewerToken}`);
+      expect(filtered.status).toBe(200);
+      expect(filtered.body.data.length).toBe(1);
+
+      const embed = await request(app).get(`/api/media/assets/${assetId}/embed`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${viewerToken}`);
+      expect(embed.status).toBe(200);
+      expect(embed.body.data.embedHtml).toContain('youtube.com/embed/dQw4w9WgXcQ');
+
+      const playback = await request(app).post(`/api/media/assets/${assetId}/playback`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${viewerToken}`);
+      expect(playback.status).toBe(200);
+      expect(playback.body.data.assetId).toBe(assetId);
     });
 
-    // 6. ASSET REGISTRATION (External Link — YouTube)
-    it('should create an external YouTube video asset', async () => {
-      const res = await request(app)
+    it('creates upload intents and platform-managed records', async () => {
+      const intent = await request(app)
+        .post('/api/media/uploads/intent')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ fileName: 'sermon-audio.mp3', fileSizeBytes: 12 * 1024 * 1024, mimeType: 'audio/mpeg', type: 'audio', providerKey: 'platform' });
+      expect(intent.status).toBe(201);
+      expect(intent.body.data.moduleKey).toBe('media');
+      expect(intent.body.data.uploadUrl).toContain('/api/media/uploads/');
+
+      const platformAsset = await request(app)
         .post('/api/media/assets')
         .set('x-tenant-id', tenantId)
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({
-          title: 'Special Guest Message',
-          type: 'video',
-          providerType: 'external_link',
-          providerKey: 'youtube',
-          sourceUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-          speakerId,
-          status: 'published',
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body.data.providerType).toBe('external_link');
-      expect(res.body.data.providerKey).toBe('youtube');
-      youtubeAssetId = res.body.data.id;
+        .send({ title: 'Podcast Audio: Walking in Faith', type: 'audio', providerType: 'platform_managed', sourceUrl: '/media/sermon-audio.mp3', thumbnailUrl: 'https://images.example.test/audio.jpg', durationSeconds: 1800, fileSizeBytes: 12 * 1024 * 1024, mimeType: 'audio/mpeg', categoryId, status: 'published' });
+      expect(platformAsset.status).toBe(201);
+      expect(platformAsset.body.data.providerType).toBe('platform_managed');
+      platformAssetId = platformAsset.body.data.id;
     });
 
-    it('should create an audio asset', async () => {
-      const res = await request(app)
-        .post('/api/media/assets')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({
-          title: 'Worship Track: Amazing Grace',
-          type: 'audio',
-          providerType: 'platform_managed',
-          sourceUrl: 'https://cdn.churchos.io/media/worship-001.mp3',
-          durationSeconds: 240,
-          mimeType: 'audio/mpeg',
-          categoryId: childCategoryId,
-          status: 'published',
-        });
+    it('creates playlists and keeps items tenant-isolated', async () => {
+      const playlist = await request(app).post('/api/media/playlists').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ name: 'Best of 2026', description: 'Top sermons from the year.' });
+      expect(playlist.status).toBe(201);
+      playlistId = playlist.body.data.id;
+      expect((await request(app).post(`/api/media/playlists/${playlistId}/items`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ assetId, order: 2 })).status).toBe(201);
+      expect((await request(app).post(`/api/media/playlists/${playlistId}/items`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`).send({ assetId: platformAssetId, order: 1 })).status).toBe(201);
+      const items = await request(app).get(`/api/media/playlists/${playlistId}/items`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${viewerToken}`);
+      expect(items.status).toBe(200);
+      expect(items.body.data[0].asset.id).toBe(platformAssetId);
+      expect(items.body.data[1].asset.id).toBe(assetId);
+      const otherTenantRead = await request(app).get(`/api/media/assets/${assetId}`).set('x-tenant-id', otherTenantId).set('Authorization', `Bearer ${otherAdminToken}`);
+      expect(otherTenantRead.status).toBe(404);
+    });
 
-      expect(res.status).toBe(201);
-      audioAssetId = res.body.data.id;
+    it('archives assets instead of hard-deleting them', async () => {
+      const archived = await request(app).delete(`/api/media/assets/${platformAssetId}`).set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`);
+      expect(archived.status).toBe(200);
+      expect(archived.body.data.status).toBe('archived');
     });
   });
 
-  // ─────────────────────────────────────────────────────────────
-  // 7. ASSET FILTERING
-  // ─────────────────────────────────────────────────────────────
-  describe('Asset Filtering', () => {
-    it('should filter assets by categoryId', async () => {
-      const res = await request(app)
-        .get(`/api/media/assets?categoryId=${categoryId}`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
+  describe('Dashboard data endpoints and activity history', () => {
+    it('returns overview, reports, and activity for the dashboard views', async () => {
+      const overview = await request(app).get('/api/media/overview').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${viewerToken}`);
+      expect(overview.status).toBe(200);
+      expect(overview.body.data.moduleKey).toBe('media');
+      expect(overview.body.data.counts.assets).toBeGreaterThanOrEqual(2);
+      expect(overview.body.data.recentAssets.length).toBeGreaterThan(0);
 
-      expect(res.status).toBe(200);
-      expect(res.body.data.length).toBe(1);
-      expect(res.body.data[0].id).toBe(platformAssetId);
-    });
+      const activity = await request(app).get('/api/media/activity').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`);
+      expect(activity.status).toBe(200);
+      expect(activity.body.data.some((item: any) => item.actionType === 'asset_created')).toBe(true);
 
-    it('should filter assets by speakerId', async () => {
-      const res = await request(app)
-        .get(`/api/media/assets?speakerId=${speakerId}`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-      // Both the platform-managed and YouTube assets have the same speaker
-      expect(res.body.data.length).toBe(2);
-    });
-
-    it('should filter assets by type', async () => {
-      const res = await request(app)
-        .get('/api/media/assets?type=audio')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body.data.length).toBe(1);
-      expect(res.body.data[0].type).toBe('audio');
-    });
-
-    it('should search assets by title', async () => {
-      const res = await request(app)
-        .get('/api/media/assets?search=Walking')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body.data.length).toBe(1);
-      expect(res.body.data[0].title).toContain('Walking');
-    });
-  });
-
-  // ─────────────────────────────────────────────────────────────
-  // 8. TAGGING
-  // ─────────────────────────────────────────────────────────────
-  describe('Tagging', () => {
-    it('should tag an asset with multiple tags', async () => {
-      const res = await request(app)
-        .post(`/api/media/assets/${platformAssetId}/tags`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ tagIds: [tagFaithId, tagGraceId] });
-
-      expect(res.status).toBe(200);
-      expect(res.body.data.length).toBe(2);
-    });
-
-    it('should verify tags appear on asset detail', async () => {
-      const res = await request(app)
-        .get(`/api/media/assets/${platformAssetId}`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-      const tagNames = res.body.data.assetTags.map((at: any) => at.tag.name);
-      expect(tagNames).toContain('Faith');
-      expect(tagNames).toContain('Grace');
-    });
-  });
-
-  // ─────────────────────────────────────────────────────────────
-  // 9. PLAYLIST MANAGEMENT
-  // ─────────────────────────────────────────────────────────────
-  describe('Playlists', () => {
-    it('should create a playlist', async () => {
-      const res = await request(app)
-        .post('/api/media/playlists')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({
-          name: 'Best of 2026',
-          description: 'Top sermons from 2026.',
-          isPublic: true,
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body.data.name).toBe('Best of 2026');
-      playlistId = res.body.data.id;
-    });
-
-    it('should add 3 assets to playlist with explicit ordering', async () => {
-      await request(app)
-        .post(`/api/media/playlists/${playlistId}/items`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ assetId: audioAssetId, order: 3 });
-
-      await request(app)
-        .post(`/api/media/playlists/${playlistId}/items`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ assetId: platformAssetId, order: 1 });
-
-      await request(app)
-        .post(`/api/media/playlists/${playlistId}/items`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({ assetId: youtubeAssetId, order: 2 });
-    });
-
-    it('should retrieve playlist items in correct order', async () => {
-      const res = await request(app)
-        .get(`/api/media/playlists/${playlistId}/items`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body.data.length).toBe(3);
-      // Ordered: platformAsset (1), youtubeAsset (2), audioAsset (3)
-      expect(res.body.data[0].asset.id).toBe(platformAssetId);
-      expect(res.body.data[1].asset.id).toBe(youtubeAssetId);
-      expect(res.body.data[2].asset.id).toBe(audioAssetId);
-    });
-
-    it('should remove an item from playlist', async () => {
-      const delRes = await request(app)
-        .delete(`/api/media/playlists/${playlistId}/items/${audioAssetId}`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(delRes.status).toBe(200);
-
-      const res = await request(app)
-        .get(`/api/media/playlists/${playlistId}/items`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.body.data.length).toBe(2);
-    });
-  });
-
-  // ─────────────────────────────────────────────────────────────
-  // 10. EMBED GENERATION
-  // ─────────────────────────────────────────────────────────────
-  describe('Embed Code', () => {
-    it('should generate YouTube embed iframe for external link asset', async () => {
-      const res = await request(app)
-        .get(`/api/media/assets/${youtubeAssetId}/embed`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body.data.embedHtml).toContain('<iframe');
-      expect(res.body.data.embedHtml).toContain('youtube.com/embed/dQw4w9WgXcQ');
-    });
-
-    it('should generate platform embed for platform-managed asset', async () => {
-      const res = await request(app)
-        .get(`/api/media/assets/${platformAssetId}/embed`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body.data.embedHtml).toContain('<iframe');
-      expect(res.body.data.embedHtml).toContain(`/embed/media/${platformAssetId}`);
-    });
-  });
-
-  // ─────────────────────────────────────────────────────────────
-  // 11. VISIBILITY SCOPING
-  // ─────────────────────────────────────────────────────────────
-  describe('Visibility', () => {
-    it('should create a members_only asset and verify visibility flag', async () => {
-      const res = await request(app)
-        .post('/api/media/assets')
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({
-          title: 'Leaders Only Prayer Guide',
-          type: 'document',
-          providerType: 'platform_managed',
-          sourceUrl: 'https://cdn.churchos.io/docs/prayer-guide.pdf',
-          mimeType: 'application/pdf',
-          visibility: 'members_only',
-          status: 'published',
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body.data.visibility).toBe('members_only');
-    });
-  });
-
-  // ─────────────────────────────────────────────────────────────
-  // 12. ASSET ARCHIVAL (soft-delete)
-  // ─────────────────────────────────────────────────────────────
-  describe('Archival', () => {
-    it('should soft-delete an asset by setting status to archived', async () => {
-      const delRes = await request(app)
-        .delete(`/api/media/assets/${audioAssetId}`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(delRes.status).toBe(200);
-      expect(delRes.body.data.status).toBe('archived');
-
-      // Verify via detail endpoint
-      const getRes = await request(app)
-        .get(`/api/media/assets/${audioAssetId}`)
-        .set('x-tenant-id', tenantId)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(getRes.status).toBe(200);
-      expect(getRes.body.data.status).toBe('archived');
+      const reports = await request(app).get('/api/media/reports').set('x-tenant-id', tenantId).set('Authorization', `Bearer ${adminToken}`);
+      expect(reports.status).toBe(200);
+      expect(reports.body.data.summary.assets).toBeGreaterThanOrEqual(2);
+      expect(reports.body.data.summary.plays).toBeGreaterThanOrEqual(1);
     });
   });
 });

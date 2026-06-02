@@ -599,7 +599,10 @@ const state = {
     updatedAt: now(),
   },
   billingEntitlements: [
-    { id: 'ent-core-cms', tenantId: demoTenantId, moduleKey: 'core-website-cms', status: 'active', billingRule: 'included', module: { name: 'Core Website & CMS' } },
+    { id: 'ent-core-cms', tenantId: demoTenantId, moduleKey: 'core-website-cms', status: 'active', billingRule: 'included', module: { name: 'Churchfront' } },
+    { id: 'ent-dt', tenantId: demoTenantId, moduleKey: 'domain-tenant-management', status: 'active', billingRule: 'included', module: { name: 'Church Details' } },
+    { id: 'ent-media', tenantId: demoTenantId, moduleKey: 'media', status: 'active', billingRule: 'included', module: { name: 'Media Module' } },
+    { id: 'ent-church-services', tenantId: demoTenantId, moduleKey: 'church-services', status: 'active', billingRule: 'included', module: { name: 'Church Services' } },
     { id: 'ent-live', tenantId: demoTenantId, moduleKey: 'live-meetings', status: 'active', billingRule: 'paid_add_on', module: { name: 'Live Meetings' } },
     { id: 'ent-ai', tenantId: demoTenantId, moduleKey: 'ai', status: 'active', billingRule: 'metered', module: { name: 'AI Copilot' } },
     { id: 'ent-analytics', tenantId: demoTenantId, moduleKey: 'analytics', status: 'suspended', billingRule: 'plan_required', module: { name: 'Analytics & Reporting' } },
@@ -612,10 +615,339 @@ const state = {
   billingRecords: [
     { id: 'billing-record-1', tenantId: demoTenantId, title: 'Local Preview Billing Console', description: 'Demo record for the documented module CRUD surface.', status: 'active', visibility: 'private', settingsJson: '{}', createdAt: now(), updatedAt: now() },
   ],
+  mediaSettings: {
+    id: 'media-settings-local',
+    tenantId: demoTenantId,
+    moduleKey: 'media',
+    enabled: true,
+    billingPlan: 'premium',
+    providerMode: 'hybrid',
+    configJson: JSON.stringify({
+      enablePlatformHosting: true,
+      enableExternalEmbeds: true,
+      enableShortClips: true,
+      enableImageGalleries: true,
+      enableDownloads: true,
+      enableAutoTranscripts: true,
+      defaultVisibility: 'public',
+      defaultStatus: 'draft',
+      defaultStreamingQuality: '720p',
+      maxUploadSizeMb: 500,
+      monthlyStorageGbLimit: 100,
+      monthlyBandwidthGbLimit: 250,
+      defaultStorageProvider: 'platform',
+      providerMode: 'hybrid',
+      publishRequiresThumbnail: false,
+      allowedExternalProviders: ['youtube', 'vimeo', 'cloudinary', 'aws_s3', 'cloudflare_r2', 'mux'],
+    }),
+    updatedAt: now(),
+  },
+  mediaRecords: [
+    { id: 'media-record-main', tenantId: demoTenantId, title: 'Next Church Media Archive', description: 'Primary sermon, replay, clip, gallery, and download library.', status: 'active', settingsJson: '{}', visibility: 'private', createdBy: 'Local Preview', createdAt: now(), updatedAt: now() },
+  ],
+  mediaCategories: [
+    { id: 'media-cat-sermons', tenantId: demoTenantId, name: 'Sunday Messages', slug: 'sunday-messages', parentId: null, createdAt: now(), updatedAt: now(), children: [] },
+    { id: 'media-cat-worship', tenantId: demoTenantId, name: 'Worship Sets', slug: 'worship-sets', parentId: null, createdAt: now(), updatedAt: now(), children: [] },
+  ],
+  mediaTags: [
+    { id: 'media-tag-faith', tenantId: demoTenantId, name: 'Faith', slug: 'faith', createdAt: now() },
+    { id: 'media-tag-prayer', tenantId: demoTenantId, name: 'Prayer', slug: 'prayer', createdAt: now() },
+  ],
+  mediaSpeakers: [
+    { id: 'media-speaker-daniel', tenantId: demoTenantId, name: 'Pastor Daniel Okafor', title: 'Resident Pastor', bio: 'Weekly teaching pastor for Next Church services.', photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100', createdAt: now(), updatedAt: now() },
+  ],
+  mediaSeries: [
+    { id: 'media-series-faith', tenantId: demoTenantId, title: 'Walking in Faith', description: 'A four-part sermon series on bold discipleship.', coverImageUrl: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=600&q=80', createdAt: now(), updatedAt: now() },
+  ],
+  mediaAssets: [
+    {
+      id: 'media-asset-faith-1',
+      tenantId: demoTenantId,
+      title: 'Walking in Faith Part 1',
+      description: 'Sunday replay with teaching notes and resource links.',
+      type: 'video',
+      providerType: 'external_link',
+      providerKey: 'youtube',
+      sourceUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=600&q=80',
+      durationSeconds: 2700,
+      fileSizeBytes: 524288000,
+      mimeType: 'video/mp4',
+      categoryId: 'media-cat-sermons',
+      seriesId: 'media-series-faith',
+      seriesOrder: 1,
+      speakerId: 'media-speaker-daniel',
+      visibility: 'public',
+      status: 'published',
+      publishedAt: now(),
+      createdAt: now(),
+      updatedAt: now(),
+      assetTags: [{ tagId: 'media-tag-faith', tag: { id: 'media-tag-faith', name: 'Faith', slug: 'faith' } }],
+    },
+    {
+      id: 'media-asset-prayer-audio',
+      tenantId: demoTenantId,
+      title: 'Midweek Prayer Audio',
+      description: 'Podcast-ready audio message for the church app.',
+      type: 'audio',
+      providerType: 'platform_managed',
+      providerKey: 'platform',
+      sourceUrl: '/media/midweek-prayer.mp3',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1438029071396-1e831a7fa6d8?auto=format&fit=crop&w=600&q=80',
+      durationSeconds: 1800,
+      fileSizeBytes: 42000000,
+      mimeType: 'audio/mpeg',
+      categoryId: 'media-cat-worship',
+      seriesId: null,
+      seriesOrder: null,
+      speakerId: 'media-speaker-daniel',
+      visibility: 'members_only',
+      status: 'published',
+      publishedAt: now(),
+      createdAt: now(),
+      updatedAt: now(),
+      assetTags: [{ tagId: 'media-tag-prayer', tag: { id: 'media-tag-prayer', name: 'Prayer', slug: 'prayer' } }],
+    },
+  ],
+  mediaPlaylists: [
+    { id: 'media-playlist-growth', tenantId: demoTenantId, name: 'Growth Fundamentals', description: 'A guided playlist for new believers and small groups.', coverImageUrl: '', isPublic: true, createdAt: now(), updatedAt: now(), _count: { items: 2 } },
+  ],
+  mediaPlaylistItems: [
+    { id: 'media-playlist-item-1', playlistId: 'media-playlist-growth', assetId: 'media-asset-faith-1', order: 1 },
+    { id: 'media-playlist-item-2', playlistId: 'media-playlist-growth', assetId: 'media-asset-prayer-audio', order: 2 },
+  ],
+  mediaActivities: [
+    { id: 'media-activity-1', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'asset_created', metadataJson: JSON.stringify({ assetId: 'media-asset-faith-1', title: 'Walking in Faith Part 1' }), createdAt: now() },
+    { id: 'media-activity-2', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'settings_updated', metadataJson: JSON.stringify({ providerMode: 'hybrid' }), createdAt: now() },
+  ],
+  churchServicesSettings: {
+    id: 'church-services-settings-local',
+    tenantId: demoTenantId,
+    moduleKey: 'church-services',
+    enabled: true,
+    billingPlan: 'premium',
+    providerMode: 'hybrid',
+    configJson: JSON.stringify({
+      enableSundayServices: true,
+      enableMidweekServices: true,
+      enablePrayerServices: true,
+      enableCommunionServices: true,
+      enableHealingServices: true,
+      enableThanksgivingServices: true,
+      enableYouthServices: true,
+      enableSpecialServices: true,
+      enableRecurringSchedules: true,
+      enablePublicArchive: true,
+      enableReplayAttachments: true,
+      enableAudioAttachments: true,
+      enableGivingIntegration: true,
+      enableAttendanceIntegration: true,
+      enableSalvationIntegration: true,
+      enableCalendarSync: false,
+      enableAiSummaries: false,
+      defaultVisibility: 'public',
+      defaultStatus: 'draft',
+      defaultLocationMode: 'hybrid',
+      archiveSortOrder: 'desc',
+      providerMode: 'hybrid',
+      defaultReplayProvider: 'media',
+      allowedVideoProviders: ['platform', 'youtube', 'vimeo', 'mux', 'cloudinary', 'cloudflare_r2'],
+      recurringMaxBatchSize: 52,
+      publishRequiresSpeaker: false,
+      publishRequiresMedia: false,
+    }),
+    updatedAt: now(),
+  },
+  churchServicesProfiles: [
+    { id: 'church-services-profile-main', tenantId: demoTenantId, title: 'Weekly Service Archive', description: 'Primary archive for Sunday, midweek, prayer, communion, and special services.', status: 'active', settingsJson: '{}', visibility: 'private', createdBy: 'Local Preview', createdAt: now(), updatedAt: now() },
+  ],
+  churchServices: [
+    {
+      id: 'service-sunday-faith',
+      tenantId: demoTenantId,
+      title: 'Sunday Morning Service - Walking in Faith',
+      serviceType: 'sunday',
+      serviceDate: '2026-05-31T09:00:00.000Z',
+      description: 'Main weekend gathering with worship, teaching, prayer, and ministry time.',
+      notes: 'Topic: Walking in Faith. Key points: trust God, act on the Word, stand firm.',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=600&q=80',
+      speakerId: 'media-speaker-daniel',
+      sermonMediaId: 'media-asset-faith-1',
+      serviceAudioId: 'media-asset-prayer-audio',
+      livestreamId: null,
+      attendanceCount: 412,
+      givingTotal: 18420.5,
+      salvationCount: 7,
+      status: 'published',
+      visibility: 'public',
+      locationMode: 'hybrid',
+      settingsJson: '{}',
+      createdById: 'Local Preview',
+      archiveOrder: 1,
+      createdAt: now(),
+      updatedAt: now(),
+      scriptures: [
+        { id: 'scripture-faith-1', serviceId: 'service-sunday-faith', reference: 'Hebrews 11:1', order: 1 },
+        { id: 'scripture-faith-2', serviceId: 'service-sunday-faith', reference: 'Romans 8:28', order: 2 },
+      ],
+      attachments: [
+        { id: 'attachment-faith-1', serviceId: 'service-sunday-faith', title: 'Sunday Bulletin and Sermon Notes', fileUrl: '/documents/sunday-faith-notes.pdf', fileType: 'pdf', createdAt: now() },
+      ],
+    },
+    {
+      id: 'service-midweek-prayer',
+      tenantId: demoTenantId,
+      title: 'Wednesday Word and Prayer',
+      serviceType: 'midweek',
+      serviceDate: '2026-06-03T19:00:00.000Z',
+      description: 'Midweek Bible study and corporate prayer.',
+      notes: 'Prayer focus: family restoration, ministry teams, and outreach.',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1438029071396-1e831a7fa6d8?auto=format&fit=crop&w=600&q=80',
+      speakerId: 'media-speaker-daniel',
+      sermonMediaId: null,
+      serviceAudioId: 'media-asset-prayer-audio',
+      livestreamId: null,
+      attendanceCount: 168,
+      givingTotal: 3425,
+      salvationCount: 1,
+      status: 'published',
+      visibility: 'members_only',
+      locationMode: 'hybrid',
+      settingsJson: '{}',
+      createdById: 'Local Preview',
+      archiveOrder: 2,
+      createdAt: now(),
+      updatedAt: now(),
+      scriptures: [{ id: 'scripture-prayer-1', serviceId: 'service-midweek-prayer', reference: 'Acts 4:31', order: 1 }],
+      attachments: [],
+    },
+    {
+      id: 'service-communion-preview',
+      tenantId: demoTenantId,
+      title: 'First Sunday Communion Service',
+      serviceType: 'communion',
+      serviceDate: new Date(Date.now() + 5 * 86400000).toISOString(),
+      description: 'Upcoming monthly communion service placeholder.',
+      notes: '',
+      thumbnailUrl: '',
+      speakerId: null,
+      sermonMediaId: null,
+      serviceAudioId: null,
+      livestreamId: null,
+      attendanceCount: 0,
+      givingTotal: 0,
+      salvationCount: 0,
+      status: 'draft',
+      visibility: 'public',
+      locationMode: 'physical',
+      settingsJson: '{}',
+      createdById: 'Local Preview',
+      archiveOrder: 3,
+      createdAt: now(),
+      updatedAt: now(),
+      scriptures: [],
+      attachments: [],
+    },
+  ],
+  churchServicesActivities: [
+    { id: 'church-services-activity-1', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'service_created', metadataJson: JSON.stringify({ serviceId: 'service-sunday-faith', title: 'Sunday Morning Service - Walking in Faith' }), createdAt: now() },
+    { id: 'church-services-activity-2', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'settings_updated', metadataJson: JSON.stringify({ providerMode: 'hybrid' }), createdAt: now() },
+  ],
   activityLogs: [
     { id: 'activity-1', actionType: 'page_create', metadataJson: 'Seeded Christ Embassy Next Church homepage', createdAt: now(), actor: 'Local Preview' },
     { id: 'activity-2', actionType: 'page_update', metadataJson: 'Configured navigation for service, livestream, events, sermons, prayer, and giving', createdAt: now(), actor: 'Local Preview' },
     { id: 'activity-3', actionType: 'page_publish', metadataJson: 'Published demo pages for CMS testing', createdAt: now(), actor: 'Local Preview' },
+  ],
+  domainTenantManagementModules: [
+    { id: 'dt-module-default', tenantId: demoTenantId, title: 'Demo Church Workspace', description: 'Primary production workspace configured for DNS mapping.', status: 'active', settingsJson: '{}', visibility: 'public', createdBy: 'Local Preview', createdAt: now(), updatedAt: now() },
+  ],
+  domainTenantManagementSettings: {
+    id: 'domain-tenant-settings-local',
+    tenantId: demoTenantId,
+    moduleKey: 'domain-tenant-management',
+    enabled: true,
+    billingPlan: 'free',
+    providerMode: 'bring_your_own',
+    configJson: JSON.stringify({
+      allowCustomDomains: true,
+      requireDnsVerification: true,
+      enableAutoSsl: true,
+      defaultSubdomainSuffix: 'churchos.com',
+    }),
+    updatedAt: now(),
+  },
+  domainTenantManagementActivities: [
+    { id: 'dt-activity-1', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'create_profile', metadataJson: JSON.stringify({ title: 'Default Workspace Profile' }), createdAt: now() },
+  ],
+  libraryCategories: [
+    { id: 'lib-cat-ebooks', tenantId: demoTenantId, name: 'E-Books & Guides', slug: 'ebooks-guides', parentId: null, createdAt: now(), updatedAt: now() },
+    { id: 'lib-cat-templates', tenantId: demoTenantId, name: 'Ministry Templates', slug: 'templates', parentId: null, createdAt: now(), updatedAt: now() },
+  ],
+  libraryResources: [
+    {
+      id: 'lib-res-growth',
+      tenantId: demoTenantId,
+      title: 'Spiritual Growth Playbook',
+      slug: 'spiritual-growth-playbook',
+      description: 'A comprehensive guide to developing spiritual disciplines.',
+      author: 'Pastor Daniel Okafor',
+      fileUrl: '/library/playbook.pdf',
+      fileSize: 1048576,
+      fileType: 'pdf',
+      coverImageUrl: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=400',
+      pricingType: 'free',
+      price: 0,
+      visibility: 'public',
+      status: 'published',
+      downloadCount: 42,
+      categoryId: 'lib-cat-ebooks',
+      createdAt: now(),
+      updatedAt: now(),
+    },
+    {
+      id: 'lib-res-worship-guide',
+      tenantId: demoTenantId,
+      title: 'Worship Team Manual 2026',
+      slug: 'worship-manual-2026',
+      description: 'Guidelines and templates for the worship ministry team.',
+      author: 'Worship Director',
+      fileUrl: '/library/worship-manual.pdf',
+      fileSize: 2097152,
+      fileType: 'pdf',
+      coverImageUrl: 'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=400',
+      pricingType: 'paid',
+      price: 9.99,
+      visibility: 'leaders_only',
+      status: 'published',
+      downloadCount: 15,
+      categoryId: 'lib-cat-templates',
+      createdAt: now(),
+      updatedAt: now(),
+    },
+  ],
+  libraryPurchases: [
+    { id: 'purchase-1', tenantId: demoTenantId, resourceId: 'lib-res-worship-guide', userId: 'user-1', amountPaid: 9.99, createdAt: now() },
+  ],
+  digitalLibrarySettings: {
+    id: 'digital-library-settings-local',
+    tenantId: demoTenantId,
+    moduleKey: 'digital-library-resource-center',
+    enabled: true,
+    billingPlan: 'free',
+    providerMode: 'bring_your_own',
+    configJson: JSON.stringify({
+      allowPublicDownloads: true,
+      allowPaidResources: true,
+      maxUploadSizeMb: 50,
+      acceptedFileTypes: ['pdf', 'epub', 'docx', 'xlsx', 'zip'],
+    }),
+    updatedAt: now(),
+  },
+  digitalLibraryModules: [
+    { id: 'dl-module-default', tenantId: demoTenantId, title: 'Main Church Digital Library', description: 'Public resource center and downloads.', status: 'active', settingsJson: '{}', visibility: 'public', createdBy: 'Local Preview', createdAt: now(), updatedAt: now() },
+  ],
+  digitalLibraryActivities: [
+    { id: 'dl-activity-1', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'create_profile', metadataJson: JSON.stringify({ title: 'Main Church Digital Library' }), createdAt: now() },
   ],
 };
 
@@ -671,6 +1003,252 @@ function addThemeActivity(actionType, metadata = {}) {
     metadataJson: JSON.stringify(metadata),
     createdAt: now(),
   });
+}
+
+function addMediaActivity(actionType, metadata = {}) {
+  state.mediaActivities.unshift({
+    id: createId('media-activity'),
+    tenantId: demoTenantId,
+    userId: 'Local Preview',
+    actionType,
+    metadataJson: JSON.stringify(metadata),
+    createdAt: now(),
+  });
+}
+
+function addChurchServicesActivity(actionType, metadata = {}) {
+  state.churchServicesActivities.unshift({
+    id: createId('church-services-activity'),
+    tenantId: demoTenantId,
+    userId: 'Local Preview',
+    actionType,
+    metadataJson: JSON.stringify(metadata),
+    createdAt: now(),
+  });
+}
+
+function normalizePreviewServiceType(value) {
+  const slug = String(value || 'sunday').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const map = {
+    'sunday-main': 'sunday',
+    'sunday-service': 'sunday',
+    'mid-week-service': 'midweek',
+    'midweek-service': 'midweek',
+    'prayer-service': 'prayer',
+    'communion-service': 'communion',
+    'healing-service': 'healing',
+    'thanksgiving-service': 'thanksgiving',
+    'youth-service': 'youth',
+    'special-service': 'special',
+  };
+  return map[slug] || slug || 'sunday';
+}
+
+function decorateChurchService(service) {
+  return {
+    ...service,
+    speaker: state.mediaSpeakers.find((item) => item.id === service.speakerId) || null,
+    sermonMedia: state.mediaAssets.find((item) => item.id === service.sermonMediaId) || null,
+    serviceAudio: state.mediaAssets.find((item) => item.id === service.serviceAudioId) || null,
+    livestream: null,
+    scriptures: service.scriptures || [],
+    attachments: service.attachments || [],
+  };
+}
+
+function churchServicesOverviewPayload() {
+  const services = state.churchServices.map(decorateChurchService);
+  const byStatus = services.reduce((acc, service) => {
+    acc[service.status] = (acc[service.status] || 0) + 1;
+    return acc;
+  }, {});
+  const byType = services.reduce((acc, service) => {
+    acc[service.serviceType] = (acc[service.serviceType] || 0) + 1;
+    return acc;
+  }, {});
+  const totals = services.reduce((acc, service) => {
+    acc.attendance += Number(service.attendanceCount || 0);
+    acc.giving += Number(service.givingTotal || 0);
+    acc.salvation += Number(service.salvationCount || 0);
+    return acc;
+  }, { attendance: 0, giving: 0, salvation: 0 });
+  const upcoming = services
+    .filter((service) => service.status !== 'archived' && new Date(service.serviceDate) >= new Date())
+    .sort((a, b) => new Date(a.serviceDate) - new Date(b.serviceDate))
+    .slice(0, 5);
+  return {
+    moduleKey: 'church-services',
+    settings: state.churchServicesSettings,
+    counts: {
+      services: services.length,
+      profiles: state.churchServicesProfiles.length,
+      published: byStatus.published || 0,
+      draft: byStatus.draft || 0,
+      archived: byStatus.archived || 0,
+      upcoming: upcoming.length,
+      activity: state.churchServicesActivities.length,
+    },
+    totals: {
+      attendance: totals.attendance,
+      giving: Number(totals.giving.toFixed(2)),
+      salvation: totals.salvation,
+    },
+    breakdowns: { byStatus, byType },
+    recentServices: services.slice(0, 8),
+    upcomingServices: upcoming,
+    recentActivity: state.churchServicesActivities.slice(0, 10),
+  };
+}
+
+function churchServicesReportsPayload() {
+  const overview = churchServicesOverviewPayload();
+  const services = state.churchServices.map(decorateChurchService);
+  const eventCounts = state.churchServicesActivities.reduce((acc, activity) => {
+    acc[activity.actionType] = (acc[activity.actionType] || 0) + 1;
+    return acc;
+  }, {});
+  const volumeByMonth = {};
+  const attendanceByType = {};
+  const givingByType = {};
+  const salvationByType = {};
+  services.forEach((service) => {
+    const month = new Date(service.serviceDate).toISOString().slice(0, 7);
+    volumeByMonth[month] = (volumeByMonth[month] || 0) + 1;
+    attendanceByType[service.serviceType] = (attendanceByType[service.serviceType] || 0) + Number(service.attendanceCount || 0);
+    givingByType[service.serviceType] = (givingByType[service.serviceType] || 0) + Number(service.givingTotal || 0);
+    salvationByType[service.serviceType] = (salvationByType[service.serviceType] || 0) + Number(service.salvationCount || 0);
+  });
+  return {
+    summary: {
+      services: overview.counts.services,
+      published: overview.counts.published,
+      attendance: overview.totals.attendance,
+      giving: overview.totals.giving,
+      salvation: overview.totals.salvation,
+      replays: eventCounts.replay_requested || 0,
+      activityCount: state.churchServicesActivities.length,
+    },
+    charts: {
+      serviceVolumeByMonth: Object.entries(volumeByMonth).map(([month, count]) => ({ month, count })),
+      attendanceByType: Object.entries(attendanceByType).map(([serviceType, count]) => ({ serviceType, count })),
+      givingByType: Object.entries(givingByType).map(([serviceType, total]) => ({ serviceType, total })),
+      salvationByType: Object.entries(salvationByType).map(([serviceType, count]) => ({ serviceType, count })),
+    },
+    byStatus: overview.breakdowns.byStatus,
+    byType: overview.breakdowns.byType,
+    eventCounts,
+    recentActivity: state.churchServicesActivities.slice(0, 25),
+    recentEvents: state.churchServicesActivities.slice(0, 25),
+  };
+}
+
+function normalizePreviewProvider(body) {
+  let providerType = body.providerType || 'platform_managed';
+  let providerKey = body.providerKey || null;
+  if (providerType === 'youtube' || providerType === 'vimeo') {
+    providerKey = providerType;
+    providerType = 'external_link';
+  }
+  if (providerType === 's3') {
+    providerKey = 'aws_s3';
+    providerType = 'bring_your_own';
+  }
+  if (['cloudinary', 'aws_s3', 'cloudflare_r2', 'mux', 'bunny_storage', 'wasabi', 'backblaze_b2'].includes(providerType)) {
+    providerKey = providerType;
+    providerType = 'bring_your_own';
+  }
+  if (!providerKey && providerType === 'platform_managed') providerKey = 'platform';
+  if (!providerKey && body.sourceUrl && body.sourceUrl.includes('youtube')) providerKey = 'youtube';
+  if (!providerKey && body.sourceUrl && body.sourceUrl.includes('vimeo')) providerKey = 'vimeo';
+  if (!providerKey && providerType === 'external_link') providerKey = 'external';
+  return { providerType, providerKey };
+}
+
+function decorateMediaAsset(asset) {
+  return {
+    ...asset,
+    category: state.mediaCategories.find((item) => item.id === asset.categoryId) || null,
+    series: state.mediaSeries.find((item) => item.id === asset.seriesId) || null,
+    speaker: state.mediaSpeakers.find((item) => item.id === asset.speakerId) || null,
+    assetTags: asset.assetTags || [],
+  };
+}
+
+function mediaOverviewPayload() {
+  const assets = state.mediaAssets.map(decorateMediaAsset);
+  const byStatus = assets.reduce((acc, asset) => {
+    acc[asset.status] = (acc[asset.status] || 0) + 1;
+    return acc;
+  }, {});
+  const byType = assets.reduce((acc, asset) => {
+    acc[asset.type] = (acc[asset.type] || 0) + 1;
+    return acc;
+  }, {});
+  const storageBytes = assets.reduce((sum, asset) => sum + Number(asset.fileSizeBytes || 0), 0);
+  return {
+    moduleKey: 'media',
+    settings: state.mediaSettings,
+    counts: {
+      moduleRecords: state.mediaRecords.length,
+      assets: assets.length,
+      published: byStatus.published || 0,
+      draft: byStatus.draft || 0,
+      archived: byStatus.archived || 0,
+      categories: state.mediaCategories.length,
+      tags: state.mediaTags.length,
+      series: state.mediaSeries.length,
+      playlists: state.mediaPlaylists.length,
+      speakers: state.mediaSpeakers.length,
+    },
+    usage: {
+      storageBytes,
+      storageGb: Number((storageBytes / 1024 / 1024 / 1024).toFixed(2)),
+      providerModes: assets.reduce((acc, asset) => {
+        const key = asset.providerKey || asset.providerType;
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {}),
+    },
+    breakdowns: { byStatus, byType },
+    recentAssets: assets.slice(0, 8),
+    recentActivity: state.mediaActivities.slice(0, 10),
+  };
+}
+
+function mediaReportsPayload() {
+  const overview = mediaOverviewPayload();
+  const eventCounts = state.mediaActivities.reduce((acc, activity) => {
+    acc[activity.actionType] = (acc[activity.actionType] || 0) + 1;
+    return acc;
+  }, {});
+  return {
+    summary: {
+      assets: overview.counts.assets,
+      published: overview.counts.published,
+      storageGb: overview.usage.storageGb,
+      plays: eventCounts.playback_requested || 0,
+      downloads: eventCounts.download_requested || 0,
+      activityCount: state.mediaActivities.length,
+    },
+    eventCounts,
+    providerModes: overview.usage.providerModes,
+    byStatus: overview.breakdowns.byStatus,
+    byType: overview.breakdowns.byType,
+    recentActivity: state.mediaActivities.slice(0, 25),
+    recentEvents: state.mediaActivities.slice(0, 25),
+  };
+}
+
+function mediaEmbedForAsset(asset) {
+  if (asset.providerKey === 'youtube' && asset.sourceUrl) {
+    const match = asset.sourceUrl.match(/(?:v=|youtu\.be\/)([^"&?/\s]{11})/);
+    if (match) return `<iframe width="560" height="315" src="https://www.youtube.com/embed/${match[1]}" title="${asset.title}" frameborder="0" allowfullscreen></iframe>`;
+  }
+  if (asset.providerKey === 'vimeo' && asset.sourceUrl) {
+    const match = asset.sourceUrl.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if (match) return `<iframe width="560" height="315" src="https://player.vimeo.com/video/${match[1]}" title="${asset.title}" frameborder="0" allowfullscreen></iframe>`;
+  }
+  return `<iframe width="560" height="315" src="/embed/media/${asset.id}" title="${asset.title}" frameborder="0" allowfullscreen></iframe>`;
 }
 
 function getBillingPlan(planId = state.billingSubscription.planId) {
@@ -1125,6 +1703,1155 @@ async function handleThemeEngineApi(req, res, parsedUrl) {
   return sendJson(res, 404, { error: 'Theme Engine preview endpoint not found' });
 }
 
+async function handleMediaApi(req, res, parsedUrl) {
+  const method = req.method || 'GET';
+  const pathname = parsedUrl.pathname;
+  const body = method === 'GET' ? {} : await readJsonBody(req);
+
+  if (pathname === '/api/media/overview' && method === 'GET') {
+    return sendJson(res, 200, { data: mediaOverviewPayload() });
+  }
+
+  if (pathname === '/api/media/settings' && method === 'GET') {
+    return sendJson(res, 200, { data: state.mediaSettings });
+  }
+
+  if (pathname === '/api/media/settings' && method === 'PATCH') {
+    const currentConfig = JSON.parse(state.mediaSettings.configJson || '{}');
+    state.mediaSettings = {
+      ...state.mediaSettings,
+      enabled: body.enabled !== undefined ? Boolean(body.enabled) : state.mediaSettings.enabled,
+      billingPlan: body.billingPlan || state.mediaSettings.billingPlan,
+      providerMode: body.providerMode || state.mediaSettings.providerMode,
+      configJson: JSON.stringify({ ...currentConfig, ...(body.configJson || {}) }),
+      updatedAt: now(),
+    };
+    addMediaActivity('settings_updated', { fields: Object.keys(body), providerMode: state.mediaSettings.providerMode });
+    return sendJson(res, 200, { data: state.mediaSettings });
+  }
+
+  if (pathname === '/api/media/reports' && method === 'GET') {
+    return sendJson(res, 200, { data: mediaReportsPayload() });
+  }
+
+  if (pathname === '/api/media/activity' && method === 'GET') {
+    return sendJson(res, 200, { data: state.mediaActivities });
+  }
+
+  if (pathname === '/api/media/templates' && method === 'GET') {
+    return sendJson(res, 200, {
+      data: {
+        categories: state.mediaCategories,
+        tags: state.mediaTags,
+        series: state.mediaSeries,
+        playlists: state.mediaPlaylists,
+        speakers: state.mediaSpeakers,
+      },
+    });
+  }
+
+  if (pathname === '/api/media/uploads/intent' && method === 'POST') {
+    const config = JSON.parse(state.mediaSettings.configJson || '{}');
+    const maxBytes = Number(config.maxUploadSizeMb || 500) * 1024 * 1024;
+    if (Number(body.fileSizeBytes || 0) > maxBytes) {
+      return sendJson(res, 400, { error: `File exceeds the ${config.maxUploadSizeMb || 500} MB upload limit` });
+    }
+    const providerKey = body.providerKey || config.defaultStorageProvider || 'platform';
+    const intent = {
+      id: createId('upload'),
+      tenantId: demoTenantId,
+      moduleKey: 'media',
+      fileName: body.fileName || 'media-upload.bin',
+      fileSizeBytes: Number(body.fileSizeBytes || 0),
+      mimeType: body.mimeType || 'application/octet-stream',
+      type: body.type || 'video',
+      providerMode: state.mediaSettings.providerMode,
+      providerKey,
+      uploadUrl: providerKey === 'platform' ? `/api/media/uploads/${Date.now()}` : null,
+      instructions: providerKey === 'platform' ? 'Upload through ChurchOS preview storage.' : `Use ${providerKey} and save the returned URL.`,
+      expiresAt: new Date(Date.now() + 15 * 60000).toISOString(),
+    };
+    addMediaActivity('upload_intent_created', { providerKey, fileName: intent.fileName });
+    return sendJson(res, 201, { data: intent });
+  }
+
+  if (pathname === '/api/media/categories' && method === 'GET') {
+    return sendJson(res, 200, { data: state.mediaCategories });
+  }
+
+  if (pathname === '/api/media/categories' && method === 'POST') {
+    const name = body.name || 'New Category';
+    const category = { id: createId('media-cat'), tenantId: demoTenantId, name, slug: String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-'), parentId: body.parentId || null, createdAt: now(), updatedAt: now(), children: [] };
+    state.mediaCategories.push(category);
+    addMediaActivity('category_created', { categoryId: category.id, name });
+    return sendJson(res, 201, { data: category });
+  }
+
+  if (pathname === '/api/media/tags' && method === 'GET') {
+    return sendJson(res, 200, { data: state.mediaTags });
+  }
+
+  if (pathname === '/api/media/tags' && method === 'POST') {
+    const name = body.name || 'New Tag';
+    const tag = { id: createId('media-tag'), tenantId: demoTenantId, name, slug: String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-'), createdAt: now() };
+    state.mediaTags.push(tag);
+    addMediaActivity('tag_created', { tagId: tag.id, name });
+    return sendJson(res, 201, { data: tag });
+  }
+
+  if (pathname === '/api/media/speakers' && method === 'GET') {
+    return sendJson(res, 200, { data: state.mediaSpeakers });
+  }
+
+  if (pathname === '/api/media/speakers' && method === 'POST') {
+    const speaker = { id: createId('media-speaker'), tenantId: demoTenantId, name: body.name || 'Guest Speaker', title: body.title || '', bio: body.bio || '', photoUrl: body.photoUrl || '', createdAt: now(), updatedAt: now() };
+    state.mediaSpeakers.push(speaker);
+    addMediaActivity('speaker_created', { speakerId: speaker.id, name: speaker.name });
+    return sendJson(res, 201, { data: speaker });
+  }
+
+  const speakerMatch = pathname.match(/^\/api\/media\/speakers\/([^/]+)$/);
+  if (speakerMatch && (method === 'PATCH' || method === 'PUT')) {
+    const speaker = state.mediaSpeakers.find((item) => item.id === speakerMatch[1]);
+    if (!speaker) return sendJson(res, 404, { error: 'Speaker not found' });
+    Object.assign(speaker, body, { updatedAt: now() });
+    addMediaActivity('speaker_updated', { speakerId: speaker.id });
+    return sendJson(res, 200, { data: speaker });
+  }
+
+  if (pathname === '/api/media/series' && method === 'GET') {
+    return sendJson(res, 200, { data: state.mediaSeries });
+  }
+
+  if (pathname === '/api/media/series' && method === 'POST') {
+    const series = { id: createId('media-series'), tenantId: demoTenantId, title: body.title || 'New Series', description: body.description || '', coverImageUrl: body.coverImageUrl || '', createdAt: now(), updatedAt: now() };
+    state.mediaSeries.unshift(series);
+    addMediaActivity('series_created', { seriesId: series.id, title: series.title });
+    return sendJson(res, 201, { data: series });
+  }
+
+  if (pathname === '/api/media/assets' && method === 'GET') {
+    let assets = state.mediaAssets.map(decorateMediaAsset);
+    const search = parsedUrl.searchParams.get('search');
+    const type = parsedUrl.searchParams.get('type');
+    const status = parsedUrl.searchParams.get('status');
+    const categoryId = parsedUrl.searchParams.get('categoryId');
+    const seriesId = parsedUrl.searchParams.get('seriesId');
+    if (search) assets = assets.filter((asset) => asset.title.toLowerCase().includes(search.toLowerCase()) || String(asset.description || '').toLowerCase().includes(search.toLowerCase()));
+    if (type) assets = assets.filter((asset) => asset.type === type);
+    if (status) assets = assets.filter((asset) => asset.status === status);
+    if (categoryId) assets = assets.filter((asset) => asset.categoryId === categoryId);
+    if (seriesId) assets = assets.filter((asset) => asset.seriesId === seriesId);
+    return sendJson(res, 200, { data: assets, meta: { total: assets.length, page: 1, pageSize: assets.length } });
+  }
+
+  if (pathname === '/api/media/assets' && method === 'POST') {
+    const provider = normalizePreviewProvider(body);
+    const config = JSON.parse(state.mediaSettings.configJson || '{}');
+    if ((body.status === 'published' || body.status === 'ready') && config.publishRequiresThumbnail && !body.thumbnailUrl) {
+      return sendJson(res, 400, { error: 'A thumbnail is required before publishing' });
+    }
+    const asset = {
+      id: createId('media-asset'),
+      tenantId: demoTenantId,
+      title: body.title || 'Untitled Media Asset',
+      description: body.description || '',
+      type: body.type || 'video',
+      providerType: provider.providerType,
+      providerKey: provider.providerKey,
+      sourceUrl: body.sourceUrl || '',
+      thumbnailUrl: body.thumbnailUrl || '',
+      durationSeconds: Number(body.durationSeconds || 0),
+      fileSizeBytes: Number(body.fileSizeBytes || 0),
+      mimeType: body.mimeType || '',
+      categoryId: body.categoryId || null,
+      seriesId: body.seriesId || null,
+      seriesOrder: body.seriesOrder || null,
+      speakerId: body.speakerId || null,
+      visibility: body.visibility || config.defaultVisibility || 'public',
+      status: body.status === 'ready' ? 'published' : (body.status || config.defaultStatus || 'draft'),
+      publishedAt: (body.status === 'published' || body.status === 'ready') ? now() : null,
+      createdAt: now(),
+      updatedAt: now(),
+      assetTags: [],
+    };
+    state.mediaAssets.unshift(asset);
+    addMediaActivity('asset_created', { assetId: asset.id, title: asset.title, providerKey: asset.providerKey });
+    return sendJson(res, 201, { data: decorateMediaAsset(asset) });
+  }
+
+  const assetTagsMatch = pathname.match(/^\/api\/media\/assets\/([^/]+)\/tags$/);
+  if (assetTagsMatch && method === 'POST') {
+    const asset = state.mediaAssets.find((item) => item.id === assetTagsMatch[1]);
+    if (!asset) return sendJson(res, 404, { error: 'Asset not found' });
+    const tagIds = Array.isArray(body.tagIds) ? body.tagIds : [];
+    asset.assetTags = tagIds.map((tagId) => ({ tagId, tag: state.mediaTags.find((tag) => tag.id === tagId) || { id: tagId, name: tagId, slug: tagId } }));
+    addMediaActivity('asset_tagged', { assetId: asset.id, tagIds });
+    return sendJson(res, 200, { data: asset.assetTags });
+  }
+
+  const assetEmbedMatch = pathname.match(/^\/api\/media\/assets\/([^/]+)\/embed$/);
+  if (assetEmbedMatch && method === 'GET') {
+    const asset = state.mediaAssets.find((item) => item.id === assetEmbedMatch[1]);
+    if (!asset) return sendJson(res, 404, { error: 'Asset not found' });
+    return sendJson(res, 200, { data: { embedHtml: mediaEmbedForAsset(asset) } });
+  }
+
+  const assetPlaybackMatch = pathname.match(/^\/api\/media\/assets\/([^/]+)\/playback$/);
+  if (assetPlaybackMatch && method === 'POST') {
+    const asset = state.mediaAssets.find((item) => item.id === assetPlaybackMatch[1]);
+    if (!asset) return sendJson(res, 404, { error: 'Asset not found' });
+    addMediaActivity('playback_requested', { assetId: asset.id, title: asset.title });
+    return sendJson(res, 200, { data: { assetId: asset.id, title: asset.title, sourceUrl: asset.sourceUrl, embedHtml: mediaEmbedForAsset(asset), quality: JSON.parse(state.mediaSettings.configJson || '{}').defaultStreamingQuality || '720p' } });
+  }
+
+  const assetMatch = pathname.match(/^\/api\/media\/assets\/([^/]+)$/);
+  if (assetMatch) {
+    const asset = state.mediaAssets.find((item) => item.id === assetMatch[1]);
+    if (!asset) return sendJson(res, 404, { error: 'Asset not found' });
+    if (method === 'GET') return sendJson(res, 200, { data: decorateMediaAsset(asset) });
+    if (method === 'PATCH' || method === 'PUT') {
+      Object.assign(asset, body, normalizePreviewProvider({ ...asset, ...body }), { updatedAt: now() });
+      if (body.status === 'ready') asset.status = 'published';
+      addMediaActivity('asset_updated', { assetId: asset.id, fields: Object.keys(body) });
+      return sendJson(res, 200, { data: decorateMediaAsset(asset) });
+    }
+    if (method === 'DELETE') {
+      asset.status = 'archived';
+      asset.updatedAt = now();
+      addMediaActivity('asset_archived', { assetId: asset.id, title: asset.title });
+      return sendJson(res, 200, { data: decorateMediaAsset(asset), message: 'Asset archived successfully' });
+    }
+  }
+
+  if (pathname === '/api/media/playlists' && method === 'GET') {
+    const playlists = state.mediaPlaylists.map((playlist) => ({ ...playlist, _count: { items: state.mediaPlaylistItems.filter((item) => item.playlistId === playlist.id).length } }));
+    return sendJson(res, 200, { data: playlists });
+  }
+
+  if (pathname === '/api/media/playlists' && method === 'POST') {
+    const playlist = { id: createId('media-playlist'), tenantId: demoTenantId, name: body.name || 'New Playlist', description: body.description || '', coverImageUrl: body.coverImageUrl || '', isPublic: body.isPublic !== false, createdAt: now(), updatedAt: now(), _count: { items: 0 } };
+    state.mediaPlaylists.unshift(playlist);
+    addMediaActivity('playlist_created', { playlistId: playlist.id, name: playlist.name });
+    return sendJson(res, 201, { data: playlist });
+  }
+
+  const playlistItemsMatch = pathname.match(/^\/api\/media\/playlists\/([^/]+)\/items$/);
+  if (playlistItemsMatch && method === 'GET') {
+    const items = state.mediaPlaylistItems
+      .filter((item) => item.playlistId === playlistItemsMatch[1])
+      .sort((a, b) => a.order - b.order)
+      .map((item) => ({ ...item, asset: decorateMediaAsset(state.mediaAssets.find((asset) => asset.id === item.assetId) || {}) }));
+    return sendJson(res, 200, { data: items });
+  }
+
+  if (playlistItemsMatch && method === 'POST') {
+    const asset = state.mediaAssets.find((item) => item.id === body.assetId);
+    if (!asset) return sendJson(res, 404, { error: 'Asset not found' });
+    const item = { id: createId('media-playlist-item'), playlistId: playlistItemsMatch[1], assetId: asset.id, order: Number(body.order || 0) };
+    state.mediaPlaylistItems = state.mediaPlaylistItems.filter((existing) => !(existing.playlistId === item.playlistId && existing.assetId === item.assetId));
+    state.mediaPlaylistItems.push(item);
+    addMediaActivity('playlist_item_added', { playlistId: item.playlistId, assetId: item.assetId, order: item.order });
+    return sendJson(res, 201, { data: { ...item, asset: decorateMediaAsset(asset) } });
+  }
+
+  const playlistItemDeleteMatch = pathname.match(/^\/api\/media\/playlists\/([^/]+)\/items\/([^/]+)$/);
+  if (playlistItemDeleteMatch && method === 'DELETE') {
+    const before = state.mediaPlaylistItems.length;
+    state.mediaPlaylistItems = state.mediaPlaylistItems.filter((item) => !(item.playlistId === playlistItemDeleteMatch[1] && item.assetId === playlistItemDeleteMatch[2]));
+    const count = before - state.mediaPlaylistItems.length;
+    addMediaActivity('playlist_item_removed', { playlistId: playlistItemDeleteMatch[1], assetId: playlistItemDeleteMatch[2], count });
+    return sendJson(res, 200, { data: { count }, message: 'Item removed from playlist' });
+  }
+
+  if (pathname === '/api/media' && method === 'GET') {
+    return sendJson(res, 200, { data: state.mediaRecords });
+  }
+
+  if (pathname === '/api/media' && method === 'POST') {
+    const record = { id: createId('media-record'), tenantId: demoTenantId, title: body.title || 'Media Workspace', description: body.description || '', status: 'active', settingsJson: JSON.stringify(body.settingsJson || {}), visibility: body.visibility || 'private', createdBy: 'Local Preview', createdAt: now(), updatedAt: now() };
+    state.mediaRecords.unshift(record);
+    addMediaActivity('module_record_created', { recordId: record.id, title: record.title });
+    return sendJson(res, 201, { data: record });
+  }
+
+  const recordMatch = pathname.match(/^\/api\/media\/([^/]+)$/);
+  if (recordMatch) {
+    const record = state.mediaRecords.find((item) => item.id === recordMatch[1]);
+    if (!record) return sendJson(res, 404, { error: 'Media module record not found' });
+    if (method === 'GET') return sendJson(res, 200, { data: record });
+    if (method === 'PATCH') {
+      Object.assign(record, body, { updatedAt: now() });
+      addMediaActivity('module_record_updated', { recordId: record.id });
+      return sendJson(res, 200, { data: record });
+    }
+    if (method === 'DELETE') {
+      record.status = 'archived';
+      record.updatedAt = now();
+      addMediaActivity('module_record_archived', { recordId: record.id });
+      return sendJson(res, 200, { data: record, success: true });
+    }
+  }
+
+  return sendJson(res, 404, { error: 'Media preview endpoint not found' });
+}
+
+async function handleChurchServicesApi(req, res, parsedUrl) {
+  const method = req.method || 'GET';
+  const pathname = parsedUrl.pathname;
+  const query = parsedUrl.query || {};
+  const body = method === 'GET' ? {} : await readJsonBody(req);
+
+  if (pathname === '/api/church-services/overview' && method === 'GET') {
+    return sendJson(res, 200, { data: churchServicesOverviewPayload() });
+  }
+
+  if (pathname === '/api/church-services/settings' && method === 'GET') {
+    return sendJson(res, 200, { data: state.churchServicesSettings });
+  }
+
+  if (pathname === '/api/church-services/settings' && method === 'PATCH') {
+    const currentConfig = JSON.parse(state.churchServicesSettings.configJson || '{}');
+    state.churchServicesSettings = {
+      ...state.churchServicesSettings,
+      enabled: body.enabled !== undefined ? Boolean(body.enabled) : state.churchServicesSettings.enabled,
+      billingPlan: body.billingPlan || state.churchServicesSettings.billingPlan,
+      providerMode: body.providerMode || state.churchServicesSettings.providerMode,
+      configJson: JSON.stringify({ ...currentConfig, ...(body.configJson || {}), ...(body.providerMode ? { providerMode: body.providerMode } : {}) }),
+      updatedAt: now(),
+    };
+    addChurchServicesActivity('settings_updated', { fields: Object.keys(body), providerMode: state.churchServicesSettings.providerMode });
+    return sendJson(res, 200, { data: state.churchServicesSettings });
+  }
+
+  if (pathname === '/api/church-services/reports' && method === 'GET') {
+    return sendJson(res, 200, { data: churchServicesReportsPayload() });
+  }
+
+  if (pathname === '/api/church-services/activity' && method === 'GET') {
+    const limit = query.limit ? Number(query.limit) : state.churchServicesActivities.length;
+    return sendJson(res, 200, { data: state.churchServicesActivities.slice(0, limit) });
+  }
+
+  if (pathname === '/api/church-services/templates' && method === 'GET') {
+    return sendJson(res, 200, {
+      data: {
+        moduleKey: 'church-services',
+        settings: state.churchServicesSettings,
+        serviceTypes: [
+          { key: 'sunday', label: 'Sunday Service' },
+          { key: 'midweek', label: 'Midweek Service' },
+          { key: 'prayer', label: 'Prayer Service' },
+          { key: 'communion', label: 'Communion Service' },
+          { key: 'healing', label: 'Healing Service' },
+          { key: 'thanksgiving', label: 'Thanksgiving Service' },
+          { key: 'youth', label: 'Youth Service' },
+          { key: 'special', label: 'Special Service' },
+        ],
+        defaultSchedules: [
+          { serviceType: 'sunday', titleTemplate: 'Sunday Morning Service', dayOfWeek: 0, frequency: 'weekly' },
+          { serviceType: 'midweek', titleTemplate: 'Wednesday Word and Prayer', dayOfWeek: 3, frequency: 'weekly' },
+          { serviceType: 'communion', titleTemplate: 'First Sunday Communion Service', dayOfWeek: 0, frequency: 'monthly' },
+        ],
+        integrations: {
+          speakers: state.mediaSpeakers,
+          mediaAssets: state.mediaAssets.filter((asset) => ['video', 'worship'].includes(asset.type)),
+          audioAssets: state.mediaAssets.filter((asset) => asset.type === 'audio'),
+          livestreams: [],
+          supportedProviders: ['platform', 'youtube', 'vimeo', 'mux', 'cloudinary', 'cloudflare_r2'],
+        },
+      },
+    });
+  }
+
+  if (pathname === '/api/church-services/profiles' && method === 'GET') {
+    return sendJson(res, 200, { data: state.churchServicesProfiles });
+  }
+
+  if (pathname === '/api/church-services/profiles' && method === 'POST') {
+    const profile = {
+      id: createId('church-services-profile'),
+      tenantId: demoTenantId,
+      title: body.title || 'Church Services Workspace',
+      description: body.description || '',
+      status: 'active',
+      settingsJson: JSON.stringify(body.settingsJson || {}),
+      visibility: body.visibility || 'private',
+      createdBy: 'Local Preview',
+      createdAt: now(),
+      updatedAt: now(),
+    };
+    state.churchServicesProfiles.unshift(profile);
+    addChurchServicesActivity('profile_created', { profileId: profile.id, title: profile.title });
+    return sendJson(res, 201, { data: profile });
+  }
+
+  const profileMatch = pathname.match(/^\/api\/church-services\/profiles\/([^/]+)$/);
+  if (profileMatch) {
+    const profile = state.churchServicesProfiles.find((item) => item.id === profileMatch[1]);
+    if (!profile) return sendJson(res, 404, { error: 'Church Services profile not found' });
+    if (method === 'GET') return sendJson(res, 200, { data: profile });
+    if (method === 'PATCH') {
+      Object.assign(profile, body, { updatedAt: now() });
+      addChurchServicesActivity('profile_updated', { profileId: profile.id });
+      return sendJson(res, 200, { data: profile });
+    }
+    if (method === 'DELETE') {
+      profile.status = 'archived';
+      profile.updatedAt = now();
+      addChurchServicesActivity('profile_archived', { profileId: profile.id });
+      return sendJson(res, 200, { data: profile, success: true });
+    }
+  }
+
+  if (pathname === '/api/church-services/recurring' && method === 'POST') {
+    const serviceType = normalizePreviewServiceType(body.serviceType);
+    const titleTemplate = body.titleTemplate || 'Sunday Morning Service';
+    const dayOfWeek = Number(body.dayOfWeek ?? 0);
+    const count = Math.min(Math.max(Number(body.count || 1), 1), 52);
+    const frequency = body.frequency || 'weekly';
+    const start = new Date(body.startDate || Date.now());
+    let daysUntilTarget = dayOfWeek - start.getDay();
+    if (daysUntilTarget < 0) daysUntilTarget += 7;
+    const firstDate = new Date(start);
+    firstDate.setDate(firstDate.getDate() + daysUntilTarget);
+    const created = [];
+    for (let i = 0; i < count; i += 1) {
+      const serviceDate = new Date(firstDate);
+      if (frequency === 'monthly') serviceDate.setMonth(serviceDate.getMonth() + i);
+      else serviceDate.setDate(serviceDate.getDate() + i * 7);
+      const dateStr = serviceDate.toISOString().split('T')[0];
+      const service = {
+        id: createId('service'),
+        tenantId: demoTenantId,
+        title: `${titleTemplate} - ${dateStr}`,
+        serviceType,
+        serviceDate: serviceDate.toISOString(),
+        description: '',
+        notes: '',
+        thumbnailUrl: '',
+        speakerId: body.speakerId || null,
+        sermonMediaId: null,
+        serviceAudioId: null,
+        livestreamId: null,
+        attendanceCount: 0,
+        givingTotal: 0,
+        salvationCount: 0,
+        status: 'draft',
+        visibility: body.visibility || 'public',
+        locationMode: body.locationMode || 'hybrid',
+        settingsJson: '{}',
+        createdById: 'Local Preview',
+        archiveOrder: state.churchServices.length + i + 1,
+        createdAt: now(),
+        updatedAt: now(),
+        scriptures: [],
+        attachments: [],
+      };
+      state.churchServices.unshift(service);
+      created.push(decorateChurchService(service));
+    }
+    addChurchServicesActivity('recurring_services_generated', { serviceType, count, serviceIds: created.map((service) => service.id) });
+    return sendJson(res, 201, { data: created });
+  }
+
+  if (pathname === '/api/church-services' && method === 'GET') {
+    let services = state.churchServices.map(decorateChurchService);
+    if (query.serviceType) {
+      const serviceType = normalizePreviewServiceType(query.serviceType);
+      services = services.filter((service) => service.serviceType === serviceType);
+    }
+    if (query.status) services = services.filter((service) => service.status === query.status);
+    if (query.visibility) services = services.filter((service) => service.visibility === query.visibility);
+    if (query.search) {
+      const search = String(query.search).toLowerCase();
+      services = services.filter((service) =>
+        [service.title, service.description, service.notes].some((value) => String(value || '').toLowerCase().includes(search))
+      );
+    }
+    services.sort((a, b) => {
+      const direction = query.sortOrder === 'asc' ? 1 : -1;
+      return (new Date(a.serviceDate) - new Date(b.serviceDate)) * direction;
+    });
+    return sendJson(res, 200, { data: services, meta: { total: services.length, page: 1, pageSize: services.length } });
+  }
+
+  if (pathname === '/api/church-services' && method === 'POST') {
+    const service = {
+      id: createId('service'),
+      tenantId: demoTenantId,
+      title: body.title || 'New Service',
+      serviceType: normalizePreviewServiceType(body.serviceType),
+      serviceDate: new Date(body.serviceDate || Date.now()).toISOString(),
+      description: body.description || '',
+      notes: body.notes || '',
+      thumbnailUrl: body.thumbnailUrl || '',
+      speakerId: body.speakerId || null,
+      sermonMediaId: body.sermonMediaId || null,
+      serviceAudioId: body.serviceAudioId || null,
+      livestreamId: body.livestreamId || null,
+      attendanceCount: Number(body.attendanceCount || 0),
+      givingTotal: Number(body.givingTotal || 0),
+      salvationCount: Number(body.salvationCount || 0),
+      status: body.status || 'draft',
+      visibility: body.visibility || 'public',
+      locationMode: body.locationMode || 'hybrid',
+      settingsJson: JSON.stringify(body.settingsJson || {}),
+      createdById: 'Local Preview',
+      archiveOrder: body.archiveOrder || state.churchServices.length + 1,
+      createdAt: now(),
+      updatedAt: now(),
+      scriptures: [],
+      attachments: [],
+    };
+    state.churchServices.unshift(service);
+    addChurchServicesActivity('service_created', { serviceId: service.id, title: service.title, serviceType: service.serviceType });
+    return sendJson(res, 201, { data: decorateChurchService(service) });
+  }
+
+  const scriptureMatch = pathname.match(/^\/api\/church-services\/([^/]+)\/scriptures$/);
+  if (scriptureMatch) {
+    const service = state.churchServices.find((item) => item.id === scriptureMatch[1]);
+    if (!service) return sendJson(res, 404, { error: 'Service not found' });
+    if (method === 'GET') return sendJson(res, 200, { data: service.scriptures || [] });
+    if (method === 'POST') {
+      const references = Array.isArray(body.references) ? body.references : [];
+      const created = references.map((item, index) => ({
+        id: createId('scripture'),
+        serviceId: service.id,
+        reference: item.reference,
+        order: item.order !== undefined ? Number(item.order) : (service.scriptures || []).length + index,
+      }));
+      service.scriptures = [...(service.scriptures || []), ...created];
+      addChurchServicesActivity('scriptures_linked', { serviceId: service.id, count: created.length });
+      return sendJson(res, 201, { data: created });
+    }
+  }
+
+  const attachmentMatch = pathname.match(/^\/api\/church-services\/([^/]+)\/attachments$/);
+  if (attachmentMatch) {
+    const service = state.churchServices.find((item) => item.id === attachmentMatch[1]);
+    if (!service) return sendJson(res, 404, { error: 'Service not found' });
+    if (method === 'GET') return sendJson(res, 200, { data: service.attachments || [] });
+    if (method === 'POST') {
+      const attachment = {
+        id: createId('attachment'),
+        serviceId: service.id,
+        title: body.title || 'Service Attachment',
+        fileUrl: body.fileUrl || '/documents/service-notes.pdf',
+        fileType: String(body.fileType || 'pdf').toLowerCase(),
+        createdAt: now(),
+      };
+      service.attachments = [attachment, ...(service.attachments || [])];
+      addChurchServicesActivity('attachment_added', { serviceId: service.id, attachmentId: attachment.id, title: attachment.title });
+      return sendJson(res, 201, { data: attachment });
+    }
+  }
+
+  const publishMatch = pathname.match(/^\/api\/church-services\/([^/]+)\/publish$/);
+  if (publishMatch && method === 'POST') {
+    const service = state.churchServices.find((item) => item.id === publishMatch[1]);
+    if (!service) return sendJson(res, 404, { error: 'Service not found' });
+    service.status = 'published';
+    service.updatedAt = now();
+    addChurchServicesActivity('service_updated', { serviceId: service.id, status: 'published' });
+    return sendJson(res, 200, { data: decorateChurchService(service) });
+  }
+
+  const replayMatch = pathname.match(/^\/api\/church-services\/([^/]+)\/replay$/);
+  if (replayMatch && method === 'POST') {
+    const service = state.churchServices.find((item) => item.id === replayMatch[1]);
+    if (!service) return sendJson(res, 404, { error: 'Service not found' });
+    addChurchServicesActivity('replay_requested', { serviceId: service.id, title: service.title, value: 1 });
+    return sendJson(res, 200, {
+      data: {
+        serviceId: service.id,
+        title: service.title,
+        serviceType: service.serviceType,
+        sermonMedia: state.mediaAssets.find((item) => item.id === service.sermonMediaId) || null,
+        serviceAudio: state.mediaAssets.find((item) => item.id === service.serviceAudioId) || null,
+        livestream: null,
+        replayAvailable: Boolean(service.sermonMediaId || service.livestreamId),
+      },
+    });
+  }
+
+  const serviceMatch = pathname.match(/^\/api\/church-services\/([^/]+)$/);
+  if (serviceMatch) {
+    const service = state.churchServices.find((item) => item.id === serviceMatch[1]);
+    if (!service) return sendJson(res, 404, { error: 'Service not found' });
+    if (method === 'GET') return sendJson(res, 200, { data: decorateChurchService(service) });
+    if (method === 'PUT' || method === 'PATCH') {
+      Object.assign(service, {
+        ...body,
+        serviceType: body.serviceType ? normalizePreviewServiceType(body.serviceType) : service.serviceType,
+        serviceDate: body.serviceDate ? new Date(body.serviceDate).toISOString() : service.serviceDate,
+        updatedAt: now(),
+      });
+      addChurchServicesActivity('service_updated', { serviceId: service.id, fields: Object.keys(body), status: service.status });
+      return sendJson(res, 200, { data: decorateChurchService(service) });
+    }
+    if (method === 'DELETE') {
+      service.status = 'archived';
+      service.updatedAt = now();
+      addChurchServicesActivity('service_archived', { serviceId: service.id, title: service.title });
+      return sendJson(res, 200, { data: decorateChurchService(service), message: 'Service archived successfully' });
+    }
+  }
+
+  return sendJson(res, 404, { error: 'Church Services preview endpoint not found' });
+}
+
+async function handleDomainTenantApi(req, res, parsedUrl) {
+  const method = req.method || 'GET';
+  const pathname = parsedUrl.pathname;
+  const body = method === 'GET' ? {} : await readJsonBody(req);
+
+  // ── /api/tenant/... endpoints ──
+  if (pathname === '/api/tenant/branding' && method === 'GET') {
+    return sendJson(res, 200, {
+      data: {
+        tenant: {
+          id: demoTenantId,
+          name: state.websites[0]?.title || 'Demo Church',
+          subdomain: 'demo',
+          customDomain: state.websites[0]?.domain || null,
+          status: 'active',
+        },
+        branding: {
+          logo: state.themes[0]?.settings?.logo || '',
+          favicon: '',
+          timezone: 'UTC',
+          accent: state.themes[0]?.settings?.colors?.primary || '#4f46e5',
+          language: 'en',
+        },
+      },
+    });
+  }
+
+  if (pathname === '/api/tenant/branding' && method === 'PATCH') {
+    if (body.name && state.websites[0]) {
+      state.websites[0].title = body.name;
+    }
+    if (body.accent && state.themes[0]) {
+      state.themes[0].settings.colors.primary = body.accent;
+    }
+    return sendJson(res, 200, {
+      data: {
+        name: body.name || 'Demo Church',
+        branding: {
+          logo: body.logo || '',
+          favicon: body.favicon || '',
+          timezone: body.timezone || 'UTC',
+          accent: body.accent || '#4f46e5',
+          language: body.language || 'en',
+        },
+      },
+    });
+  }
+
+  if (pathname === '/api/tenant/domain' && method === 'GET') {
+    return sendJson(res, 200, {
+      data: {
+        subdomain: 'demo',
+        customDomain: state.websites[0]?.domain || null,
+        dnsStatus: {
+          verified: !!state.websites[0]?.domain,
+          sslStatus: state.websites[0]?.domain ? 'active' : 'none',
+          aRecordMatch: !!state.websites[0]?.domain,
+          cnameRecordMatch: !!state.websites[0]?.domain,
+        },
+        instructions: {
+          ip: '76.76.21.21',
+          cname: 'cname.churchos.com',
+        },
+      },
+    });
+  }
+
+  if (pathname === '/api/tenant/domain' && method === 'PATCH') {
+    if (state.websites[0]) {
+      state.websites[0].domain = body.customDomain || null;
+    }
+    return sendJson(res, 200, {
+      data: {
+        subdomain: 'demo',
+        customDomain: body.customDomain || null,
+      },
+    });
+  }
+
+  if (pathname === '/api/tenant/domain/verify' && method === 'POST') {
+    return sendJson(res, 200, {
+      data: {
+        verified: true,
+        sslStatus: 'active',
+        aRecordMatch: true,
+        cnameRecordMatch: true,
+        lastChecked: now(),
+      },
+    });
+  }
+
+  if (pathname === '/api/tenant/modules' && method === 'GET') {
+    const list = [
+      { key: 'website-cms', name: 'Churchfront', category: 'Core', dependencies: [], status: 'active', billingRule: 'included' },
+      { key: 'theme-engine', name: 'Theme Engine', category: 'Core', dependencies: [], status: 'active', billingRule: 'included' },
+      { key: 'domain-tenant-management', name: 'Church Details', category: 'Core', dependencies: [], status: 'active', billingRule: 'included' },
+      { key: 'billing-subscription-management', name: 'Billing & Subscription Management', category: 'Admin', dependencies: [], status: 'active', billingRule: 'platform' },
+      { key: 'media', name: 'Media Module', category: 'Content', dependencies: ['website-cms'], status: 'active', billingRule: 'included' },
+      { key: 'church-services', name: 'Church Services', category: 'Content', dependencies: ['media'], status: 'active', billingRule: 'included' },
+      { key: 'giving-donations', name: 'Tithes & Offerings', category: 'Finance', dependencies: [], status: state.billingEntitlements.some(e => e.moduleKey === 'giving') ? 'active' : 'inactive', billingRule: 'free' },
+      { key: 'digital-library-resource-center', name: 'Digital Library & Resource Center', category: 'Content', dependencies: [], status: 'active', billingRule: 'free' },
+    ];
+    return sendJson(res, 200, { data: list });
+  }
+
+  if (pathname.startsWith('/api/tenant/modules/') && method === 'PATCH') {
+    const moduleKey = pathname.split('/').pop();
+    const status = body.status || 'active';
+    return sendJson(res, 200, {
+      data: {
+        moduleKey,
+        status,
+        billingRule: 'free',
+      },
+    });
+  }
+
+  if (pathname === '/api/tenant/checklist' && method === 'GET') {
+    return sendJson(res, 200, {
+      data: {
+        domainSetup: !!state.websites[0]?.domain,
+        brandingSetup: true,
+        moduleRegistry: true,
+        inviteTeam: false,
+      },
+    });
+  }
+
+  // ── /api/domain-tenant-management/... endpoints ──
+  if (pathname === '/api/domain-tenant-management' && method === 'GET') {
+    return sendJson(res, 200, { data: state.domainTenantManagementModules });
+  }
+
+  if (pathname === '/api/domain-tenant-management' && method === 'POST') {
+    const record = {
+      id: createId('dt-module'),
+      tenantId: demoTenantId,
+      title: body.title || 'Untitled Profile',
+      description: body.description || '',
+      status: 'active',
+      settingsJson: '{}',
+      visibility: body.visibility || 'public',
+      createdBy: 'Local Preview',
+      createdAt: now(),
+      updatedAt: now(),
+    };
+    state.domainTenantManagementModules.push(record);
+    state.domainTenantManagementActivities.unshift({
+      id: createId('dt-act'),
+      tenantId: demoTenantId,
+      userId: 'Local Preview',
+      actionType: 'create_profile',
+      metadataJson: JSON.stringify({ title: record.title }),
+      createdAt: now(),
+    });
+    return sendJson(res, 201, { data: record });
+  }
+
+  if (pathname === '/api/domain-tenant-management/overview' && method === 'GET') {
+    return sendJson(res, 200, {
+      data: {
+        moduleKey: 'domain-tenant-management',
+        settings: state.domainTenantManagementSettings,
+        checklist: {
+          domainSetup: !!state.websites[0]?.domain,
+          brandingSetup: true,
+          moduleRegistry: true,
+          inviteTeam: false,
+        },
+        counts: {
+          profilesCount: state.domainTenantManagementModules.length,
+          activeModules: 4,
+          activitiesCount: state.domainTenantManagementActivities.length,
+        },
+        recentActivity: state.domainTenantManagementActivities.slice(0, 10),
+        profiles: state.domainTenantManagementModules,
+      },
+    });
+  }
+
+  if (pathname === '/api/domain-tenant-management/settings' && method === 'GET') {
+    return sendJson(res, 200, { data: state.domainTenantManagementSettings });
+  }
+
+  if (pathname === '/api/domain-tenant-management/settings' && method === 'PATCH') {
+    state.domainTenantManagementSettings = {
+      ...state.domainTenantManagementSettings,
+      ...body,
+      updatedAt: now(),
+    };
+    return sendJson(res, 200, { data: state.domainTenantManagementSettings });
+  }
+
+  if (pathname === '/api/domain-tenant-management/reports' && method === 'GET') {
+    return sendJson(res, 200, { data: state.domainTenantManagementActivities });
+  }
+
+  const singleMatch = pathname.match(/^\/api\/domain-tenant-management\/([^/]+)$/);
+  if (singleMatch) {
+    const id = singleMatch[1];
+    const index = state.domainTenantManagementModules.findIndex(m => m.id === id);
+
+    if (method === 'GET') {
+      if (index === -1) return sendJson(res, 404, { error: 'Profile not found' });
+      return sendJson(res, 200, { data: state.domainTenantManagementModules[index] });
+    }
+
+    if (method === 'PATCH') {
+      if (index === -1) return sendJson(res, 404, { error: 'Profile not found' });
+      const record = {
+        ...state.domainTenantManagementModules[index],
+        ...body,
+        updatedAt: now(),
+      };
+      state.domainTenantManagementModules[index] = record;
+      state.domainTenantManagementActivities.unshift({
+        id: createId('dt-act'),
+        tenantId: demoTenantId,
+        userId: 'Local Preview',
+        actionType: 'update_profile',
+        metadataJson: JSON.stringify({ profileId: id }),
+        createdAt: now(),
+      });
+      return sendJson(res, 200, { data: record });
+    }
+
+    if (method === 'DELETE') {
+      if (index === -1) return sendJson(res, 404, { error: 'Profile not found' });
+      const deleted = state.domainTenantManagementModules.splice(index, 1)[0];
+      state.domainTenantManagementActivities.unshift({
+        id: createId('dt-act'),
+        tenantId: demoTenantId,
+        userId: 'Local Preview',
+        actionType: 'delete_profile',
+        metadataJson: JSON.stringify({ title: deleted.title }),
+        createdAt: now(),
+      });
+      return sendJson(res, 200, { success: true });
+    }
+  }
+
+  return sendJson(res, 404, { error: 'Endpoint not found' });
+}
+
+async function handleDigitalLibraryApi(req, res, parsedUrl) {
+  const method = req.method || 'GET';
+  const pathname = parsedUrl.pathname;
+  const body = method === 'GET' ? {} : await readJsonBody(req);
+
+  if (pathname === '/api/digital-library-resource-center' && method === 'GET') {
+    return sendJson(res, 200, { data: state.digitalLibraryModules });
+  }
+
+  if (pathname === '/api/digital-library-resource-center' && method === 'POST') {
+    const record = {
+      id: createId('dl-module'),
+      tenantId: demoTenantId,
+      title: body.title || 'Untitled Library',
+      description: body.description || '',
+      status: 'active',
+      settingsJson: '{}',
+      visibility: body.visibility || 'public',
+      createdBy: 'Local Preview',
+      createdAt: now(),
+      updatedAt: now(),
+    };
+    state.digitalLibraryModules.push(record);
+    state.digitalLibraryActivities.unshift({
+      id: createId('dl-act'),
+      tenantId: demoTenantId,
+      userId: 'Local Preview',
+      actionType: 'create_profile',
+      metadataJson: JSON.stringify({ title: record.title }),
+      createdAt: now(),
+    });
+    return sendJson(res, 201, { data: record });
+  }
+
+  if (pathname === '/api/digital-library-resource-center/overview' && method === 'GET') {
+    return sendJson(res, 200, {
+      data: {
+        moduleKey: 'digital-library-resource-center',
+        settings: state.digitalLibrarySettings,
+        counts: {
+          profilesCount: state.digitalLibraryModules.length,
+          categoriesCount: state.libraryCategories.length,
+          resourcesCount: state.libraryResources.length,
+          downloadsCount: state.libraryResources.reduce((acc, r) => acc + (r.downloadCount || 0), 0),
+          activitiesCount: state.digitalLibraryActivities.length,
+        },
+        recentActivity: state.digitalLibraryActivities.slice(0, 10),
+        profiles: state.digitalLibraryModules,
+      },
+    });
+  }
+
+  if (pathname === '/api/digital-library-resource-center/settings' && method === 'GET') {
+    return sendJson(res, 200, { data: state.digitalLibrarySettings });
+  }
+
+  if (pathname === '/api/digital-library-resource-center/settings' && method === 'PATCH') {
+    state.digitalLibrarySettings = {
+      ...state.digitalLibrarySettings,
+      ...body,
+      updatedAt: now(),
+    };
+    return sendJson(res, 200, { data: state.digitalLibrarySettings });
+  }
+
+  if (pathname === '/api/digital-library-resource-center/reports' && method === 'GET') {
+    return sendJson(res, 200, { data: state.digitalLibraryActivities });
+  }
+
+  const singleMatch = pathname.match(/^\/api\/digital-library-resource-center\/([^/]+)$/);
+  if (singleMatch) {
+    const id = singleMatch[1];
+    const index = state.digitalLibraryModules.findIndex(m => m.id === id);
+
+    if (method === 'GET') {
+      if (index === -1) return sendJson(res, 404, { error: 'Profile not found' });
+      return sendJson(res, 200, { data: state.digitalLibraryModules[index] });
+    }
+
+    if (method === 'PATCH') {
+      if (index === -1) return sendJson(res, 404, { error: 'Profile not found' });
+      const record = {
+        ...state.digitalLibraryModules[index],
+        ...body,
+        updatedAt: now(),
+      };
+      state.digitalLibraryModules[index] = record;
+      state.digitalLibraryActivities.unshift({
+        id: createId('dl-act'),
+        tenantId: demoTenantId,
+        userId: 'Local Preview',
+        actionType: 'update_profile',
+        metadataJson: JSON.stringify({ profileId: id }),
+        createdAt: now(),
+      });
+      return sendJson(res, 200, { data: record });
+    }
+
+    if (method === 'DELETE') {
+      if (index === -1) return sendJson(res, 404, { error: 'Profile not found' });
+      const deleted = state.digitalLibraryModules.splice(index, 1)[0];
+      state.digitalLibraryActivities.unshift({
+        id: createId('dl-act'),
+        tenantId: demoTenantId,
+        userId: 'Local Preview',
+        actionType: 'delete_profile',
+        metadataJson: JSON.stringify({ title: deleted.title }),
+        createdAt: now(),
+      });
+      return sendJson(res, 200, { success: true });
+    }
+  }
+
+  return sendJson(res, 404, { error: 'Endpoint not found' });
+}
+
+async function handleLibraryApi(req, res, parsedUrl) {
+  const method = req.method || 'GET';
+  const pathname = parsedUrl.pathname;
+  const body = method === 'GET' ? {} : await readJsonBody(req);
+
+  if (pathname === '/api/library/categories' && method === 'GET') {
+    return sendJson(res, 200, { data: state.libraryCategories });
+  }
+
+  if (pathname === '/api/library/categories' && method === 'POST') {
+    const category = {
+      id: createId('lib-cat'),
+      tenantId: demoTenantId,
+      name: body.name || 'Untitled Category',
+      slug: body.slug || createId('slug'),
+      description: body.description || '',
+      parentId: body.parentId || null,
+      createdAt: now(),
+      updatedAt: now(),
+    };
+    state.libraryCategories.push(category);
+    state.digitalLibraryActivities.unshift({
+      id: createId('dl-act'),
+      tenantId: demoTenantId,
+      userId: 'Local Preview',
+      actionType: 'create_category',
+      metadataJson: JSON.stringify({ categoryId: category.id, name: category.name }),
+      createdAt: now(),
+    });
+    return sendJson(res, 201, { data: category });
+  }
+
+  if (pathname === '/api/library/resources' && method === 'GET') {
+    return sendJson(res, 200, { data: state.libraryResources });
+  }
+
+  if (pathname === '/api/library/resources' && method === 'POST') {
+    const resource = {
+      id: createId('lib-res'),
+      tenantId: demoTenantId,
+      title: body.title || 'Untitled Resource',
+      slug: body.slug || createId('slug'),
+      description: body.description || '',
+      author: body.author || '',
+      fileUrl: body.fileUrl || '',
+      fileSize: body.fileSize || 0,
+      fileType: body.fileType || '',
+      coverImageUrl: body.coverImageUrl || '',
+      pricingType: body.pricingType || 'free',
+      price: Number(body.price || 0),
+      visibility: body.visibility || 'public',
+      status: body.status || 'draft',
+      downloadCount: 0,
+      categoryId: body.categoryId || null,
+      createdAt: now(),
+      updatedAt: now(),
+    };
+    state.libraryResources.push(resource);
+    state.digitalLibraryActivities.unshift({
+      id: createId('dl-act'),
+      tenantId: demoTenantId,
+      userId: 'Local Preview',
+      actionType: 'create_resource',
+      metadataJson: JSON.stringify({ resourceId: resource.id, title: resource.title }),
+      createdAt: now(),
+    });
+    return sendJson(res, 201, { data: resource });
+  }
+
+  if (pathname === '/api/library/audit' && method === 'GET') {
+    const formatted = state.digitalLibraryActivities.map(item => {
+      let title = 'System Config';
+      try {
+        const metadata = JSON.parse(item.metadataJson);
+        title = metadata.title || metadata.resourceId || title;
+      } catch (e) {}
+      return {
+        timestamp: item.createdAt,
+        resource: title,
+        user: item.userId || 'System',
+        role: 'Tenant Owner',
+        action: item.actionType.replace('_', ' ').toUpperCase(),
+      };
+    });
+    return sendJson(res, 200, { data: formatted });
+  }
+
+  if (pathname === '/api/library/sales' && method === 'GET') {
+    const formatted = state.libraryPurchases.map(item => {
+      const resource = state.libraryResources.find(r => r.id === item.resourceId) || { title: 'Unknown Resource' };
+      return {
+        date: item.createdAt.split('T')[0],
+        memberName: 'member@example.com',
+        resource: resource.title,
+        pricePaid: item.amountPaid,
+        txId: `TXN-${item.id.slice(0, 8).toUpperCase()}`,
+      };
+    });
+    return sendJson(res, 200, { data: formatted });
+  }
+
+  const resMatch = pathname.match(/^\/api\/library\/resources\/([^/]+)$/);
+  if (resMatch) {
+    const id = resMatch[1];
+    const index = state.libraryResources.findIndex(r => r.id === id);
+
+    if (method === 'GET') {
+      if (index === -1) return sendJson(res, 404, { error: 'Resource not found' });
+      return sendJson(res, 200, { data: state.libraryResources[index] });
+    }
+
+    if (method === 'PUT' || method === 'PATCH') {
+      if (index === -1) return sendJson(res, 404, { error: 'Resource not found' });
+      const record = {
+        ...state.libraryResources[index],
+        ...body,
+        updatedAt: now(),
+      };
+      state.libraryResources[index] = record;
+      state.digitalLibraryActivities.unshift({
+        id: createId('dl-act'),
+        tenantId: demoTenantId,
+        userId: 'Local Preview',
+        actionType: 'update_resource',
+        metadataJson: JSON.stringify({ resourceId: id }),
+        createdAt: now(),
+      });
+      return sendJson(res, 200, { data: record });
+    }
+
+    if (method === 'DELETE') {
+      if (index === -1) return sendJson(res, 404, { error: 'Resource not found' });
+      const deleted = state.libraryResources.splice(index, 1)[0];
+      state.digitalLibraryActivities.unshift({
+        id: createId('dl-act'),
+        tenantId: demoTenantId,
+        userId: 'Local Preview',
+        actionType: 'delete_resource',
+        metadataJson: JSON.stringify({ title: deleted.title }),
+        createdAt: now(),
+      });
+      return sendJson(res, 200, { data: deleted });
+    }
+  }
+
+  const downloadMatch = pathname.match(/^\/api\/library\/resources\/([^/]+)\/download$/);
+  if (downloadMatch && method === 'POST') {
+    const id = downloadMatch[1];
+    const r = state.libraryResources.find(item => item.id === id);
+    if (!r) return sendJson(res, 404, { error: 'Resource not found' });
+    r.downloadCount = (r.downloadCount || 0) + 1;
+    state.digitalLibraryActivities.unshift({
+      id: createId('dl-act'),
+      tenantId: demoTenantId,
+      userId: 'Local Preview',
+      actionType: 'download_resource',
+      metadataJson: JSON.stringify({ resourceId: id, title: r.title }),
+      createdAt: now(),
+    });
+    return sendJson(res, 200, { data: { fileUrl: r.fileUrl, downloadCount: r.downloadCount } });
+  }
+
+  const purchaseMatch = pathname.match(/^\/api\/library\/resources\/([^/]+)\/purchase$/);
+  if (purchaseMatch && method === 'POST') {
+    const id = purchaseMatch[1];
+    const r = state.libraryResources.find(item => item.id === id);
+    if (!r) return sendJson(res, 404, { error: 'Resource not found' });
+    const purchase = {
+      id: createId('purchase'),
+      tenantId: demoTenantId,
+      resourceId: id,
+      userId: 'local-user',
+      amountPaid: r.price,
+      createdAt: now(),
+    };
+    state.libraryPurchases.push(purchase);
+    state.digitalLibraryActivities.unshift({
+      id: createId('dl-act'),
+      tenantId: demoTenantId,
+      userId: 'Local Preview',
+      actionType: 'purchase_resource',
+      metadataJson: JSON.stringify({ resourceId: id, title: r.title, amountPaid: r.price }),
+      createdAt: now(),
+    });
+    return sendJson(res, 201, { data: purchase });
+  }
+
+  return sendJson(res, 404, { error: 'Endpoint not found' });
+}
+
 async function handleDemoApi(req, res, parsedUrl) {
   const method = req.method || 'GET';
   const pathname = parsedUrl.pathname;
@@ -1143,6 +2870,26 @@ async function handleDemoApi(req, res, parsedUrl) {
 
   if (pathname.startsWith('/api/theme-engine')) {
     return handleThemeEngineApi(req, res, parsedUrl);
+  }
+
+  if (pathname.startsWith('/api/media')) {
+    return handleMediaApi(req, res, parsedUrl);
+  }
+
+  if (pathname.startsWith('/api/church-services')) {
+    return handleChurchServicesApi(req, res, parsedUrl);
+  }
+
+  if (pathname.startsWith('/api/tenant') || pathname.startsWith('/api/domain-tenant-management')) {
+    return handleDomainTenantApi(req, res, parsedUrl);
+  }
+
+  if (pathname.startsWith('/api/digital-library-resource-center')) {
+    return handleDigitalLibraryApi(req, res, parsedUrl);
+  }
+
+  if (pathname.startsWith('/api/library')) {
+    return handleLibraryApi(req, res, parsedUrl);
   }
 
   if (pathname === '/api/marketplace/assets' && method === 'GET') {
@@ -1294,6 +3041,8 @@ http
       urlPath = '/index.html';
     } else if (urlPath === '/dashboard') {
       urlPath = '/dashboard.html';
+    } else if (urlPath === '/marketplace') {
+      urlPath = '/marketplace.html';
     } else if (urlPath === '/cms') {
       res.writeHead(302, { Location: '/dashboard.html?module=cms' });
       res.end();

@@ -448,8 +448,9 @@
       background: var(--surface);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      width: 100%;
-      max-width: 400px;
+      width: fit-content;
+      min-width: 320px;
+      max-width: min(650px, calc(100% - 48px));
       padding: 24px;
       text-align: center;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.16);
@@ -458,6 +459,7 @@
       align-items: center;
       transform: translateY(0);
       animation: dialogSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
     }
 
     .system-dialog-icon {
@@ -545,7 +547,7 @@
 
   <!-- Custom System Modal Dialog Logic -->
   <script>
-    function showSystemModal({ type = 'info', title = '', message = '', defaultValue = '', showCancel = false }) {
+    function showSystemModal({ type = 'info', title = '', message = '', defaultValue = '', showCancel = false, icon = '' }) {
       return new Promise((resolve) => {
         const existing = document.querySelector('.system-dialog-overlay');
         if (existing) existing.remove();
@@ -553,11 +555,25 @@
         const overlay = document.createElement('div');
         overlay.className = 'system-dialog-overlay';
 
-        let iconName = 'info';
-        if (type === 'success') iconName = 'check';
-        else if (type === 'error' || type === 'danger') iconName = 'alert-triangle';
-        else if (type === 'confirm') iconName = 'help-circle';
-        else if (type === 'prompt') iconName = 'keyboard';
+        let iconName = icon;
+        if (!iconName) {
+          const lowerTitle = (title || '').toLowerCase();
+          if (lowerTitle.includes('event')) iconName = 'calendar';
+          else if (lowerTitle.includes('member') || lowerTitle.includes('profile')) iconName = 'user-check';
+          else if (lowerTitle.includes('status') || lowerTitle.includes('level') || lowerTitle.includes('role')) iconName = 'shield-alert';
+          else if (lowerTitle.includes('pastoral') || lowerTitle.includes('note') || lowerTitle.includes('counseling') || lowerTitle.includes('details')) iconName = 'heart-pulse';
+          else if (lowerTitle.includes('task') || lowerTitle.includes('todo')) iconName = 'check-square';
+          else if (lowerTitle.includes('pipeline') || lowerTitle.includes('stage') || lowerTitle.includes('advance')) iconName = 'git-commit';
+          else if (lowerTitle.includes('lead') || lowerTitle.includes('crm') || lowerTitle.includes('contact')) iconName = 'users';
+          else if (lowerTitle.includes('delete') || lowerTitle.includes('remove') || lowerTitle.includes('discard') || lowerTitle.includes('clear')) iconName = 'trash-2';
+          else if (lowerTitle.includes('create') || lowerTitle.includes('add') || lowerTitle.includes('new')) iconName = 'plus-circle';
+          else if (lowerTitle.includes('save') || lowerTitle.includes('update') || lowerTitle.includes('edit')) iconName = 'save';
+          else if (type === 'success') iconName = 'check';
+          else if (type === 'error' || type === 'danger') iconName = 'alert-triangle';
+          else if (type === 'confirm') iconName = 'help-circle';
+          else if (type === 'prompt') iconName = 'keyboard';
+          else iconName = 'info';
+        }
 
         if (!title) {
           if (type === 'success') title = 'Success';

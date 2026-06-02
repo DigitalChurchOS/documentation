@@ -1,362 +1,231 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
-import { requirePermission } from '../middleware/rbac';
-import {
-  createCategory,
-  listCategories,
-  createTag,
-  listTags,
-  createSpeaker,
-  listSpeakers,
-  updateSpeaker,
-  createSeries,
-  listSeries,
-  createAsset,
-  getAsset,
-  listAssets,
-  updateAsset,
-  deleteAsset,
-  tagAsset,
-  createPlaylist,
-  listPlaylists,
-  addToPlaylist,
-  removeFromPlaylist,
-  getPlaylistItems,
-  generateEmbed,
-} from '../services/media';
+import { requireAnyPermission } from '../middleware/rbac';
+import { requireModule } from '../middleware/entitlements';
+import { generateEmbed, MEDIA_MODULE_KEY, MediaService } from '../services/media';
 
 const router = Router();
 
-// All media routes require authentication
 router.use(authMiddleware);
+router.use(requireModule(MEDIA_MODULE_KEY));
 
-// ─────────────────────────────────────────────────────────────
-// CATEGORIES
-// ─────────────────────────────────────────────────────────────
+const requireMediaPermission = (...permissions: string[]) =>
+  requireAnyPermission('tenant.settings', ...permissions);
 
-// GET /api/media/categories
-router.get('/categories', async (req: Request, res: Response) => {
-  try {
-    const categories = await listCategories(req.tenantId!);
-    res.json({ data: categories });
-  } catch (err: any) {
-    console.error('List categories error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+function statusFor(error: Error) {
+  const message = error.message.toLowerCase();
+  if (message.includes('not found')) return 404;
+  if (message.includes('disabled')) return 403;
+  return 400;
+}
+
+function filters(req: Request) {
+  return {
+    categoryId: req.query.categoryId as string | undefined,
+    seriesId: req.query.seriesId as string | undefined,
+    speakerId: req.query.speakerId as string | undefined,
+    type: req.query.type as string | undefined,
+    status: req.query.status as string | undefined,
+    visibility: req.query.visibility as string | undefined,
+    providerKey: req.query.providerKey as string | undefined,
+    search: req.query.search as string | undefined,
+    tagIds: req.query.tagIds ? String(req.query.tagIds).split(',').map((id) => id.trim()).filter(Boolean) : undefined,
+    page: req.query.page ? Number(req.query.page) : undefined,
+    pageSize: req.query.pageSize ? Number(req.query.pageSize) : undefined,
+  };
+}
+
+router.get('/overview', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.getOverview(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
-// POST /api/media/categories
-router.post('/categories', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const { name, parentId } = req.body;
-    if (!name) {
-      res.status(400).json({ error: 'name is required' });
-      return;
-    }
-    const category = await createCategory(req.tenantId!, name, parentId);
-    res.status(201).json({ data: category });
-  } catch (err: any) {
-    console.error('Create category error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.get('/settings', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.getSettings(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
-// ─────────────────────────────────────────────────────────────
-// TAGS
-// ─────────────────────────────────────────────────────────────
-
-// GET /api/media/tags
-router.get('/tags', async (req: Request, res: Response) => {
-  try {
-    const tags = await listTags(req.tenantId!);
-    res.json({ data: tags });
-  } catch (err: any) {
-    console.error('List tags error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+router.patch('/settings', requireMediaPermission('media.manage_settings'), async (req, res) => {
+  try { res.json({ data: await MediaService.updateSettings(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// POST /api/media/tags
-router.post('/tags', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const { name } = req.body;
-    if (!name) {
-      res.status(400).json({ error: 'name is required' });
-      return;
-    }
-    const tag = await createTag(req.tenantId!, name);
-    res.status(201).json({ data: tag });
-  } catch (err: any) {
-    console.error('Create tag error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.get('/reports', requireMediaPermission('media.view_reports'), async (req, res) => {
+  try { res.json({ data: await MediaService.getReports(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
-// ─────────────────────────────────────────────────────────────
-// SPEAKERS
-// ─────────────────────────────────────────────────────────────
-
-// GET /api/media/speakers
-router.get('/speakers', async (req: Request, res: Response) => {
-  try {
-    const speakers = await listSpeakers(req.tenantId!);
-    res.json({ data: speakers });
-  } catch (err: any) {
-    console.error('List speakers error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+router.get('/activity', requireMediaPermission('media.view_reports'), async (req, res) => {
+  try { res.json({ data: await MediaService.listActivities(req.tenantId!, { actionType: req.query.actionType as string | undefined, limit: req.query.limit ? Number(req.query.limit) : undefined }) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
-// POST /api/media/speakers
-router.post('/speakers', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const { name, title, bio, photoUrl } = req.body;
-    if (!name) {
-      res.status(400).json({ error: 'name is required' });
-      return;
-    }
-    const speaker = await createSpeaker(req.tenantId!, { name, title, bio, photoUrl });
-    res.status(201).json({ data: speaker });
-  } catch (err: any) {
-    console.error('Create speaker error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.get('/templates', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.getTemplates(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
-// PUT /api/media/speakers/:id
-router.put('/speakers/:id', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const { name, title, bio, photoUrl } = req.body;
-    const speaker = await updateSpeaker(req.params.id as string, req.tenantId!, { name, title, bio, photoUrl });
-    res.json({ data: speaker });
-  } catch (err: any) {
-    console.error('Update speaker error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.post('/uploads/intent', requireMediaPermission('media.create'), async (req, res) => {
+  try { res.status(201).json({ data: await MediaService.createUploadIntent(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// ─────────────────────────────────────────────────────────────
-// SERIES
-// ─────────────────────────────────────────────────────────────
-
-// GET /api/media/series
-router.get('/series', async (req: Request, res: Response) => {
-  try {
-    const series = await listSeries(req.tenantId!);
-    res.json({ data: series });
-  } catch (err: any) {
-    console.error('List series error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+router.get('/categories', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.listCategories(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
-// POST /api/media/series
-router.post('/series', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const { title, description, coverImageUrl } = req.body;
-    if (!title) {
-      res.status(400).json({ error: 'title is required' });
-      return;
-    }
-    const series = await createSeries(req.tenantId!, { title, description, coverImageUrl });
-    res.status(201).json({ data: series });
-  } catch (err: any) {
-    console.error('Create series error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.post('/categories', requireMediaPermission('media.create'), async (req, res) => {
+  try { res.status(201).json({ data: await MediaService.createCategory(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// ─────────────────────────────────────────────────────────────
-// ASSETS (Core CRUD)
-// ─────────────────────────────────────────────────────────────
-
-// POST /api/media/assets
-router.post('/assets', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const {
-      title, description, type, providerType, providerKey, sourceUrl,
-      thumbnailUrl, durationSeconds, fileSizeBytes, mimeType,
-      categoryId, seriesId, seriesOrder, speakerId, visibility, status,
-    } = req.body;
-
-    if (!title || !type || !providerType) {
-      res.status(400).json({ error: 'title, type, and providerType are required' });
-      return;
-    }
-
-    const asset = await createAsset(req.tenantId!, {
-      title, description, type, providerType, providerKey, sourceUrl,
-      thumbnailUrl, durationSeconds, fileSizeBytes, mimeType,
-      categoryId, seriesId, seriesOrder, speakerId, visibility, status,
-    });
-    res.status(201).json({ data: asset });
-  } catch (err: any) {
-    console.error('Create asset error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.get('/tags', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.listTags(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
-// GET /api/media/assets
-router.get('/assets', async (req: Request, res: Response) => {
-  try {
-    const filters = {
-      categoryId: req.query.categoryId as string | undefined,
-      seriesId: req.query.seriesId as string | undefined,
-      speakerId: req.query.speakerId as string | undefined,
-      type: req.query.type as string | undefined,
-      status: req.query.status as string | undefined,
-      search: req.query.search as string | undefined,
-      tagIds: req.query.tagIds
-        ? (req.query.tagIds as string).split(',').map((id) => id.trim())
-        : undefined,
-      page: req.query.page ? parseInt(req.query.page as string, 10) : undefined,
-      pageSize: req.query.pageSize ? parseInt(req.query.pageSize as string, 10) : undefined,
-    };
+router.post('/tags', requireMediaPermission('media.create'), async (req, res) => {
+  try { res.status(201).json({ data: await MediaService.createTag(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
 
-    const result = await listAssets(req.tenantId!, filters);
+router.get('/speakers', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.listSpeakers(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/speakers', requireMediaPermission('media.create'), async (req, res) => {
+  try { res.status(201).json({ data: await MediaService.createSpeaker(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.put('/speakers/:id', requireMediaPermission('media.update'), async (req, res) => {
+  try { res.json({ data: await MediaService.updateSpeaker(req.params.id as string, req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.patch('/speakers/:id', requireMediaPermission('media.update'), async (req, res) => {
+  try { res.json({ data: await MediaService.updateSpeaker(req.params.id as string, req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.get('/series', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.listSeries(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/series', requireMediaPermission('media.create'), async (req, res) => {
+  try { res.status(201).json({ data: await MediaService.createSeries(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.get('/assets', requireMediaPermission('media.read'), async (req, res) => {
+  try {
+    const result = await MediaService.listAssets(req.tenantId!, filters(req));
     res.json({ data: result.assets, meta: { total: result.total, page: result.page, pageSize: result.pageSize } });
-  } catch (err: any) {
-    console.error('List assets error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+  } catch (err: any) { res.status(500).json({ error: err.message }); }
 });
 
-// GET /api/media/assets/:id
-router.get('/assets/:id', async (req: Request, res: Response) => {
-  try {
-    const asset = await getAsset(req.params.id as string, req.tenantId!);
-    if (!asset) {
-      res.status(404).json({ error: 'Asset not found' });
-      return;
-    }
-    res.json({ data: asset });
-  } catch (err: any) {
-    console.error('Get asset error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+router.post('/assets', requireMediaPermission('media.create'), async (req, res) => {
+  try { res.status(201).json({ data: await MediaService.createAsset(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// PUT /api/media/assets/:id
-router.put('/assets/:id', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const asset = await updateAsset(req.params.id as string, req.tenantId!, req.body);
-    res.json({ data: asset });
-  } catch (err: any) {
-    console.error('Update asset error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.get('/assets/:id', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.getAsset(req.params.id as string, req.tenantId!) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// DELETE /api/media/assets/:id
-router.delete('/assets/:id', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const asset = await deleteAsset(req.params.id as string, req.tenantId!);
-    res.json({ data: asset, message: 'Asset archived successfully' });
-  } catch (err: any) {
-    console.error('Delete asset error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.put('/assets/:id', requireMediaPermission('media.update'), async (req, res) => {
+  try { res.json({ data: await MediaService.updateAsset(req.params.id as string, req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// POST /api/media/assets/:id/tags
-router.post('/assets/:id/tags', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const { tagIds } = req.body;
-    if (!tagIds || !Array.isArray(tagIds)) {
-      res.status(400).json({ error: 'tagIds array is required' });
-      return;
-    }
-    const tags = await tagAsset(req.params.id as string, tagIds);
-    res.json({ data: tags });
-  } catch (err: any) {
-    console.error('Tag asset error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.patch('/assets/:id', requireMediaPermission('media.update'), async (req, res) => {
+  try { res.json({ data: await MediaService.updateAsset(req.params.id as string, req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// GET /api/media/assets/:id/embed
-router.get('/assets/:id/embed', async (req: Request, res: Response) => {
-  try {
-    const asset = await getAsset(req.params.id as string, req.tenantId!);
-    if (!asset) {
-      res.status(404).json({ error: 'Asset not found' });
-      return;
-    }
-    const embedHtml = generateEmbed(asset);
-    res.json({ data: { embedHtml } });
-  } catch (err: any) {
-    console.error('Generate embed error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+router.delete('/assets/:id', requireMediaPermission('media.delete'), async (req, res) => {
+  try { res.json({ data: await MediaService.deleteAsset(req.params.id as string, req.tenantId!, req.user?.userId), message: 'Asset archived successfully' }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// ─────────────────────────────────────────────────────────────
-// PLAYLISTS
-// ─────────────────────────────────────────────────────────────
-
-// GET /api/media/playlists
-router.get('/playlists', async (req: Request, res: Response) => {
+router.post('/assets/:id/tags', requireMediaPermission('media.update'), async (req, res) => {
   try {
-    const playlists = await listPlaylists(req.tenantId!);
-    res.json({ data: playlists });
-  } catch (err: any) {
-    console.error('List playlists error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+    if (!Array.isArray(req.body.tagIds)) { res.status(400).json({ error: 'tagIds array is required' }); return; }
+    res.json({ data: await MediaService.tagAsset(req.params.id as string, req.tenantId!, req.body.tagIds, req.user?.userId) });
+  } catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// POST /api/media/playlists
-router.post('/playlists', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.delete('/assets/:id/tags', requireMediaPermission('media.update'), async (req, res) => {
   try {
-    const { name, description, coverImageUrl, isPublic } = req.body;
-    if (!name) {
-      res.status(400).json({ error: 'name is required' });
-      return;
-    }
-    const playlist = await createPlaylist(req.tenantId!, { name, description, coverImageUrl, isPublic });
-    res.status(201).json({ data: playlist });
-  } catch (err: any) {
-    console.error('Create playlist error:', err);
-    res.status(400).json({ error: err.message });
-  }
+    if (!Array.isArray(req.body.tagIds)) { res.status(400).json({ error: 'tagIds array is required' }); return; }
+    res.json({ data: await MediaService.untagAsset(req.params.id as string, req.tenantId!, req.body.tagIds, req.user?.userId) });
+  } catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// POST /api/media/playlists/:id/items
-router.post('/playlists/:id/items', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    const { assetId, order } = req.body;
-    if (!assetId) {
-      res.status(400).json({ error: 'assetId is required' });
-      return;
-    }
-    const item = await addToPlaylist(req.params.id as string, assetId, order || 0);
-    res.status(201).json({ data: item });
-  } catch (err: any) {
-    console.error('Add to playlist error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.get('/assets/:id/embed', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: { embedHtml: generateEmbed(await MediaService.getAsset(req.params.id as string, req.tenantId!)) } }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// DELETE /api/media/playlists/:id/items/:assetId
-router.delete('/playlists/:id/items/:assetId', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
-  try {
-    await removeFromPlaylist(req.params.id as string, req.params.assetId as string);
-    res.json({ message: 'Item removed from playlist' });
-  } catch (err: any) {
-    console.error('Remove from playlist error:', err);
-    res.status(400).json({ error: err.message });
-  }
+router.post('/assets/:id/playback', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.recordPlayback(req.tenantId!, req.params.id as string, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
-// GET /api/media/playlists/:id/items
-router.get('/playlists/:id/items', async (req: Request, res: Response) => {
+router.get('/playlists', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.listPlaylists(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/playlists', requireMediaPermission('media.create'), async (req, res) => {
+  try { res.status(201).json({ data: await MediaService.createPlaylist(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.get('/playlists/:id/items', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.getPlaylistItems(req.params.id as string, req.tenantId!) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.post('/playlists/:id/items', requireMediaPermission('media.update'), async (req, res) => {
   try {
-    const items = await getPlaylistItems(req.params.id as string);
-    res.json({ data: items });
-  } catch (err: any) {
-    console.error('Get playlist items error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
+    if (!req.body.assetId) { res.status(400).json({ error: 'assetId is required' }); return; }
+    res.status(201).json({ data: await MediaService.addToPlaylist(req.params.id as string, req.tenantId!, req.body.assetId, Number(req.body.order || 0), req.user?.userId) });
+  } catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.delete('/playlists/:id/items/:assetId', requireMediaPermission('media.update'), async (req, res) => {
+  try { res.json({ data: await MediaService.removeFromPlaylist(req.params.id as string, req.tenantId!, req.params.assetId as string, req.user?.userId), message: 'Item removed from playlist' }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.get('/', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.listModuleRecords(req.tenantId!) }); }
+  catch (err: any) { res.status(500).json({ error: err.message }); }
+});
+
+router.post('/', requireMediaPermission('media.create'), async (req, res) => {
+  try { res.status(201).json({ data: await MediaService.createModuleRecord(req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.get('/:id', requireMediaPermission('media.read'), async (req, res) => {
+  try { res.json({ data: await MediaService.getModuleRecord(req.params.id as string, req.tenantId!) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.patch('/:id', requireMediaPermission('media.update'), async (req, res) => {
+  try { res.json({ data: await MediaService.updateModuleRecord(req.params.id as string, req.tenantId!, req.body, req.user?.userId) }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.delete('/:id', requireMediaPermission('media.delete'), async (req, res) => {
+  try { res.json({ data: await MediaService.deleteModuleRecord(req.params.id as string, req.tenantId!, req.user?.userId), success: true }); }
+  catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
 });
 
 export default router;

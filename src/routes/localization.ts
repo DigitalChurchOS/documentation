@@ -332,7 +332,7 @@ router.get('/activity-logs', async (req: Request, res: Response): Promise<void> 
       take: 30,
     });
 
-    const logs = jobs.map(job => ({
+    const logs = jobs.map((job: any) => ({
       actionType: `ai_translate_${job.status}`,
       metadataJson: JSON.stringify({
         summary: `AI translation job for ${job.entityType} (${job.entityId}) → ${job.targetLanguage}: ${job.status}`,

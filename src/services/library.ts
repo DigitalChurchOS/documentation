@@ -1,4 +1,5 @@
 import prisma from '../lib/prisma';
+import { DigitalLibraryResourceCenterService } from './digitalLibraryResourceCenter';
 
 function slugify(text: string): string {
   return text
@@ -23,7 +24,8 @@ export async function createLibraryCategory(
     slug?: string;
     description?: string;
     parentId?: string;
-  }
+  },
+  userId?: string
 ): Promise<any> {
   const slug = data.slug ? slugify(data.slug) : slugify(data.name);
 
@@ -44,7 +46,7 @@ export async function createLibraryCategory(
     }
   }
 
-  return await prisma.libraryCategory.create({
+  const category = await prisma.libraryCategory.create({
     data: {
       tenantId,
       name: data.name,
@@ -53,6 +55,14 @@ export async function createLibraryCategory(
       parentId: data.parentId || null,
     },
   });
+
+  await DigitalLibraryResourceCenterService.logActivity(tenantId, userId || 'System', 'create_category', {
+    categoryId: category.id,
+    name: category.name,
+    slug: category.slug,
+  }).catch(() => undefined);
+
+  return category;
 }
 
 export async function listLibraryCategories(tenantId: string): Promise<any[]> {
@@ -94,7 +104,8 @@ export async function createResource(
     visibility?: string; // public | members_only | leaders_only
     status?: string; // draft | published | archived
     categoryId?: string;
-  }
+  },
+  userId?: string
 ): Promise<any> {
   const slug = data.slug ? slugify(data.slug) : slugify(data.title);
 
@@ -119,7 +130,7 @@ export async function createResource(
   const status = data.status || 'draft';
   const visibility = data.visibility || 'public';
 
-  return await prisma.libraryResource.create({
+  const resource = await prisma.libraryResource.create({
     data: {
       tenantId,
       title: data.title,
@@ -140,6 +151,14 @@ export async function createResource(
       category: true,
     },
   });
+
+  await DigitalLibraryResourceCenterService.logActivity(tenantId, userId || 'System', 'create_resource', {
+    resourceId: resource.id,
+    title: resource.title,
+    slug: resource.slug,
+  }).catch(() => undefined);
+
+  return resource;
 }
 
 export async function updateResource(
@@ -159,7 +178,8 @@ export async function updateResource(
     visibility?: string;
     status?: string;
     categoryId?: string;
-  }
+  },
+  userId?: string
 ): Promise<any> {
   const resource = await prisma.libraryResource.findFirst({
     where: { id, tenantId },
@@ -191,7 +211,7 @@ export async function updateResource(
   const pricingType = data.pricingType !== undefined ? data.pricingType : resource.pricingType;
   const price = pricingType === 'free' ? 0.0 : (data.price !== undefined ? data.price : resource.price);
 
-  return await prisma.libraryResource.update({
+  const updated = await prisma.libraryResource.update({
     where: { id },
     data: {
       title: data.title !== undefined ? data.title : resource.title,
@@ -212,9 +232,17 @@ export async function updateResource(
       category: true,
     },
   });
+
+  await DigitalLibraryResourceCenterService.logActivity(tenantId, userId || 'System', 'update_resource', {
+    resourceId: id,
+    title: updated.title,
+    fieldsUpdated: Object.keys(data),
+  }).catch(() => undefined);
+
+  return updated;
 }
 
-export async function deleteResource(id: string, tenantId: string): Promise<any> {
+export async function deleteResource(id: string, tenantId: string, userId?: string): Promise<any> {
   const resource = await prisma.libraryResource.findFirst({
     where: { id, tenantId },
   });
@@ -223,10 +251,17 @@ export async function deleteResource(id: string, tenantId: string): Promise<any>
   }
 
   // Soft delete by archiving
-  return await prisma.libraryResource.update({
+  const updated = await prisma.libraryResource.update({
     where: { id },
     data: { status: 'archived' },
   });
+
+  await DigitalLibraryResourceCenterService.logActivity(tenantId, userId || 'System', 'delete_resource', {
+    resourceId: id,
+    title: updated.title,
+  }).catch(() => undefined);
+
+  return updated;
 }
 
 export async function getResource(idOrSlug: string, tenantId: string): Promise<any> {
@@ -325,7 +360,7 @@ export async function listResources(
  * ─────────────────────────────────────────────────────────────
  */
 
-export async function incrementDownloadCount(resourceId: string, tenantId: string): Promise<any> {
+export async function incrementDownloadCount(resourceId: string, tenantId: string, userId?: string): Promise<any> {
   const resource = await prisma.libraryResource.findFirst({
     where: { id: resourceId, tenantId },
   });
@@ -333,7 +368,7 @@ export async function incrementDownloadCount(resourceId: string, tenantId: strin
     throw new Error('Library resource not found');
   }
 
-  return await prisma.libraryResource.update({
+  const updated = await prisma.libraryResource.update({
     where: { id: resourceId },
     data: {
       downloadCount: {
@@ -341,6 +376,13 @@ export async function incrementDownloadCount(resourceId: string, tenantId: strin
       },
     },
   });
+
+  await DigitalLibraryResourceCenterService.logActivity(tenantId, userId || 'System', 'download_resource', {
+    resourceId,
+    title: updated.title,
+  }).catch(() => undefined);
+
+  return updated;
 }
 
 export async function purchaseResource(
@@ -367,7 +409,7 @@ export async function purchaseResource(
     return existing; // already purchased
   }
 
-  return await prisma.libraryPurchase.create({
+  const purchase = await prisma.libraryPurchase.create({
     data: {
       tenantId,
       resourceId,
@@ -375,6 +417,15 @@ export async function purchaseResource(
       amountPaid: resource.price,
     },
   });
+
+  await DigitalLibraryResourceCenterService.logActivity(tenantId, userId, 'purchase_resource', {
+    resourceId,
+    title: resource.title,
+    amountPaid: resource.price,
+    purchaseId: purchase.id,
+  }).catch(() => undefined);
+
+  return purchase;
 }
 
 /**

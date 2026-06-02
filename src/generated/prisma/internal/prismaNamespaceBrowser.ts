@@ -99,6 +99,11 @@ export const ModelName = {
   PluginDefinition: 'PluginDefinition',
   TenantPlugin: 'TenantPlugin',
   PluginWebhook: 'PluginWebhook',
+  PluginEngine: 'PluginEngine',
+  PluginEnginePermission: 'PluginEnginePermission',
+  PluginExtensionsEngineModule: 'PluginExtensionsEngineModule',
+  PluginExtensionsEngineActivity: 'PluginExtensionsEngineActivity',
+  PluginExtensionsEngineSetting: 'PluginExtensionsEngineSetting',
   DeveloperProfile: 'DeveloperProfile',
   MarketplaceAsset: 'MarketplaceAsset',
   AssetSubmission: 'AssetSubmission',
@@ -123,6 +128,12 @@ export const ModelName = {
   ChurchService: 'ChurchService',
   ServiceScripture: 'ServiceScripture',
   ServiceAttachment: 'ServiceAttachment',
+  ChurchServicesModule: 'ChurchServicesModule',
+  ChurchServicesModuleActivity: 'ChurchServicesModuleActivity',
+  ChurchServicesModuleSettings: 'ChurchServicesModuleSettings',
+  LivestreamModule: 'LivestreamModule',
+  LivestreamModuleActivity: 'LivestreamModuleActivity',
+  LivestreamModuleSettings: 'LivestreamModuleSettings',
   BlogCategory: 'BlogCategory',
   BlogTag: 'BlogTag',
   BlogPost: 'BlogPost',
@@ -280,7 +291,22 @@ export const ModelName = {
   CmsActivityLog: 'CmsActivityLog',
   ThemeEngineModule: 'ThemeEngineModule',
   ThemeEngineModuleActivity: 'ThemeEngineModuleActivity',
-  ThemeEngineModuleSettings: 'ThemeEngineModuleSettings'
+  ThemeEngineModuleSettings: 'ThemeEngineModuleSettings',
+  DeveloperMarketplaceModule: 'DeveloperMarketplaceModule',
+  DeveloperMarketplaceModuleActivity: 'DeveloperMarketplaceModuleActivity',
+  DeveloperMarketplaceModuleSettings: 'DeveloperMarketplaceModuleSettings',
+  DomainTenantManagementModule: 'DomainTenantManagementModule',
+  DomainTenantManagementModuleActivity: 'DomainTenantManagementModuleActivity',
+  DomainTenantManagementModuleSettings: 'DomainTenantManagementModuleSettings',
+  DigitalLibraryResourceCenterModule: 'DigitalLibraryResourceCenterModule',
+  DigitalLibraryResourceCenterModuleActivity: 'DigitalLibraryResourceCenterModuleActivity',
+  DigitalLibraryResourceCenterModuleSettings: 'DigitalLibraryResourceCenterModuleSettings',
+  MediaModule: 'MediaModule',
+  MediaModuleActivity: 'MediaModuleActivity',
+  MediaModuleSettings: 'MediaModuleSettings',
+  DynamicBlogPublishingEngineModule: 'DynamicBlogPublishingEngineModule',
+  DynamicBlogPublishingEngineModuleActivity: 'DynamicBlogPublishingEngineModuleActivity',
+  DynamicBlogPublishingEngineModuleSettings: 'DynamicBlogPublishingEngineModuleSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1035,6 +1061,69 @@ export const PluginWebhookScalarFieldEnum = {
 export type PluginWebhookScalarFieldEnum = (typeof PluginWebhookScalarFieldEnum)[keyof typeof PluginWebhookScalarFieldEnum]
 
 
+export const PluginEngineScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  pluginId: 'pluginId',
+  status: 'status',
+  settings: 'settings',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PluginEngineScalarFieldEnum = (typeof PluginEngineScalarFieldEnum)[keyof typeof PluginEngineScalarFieldEnum]
+
+
+export const PluginEnginePermissionScalarFieldEnum = {
+  id: 'id',
+  pluginEngineId: 'pluginEngineId',
+  permission: 'permission',
+  grantedAt: 'grantedAt'
+} as const
+
+export type PluginEnginePermissionScalarFieldEnum = (typeof PluginEnginePermissionScalarFieldEnum)[keyof typeof PluginEnginePermissionScalarFieldEnum]
+
+
+export const PluginExtensionsEngineModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  pluginEngineId: 'pluginEngineId',
+  key: 'key',
+  name: 'name',
+  status: 'status',
+  settings: 'settings',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PluginExtensionsEngineModuleScalarFieldEnum = (typeof PluginExtensionsEngineModuleScalarFieldEnum)[keyof typeof PluginExtensionsEngineModuleScalarFieldEnum]
+
+
+export const PluginExtensionsEngineActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleId: 'moduleId',
+  type: 'type',
+  payload: 'payload',
+  createdAt: 'createdAt'
+} as const
+
+export type PluginExtensionsEngineActivityScalarFieldEnum = (typeof PluginExtensionsEngineActivityScalarFieldEnum)[keyof typeof PluginExtensionsEngineActivityScalarFieldEnum]
+
+
+export const PluginExtensionsEngineSettingScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleId: 'moduleId',
+  key: 'key',
+  value: 'value',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PluginExtensionsEngineSettingScalarFieldEnum = (typeof PluginExtensionsEngineSettingScalarFieldEnum)[keyof typeof PluginExtensionsEngineSettingScalarFieldEnum]
+
+
 export const DeveloperProfileScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -1349,6 +1438,11 @@ export const ChurchServiceScalarFieldEnum = {
   givingTotal: 'givingTotal',
   salvationCount: 'salvationCount',
   status: 'status',
+  visibility: 'visibility',
+  locationMode: 'locationMode',
+  settingsJson: 'settingsJson',
+  createdById: 'createdById',
+  archiveOrder: 'archiveOrder',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1376,6 +1470,90 @@ export const ServiceAttachmentScalarFieldEnum = {
 } as const
 
 export type ServiceAttachmentScalarFieldEnum = (typeof ServiceAttachmentScalarFieldEnum)[keyof typeof ServiceAttachmentScalarFieldEnum]
+
+
+export const ChurchServicesModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChurchServicesModuleScalarFieldEnum = (typeof ChurchServicesModuleScalarFieldEnum)[keyof typeof ChurchServicesModuleScalarFieldEnum]
+
+
+export const ChurchServicesModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type ChurchServicesModuleActivityScalarFieldEnum = (typeof ChurchServicesModuleActivityScalarFieldEnum)[keyof typeof ChurchServicesModuleActivityScalarFieldEnum]
+
+
+export const ChurchServicesModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChurchServicesModuleSettingsScalarFieldEnum = (typeof ChurchServicesModuleSettingsScalarFieldEnum)[keyof typeof ChurchServicesModuleSettingsScalarFieldEnum]
+
+
+export const LivestreamModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdById: 'createdById',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LivestreamModuleScalarFieldEnum = (typeof LivestreamModuleScalarFieldEnum)[keyof typeof LivestreamModuleScalarFieldEnum]
+
+
+export const LivestreamModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type LivestreamModuleActivityScalarFieldEnum = (typeof LivestreamModuleActivityScalarFieldEnum)[keyof typeof LivestreamModuleActivityScalarFieldEnum]
+
+
+export const LivestreamModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type LivestreamModuleSettingsScalarFieldEnum = (typeof LivestreamModuleSettingsScalarFieldEnum)[keyof typeof LivestreamModuleSettingsScalarFieldEnum]
 
 
 export const BlogCategoryScalarFieldEnum = {
@@ -3820,6 +3998,216 @@ export const ThemeEngineModuleSettingsScalarFieldEnum = {
 } as const
 
 export type ThemeEngineModuleSettingsScalarFieldEnum = (typeof ThemeEngineModuleSettingsScalarFieldEnum)[keyof typeof ThemeEngineModuleSettingsScalarFieldEnum]
+
+
+export const DeveloperMarketplaceModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeveloperMarketplaceModuleScalarFieldEnum = (typeof DeveloperMarketplaceModuleScalarFieldEnum)[keyof typeof DeveloperMarketplaceModuleScalarFieldEnum]
+
+
+export const DeveloperMarketplaceModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type DeveloperMarketplaceModuleActivityScalarFieldEnum = (typeof DeveloperMarketplaceModuleActivityScalarFieldEnum)[keyof typeof DeveloperMarketplaceModuleActivityScalarFieldEnum]
+
+
+export const DeveloperMarketplaceModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DeveloperMarketplaceModuleSettingsScalarFieldEnum = (typeof DeveloperMarketplaceModuleSettingsScalarFieldEnum)[keyof typeof DeveloperMarketplaceModuleSettingsScalarFieldEnum]
+
+
+export const DomainTenantManagementModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DomainTenantManagementModuleScalarFieldEnum = (typeof DomainTenantManagementModuleScalarFieldEnum)[keyof typeof DomainTenantManagementModuleScalarFieldEnum]
+
+
+export const DomainTenantManagementModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type DomainTenantManagementModuleActivityScalarFieldEnum = (typeof DomainTenantManagementModuleActivityScalarFieldEnum)[keyof typeof DomainTenantManagementModuleActivityScalarFieldEnum]
+
+
+export const DomainTenantManagementModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DomainTenantManagementModuleSettingsScalarFieldEnum = (typeof DomainTenantManagementModuleSettingsScalarFieldEnum)[keyof typeof DomainTenantManagementModuleSettingsScalarFieldEnum]
+
+
+export const DigitalLibraryResourceCenterModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DigitalLibraryResourceCenterModuleScalarFieldEnum = (typeof DigitalLibraryResourceCenterModuleScalarFieldEnum)[keyof typeof DigitalLibraryResourceCenterModuleScalarFieldEnum]
+
+
+export const DigitalLibraryResourceCenterModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type DigitalLibraryResourceCenterModuleActivityScalarFieldEnum = (typeof DigitalLibraryResourceCenterModuleActivityScalarFieldEnum)[keyof typeof DigitalLibraryResourceCenterModuleActivityScalarFieldEnum]
+
+
+export const DigitalLibraryResourceCenterModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DigitalLibraryResourceCenterModuleSettingsScalarFieldEnum = (typeof DigitalLibraryResourceCenterModuleSettingsScalarFieldEnum)[keyof typeof DigitalLibraryResourceCenterModuleSettingsScalarFieldEnum]
+
+
+export const MediaModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MediaModuleScalarFieldEnum = (typeof MediaModuleScalarFieldEnum)[keyof typeof MediaModuleScalarFieldEnum]
+
+
+export const MediaModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type MediaModuleActivityScalarFieldEnum = (typeof MediaModuleActivityScalarFieldEnum)[keyof typeof MediaModuleActivityScalarFieldEnum]
+
+
+export const MediaModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MediaModuleSettingsScalarFieldEnum = (typeof MediaModuleSettingsScalarFieldEnum)[keyof typeof MediaModuleSettingsScalarFieldEnum]
+
+
+export const DynamicBlogPublishingEngineModuleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  title: 'title',
+  description: 'description',
+  status: 'status',
+  settingsJson: 'settingsJson',
+  visibility: 'visibility',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DynamicBlogPublishingEngineModuleScalarFieldEnum = (typeof DynamicBlogPublishingEngineModuleScalarFieldEnum)[keyof typeof DynamicBlogPublishingEngineModuleScalarFieldEnum]
+
+
+export const DynamicBlogPublishingEngineModuleActivityScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  userId: 'userId',
+  actionType: 'actionType',
+  metadataJson: 'metadataJson',
+  createdAt: 'createdAt'
+} as const
+
+export type DynamicBlogPublishingEngineModuleActivityScalarFieldEnum = (typeof DynamicBlogPublishingEngineModuleActivityScalarFieldEnum)[keyof typeof DynamicBlogPublishingEngineModuleActivityScalarFieldEnum]
+
+
+export const DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  moduleKey: 'moduleKey',
+  enabled: 'enabled',
+  billingPlan: 'billingPlan',
+  providerMode: 'providerMode',
+  configJson: 'configJson',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum = (typeof DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum)[keyof typeof DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum]
 
 
 export const SortOrder = {

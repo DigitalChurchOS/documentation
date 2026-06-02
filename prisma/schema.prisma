@@ -77,6 +77,12 @@ model Tenant {
   livestreamInteractions LivestreamInteraction[]
 
   churchServices          ChurchService[]
+  churchServicesModules   ChurchServicesModule[]
+  churchServicesActivities ChurchServicesModuleActivity[]
+  churchServicesSettings  ChurchServicesModuleSettings[]
+  livestreamModules       LivestreamModule[]
+  livestreamActivities    LivestreamModuleActivity[]
+  livestreamSettings      LivestreamModuleSettings[]
   blogCategories          BlogCategory[]
   blogTags                BlogTag[]
   blogPosts               BlogPost[]
@@ -232,6 +238,32 @@ model Tenant {
   centralizedSettingsEngineModules    CentralizedSettingsEngineModule[]
   centralizedSettingsEngineActivities CentralizedSettingsEngineModuleActivity[]
   centralizedSettingsEngineSettings   CentralizedSettingsEngineModuleSettings[]
+
+  pluginEngines PluginEngine[]
+
+  pluginExtensionsEngineModules    PluginExtensionsEngineModule[]
+  pluginExtensionsEngineActivities PluginExtensionsEngineActivity[]
+  pluginExtensionsEngineSettings   PluginExtensionsEngineSetting[]
+
+  developerMarketplaceModules    DeveloperMarketplaceModule[]
+  developerMarketplaceActivities DeveloperMarketplaceModuleActivity[]
+  developerMarketplaceSettings   DeveloperMarketplaceModuleSettings[]
+
+  domainTenantManagementModules    DomainTenantManagementModule[]
+  domainTenantManagementActivities DomainTenantManagementModuleActivity[]
+  domainTenantManagementSettings   DomainTenantManagementModuleSettings[]
+
+  digitalLibraryResourceCenterModules    DigitalLibraryResourceCenterModule[]
+  digitalLibraryResourceCenterActivities DigitalLibraryResourceCenterModuleActivity[]
+  digitalLibraryResourceCenterSettings   DigitalLibraryResourceCenterModuleSettings[]
+
+  mediaModules    MediaModule[]
+  mediaActivities MediaModuleActivity[]
+  mediaSettings   MediaModuleSettings[]
+
+  dynamicBlogPublishingEngineModules    DynamicBlogPublishingEngineModule[]
+  dynamicBlogPublishingEngineActivities DynamicBlogPublishingEngineModuleActivity[]
+  dynamicBlogPublishingEngineSettings   DynamicBlogPublishingEngineModuleSettings[]
 
   @@map("tenants")
 }
@@ -1309,6 +1341,8 @@ model PluginDefinition {
 
   tenantPlugins TenantPlugin[]
 
+  pluginEngines PluginEngine[]
+
   @@map("plugin_definitions")
 }
 
@@ -1356,6 +1390,95 @@ model PluginWebhook {
   @@index([tenantPluginId])
   @@index([eventTrigger])
   @@map("plugin_webhooks")
+}
+
+model PluginEngine {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  pluginId  String   @map("plugin_id")
+  status    String   @default("active") // active | disabled
+  settings  String   @default("{}") // JSON configuration
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant                  Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pluginDef               PluginDefinition         @relation(fields: [pluginId], references: [id], onDelete: Cascade)
+  pluginEnginePermissions PluginEnginePermission[]
+
+  @@unique([tenantId, pluginId])
+  @@index([tenantId])
+  @@index([pluginId])
+  pluginExtensionsEngineModules PluginExtensionsEngineModule[]
+  @@map("plugin_engine_instances")
+}
+
+model PluginEnginePermission {
+  id             String   @id @default(uuid())
+  pluginEngineId String   @map("plugin_engine_id")
+  permission     String
+  grantedAt      DateTime @default(now()) @map("granted_at")
+
+  pluginEngine PluginEngine @relation(fields: [pluginEngineId], references: [id], onDelete: Cascade)
+
+  @@index([pluginEngineId])
+  @@map("plugin_engine_permissions")
+}
+
+model PluginExtensionsEngineModule {
+  id                String   @id @default(uuid())
+  tenantId          String   @map("tenant_id")
+  pluginEngineId    String   @map("plugin_engine_id")
+  key               String   // unique key per tenant
+  name              String
+  status            String   @default("active") // active | disabled
+  settings          String   @default("{}") // JSON config
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  tenant        Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pluginEngine  PluginEngine @relation(fields: [pluginEngineId], references: [id], onDelete: Cascade)
+
+  activities PluginExtensionsEngineActivity[]
+  moduleSettings PluginExtensionsEngineSetting[]
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+  @@index([pluginEngineId])
+  @@map("plugin_extensions_engine_modules")
+}
+
+model PluginExtensionsEngineActivity {
+  id          String   @id @default(uuid())
+  tenantId    String   @map("tenant_id")
+  moduleId    String   @map("module_id")
+  type        String   // e.g., "install", "update", "error"
+  payload     String   @default("{}") // JSON payload
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  module   PluginExtensionsEngineModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([moduleId])
+  @@map("plugin_extensions_engine_activities")
+}
+
+model PluginExtensionsEngineSetting {
+  id          String   @id @default(uuid())
+  tenantId    String   @map("tenant_id")
+  moduleId    String   @map("module_id")
+  key         String
+  value       String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  module   PluginExtensionsEngineModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleId, key])
+  @@index([tenantId])
+  @@index([moduleId])
+  @@map("plugin_extensions_engine_settings")
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -1839,6 +1962,11 @@ model ChurchService {
   givingTotal     Float?   @map("giving_total")
   salvationCount  Int?     @map("salvation_count")
   status          String   @default("draft") // draft | published | archived
+  visibility      String   @default("public")
+  locationMode    String   @default("hybrid") @map("location_mode")
+  settingsJson    String   @default("{}") @map("settings_json")
+  createdById     String?  @map("created_by")
+  archiveOrder    Int?     @map("archive_order")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
@@ -1852,10 +1980,14 @@ model ChurchService {
   attachments ServiceAttachment[]
 
   @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, serviceType])
+  @@index([tenantId, serviceDate])
   @@index([serviceType])
   @@index([serviceDate])
   @@index([speakerId])
   @@index([status])
+  @@index([visibility])
   @@map("church_services")
 }
 
@@ -1894,6 +2026,120 @@ model ServiceAttachment {
 // ─────────────────────────────────────────────────────────────
 // 57. BLOG CATEGORY
 // ─────────────────────────────────────────────────────────────
+// Church Services module profile, activity, and settings records.
+model ChurchServicesModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String
+  description  String?
+  status       String   @default("active")
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("private")
+  createdById  String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([status])
+  @@index([visibility])
+  @@map("church_services_module")
+}
+
+model ChurchServicesModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type")
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, actionType])
+  @@index([actionType])
+  @@map("church_services_module_activity")
+}
+
+model ChurchServicesModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key")
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan")
+  providerMode String   @default("hybrid") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@index([moduleKey])
+  @@map("church_services_module_settings")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 50b. LIVESTREAM MODULE
+// ─────────────────────────────────────────────────────────────
+model LivestreamModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String
+  description  String?
+  status       String   @default("active")
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("private")
+  createdById  String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([status])
+  @@index([visibility])
+  @@map("livestream_module")
+}
+
+model LivestreamModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type")
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([tenantId, actionType])
+  @@index([actionType])
+  @@map("livestream_module_activity")
+}
+
+model LivestreamModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key")
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan")
+  providerMode String   @default("hybrid") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@index([moduleKey])
+  @@map("livestream_module_settings")
+}
+
 model BlogCategory {
   id          String   @id @default(uuid())
   tenantId    String   @map("tenant_id")
@@ -5471,3 +5717,284 @@ model ThemeEngineModuleSettings {
   @@index([tenantId])
   @@map("theme_engine_module_settings")
 }
+
+// ─────────────────────────────────────────────────────────────
+// 51. DEVELOPER MARKETPLACE MODULE MODELS
+// ─────────────────────────────────────────────────────────────
+
+model DeveloperMarketplaceModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String   @map("title")
+  description  String?
+  status       String   @default("active") // active | inactive
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("public") // public | private
+  createdBy    String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("developer_marketplace_module")
+}
+
+model DeveloperMarketplaceModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type")
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([actionType])
+  @@map("developer_marketplace_module_activity")
+}
+
+model DeveloperMarketplaceModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key") // developer-marketplace
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan")
+  providerMode String   @default("bring_your_own") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@map("developer_marketplace_module_settings")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 52. DOMAIN & TENANT MANAGEMENT MODULE MODELS
+// ─────────────────────────────────────────────────────────────
+
+model DomainTenantManagementModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String   @map("title")
+  description  String?
+  status       String   @default("active") // active | inactive
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("public") // public | private
+  createdBy    String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("domain_tenant_management_module")
+}
+
+model DomainTenantManagementModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type")
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([actionType])
+  @@map("domain_tenant_management_module_activity")
+}
+
+model DomainTenantManagementModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key") // domain-tenant-management
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan")
+  providerMode String   @default("bring_your_own") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@map("domain_tenant_management_module_settings")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 53. DIGITAL LIBRARY & RESOURCE CENTER MODULE MODELS
+// ─────────────────────────────────────────────────────────────
+
+model DigitalLibraryResourceCenterModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String   @map("title")
+  description  String?
+  status       String   @default("active") // active | inactive
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("public") // public | private
+  createdBy    String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("digital_library_resource_center_module")
+}
+
+model DigitalLibraryResourceCenterModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type")
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([actionType])
+  @@map("digital_library_resource_center_module_activity")
+}
+
+model DigitalLibraryResourceCenterModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key") // digital-library-resource-center
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan")
+  providerMode String   @default("bring_your_own") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@map("digital_library_resource_center_module_settings")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 54. MEDIA MODULE MODELS
+// ─────────────────────────────────────────────────────────────
+
+model MediaModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String
+  description  String?
+  status       String   @default("active") // active | inactive | archived
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("private")
+  createdBy    String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+  @@index([tenantId, status])
+  @@map("media_module")
+}
+
+model MediaModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type")
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([actionType])
+  @@index([tenantId, actionType])
+  @@map("media_module_activity")
+}
+
+model MediaModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key")
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan")
+  providerMode String   @default("hybrid") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@index([moduleKey])
+  @@map("media_module_settings")
+}
+
+// ─────────────────────────────────────────────────────────────
+// 55. DYNAMIC BLOG & PUBLISHING ENGINE MODULE MODELS
+// ─────────────────────────────────────────────────────────────
+
+model DynamicBlogPublishingEngineModule {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  title        String   @map("title")
+  description  String?
+  status       String   @default("active") // active | inactive
+  settingsJson String   @default("{}") @map("settings_json")
+  visibility   String   @default("public") // public | private
+  createdBy    String?  @map("created_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("dynamic_blog_publishing_engine_module")
+}
+
+model DynamicBlogPublishingEngineModuleActivity {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  userId       String?  @map("user_id")
+  actionType   String   @map("action_type")
+  metadataJson String   @default("{}") @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([actionType])
+  @@map("dynamic_blog_publishing_engine_module_activity")
+}
+
+model DynamicBlogPublishingEngineModuleSettings {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  moduleKey    String   @map("module_key") // dynamic-blog-publishing-engine
+  enabled      Boolean  @default(true)
+  billingPlan  String   @default("free") @map("billing_plan")
+  providerMode String   @default("bring_your_own") @map("provider_mode")
+  configJson   String   @default("{}") @map("config_json")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, moduleKey])
+  @@index([tenantId])
+  @@map("dynamic_blog_publishing_engine_module_settings")
+}
+
+
+

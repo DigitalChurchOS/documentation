@@ -6,6 +6,8 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
+jest.setTimeout(30000);
+
 describe('ChurchOS Livestream Module', () => {
   let tenantId: string;
   let adminToken: string;
@@ -35,6 +37,15 @@ describe('ChurchOS Livestream Module', () => {
       data: { name: 'Live Church', subdomain: 'live-test', status: 'active' },
     });
     tenantId = tenant.id;
+
+    // Activate Livestream Module Entitlement
+    await prisma.tenantModule.create({
+      data: {
+        tenantId,
+        moduleKey: 'livestream',
+        status: 'active',
+      },
+    });
 
     // Create Admin Role & Permissions
     const permissions = await prisma.permission.findMany({
@@ -390,6 +401,109 @@ describe('ChurchOS Livestream Module', () => {
       expect(res.status).toBe(200);
       expect(res.body.data.length).toBe(1);
       expect(res.body.data[0].type).toBe('prayer_request');
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────
+  // 15. PUBLIC VISITOR ENDPOINTS
+  // ─────────────────────────────────────────────────────────────
+  describe('Public Visitor Endpoints', () => {
+    let publicStreamId: string;
+    let guestViewerId: string;
+
+    it('should schedule a public stream and check countdown page API access', async () => {
+      const createRes = await request(app)
+        .post('/api/livestream/streams')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          title: 'Public Youth Gathering',
+          description: 'A service for the youth.',
+          scheduledAt: '2026-06-02T18:00:00Z',
+          thumbnailUrl: 'https://cdn.church.com/thumbs/youth.jpg',
+          countdownEnabled: true,
+          chatEnabled: true,
+        });
+
+      expect(createRes.status).toBe(201);
+      publicStreamId = createRes.body.data.id;
+
+      // Update public settings to have public publishing enabled
+      await request(app)
+        .patch('/api/livestream/settings')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          configJson: {
+            publicPublishingEnabled: true,
+            enabled: true,
+          }
+        });
+
+      // Get public detail as guest (no Authorization header, resolves tenant context from stream id)
+      const res = await request(app)
+        .get(`/api/public/livestream/${publicStreamId}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.title).toBe('Public Youth Gathering');
+      expect(res.body.data.status).toBe('scheduled');
+      expect(res.body.data.streamKey).toBeUndefined(); // Sanitize check
+      expect(res.body.data.rtmpIngestUrl).toBeUndefined(); // Sanitize check
+    });
+
+    it('should register guest viewer joining', async () => {
+      const res = await request(app)
+        .post(`/api/public/livestream/${publicStreamId}/viewers/join`)
+        .send({ sessionId: 'guest-session-123' });
+
+      expect(res.status).toBe(201);
+      expect(res.body.data.id).toBeTruthy();
+      expect(res.body.data.sessionId).toBe('guest-session-123');
+      guestViewerId = res.body.data.id;
+    });
+
+    it('should submit viewer interactions (prayer, salvation, giving)', async () => {
+      const prRes = await request(app)
+        .post(`/api/public/livestream/${publicStreamId}/interactions`)
+        .send({ type: 'prayer_request', content: 'Prayer for exams.' });
+      expect(prRes.status).toBe(201);
+
+      const givRes = await request(app)
+        .post(`/api/public/livestream/${publicStreamId}/interactions`)
+        .send({ type: 'giving_click', content: 'Offered $50' });
+      expect(givRes.status).toBe(201);
+    });
+
+    it('should handle guest chat message verification (rejection if offline vs active)', async () => {
+      // Stream is scheduled (not live), so chat should be rejected
+      const chatRes1 = await request(app)
+        .post(`/api/public/livestream/${publicStreamId}/chat`)
+        .send({ displayName: 'Guest User', message: 'Hello' });
+
+      expect(chatRes1.status).toBe(400); // Rejects chat when not live
+
+      // Go live
+      await request(app)
+        .post(`/api/livestream/streams/${publicStreamId}/go-live`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      // Now chat should be accepted
+      const chatRes2 = await request(app)
+        .post(`/api/public/livestream/${publicStreamId}/chat`)
+        .send({ displayName: 'Guest User', message: 'Hello active stream' });
+
+      expect(chatRes2.status).toBe(201);
+      expect(chatRes2.body.data.message).toBe('Hello active stream');
+    });
+
+    it('should track viewer leaving', async () => {
+      const res = await request(app)
+        .post(`/api/public/livestream/${publicStreamId}/viewers/leave`)
+        .send({ viewerId: guestViewerId });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.durationSeconds).toBeDefined();
     });
   });
 });

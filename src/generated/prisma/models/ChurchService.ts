@@ -30,12 +30,14 @@ export type ChurchServiceAvgAggregateOutputType = {
   attendanceCount: number | null
   givingTotal: number | null
   salvationCount: number | null
+  archiveOrder: number | null
 }
 
 export type ChurchServiceSumAggregateOutputType = {
   attendanceCount: number | null
   givingTotal: number | null
   salvationCount: number | null
+  archiveOrder: number | null
 }
 
 export type ChurchServiceMinAggregateOutputType = {
@@ -55,6 +57,11 @@ export type ChurchServiceMinAggregateOutputType = {
   givingTotal: number | null
   salvationCount: number | null
   status: string | null
+  visibility: string | null
+  locationMode: string | null
+  settingsJson: string | null
+  createdById: string | null
+  archiveOrder: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -76,6 +83,11 @@ export type ChurchServiceMaxAggregateOutputType = {
   givingTotal: number | null
   salvationCount: number | null
   status: string | null
+  visibility: string | null
+  locationMode: string | null
+  settingsJson: string | null
+  createdById: string | null
+  archiveOrder: number | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -97,6 +109,11 @@ export type ChurchServiceCountAggregateOutputType = {
   givingTotal: number
   salvationCount: number
   status: number
+  visibility: number
+  locationMode: number
+  settingsJson: number
+  createdById: number
+  archiveOrder: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -107,12 +124,14 @@ export type ChurchServiceAvgAggregateInputType = {
   attendanceCount?: true
   givingTotal?: true
   salvationCount?: true
+  archiveOrder?: true
 }
 
 export type ChurchServiceSumAggregateInputType = {
   attendanceCount?: true
   givingTotal?: true
   salvationCount?: true
+  archiveOrder?: true
 }
 
 export type ChurchServiceMinAggregateInputType = {
@@ -132,6 +151,11 @@ export type ChurchServiceMinAggregateInputType = {
   givingTotal?: true
   salvationCount?: true
   status?: true
+  visibility?: true
+  locationMode?: true
+  settingsJson?: true
+  createdById?: true
+  archiveOrder?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -153,6 +177,11 @@ export type ChurchServiceMaxAggregateInputType = {
   givingTotal?: true
   salvationCount?: true
   status?: true
+  visibility?: true
+  locationMode?: true
+  settingsJson?: true
+  createdById?: true
+  archiveOrder?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -174,6 +203,11 @@ export type ChurchServiceCountAggregateInputType = {
   givingTotal?: true
   salvationCount?: true
   status?: true
+  visibility?: true
+  locationMode?: true
+  settingsJson?: true
+  createdById?: true
+  archiveOrder?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -282,6 +316,11 @@ export type ChurchServiceGroupByOutputType = {
   givingTotal: number | null
   salvationCount: number | null
   status: string
+  visibility: string
+  locationMode: string
+  settingsJson: string
+  createdById: string | null
+  archiveOrder: number | null
   createdAt: Date
   updatedAt: Date
   _count: ChurchServiceCountAggregateOutputType | null
@@ -326,6 +365,11 @@ export type ChurchServiceWhereInput = {
   givingTotal?: Prisma.FloatNullableFilter<"ChurchService"> | number | null
   salvationCount?: Prisma.IntNullableFilter<"ChurchService"> | number | null
   status?: Prisma.StringFilter<"ChurchService"> | string
+  visibility?: Prisma.StringFilter<"ChurchService"> | string
+  locationMode?: Prisma.StringFilter<"ChurchService"> | string
+  settingsJson?: Prisma.StringFilter<"ChurchService"> | string
+  createdById?: Prisma.StringNullableFilter<"ChurchService"> | string | null
+  archiveOrder?: Prisma.IntNullableFilter<"ChurchService"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ChurchService"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChurchService"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -354,6 +398,11 @@ export type ChurchServiceOrderByWithRelationInput = {
   givingTotal?: Prisma.SortOrderInput | Prisma.SortOrder
   salvationCount?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  settingsJson?: Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  archiveOrder?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
@@ -385,6 +434,11 @@ export type ChurchServiceWhereUniqueInput = Prisma.AtLeast<{
   givingTotal?: Prisma.FloatNullableFilter<"ChurchService"> | number | null
   salvationCount?: Prisma.IntNullableFilter<"ChurchService"> | number | null
   status?: Prisma.StringFilter<"ChurchService"> | string
+  visibility?: Prisma.StringFilter<"ChurchService"> | string
+  locationMode?: Prisma.StringFilter<"ChurchService"> | string
+  settingsJson?: Prisma.StringFilter<"ChurchService"> | string
+  createdById?: Prisma.StringNullableFilter<"ChurchService"> | string | null
+  archiveOrder?: Prisma.IntNullableFilter<"ChurchService"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ChurchService"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChurchService"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
@@ -413,6 +467,11 @@ export type ChurchServiceOrderByWithAggregationInput = {
   givingTotal?: Prisma.SortOrderInput | Prisma.SortOrder
   salvationCount?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  settingsJson?: Prisma.SortOrder
+  createdById?: Prisma.SortOrderInput | Prisma.SortOrder
+  archiveOrder?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ChurchServiceCountOrderByAggregateInput
@@ -442,6 +501,11 @@ export type ChurchServiceScalarWhereWithAggregatesInput = {
   givingTotal?: Prisma.FloatNullableWithAggregatesFilter<"ChurchService"> | number | null
   salvationCount?: Prisma.IntNullableWithAggregatesFilter<"ChurchService"> | number | null
   status?: Prisma.StringWithAggregatesFilter<"ChurchService"> | string
+  visibility?: Prisma.StringWithAggregatesFilter<"ChurchService"> | string
+  locationMode?: Prisma.StringWithAggregatesFilter<"ChurchService"> | string
+  settingsJson?: Prisma.StringWithAggregatesFilter<"ChurchService"> | string
+  createdById?: Prisma.StringNullableWithAggregatesFilter<"ChurchService"> | string | null
+  archiveOrder?: Prisma.IntNullableWithAggregatesFilter<"ChurchService"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ChurchService"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ChurchService"> | Date | string
 }
@@ -458,6 +522,11 @@ export type ChurchServiceCreateInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutChurchServicesInput
@@ -486,6 +555,11 @@ export type ChurchServiceUncheckedCreateInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedCreateNestedManyWithoutServiceInput
@@ -504,6 +578,11 @@ export type ChurchServiceUpdateInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutChurchServicesNestedInput
@@ -532,6 +611,11 @@ export type ChurchServiceUncheckedUpdateInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedUpdateManyWithoutServiceNestedInput
@@ -555,6 +639,11 @@ export type ChurchServiceCreateManyInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -571,6 +660,11 @@ export type ChurchServiceUpdateManyMutationInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -592,6 +686,11 @@ export type ChurchServiceUncheckedUpdateManyInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -623,6 +722,11 @@ export type ChurchServiceCountOrderByAggregateInput = {
   givingTotal?: Prisma.SortOrder
   salvationCount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  settingsJson?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  archiveOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -631,6 +735,7 @@ export type ChurchServiceAvgOrderByAggregateInput = {
   attendanceCount?: Prisma.SortOrder
   givingTotal?: Prisma.SortOrder
   salvationCount?: Prisma.SortOrder
+  archiveOrder?: Prisma.SortOrder
 }
 
 export type ChurchServiceMaxOrderByAggregateInput = {
@@ -650,6 +755,11 @@ export type ChurchServiceMaxOrderByAggregateInput = {
   givingTotal?: Prisma.SortOrder
   salvationCount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  settingsJson?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  archiveOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -671,6 +781,11 @@ export type ChurchServiceMinOrderByAggregateInput = {
   givingTotal?: Prisma.SortOrder
   salvationCount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  visibility?: Prisma.SortOrder
+  locationMode?: Prisma.SortOrder
+  settingsJson?: Prisma.SortOrder
+  createdById?: Prisma.SortOrder
+  archiveOrder?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -679,6 +794,7 @@ export type ChurchServiceSumOrderByAggregateInput = {
   attendanceCount?: Prisma.SortOrder
   givingTotal?: Prisma.SortOrder
   salvationCount?: Prisma.SortOrder
+  archiveOrder?: Prisma.SortOrder
 }
 
 export type ChurchServiceScalarRelationFilter = {
@@ -936,6 +1052,11 @@ export type ChurchServiceCreateWithoutTenantInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   speaker?: Prisma.SpeakerCreateNestedOneWithoutChurchServicesInput
@@ -962,6 +1083,11 @@ export type ChurchServiceUncheckedCreateWithoutTenantInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedCreateNestedManyWithoutServiceInput
@@ -1013,6 +1139,11 @@ export type ChurchServiceScalarWhereInput = {
   givingTotal?: Prisma.FloatNullableFilter<"ChurchService"> | number | null
   salvationCount?: Prisma.IntNullableFilter<"ChurchService"> | number | null
   status?: Prisma.StringFilter<"ChurchService"> | string
+  visibility?: Prisma.StringFilter<"ChurchService"> | string
+  locationMode?: Prisma.StringFilter<"ChurchService"> | string
+  settingsJson?: Prisma.StringFilter<"ChurchService"> | string
+  createdById?: Prisma.StringNullableFilter<"ChurchService"> | string | null
+  archiveOrder?: Prisma.IntNullableFilter<"ChurchService"> | number | null
   createdAt?: Prisma.DateTimeFilter<"ChurchService"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ChurchService"> | Date | string
 }
@@ -1029,6 +1160,11 @@ export type ChurchServiceCreateWithoutSpeakerInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutChurchServicesInput
@@ -1055,6 +1191,11 @@ export type ChurchServiceUncheckedCreateWithoutSpeakerInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedCreateNestedManyWithoutServiceInput
@@ -1098,6 +1239,11 @@ export type ChurchServiceCreateWithoutSermonMediaInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutChurchServicesInput
@@ -1124,6 +1270,11 @@ export type ChurchServiceUncheckedCreateWithoutSermonMediaInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedCreateNestedManyWithoutServiceInput
@@ -1151,6 +1302,11 @@ export type ChurchServiceCreateWithoutServiceAudioInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutChurchServicesInput
@@ -1177,6 +1333,11 @@ export type ChurchServiceUncheckedCreateWithoutServiceAudioInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedCreateNestedManyWithoutServiceInput
@@ -1236,6 +1397,11 @@ export type ChurchServiceCreateWithoutLivestreamInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutChurchServicesInput
@@ -1262,6 +1428,11 @@ export type ChurchServiceUncheckedCreateWithoutLivestreamInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedCreateNestedManyWithoutServiceInput
@@ -1305,6 +1476,11 @@ export type ChurchServiceCreateWithoutScripturesInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutChurchServicesInput
@@ -1332,6 +1508,11 @@ export type ChurchServiceUncheckedCreateWithoutScripturesInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   attachments?: Prisma.ServiceAttachmentUncheckedCreateNestedManyWithoutServiceInput
@@ -1365,6 +1546,11 @@ export type ChurchServiceUpdateWithoutScripturesInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutChurchServicesNestedInput
@@ -1392,6 +1578,11 @@ export type ChurchServiceUncheckedUpdateWithoutScripturesInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attachments?: Prisma.ServiceAttachmentUncheckedUpdateManyWithoutServiceNestedInput
@@ -1409,6 +1600,11 @@ export type ChurchServiceCreateWithoutAttachmentsInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutChurchServicesInput
@@ -1436,6 +1632,11 @@ export type ChurchServiceUncheckedCreateWithoutAttachmentsInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedCreateNestedManyWithoutServiceInput
@@ -1469,6 +1670,11 @@ export type ChurchServiceUpdateWithoutAttachmentsInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutChurchServicesNestedInput
@@ -1496,6 +1702,11 @@ export type ChurchServiceUncheckedUpdateWithoutAttachmentsInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedUpdateManyWithoutServiceNestedInput
@@ -1517,6 +1728,11 @@ export type ChurchServiceCreateManyTenantInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1533,6 +1749,11 @@ export type ChurchServiceUpdateWithoutTenantInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   speaker?: Prisma.SpeakerUpdateOneWithoutChurchServicesNestedInput
@@ -1559,6 +1780,11 @@ export type ChurchServiceUncheckedUpdateWithoutTenantInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedUpdateManyWithoutServiceNestedInput
@@ -1581,6 +1807,11 @@ export type ChurchServiceUncheckedUpdateManyWithoutTenantInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1601,6 +1832,11 @@ export type ChurchServiceCreateManySpeakerInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1617,6 +1853,11 @@ export type ChurchServiceUpdateWithoutSpeakerInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutChurchServicesNestedInput
@@ -1643,6 +1884,11 @@ export type ChurchServiceUncheckedUpdateWithoutSpeakerInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedUpdateManyWithoutServiceNestedInput
@@ -1665,6 +1911,11 @@ export type ChurchServiceUncheckedUpdateManyWithoutSpeakerInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1685,6 +1936,11 @@ export type ChurchServiceCreateManySermonMediaInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1705,6 +1961,11 @@ export type ChurchServiceCreateManyServiceAudioInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1721,6 +1982,11 @@ export type ChurchServiceUpdateWithoutSermonMediaInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutChurchServicesNestedInput
@@ -1747,6 +2013,11 @@ export type ChurchServiceUncheckedUpdateWithoutSermonMediaInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedUpdateManyWithoutServiceNestedInput
@@ -1769,6 +2040,11 @@ export type ChurchServiceUncheckedUpdateManyWithoutSermonMediaInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1785,6 +2061,11 @@ export type ChurchServiceUpdateWithoutServiceAudioInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutChurchServicesNestedInput
@@ -1811,6 +2092,11 @@ export type ChurchServiceUncheckedUpdateWithoutServiceAudioInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedUpdateManyWithoutServiceNestedInput
@@ -1833,6 +2119,11 @@ export type ChurchServiceUncheckedUpdateManyWithoutServiceAudioInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1853,6 +2144,11 @@ export type ChurchServiceCreateManyLivestreamInput = {
   givingTotal?: number | null
   salvationCount?: number | null
   status?: string
+  visibility?: string
+  locationMode?: string
+  settingsJson?: string
+  createdById?: string | null
+  archiveOrder?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1869,6 +2165,11 @@ export type ChurchServiceUpdateWithoutLivestreamInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutChurchServicesNestedInput
@@ -1895,6 +2196,11 @@ export type ChurchServiceUncheckedUpdateWithoutLivestreamInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   scriptures?: Prisma.ServiceScriptureUncheckedUpdateManyWithoutServiceNestedInput
@@ -1917,6 +2223,11 @@ export type ChurchServiceUncheckedUpdateManyWithoutLivestreamInput = {
   givingTotal?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   salvationCount?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  locationMode?: Prisma.StringFieldUpdateOperationsInput | string
+  settingsJson?: Prisma.StringFieldUpdateOperationsInput | string
+  createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  archiveOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1978,6 +2289,11 @@ export type ChurchServiceSelect<ExtArgs extends runtime.Types.Extensions.Interna
   givingTotal?: boolean
   salvationCount?: boolean
   status?: boolean
+  visibility?: boolean
+  locationMode?: boolean
+  settingsJson?: boolean
+  createdById?: boolean
+  archiveOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -2007,6 +2323,11 @@ export type ChurchServiceSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   givingTotal?: boolean
   salvationCount?: boolean
   status?: boolean
+  visibility?: boolean
+  locationMode?: boolean
+  settingsJson?: boolean
+  createdById?: boolean
+  archiveOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -2033,6 +2354,11 @@ export type ChurchServiceSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   givingTotal?: boolean
   salvationCount?: boolean
   status?: boolean
+  visibility?: boolean
+  locationMode?: boolean
+  settingsJson?: boolean
+  createdById?: boolean
+  archiveOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -2059,11 +2385,16 @@ export type ChurchServiceSelectScalar = {
   givingTotal?: boolean
   salvationCount?: boolean
   status?: boolean
+  visibility?: boolean
+  locationMode?: boolean
+  settingsJson?: boolean
+  createdById?: boolean
+  archiveOrder?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ChurchServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "title" | "serviceType" | "serviceDate" | "description" | "notes" | "thumbnailUrl" | "speakerId" | "sermonMediaId" | "serviceAudioId" | "livestreamId" | "attendanceCount" | "givingTotal" | "salvationCount" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["churchService"]>
+export type ChurchServiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "title" | "serviceType" | "serviceDate" | "description" | "notes" | "thumbnailUrl" | "speakerId" | "sermonMediaId" | "serviceAudioId" | "livestreamId" | "attendanceCount" | "givingTotal" | "salvationCount" | "status" | "visibility" | "locationMode" | "settingsJson" | "createdById" | "archiveOrder" | "createdAt" | "updatedAt", ExtArgs["result"]["churchService"]>
 export type ChurchServiceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   speaker?: boolean | Prisma.ChurchService$speakerArgs<ExtArgs>
@@ -2117,6 +2448,11 @@ export type $ChurchServicePayload<ExtArgs extends runtime.Types.Extensions.Inter
     givingTotal: number | null
     salvationCount: number | null
     status: string
+    visibility: string
+    locationMode: string
+    settingsJson: string
+    createdById: string | null
+    archiveOrder: number | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["churchService"]>
@@ -2565,6 +2901,11 @@ export interface ChurchServiceFieldRefs {
   readonly givingTotal: Prisma.FieldRef<"ChurchService", 'Float'>
   readonly salvationCount: Prisma.FieldRef<"ChurchService", 'Int'>
   readonly status: Prisma.FieldRef<"ChurchService", 'String'>
+  readonly visibility: Prisma.FieldRef<"ChurchService", 'String'>
+  readonly locationMode: Prisma.FieldRef<"ChurchService", 'String'>
+  readonly settingsJson: Prisma.FieldRef<"ChurchService", 'String'>
+  readonly createdById: Prisma.FieldRef<"ChurchService", 'String'>
+  readonly archiveOrder: Prisma.FieldRef<"ChurchService", 'Int'>
   readonly createdAt: Prisma.FieldRef<"ChurchService", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ChurchService", 'DateTime'>
 }

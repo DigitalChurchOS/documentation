@@ -54,8 +54,8 @@ describe('ChurchOS Theme Engine Module', () => {
 
     await prisma.moduleDefinition.upsert({
       where: { key: 'website-cms' },
-      update: { name: 'Core Website & CMS', category: 'Core', dependencies: '[]' },
-      create: { key: 'website-cms', name: 'Core Website & CMS', category: 'Core', dependencies: '[]' },
+      update: { name: 'Churchfront', category: 'Core', dependencies: '[]' },
+      create: { key: 'website-cms', name: 'Churchfront', category: 'Core', dependencies: '[]' },
     });
 
     await prisma.tenantModule.createMany({

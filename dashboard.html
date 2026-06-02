@@ -214,9 +214,10 @@
       display: block;
       margin: 0 0 8px;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
+      text-align: left;
     }
 
     input, select, textarea {
@@ -229,6 +230,19 @@
       padding: 12px 13px;
       font-size: 13px;
       transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    input[type="checkbox"], input[type="radio"] {
+      width: 16px !important;
+      height: 16px !important;
+      min-height: 16px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      background: transparent !important;
+      border: none !important;
+      appearance: checkbox !important;
+      -webkit-appearance: checkbox !important;
+      cursor: pointer;
     }
 
     body.light input,
@@ -2615,14 +2629,44 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: var(--radius);
-        background: var(--panel-2);
-        border: 1px solid var(--line);
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
         color: var(--text);
         cursor: pointer;
         flex-shrink: 0;
+        transition: opacity 0.2s, transform 0.2s;
+      }
+      .hamburger-btn:hover {
+        transform: scale(1.1);
+        opacity: 0.85;
+      }
+      .hamburger-btn i,
+      .hamburger-btn svg {
+        width: 24px !important;
+        height: 24px !important;
+        stroke-width: 2 !important;
+      }
+
+      /* Profile dropdown button on mobile */
+      .profile-dropdown-btn {
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .profile-dropdown-btn #topbarUserName,
+      .profile-dropdown-btn [data-lucide="chevron-down"],
+      .profile-dropdown-btn .lucide-chevron-down {
+        display: none !important;
+      }
+      .profile-dropdown-btn .avatar {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 13px !important;
       }
       .content {
         padding: 16px;
@@ -2699,8 +2743,9 @@
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      width: 100%;
-      max-width: 400px;
+      width: fit-content;
+      min-width: 320px;
+      max-width: min(650px, calc(100% - 48px));
       padding: 24px;
       text-align: center;
       box-shadow: var(--shadow);
@@ -2709,6 +2754,7 @@
       align-items: center;
       transform: translateY(0);
       animation: dialogSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
     }
 
     .system-dialog-icon {
@@ -2791,6 +2837,85 @@
       background: var(--accent-soft) !important;
       color: var(--text) !important;
     }
+
+    /* International Phone Input Custom Styles */
+    .phone-input-wrapper {
+      position: relative;
+      display: flex;
+      gap: 6px;
+      width: 100%;
+    }
+    .country-select-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0 10px;
+      cursor: pointer;
+      min-height: 40px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      user-select: none;
+      transition: border-color 0.16s ease, background 0.16s ease;
+    }
+    .country-select-btn:hover {
+      border-color: var(--accent);
+      background: var(--soft-surface);
+    }
+    .country-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 280px;
+      max-height: 220px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      animation: dialogSlideUp 0.15s ease-out;
+    }
+    .country-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      max-height: 160px;
+    }
+    .country-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text);
+      transition: background 0.16s ease;
+      text-align: left;
+    }
+    .country-item:hover {
+      background: var(--panel-2);
+    }
+    .country-item .flag {
+      font-size: 16px;
+    }
+    .country-item .name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .country-item .code {
+      color: var(--muted);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -2832,7 +2957,7 @@
     <div class="sidebar-wrapper">
       <!-- Column A: Module Category Sidebar (thin vertical bar on the left) -->
       <aside class="sidebar-column-a">
-        <div class="sidebar-a-logo" onclick="switchView('overview')" style="cursor: pointer;" title="ChurchOS">
+        <div class="sidebar-a-logo" onclick="selectSidebarCategory('home')" style="cursor: pointer;" title="ChurchOS">
           <i data-lucide="church"></i>
         </div>
         <div class="sidebar-a-nav" id="sidebarCategoriesA">
@@ -2959,7 +3084,7 @@
               <!-- CMS Sidebar -->
               <aside class="cms-nav-panel">
                 <div class="cms-nav-group">
-                  <div class="cms-nav-header">Core Website & CMS</div>
+                  <div class="cms-nav-header">Churchfront</div>
                   <button class="cms-nav-item active" data-cms-tab="overview">
                     <i data-lucide="layout-dashboard"></i>
                     <span>Overview</span>
@@ -3005,7 +3130,7 @@
                 <div id="cmsOverviewTab" class="cms-tab-content">
                   <div class="section-head">
                     <div>
-                      <h2>Core Website & CMS Control Center</h2>
+                      <h2>Churchfront Control Center</h2>
                       <p>Create public pages, guide publishing, manage reusable content, and keep church website records tenant-safe.</p>
                     </div>
                     <button class="btn primary" onclick="createNewPageModal()"><i data-lucide="plus"></i>New Page</button>
@@ -3362,36 +3487,506 @@
             </div>
           </div>
 
-          <!-- DOMAIN & TENANT MANAGEMENT CONSOLE -->
+          <!-- CHURCH DETAILS CONSOLE -->
           <div id="domainTenantConsoleContainer" class="hidden">
-            <div class="cms-view-layout">
+            <div class="cms-view-layout" style="grid-template-columns: 240px 1fr 300px;">
               <!-- Sidebar -->
               <aside class="cms-nav-panel">
                 <div class="cms-nav-group">
-                  <div class="cms-nav-header">Domain & Tenant</div>
-                  <button class="cms-nav-item active" data-domain-tenant-tab="domain">
-                    <i data-lucide="globe"></i>
-                    <span>Domain Setup</span>
+                  <div class="cms-nav-header">Church Details</div>
+                  <button class="cms-nav-item active" data-domain-tenant-tab="identity">
+                    <i data-lucide="sliders-horizontal"></i>
+                    <span>Church Identity</span>
                   </button>
                   <button class="cms-nav-item" data-domain-tenant-tab="branding">
                     <i data-lucide="palette"></i>
                     <span>Branding</span>
                   </button>
-                  <button class="cms-nav-item" data-domain-tenant-tab="modules">
-                    <i data-lucide="layers"></i>
-                    <span>Module Registry</span>
-                  </button>
-                  <button class="cms-nav-item" data-domain-tenant-tab="checklist">
-                    <i data-lucide="list-todo"></i>
-                    <span>Onboarding Checklist</span>
+                  <button class="cms-nav-item" data-domain-tenant-tab="domain">
+                    <i data-lucide="globe"></i>
+                    <span>Domain Setup</span>
                   </button>
                 </div>
               </aside>
 
               <!-- Content Panel -->
               <div class="cms-content-panel" style="padding: 0; display: flex; flex-direction: column; gap: 16px;">
-                <!-- 1. DOMAIN SETUP TAB -->
-                <div id="domainTenantDomainTab" class="domain-tenant-tab-content">
+                <!-- 1. CHURCH IDENTITY TAB -->
+                <div id="domainTenantIdentityTab" class="domain-tenant-tab-content">
+                  <div class="section-head">
+                    <div>
+                      <h2>Church Identity</h2>
+                      <p>Manage your church name, contact details, location, and regional settings.</p>
+                    </div>
+                  </div>
+                  <div class="panel" style="padding:24px; display:flex; flex-direction:column; gap:20px;">
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                      <div>
+                        <label style="font-weight:600; display:block; margin-bottom:8px;">Church Name</label>
+                        <input type="text" id="dtChurchNameInput" class="input" style="width:100%;" placeholder="e.g. Grace Fellowship">
+                      </div>
+                      <div>
+                        <label style="font-weight:600; display:block; margin-bottom:8px;">Primary Language</label>
+                        <select id="dtLanguageSelect" class="select" style="width:100%;">
+                          <optgroup label="── Most Common ──">
+                            <option value="en">English</option>
+                            <option value="es">Español (Spanish)</option>
+                            <option value="fr">Français (French)</option>
+                            <option value="pt">Português (Portuguese)</option>
+                            <option value="zh">中文 (Chinese)</option>
+                            <option value="ar">العربية (Arabic)</option>
+                            <option value="hi">हिन्दी (Hindi)</option>
+                            <option value="ru">Русский (Russian)</option>
+                            <option value="de">Deutsch (German)</option>
+                            <option value="ja">日本語 (Japanese)</option>
+                            <option value="ko">한국어 (Korean)</option>
+                            <option value="it">Italiano (Italian)</option>
+                            <option value="nl">Nederlands (Dutch)</option>
+                            <option value="pl">Polski (Polish)</option>
+                            <option value="tr">Türkçe (Turkish)</option>
+                            <option value="vi">Tiếng Việt (Vietnamese)</option>
+                            <option value="th">ไทย (Thai)</option>
+                            <option value="id">Bahasa Indonesia (Indonesian)</option>
+                            <option value="ms">Bahasa Melayu (Malay)</option>
+                            <option value="fil">Filipino (Tagalog)</option>
+                            <option value="sw">Kiswahili (Swahili)</option>
+                          </optgroup>
+                          <optgroup label="── African Languages ──">
+                            <option value="af">Afrikaans</option>
+                            <option value="am">አማርኛ (Amharic)</option>
+                            <option value="bm">Bamanankan (Bambara)</option>
+                            <option value="ee">Eʋegbe (Ewe)</option>
+                            <option value="ff">Fulfulde (Fula)</option>
+                            <option value="ha">Hausa</option>
+                            <option value="ig">Igbo</option>
+                            <option value="rw">Ikinyarwanda (Kinyarwanda)</option>
+                            <option value="rn">Ikirundi (Kirundi)</option>
+                            <option value="kg">Kikongo (Kongo)</option>
+                            <option value="ln">Lingála</option>
+                            <option value="lg">Luganda (Ganda)</option>
+                            <option value="mg">Malagasy</option>
+                            <option value="ny">Chichewa (Chewa)</option>
+                            <option value="om">Afaan Oromoo (Oromo)</option>
+                            <option value="sn">chiShona (Shona)</option>
+                            <option value="so">Soomaali (Somali)</option>
+                            <option value="st">Sesotho (Southern Sotho)</option>
+                            <option value="ti">ትግርኛ (Tigrinya)</option>
+                            <option value="ts">Xitsonga (Tsonga)</option>
+                            <option value="tn">Setswana (Tswana)</option>
+                            <option value="tw">Twi (Akan)</option>
+                            <option value="wo">Wolof</option>
+                            <option value="xh">isiXhosa (Xhosa)</option>
+                            <option value="yo">Yorùbá</option>
+                            <option value="zu">isiZulu (Zulu)</option>
+                          </optgroup>
+                          <optgroup label="── South Asian Languages ──">
+                            <option value="as">অসমীয়া (Assamese)</option>
+                            <option value="bn">বাংলা (Bengali)</option>
+                            <option value="gu">ગુજરાતી (Gujarati)</option>
+                            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                            <option value="ks">کٲشُر (Kashmiri)</option>
+                            <option value="ml">മലയാളം (Malayalam)</option>
+                            <option value="mr">मराठी (Marathi)</option>
+                            <option value="ne">नेपाली (Nepali)</option>
+                            <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                            <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                            <option value="sd">سنڌي (Sindhi)</option>
+                            <option value="si">සිංහල (Sinhala)</option>
+                            <option value="ta">தமிழ் (Tamil)</option>
+                            <option value="te">తెలుగు (Telugu)</option>
+                            <option value="ur">اردو (Urdu)</option>
+                          </optgroup>
+                          <optgroup label="── East & Southeast Asian Languages ──">
+                            <option value="my">ဗမာစာ (Burmese)</option>
+                            <option value="km">ភាសាខ្មែរ (Khmer)</option>
+                            <option value="lo">ລາວ (Lao)</option>
+                            <option value="mn">Монгол (Mongolian)</option>
+                            <option value="zh-TW">繁體中文 (Chinese Traditional)</option>
+                            <option value="zh-CN">简体中文 (Chinese Simplified)</option>
+                          </optgroup>
+                          <optgroup label="── Middle Eastern Languages ──">
+                            <option value="fa">فارسی (Persian/Farsi)</option>
+                            <option value="he">עברית (Hebrew)</option>
+                            <option value="ku">Kurdî (Kurdish)</option>
+                            <option value="ps">پښتو (Pashto)</option>
+                          </optgroup>
+                          <optgroup label="── European Languages ──">
+                            <option value="sq">Shqip (Albanian)</option>
+                            <option value="hy">Հայերեն (Armenian)</option>
+                            <option value="az">Azərbaycan dili (Azerbaijani)</option>
+                            <option value="eu">Euskara (Basque)</option>
+                            <option value="be">Беларуская (Belarusian)</option>
+                            <option value="bs">Bosanski (Bosnian)</option>
+                            <option value="bg">Български (Bulgarian)</option>
+                            <option value="ca">Català (Catalan)</option>
+                            <option value="hr">Hrvatski (Croatian)</option>
+                            <option value="cs">Čeština (Czech)</option>
+                            <option value="da">Dansk (Danish)</option>
+                            <option value="et">Eesti (Estonian)</option>
+                            <option value="fi">Suomi (Finnish)</option>
+                            <option value="gl">Galego (Galician)</option>
+                            <option value="ka">ქართული (Georgian)</option>
+                            <option value="el">Ελληνικά (Greek)</option>
+                            <option value="hu">Magyar (Hungarian)</option>
+                            <option value="is">Íslenska (Icelandic)</option>
+                            <option value="ga">Gaeilge (Irish)</option>
+                            <option value="kk">Қазақ тілі (Kazakh)</option>
+                            <option value="ky">Кыргызча (Kyrgyz)</option>
+                            <option value="lv">Latviešu (Latvian)</option>
+                            <option value="lt">Lietuvių (Lithuanian)</option>
+                            <option value="lb">Lëtzebuergesch (Luxembourgish)</option>
+                            <option value="mk">Македонски (Macedonian)</option>
+                            <option value="mt">Malti (Maltese)</option>
+                            <option value="no">Norsk (Norwegian)</option>
+                            <option value="pt-BR">Português (Brazilian)</option>
+                            <option value="ro">Română (Romanian)</option>
+                            <option value="sr">Српски (Serbian)</option>
+                            <option value="sk">Slovenčina (Slovak)</option>
+                            <option value="sl">Slovenščina (Slovenian)</option>
+                            <option value="sv">Svenska (Swedish)</option>
+                            <option value="tg">Тоҷикӣ (Tajik)</option>
+                            <option value="tk">Türkmen (Turkmen)</option>
+                            <option value="uk">Українська (Ukrainian)</option>
+                            <option value="uz">Oʻzbek (Uzbek)</option>
+                            <option value="cy">Cymraeg (Welsh)</option>
+                          </optgroup>
+                          <optgroup label="── Americas & Pacific ──">
+                            <option value="ht">Kreyòl Ayisyen (Haitian Creole)</option>
+                            <option value="gn">Avañe'ẽ (Guarani)</option>
+                            <option value="qu">Runasimi (Quechua)</option>
+                            <option value="ay">Aymar aru (Aymara)</option>
+                            <option value="mi">Te Reo Māori (Maori)</option>
+                            <option value="sm">Gagana Sāmoa (Samoan)</option>
+                            <option value="to">Lea Faka-Tonga (Tongan)</option>
+                            <option value="fj">Vosa Vakaviti (Fijian)</option>
+                            <option value="haw">ʻŌlelo Hawaiʻi (Hawaiian)</option>
+                          </optgroup>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style="font-weight:600; display:block; margin-bottom:8px;">Description</label>
+                      <textarea id="dtDescriptionInput" class="input" rows="3" style="width:100%; resize:vertical;" placeholder="A brief description of your church, its mission and values..."></textarea>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
+                      <div>
+                        <label style="font-weight:600; display:block; margin-bottom:8px;">Phone Number</label>
+                        <div class="phone-input-wrapper">
+                          <div class="country-select-btn" onclick="toggleCountryDropdown(this)">
+                            <span class="flag">🇺🇸</span>
+                            <span class="code">+1</span>
+                            <i data-lucide="chevron-down" style="width: 12px; height: 12px;"></i>
+                          </div>
+                          <input type="hidden" id="dtPhonePrefix" value="+1" />
+                          <input type="tel" id="dtPhoneInput" class="input" style="flex:1;" placeholder="e.g. 555-000-0000">
+                        </div>
+                      </div>
+                      <div>
+                        <label style="font-weight:600; display:block; margin-bottom:8px;">Timezone</label>
+                        <select id="dtTimezoneSelect" class="select" style="width:100%;">
+                          <optgroup label="── Universal ──">
+                            <option value="UTC">UTC — Coordinated Universal Time</option>
+                          </optgroup>
+                          <optgroup label="── Africa ──">
+                            <option value="Africa/Abidjan">Abidjan (UTC+0)</option>
+                            <option value="Africa/Accra">Accra (UTC+0)</option>
+                            <option value="Africa/Addis_Ababa">Addis Ababa (UTC+3)</option>
+                            <option value="Africa/Algiers">Algiers (UTC+1)</option>
+                            <option value="Africa/Asmara">Asmara (UTC+3)</option>
+                            <option value="Africa/Bamako">Bamako (UTC+0)</option>
+                            <option value="Africa/Bangui">Bangui (UTC+1)</option>
+                            <option value="Africa/Banjul">Banjul (UTC+0)</option>
+                            <option value="Africa/Bissau">Bissau (UTC+0)</option>
+                            <option value="Africa/Blantyre">Blantyre (UTC+2)</option>
+                            <option value="Africa/Brazzaville">Brazzaville (UTC+1)</option>
+                            <option value="Africa/Bujumbura">Bujumbura (UTC+2)</option>
+                            <option value="Africa/Cairo">Cairo (UTC+2)</option>
+                            <option value="Africa/Casablanca">Casablanca (UTC+1)</option>
+                            <option value="Africa/Conakry">Conakry (UTC+0)</option>
+                            <option value="Africa/Dakar">Dakar (UTC+0)</option>
+                            <option value="Africa/Dar_es_Salaam">Dar es Salaam (UTC+3)</option>
+                            <option value="Africa/Djibouti">Djibouti (UTC+3)</option>
+                            <option value="Africa/Douala">Douala (UTC+1)</option>
+                            <option value="Africa/Freetown">Freetown (UTC+0)</option>
+                            <option value="Africa/Gaborone">Gaborone (UTC+2)</option>
+                            <option value="Africa/Harare">Harare (UTC+2)</option>
+                            <option value="Africa/Johannesburg">Johannesburg (UTC+2)</option>
+                            <option value="Africa/Juba">Juba (UTC+2)</option>
+                            <option value="Africa/Kampala">Kampala (UTC+3)</option>
+                            <option value="Africa/Khartoum">Khartoum (UTC+2)</option>
+                            <option value="Africa/Kigali">Kigali (UTC+2)</option>
+                            <option value="Africa/Kinshasa">Kinshasa (UTC+1)</option>
+                            <option value="Africa/Lagos">Lagos (UTC+1)</option>
+                            <option value="Africa/Libreville">Libreville (UTC+1)</option>
+                            <option value="Africa/Lome">Lomé (UTC+0)</option>
+                            <option value="Africa/Luanda">Luanda (UTC+1)</option>
+                            <option value="Africa/Lubumbashi">Lubumbashi (UTC+2)</option>
+                            <option value="Africa/Lusaka">Lusaka (UTC+2)</option>
+                            <option value="Africa/Malabo">Malabo (UTC+1)</option>
+                            <option value="Africa/Maputo">Maputo (UTC+2)</option>
+                            <option value="Africa/Mogadishu">Mogadishu (UTC+3)</option>
+                            <option value="Africa/Monrovia">Monrovia (UTC+0)</option>
+                            <option value="Africa/Nairobi">Nairobi (UTC+3)</option>
+                            <option value="Africa/Ndjamena">N'Djamena (UTC+1)</option>
+                            <option value="Africa/Niamey">Niamey (UTC+1)</option>
+                            <option value="Africa/Nouakchott">Nouakchott (UTC+0)</option>
+                            <option value="Africa/Ouagadougou">Ouagadougou (UTC+0)</option>
+                            <option value="Africa/Porto-Novo">Porto-Novo (UTC+1)</option>
+                            <option value="Africa/Sao_Tome">São Tomé (UTC+0)</option>
+                            <option value="Africa/Tripoli">Tripoli (UTC+2)</option>
+                            <option value="Africa/Tunis">Tunis (UTC+1)</option>
+                            <option value="Africa/Windhoek">Windhoek (UTC+2)</option>
+                          </optgroup>
+                          <optgroup label="── Americas — North ──">
+                            <option value="America/Adak">Adak, Hawaii-Aleutian (UTC-10)</option>
+                            <option value="America/Anchorage">Anchorage, Alaska (UTC-9)</option>
+                            <option value="America/Boise">Boise (UTC-7)</option>
+                            <option value="America/Chicago">Chicago, Central (UTC-6)</option>
+                            <option value="America/Denver">Denver, Mountain (UTC-7)</option>
+                            <option value="America/Detroit">Detroit (UTC-5)</option>
+                            <option value="America/Edmonton">Edmonton (UTC-7)</option>
+                            <option value="America/Halifax">Halifax, Atlantic (UTC-4)</option>
+                            <option value="America/Indiana/Indianapolis">Indianapolis (UTC-5)</option>
+                            <option value="America/Juneau">Juneau (UTC-9)</option>
+                            <option value="America/Los_Angeles">Los Angeles, Pacific (UTC-8)</option>
+                            <option value="America/New_York">New York, Eastern (UTC-5)</option>
+                            <option value="America/Phoenix">Phoenix (UTC-7)</option>
+                            <option value="America/Regina">Regina, Saskatchewan (UTC-6)</option>
+                            <option value="America/St_Johns">St. John's, Newfoundland (UTC-3:30)</option>
+                            <option value="America/Toronto">Toronto (UTC-5)</option>
+                            <option value="America/Vancouver">Vancouver (UTC-8)</option>
+                            <option value="America/Winnipeg">Winnipeg (UTC-6)</option>
+                          </optgroup>
+                          <optgroup label="── Americas — Mexico & Central ──">
+                            <option value="America/Cancun">Cancún (UTC-5)</option>
+                            <option value="America/Costa_Rica">Costa Rica (UTC-6)</option>
+                            <option value="America/El_Salvador">El Salvador (UTC-6)</option>
+                            <option value="America/Guatemala">Guatemala (UTC-6)</option>
+                            <option value="America/Havana">Havana (UTC-5)</option>
+                            <option value="America/Jamaica">Jamaica (UTC-5)</option>
+                            <option value="America/Managua">Managua (UTC-6)</option>
+                            <option value="America/Mexico_City">Mexico City (UTC-6)</option>
+                            <option value="America/Monterrey">Monterrey (UTC-6)</option>
+                            <option value="America/Panama">Panama (UTC-5)</option>
+                            <option value="America/Port-au-Prince">Port-au-Prince (UTC-5)</option>
+                            <option value="America/Santo_Domingo">Santo Domingo (UTC-4)</option>
+                            <option value="America/Tegucigalpa">Tegucigalpa (UTC-6)</option>
+                            <option value="America/Tijuana">Tijuana (UTC-8)</option>
+                          </optgroup>
+                          <optgroup label="── Americas — South ──">
+                            <option value="America/Argentina/Buenos_Aires">Buenos Aires (UTC-3)</option>
+                            <option value="America/Asuncion">Asunción (UTC-4)</option>
+                            <option value="America/Bogota">Bogotá (UTC-5)</option>
+                            <option value="America/Caracas">Caracas (UTC-4)</option>
+                            <option value="America/Cayenne">Cayenne (UTC-3)</option>
+                            <option value="America/Guayaquil">Guayaquil (UTC-5)</option>
+                            <option value="America/Guyana">Guyana (UTC-4)</option>
+                            <option value="America/La_Paz">La Paz (UTC-4)</option>
+                            <option value="America/Lima">Lima (UTC-5)</option>
+                            <option value="America/Manaus">Manaus (UTC-4)</option>
+                            <option value="America/Montevideo">Montevideo (UTC-3)</option>
+                            <option value="America/Paramaribo">Paramaribo (UTC-3)</option>
+                            <option value="America/Santiago">Santiago (UTC-4)</option>
+                            <option value="America/Sao_Paulo">São Paulo (UTC-3)</option>
+                          </optgroup>
+                          <optgroup label="── Antarctica ──">
+                            <option value="Antarctica/McMurdo">McMurdo (UTC+12)</option>
+                            <option value="Antarctica/Palmer">Palmer (UTC-3)</option>
+                            <option value="Antarctica/Syowa">Syowa (UTC+3)</option>
+                          </optgroup>
+                          <optgroup label="── Asia — West & Central ──">
+                            <option value="Asia/Almaty">Almaty (UTC+6)</option>
+                            <option value="Asia/Amman">Amman (UTC+3)</option>
+                            <option value="Asia/Baghdad">Baghdad (UTC+3)</option>
+                            <option value="Asia/Bahrain">Bahrain (UTC+3)</option>
+                            <option value="Asia/Baku">Baku (UTC+4)</option>
+                            <option value="Asia/Beirut">Beirut (UTC+2)</option>
+                            <option value="Asia/Damascus">Damascus (UTC+3)</option>
+                            <option value="Asia/Dhaka">Dhaka (UTC+6)</option>
+                            <option value="Asia/Dubai">Dubai (UTC+4)</option>
+                            <option value="Asia/Dushanbe">Dushanbe (UTC+5)</option>
+                            <option value="Asia/Gaza">Gaza (UTC+2)</option>
+                            <option value="Asia/Irkutsk">Irkutsk (UTC+8)</option>
+                            <option value="Asia/Istanbul">Istanbul (UTC+3)</option>
+                            <option value="Asia/Jerusalem">Jerusalem (UTC+2)</option>
+                            <option value="Asia/Kabul">Kabul (UTC+4:30)</option>
+                            <option value="Asia/Karachi">Karachi (UTC+5)</option>
+                            <option value="Asia/Kathmandu">Kathmandu (UTC+5:45)</option>
+                            <option value="Asia/Kolkata">Kolkata / India (UTC+5:30)</option>
+                            <option value="Asia/Kuwait">Kuwait (UTC+3)</option>
+                            <option value="Asia/Muscat">Muscat (UTC+4)</option>
+                            <option value="Asia/Nicosia">Nicosia (UTC+2)</option>
+                            <option value="Asia/Qatar">Qatar (UTC+3)</option>
+                            <option value="Asia/Riyadh">Riyadh (UTC+3)</option>
+                            <option value="Asia/Tashkent">Tashkent (UTC+5)</option>
+                            <option value="Asia/Tbilisi">Tbilisi (UTC+4)</option>
+                            <option value="Asia/Tehran">Tehran (UTC+3:30)</option>
+                            <option value="Asia/Yerevan">Yerevan (UTC+4)</option>
+                          </optgroup>
+                          <optgroup label="── Asia — East & Southeast ──">
+                            <option value="Asia/Bangkok">Bangkok (UTC+7)</option>
+                            <option value="Asia/Brunei">Brunei (UTC+8)</option>
+                            <option value="Asia/Colombo">Colombo (UTC+5:30)</option>
+                            <option value="Asia/Ho_Chi_Minh">Ho Chi Minh City (UTC+7)</option>
+                            <option value="Asia/Hong_Kong">Hong Kong (UTC+8)</option>
+                            <option value="Asia/Jakarta">Jakarta (UTC+7)</option>
+                            <option value="Asia/Jayapura">Jayapura (UTC+9)</option>
+                            <option value="Asia/Kuala_Lumpur">Kuala Lumpur (UTC+8)</option>
+                            <option value="Asia/Macau">Macau (UTC+8)</option>
+                            <option value="Asia/Makassar">Makassar (UTC+8)</option>
+                            <option value="Asia/Manila">Manila (UTC+8)</option>
+                            <option value="Asia/Phnom_Penh">Phnom Penh (UTC+7)</option>
+                            <option value="Asia/Pyongyang">Pyongyang (UTC+9)</option>
+                            <option value="Asia/Rangoon">Yangon (UTC+6:30)</option>
+                            <option value="Asia/Seoul">Seoul (UTC+9)</option>
+                            <option value="Asia/Shanghai">Shanghai / Beijing (UTC+8)</option>
+                            <option value="Asia/Singapore">Singapore (UTC+8)</option>
+                            <option value="Asia/Taipei">Taipei (UTC+8)</option>
+                            <option value="Asia/Tokyo">Tokyo (UTC+9)</option>
+                            <option value="Asia/Ulaanbaatar">Ulaanbaatar (UTC+8)</option>
+                            <option value="Asia/Vladivostok">Vladivostok (UTC+10)</option>
+                          </optgroup>
+                          <optgroup label="── Atlantic ──">
+                            <option value="Atlantic/Azores">Azores (UTC-1)</option>
+                            <option value="Atlantic/Bermuda">Bermuda (UTC-4)</option>
+                            <option value="Atlantic/Canary">Canary Islands (UTC+0)</option>
+                            <option value="Atlantic/Cape_Verde">Cape Verde (UTC-1)</option>
+                            <option value="Atlantic/Reykjavik">Reykjavik (UTC+0)</option>
+                          </optgroup>
+                          <optgroup label="── Australia & New Zealand ──">
+                            <option value="Australia/Adelaide">Adelaide (UTC+9:30)</option>
+                            <option value="Australia/Brisbane">Brisbane (UTC+10)</option>
+                            <option value="Australia/Darwin">Darwin (UTC+9:30)</option>
+                            <option value="Australia/Hobart">Hobart (UTC+10)</option>
+                            <option value="Australia/Melbourne">Melbourne (UTC+10)</option>
+                            <option value="Australia/Perth">Perth (UTC+8)</option>
+                            <option value="Australia/Sydney">Sydney (UTC+10)</option>
+                            <option value="Pacific/Auckland">Auckland, New Zealand (UTC+12)</option>
+                            <option value="Pacific/Chatham">Chatham Islands (UTC+12:45)</option>
+                          </optgroup>
+                          <optgroup label="── Europe ──">
+                            <option value="Europe/Amsterdam">Amsterdam (UTC+1)</option>
+                            <option value="Europe/Athens">Athens (UTC+2)</option>
+                            <option value="Europe/Belgrade">Belgrade (UTC+1)</option>
+                            <option value="Europe/Berlin">Berlin (UTC+1)</option>
+                            <option value="Europe/Bratislava">Bratislava (UTC+1)</option>
+                            <option value="Europe/Brussels">Brussels (UTC+1)</option>
+                            <option value="Europe/Bucharest">Bucharest (UTC+2)</option>
+                            <option value="Europe/Budapest">Budapest (UTC+1)</option>
+                            <option value="Europe/Chisinau">Chișinău (UTC+2)</option>
+                            <option value="Europe/Copenhagen">Copenhagen (UTC+1)</option>
+                            <option value="Europe/Dublin">Dublin (UTC+0)</option>
+                            <option value="Europe/Helsinki">Helsinki (UTC+2)</option>
+                            <option value="Europe/Kiev">Kyiv (UTC+2)</option>
+                            <option value="Europe/Lisbon">Lisbon (UTC+0)</option>
+                            <option value="Europe/Ljubljana">Ljubljana (UTC+1)</option>
+                            <option value="Europe/London">London (UTC+0)</option>
+                            <option value="Europe/Luxembourg">Luxembourg (UTC+1)</option>
+                            <option value="Europe/Madrid">Madrid (UTC+1)</option>
+                            <option value="Europe/Malta">Malta (UTC+1)</option>
+                            <option value="Europe/Minsk">Minsk (UTC+3)</option>
+                            <option value="Europe/Monaco">Monaco (UTC+1)</option>
+                            <option value="Europe/Moscow">Moscow (UTC+3)</option>
+                            <option value="Europe/Oslo">Oslo (UTC+1)</option>
+                            <option value="Europe/Paris">Paris (UTC+1)</option>
+                            <option value="Europe/Prague">Prague (UTC+1)</option>
+                            <option value="Europe/Riga">Riga (UTC+2)</option>
+                            <option value="Europe/Rome">Rome (UTC+1)</option>
+                            <option value="Europe/Samara">Samara (UTC+4)</option>
+                            <option value="Europe/Sofia">Sofia (UTC+2)</option>
+                            <option value="Europe/Stockholm">Stockholm (UTC+1)</option>
+                            <option value="Europe/Tallinn">Tallinn (UTC+2)</option>
+                            <option value="Europe/Tirane">Tirana (UTC+1)</option>
+                            <option value="Europe/Vienna">Vienna (UTC+1)</option>
+                            <option value="Europe/Vilnius">Vilnius (UTC+2)</option>
+                            <option value="Europe/Warsaw">Warsaw (UTC+1)</option>
+                            <option value="Europe/Zagreb">Zagreb (UTC+1)</option>
+                            <option value="Europe/Zurich">Zürich (UTC+1)</option>
+                          </optgroup>
+                          <optgroup label="── Indian Ocean ──">
+                            <option value="Indian/Antananarivo">Antananarivo (UTC+3)</option>
+                            <option value="Indian/Maldives">Maldives (UTC+5)</option>
+                            <option value="Indian/Mauritius">Mauritius (UTC+4)</option>
+                            <option value="Indian/Reunion">Réunion (UTC+4)</option>
+                          </optgroup>
+                          <optgroup label="── Pacific ──">
+                            <option value="Pacific/Apia">Apia, Samoa (UTC+13)</option>
+                            <option value="Pacific/Fiji">Fiji (UTC+12)</option>
+                            <option value="Pacific/Guam">Guam (UTC+10)</option>
+                            <option value="Pacific/Honolulu">Honolulu, Hawaii (UTC-10)</option>
+                            <option value="Pacific/Noumea">Nouméa (UTC+11)</option>
+                            <option value="Pacific/Pago_Pago">Pago Pago (UTC-11)</option>
+                            <option value="Pacific/Port_Moresby">Port Moresby (UTC+10)</option>
+                            <option value="Pacific/Tahiti">Tahiti (UTC-10)</option>
+                            <option value="Pacific/Tongatapu">Tongatapu (UTC+13)</option>
+                          </optgroup>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style="font-weight:600; display:block; margin-bottom:8px;">Address</label>
+                      <input type="text" id="dtAddressInput" class="input" style="width:100%;" placeholder="e.g. 123 Faith Avenue, Suite 4, Nairobi, Kenya">
+                    </div>
+
+                    <div class="row" style="justify-content: flex-end; margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--line);">
+                      <button class="btn primary" onclick="saveTenantBranding()"><i data-lucide="save"></i>Save Identity</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 2. BRANDING TAB -->
+                <div id="domainTenantBrandingTab" class="domain-tenant-tab-content hidden">
+                  <div class="section-head">
+                    <div>
+                      <h2>Branding</h2>
+                      <p>Upload your church logo and favicon. Colors and themes are managed in Styling.</p>
+                    </div>
+                  </div>
+                  <div class="panel" style="padding:24px; display:flex; flex-direction:column; gap:24px;">
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:24px;">
+                      <!-- Logo -->
+                      <div>
+                        <label style="font-weight:600; display:block; margin-bottom:4px;">Church Logo</label>
+                        <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Displayed in your website header and communications.</p>
+                        <div class="row" style="gap:8px;">
+                          <input type="file" id="dtLogoFileInput" style="display:none;" accept="image/*" onchange="handleImageUpload(event, 'logo')">
+                          <input type="hidden" id="dtLogoUrlInput">
+                          <button class="btn secondary" onclick="document.getElementById('dtLogoFileInput').click()"><i data-lucide="upload" style="margin-right: 6px;"></i>Upload Logo</button>
+                        </div>
+                        <div id="dtLogoPreviewContainer" class="hidden" style="margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--panel-2); max-width: fit-content; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                          <img id="dtLogoPreview" style="max-height: 48px; border-radius: 4px;">
+                          <span class="muted" style="font-size: 10px;">Logo Preview</span>
+                        </div>
+
+                      </div>
+
+                      <!-- Favicon -->
+                      <div>
+                        <label style="font-weight:600; display:block; margin-bottom:4px;">Favicon</label>
+                        <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Shown in browser tabs. Best results with a square image.</p>
+                        <div class="row" style="gap:8px;">
+                          <input type="file" id="dtFaviconFileInput" style="display:none;" accept="image/*" onchange="handleImageUpload(event, 'favicon')">
+                          <input type="hidden" id="dtFaviconUrlInput">
+                          <button class="btn secondary" onclick="document.getElementById('dtFaviconFileInput').click()"><i data-lucide="upload" style="margin-right: 6px;"></i>Upload Favicon</button>
+                        </div>
+                        <div id="dtFaviconPreviewContainer" class="hidden" style="margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--panel-2); max-width: fit-content; display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                          <img id="dtFaviconPreview" style="width: 32px; height: 32px; border-radius: 4px;">
+                          <span class="muted" style="font-size: 10px;">Favicon Preview</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row" style="justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--line);">
+                      <button class="btn primary" onclick="saveTenantBranding()"><i data-lucide="save"></i>Save Branding</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. DOMAIN SETUP TAB -->
+                <div id="domainTenantDomainTab" class="domain-tenant-tab-content hidden">
                   <div class="section-head">
                     <div>
                       <h2>Domain Setup</h2>
@@ -3459,169 +4054,66 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- 2. BRANDING TAB -->
-                <div id="domainTenantBrandingTab" class="domain-tenant-tab-content hidden">
-                  <div class="section-head">
-                    <div>
-                      <h2>Church Identity & Branding</h2>
-                      <p>Customize church details, logo badges, favicon, theme accent, and time formats.</p>
-                    </div>
-                  </div>
-                  <div class="panel" style="padding:24px; display:flex; flex-direction:column; gap:20px;">
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px;">
-                      <div>
-                        <label style="font-weight:600; display:block; margin-bottom:8px;">Church / Tenant Name</label>
-                        <input type="text" id="dtChurchNameInput" class="input" style="width:100%;" placeholder="e.g. Grace Fellowship">
-                      </div>
-                      <div>
-                        <label style="font-weight:600; display:block; margin-bottom:8px;">Primary Language</label>
-                        <select id="dtLanguageSelect" class="select" style="width:100%;">
-                          <option value="en">English (US/UK)</option>
-                          <option value="es">Español (Spanish)</option>
-                          <option value="fr">Français (French)</option>
-                          <option value="lg">Luganda (Ganda)</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px; border-top:1px solid var(--line); padding-top:20px;">
-                      <div>
-                        <label style="font-weight:600; display:block; margin-bottom:8px;">Church Logo URL</label>
-                        <div class="row" style="gap:8px;">
-                          <input type="text" id="dtLogoUrlInput" class="input" style="flex:1;" placeholder="https://example.com/logo.png">
-                          <button class="btn secondary" onclick="generateMockBrandingAsset('logo')">Generate Asset</button>
-                        </div>
-                      </div>
-                      <div>
-                        <label style="font-weight:600; display:block; margin-bottom:8px;">Favicon URL</label>
-                        <div class="row" style="gap:8px;">
-                          <input type="text" id="dtFaviconUrlInput" class="input" style="flex:1;" placeholder="https://example.com/favicon.png">
-                          <button class="btn secondary" onclick="generateMockBrandingAsset('favicon')">Generate Asset</button>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px; border-top:1px solid var(--line); padding-top:20px;">
-                      <div>
-                        <label style="font-weight:600; display:block; margin-bottom:8px;">Timezone Configuration</label>
-                        <select id="dtTimezoneSelect" class="select" style="width:100%;">
-                          <option value="UTC">Coordinated Universal Time (UTC)</option>
-                          <option value="Africa/Lagos">West Africa Time (Lagos / UTC+1)</option>
-                          <option value="America/New_York">Eastern Time (US & Canada)</option>
-                          <option value="America/Los_Angeles">Pacific Time (US & Canada)</option>
-                          <option value="Europe/London">London / Greenwich Time</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label style="font-weight:600; display:block; margin-bottom:8px;">Brand Accent Color</label>
-                        <div class="row" style="gap:12px;">
-                          <input type="color" id="dtAccentColorPicker" style="width:50px; height:40px; border-radius:6px; border:1px solid var(--line); cursor:pointer; padding:0; background:none;">
-                          <input type="text" id="dtAccentColorInput" class="input" style="width:120px;" placeholder="#4f46e5">
-                          <div id="dtAccentSwatches" class="accent-swatches" style="margin-left:8px; display:flex; gap:6px;"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="row" style="justify-content: flex-end; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line);">
-                      <button class="btn primary" onclick="saveTenantBranding()"><i data-lucide="save"></i>Save</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 3. MODULE REGISTRY TAB -->
-                <div id="domainTenantModulesTab" class="domain-tenant-tab-content hidden">
-                  <div class="section-head">
-                    <div>
-                      <h2>Module Entitlements Registry</h2>
-                      <p>Toggle capabilities and activate/suspend active subscriptions for this church workspace.</p>
-                    </div>
-                  </div>
-                  <div class="panel" style="padding:0; overflow:hidden;">
-                    <table class="mini-table" style="width:100%;">
-                      <thead>
-                        <tr>
-                          <th>Module</th>
-                          <th>Category</th>
-                          <th>Entitlement Status</th>
-                          <th>Billing Rule</th>
-                          <th style="text-align:right; padding-right:18px;">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody id="dtModulesList">
-                        <!-- Populated dynamically -->
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <!-- 4. ONBOARDING CHECKLIST TAB -->
-                <div id="domainTenantChecklistTab" class="domain-tenant-tab-content hidden">
-                  <div class="section-head">
-                    <div>
-                      <h2>Onboarding & Launch Checklist</h2>
-                      <p>Verify that your church instance is fully configured and ready for production launch.</p>
-                    </div>
-                  </div>
-                  <div class="panel" style="padding:24px; display:flex; flex-direction:column; gap:16px;">
-                    <div style="margin-bottom:12px;">
-                      <div class="row" style="justify-content:space-between; margin-bottom:8px;">
-                        <span style="font-weight:600;">Launch Readiness Progress</span>
-                        <span id="dtChecklistProgressText" style="font-weight:600; color:var(--accent);">0%</span>
-                      </div>
-                      <div style="background:var(--panel-2); height:10px; border-radius:5px; overflow:hidden;">
-                        <div id="dtChecklistProgressBar" style="background:var(--accent); height:100%; width:0%; transition:width 0.4s ease;"></div>
-                      </div>
-                    </div>
-
-                    <div class="settings-list" style="display:flex; flex-direction:column; gap:12px;">
-                      <div class="setting-row" style="background:rgba(255,255,255,0.01); border:1px solid var(--line); padding:16px; border-radius:8px;">
-                        <div class="row" style="gap:12px; width:100%;">
-                          <div id="checkIconDomain" style="display:grid; place-items:center;"><i data-lucide="circle"></i></div>
-                          <div style="flex:1;">
-                            <strong>Setup Custom Domain</strong>
-                            <p class="muted" style="font-size:12px; margin-top:2px;">Map a custom DNS host name to bypass preview subdomain.</p>
-                          </div>
-                          <button class="btn secondary btn-sm" onclick="switchDomainTenantTab('domain')">Configure</button>
-                        </div>
-                      </div>
-
-                      <div class="setting-row" style="background:rgba(255,255,255,0.01); border:1px solid var(--line); padding:16px; border-radius:8px;">
-                        <div class="row" style="gap:12px; width:100%;">
-                          <div id="checkIconBranding" style="display:grid; place-items:center;"><i data-lucide="circle"></i></div>
-                          <div style="flex:1;">
-                            <strong>Upload Branding Assets</strong>
-                            <p class="muted" style="font-size:12px; margin-top:2px;">Customize church logo, favicon, accent color and timezones.</p>
-                          </div>
-                          <button class="btn secondary btn-sm" onclick="switchDomainTenantTab('branding')">Configure</button>
-                        </div>
-                      </div>
-
-                      <div class="setting-row" style="background:rgba(255,255,255,0.01); border:1px solid var(--line); padding:16px; border-radius:8px;">
-                        <div class="row" style="gap:12px; width:100%;">
-                          <div id="checkIconModules" style="display:grid; place-items:center;"><i data-lucide="circle"></i></div>
-                          <div style="flex:1;">
-                            <strong>Configure Active Modules</strong>
-                            <p class="muted" style="font-size:12px; margin-top:2px;">Select and activate the modules required for your ministry.</p>
-                          </div>
-                          <button class="btn secondary btn-sm" onclick="switchDomainTenantTab('modules')">Configure</button>
-                        </div>
-                      </div>
-
-                      <div class="setting-row" style="background:rgba(255,255,255,0.01); border:1px solid var(--line); padding:16px; border-radius:8px;">
-                        <div class="row" style="gap:12px; width:100%;">
-                          <div id="checkIconInvite" style="display:grid; place-items:center;"><i data-lucide="circle"></i></div>
-                          <div style="flex:1;">
-                            <strong>Invite Team Members</strong>
-                            <p class="muted" style="font-size:12px; margin-top:2px;">Add co-pastors, media managers, and staff to the dashboard.</p>
-                          </div>
-                          <button class="btn secondary btn-sm" onclick="selectedModule = 'user-role-management'; switchView('modules'); switchUserRoleTab('invitations');">Configure</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
+
+              <!-- Static Sticky Onboarding Checklist Sidebar -->
+              <aside class="cms-nav-panel" style="position: sticky; top: 98px; width: 300px; max-height: calc(100vh - 120px); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--shadow); align-self: start;">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="list-todo" style="color: var(--accent); width: 18px; height: 18px;"></i>
+                  Launch Readiness
+                </h3>
+                
+                <div>
+                  <div class="row" style="justify-content:space-between; margin-bottom:8px;">
+                    <span style="font-size: 12px; font-weight:600; color: var(--muted);">Progress</span>
+                    <span id="dtChecklistProgressText" style="font-size: 13px; font-weight:600; color:var(--accent);">0%</span>
+                  </div>
+                  <div style="background:var(--panel-2); height:8px; border-radius:4px; overflow:hidden;">
+                    <div id="dtChecklistProgressBar" style="background:var(--accent); height:100%; width:0%; transition:width 0.4s ease;"></div>
+                  </div>
+                </div>
+
+                <div class="checklist-items" style="display: flex; flex-direction: column; gap: 12px;">
+                  <!-- Item 1: Domain -->
+                  <div style="background:var(--panel-2); border:1px solid var(--line); padding:12px; border-radius:8px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                      <div id="checkIconDomain" style="margin-top: 2px;"><i data-lucide="circle" style="width: 14px; height: 14px; color: var(--muted);"></i></div>
+                      <div style="flex: 1;">
+                        <strong style="font-size: 13px; color: var(--text);">Setup Custom Domain</strong>
+                        <p class="muted" style="font-size: 11px; margin: 2px 0 0 0; line-height: 1.4;">Map a custom DNS host name to bypass preview subdomain.</p>
+                      </div>
+                    </div>
+                    <button class="btn secondary btn-sm" onclick="switchDomainTenantTab('domain')" style="align-self: flex-end; padding: 4px 10px; font-size: 11px; height: 26px;">Configure</button>
+                  </div>
+                  
+                  <!-- Item 2: Branding -->
+                  <div style="background:var(--panel-2); border:1px solid var(--line); padding:12px; border-radius:8px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                      <div id="checkIconBranding" style="margin-top: 2px;"><i data-lucide="circle" style="width: 14px; height: 14px; color: var(--muted);"></i></div>
+                      <div style="flex: 1;">
+                        <strong style="font-size: 13px; color: var(--text);">Identity & Branding</strong>
+                        <p class="muted" style="font-size: 11px; margin: 2px 0 0 0; line-height: 1.4;">Customize name, logo, favicon, accent color and timezones.</p>
+                      </div>
+                    </div>
+                    <div style="display: flex; gap: 6px; align-self: flex-end;">
+                      <button class="btn secondary btn-sm" onclick="switchDomainTenantTab('identity')" style="padding: 4px 10px; font-size: 11px; height: 26px;">Identity</button>
+                      <button class="btn secondary btn-sm" onclick="switchDomainTenantTab('branding')" style="padding: 4px 10px; font-size: 11px; height: 26px;">Branding</button>
+                    </div>
+                  </div>
+
+                  <!-- Item 3: Invite Team -->
+                  <div style="background:var(--panel-2); border:1px solid var(--line); padding:12px; border-radius:8px; display: flex; flex-direction: column; gap: 8px;">
+                    <div style="display: flex; align-items: flex-start; gap: 8px;">
+                      <div id="checkIconInvite" style="margin-top: 2px;"><i data-lucide="circle" style="width: 14px; height: 14px; color: var(--muted);"></i></div>
+                      <div style="flex: 1;">
+                        <strong style="font-size: 13px; color: var(--text);">Invite Team Members</strong>
+                        <p class="muted" style="font-size: 11px; margin: 2px 0 0 0; line-height: 1.4;">Add co-pastors, media managers, and staff to the dashboard.</p>
+                      </div>
+                    </div>
+                    <button class="btn secondary btn-sm" onclick="selectedModule = 'user-role-management'; switchView('modules'); switchUserRoleTab('invitations');" style="align-self: flex-end; padding: 4px 10px; font-size: 11px; height: 26px;">Configure</button>
+                  </div>
+                </div>
+              </aside>
             </div>
           </div>
 
@@ -3631,14 +4123,10 @@
               <!-- Sidebar -->
               <aside class="cms-nav-panel">
                 <div class="cms-nav-group">
-                  <div class="cms-nav-header">Theme Engine</div>
+                  <div class="cms-nav-header">Styling</div>
                   <button class="cms-nav-item active" data-theme-engine-tab="overview">
                     <i data-lucide="layout-dashboard"></i>
                     <span>Overview</span>
-                  </button>
-                  <button class="cms-nav-item" data-theme-engine-tab="install">
-                    <i data-lucide="download"></i>
-                    <span>Install Themes</span>
                   </button>
                   <button class="cms-nav-item" data-theme-engine-tab="colors">
                     <i data-lucide="paint-bucket"></i>
@@ -3677,10 +4165,10 @@
                 <div id="themeEngineOverviewTab" class="theme-engine-tab-content">
                   <div class="section-head">
                     <div>
-                      <h2>Theme Engine Overview</h2>
+                      <h2>Styling Overview</h2>
                       <p>Active theme status, installed templates, and publishing controls.</p>
                     </div>
-                    <button class="btn primary" onclick="switchThemeEngineTab('install')"><i data-lucide="download"></i>Install Theme</button>
+                    <button class="btn primary" onclick="selectedModule = 'tenant-themes'; switchView('modules');"><i data-lucide="download"></i>Install Theme</button>
                   </div>
                   <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:16px;" id="teOverviewMetrics">
                     <!-- Populated dynamically -->
@@ -3906,7 +4394,7 @@
                 <div id="themeEngineSettingsTab" class="theme-engine-tab-content hidden">
                   <div class="section-head">
                     <div>
-                      <h2>Theme Engine Settings</h2>
+                      <h2>Styling Settings</h2>
                       <p>Module availability, marketplace access, publishing gates, and provider mode.</p>
                     </div>
                   </div>
@@ -3957,7 +4445,7 @@
                 <div id="themeEngineLogsTab" class="theme-engine-tab-content hidden">
                   <div class="section-head">
                     <div>
-                      <h2>Theme Engine Module Activity logs</h2>
+                      <h2>Styling Module Activity logs</h2>
                       <p>Logs of theme installations, customizations, and activations.</p>
                     </div>
                   </div>
@@ -3977,6 +4465,35 @@
                     </table>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+          <!-- TENANT THEMES CONSOLE -->
+          <div id="tenantThemesConsoleContainer" class="hidden">
+            <div class="cms-view-layout" style="display: flex; flex-direction: column; gap: 20px; padding: 24px; width: 100%;">
+              <div class="section-head">
+                <div>
+                  <h2>Theme Directory</h2>
+                  <p>Browse, preview, and install premium website themes designed to elevate your online ministry.</p>
+                </div>
+              </div>
+              <div class="grid" id="tenantThemesCatalogGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 10px;">
+                <!-- Dynamically populated theme cards -->
+              </div>
+            </div>
+          </div>
+
+          <!-- TENANT PLUGINS CONSOLE -->
+          <div id="tenantPluginsConsoleContainer" class="hidden">
+            <div class="cms-view-layout" style="display: flex; flex-direction: column; gap: 20px; padding: 24px; width: 100%;">
+              <div class="section-head">
+                <div>
+                  <h2>Feature Extensions & Plugins</h2>
+                  <p>Activate dynamic plugins and backend integrations to expand your platform capabilities.</p>
+                </div>
+              </div>
+              <div class="grid" id="tenantPluginsCatalogGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-top: 10px;">
+                <!-- Dynamically populated plugin cards -->
               </div>
             </div>
           </div>
@@ -4120,7 +4637,7 @@
               <!-- Sidebar -->
               <aside class="cms-nav-panel">
                 <div class="cms-nav-group">
-                  <div class="cms-nav-header">Localization Engine</div>
+                  <div class="cms-nav-header">Website Language</div>
                   <button class="cms-nav-item active" data-l10n-tab="languages">
                     <i data-lucide="globe-2"></i>
                     <span>Language Registry</span>
@@ -4578,6 +5095,38 @@
                 <div class="system-dialog-footer" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 8px;">
                   <button class="btn secondary" onclick="closePluginModal('pluginRegisterWebhookModal')">Cancel</button>
                   <button class="btn primary" onclick="registerPluginWebhook()"><i data-lucide="plus"></i>Register</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- IMAGE CROPPER MODAL -->
+            <div id="dtCropModal" class="system-dialog-overlay hidden" style="z-index: 100000;">
+              <div class="system-dialog-card" style="max-width: 500px; text-align: left; align-items: stretch; margin: auto; padding: 24px;">
+                <h3 id="dtCropModalTitle" style="margin: 0 0 16px 0; font-weight: 700;">Crop and Edit Image</h3>
+                
+                <!-- Interactive Workspace -->
+                <div id="dtCropWorkspace" style="width: 100%; height: 300px; background: #0F131A; border-radius: 8px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: move; user-select: none;">
+                  <img id="dtCropImage" style="position: absolute; transform-origin: center center;" draggable="false" />
+                  <!-- Spotlight Overlay Frame -->
+                  <div id="dtCropFrame" style="position: absolute; border: 2px solid var(--accent); box-shadow: 0 0 0 9999px rgba(11, 14, 20, 0.75); pointer-events: none; z-index: 10;"></div>
+                </div>
+                
+                <!-- Controls -->
+                <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
+                  <div class="field">
+                    <label style="font-size: 12px; font-weight: 600; color: var(--muted);">Zoom & Scale</label>
+                    <input type="range" id="dtCropZoom" min="1" max="4" step="0.01" value="1" style="width: 100%; cursor: pointer;" />
+                  </div>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <button class="btn secondary btn-sm" onclick="rotateCropImage()"><i data-lucide="rotate-cw"></i>Rotate 90°</button>
+                    <span style="font-size: 11px; color: var(--muted);">Drag image to reposition inside frame</span>
+                  </div>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="system-dialog-footer" style="margin-top: 24px; border-top: 1px solid var(--line); padding-top: 16px; display: flex; justify-content: flex-end; gap: 10px;">
+                  <button class="btn secondary" onclick="closeCropperModal()">Cancel</button>
+                  <button class="btn primary" onclick="applyCrop()">Apply Crop</button>
                 </div>
               </div>
             </div>
@@ -10643,8 +11192,36 @@
   </div>
 
   <script>
+    function initPhonePrefixes(container) {
+      container.querySelectorAll('.phone-input-wrapper').forEach(wrapper => {
+        const selectBtn = wrapper.querySelector('.country-select-btn');
+        if (!selectBtn) return;
+        const hiddenInput = wrapper.querySelector('input[type="hidden"]');
+        const prefixId = hiddenInput ? hiddenInput.id : '';
+        
+        // Find or create dropdown
+        let dropdown = wrapper.querySelector('.country-dropdown');
+        if (!dropdown) {
+          dropdown = document.createElement('div');
+          dropdown.className = 'country-dropdown hidden';
+          dropdown.innerHTML = `
+            <div style="padding: 6px; border-bottom: 1px solid var(--line); background: var(--panel-2); text-align: left;">
+              <input type="text" placeholder="Search country..." class="form-control" style="width: 100%; padding: 6px 10px; font-size: 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--text); outline: none;" />
+            </div>
+            <div class="country-list thin-scroll"></div>
+          `;
+          wrapper.appendChild(dropdown);
+        }
+        
+        const searchInput = dropdown.querySelector('input');
+        if (searchInput) {
+          searchInput.addEventListener('input', () => filterCountries(searchInput));
+        }
+      });
+    }
+
     // Custom System Modal Dialog Logic
-    function showSystemModal({ type = 'info', title = '', message = '', defaultValue = '', showCancel = false }) {
+    function showSystemModal({ type = 'info', title = '', message = '', defaultValue = '', showCancel = false, icon = '' }) {
       return new Promise((resolve) => {
         const existing = document.querySelector('.system-dialog-overlay');
         if (existing) existing.remove();
@@ -10652,11 +11229,25 @@
         const overlay = document.createElement('div');
         overlay.className = 'system-dialog-overlay';
 
-        let iconName = 'info';
-        if (type === 'success') iconName = 'check-circle-2';
-        else if (type === 'error' || type === 'danger') iconName = 'alert-triangle';
-        else if (type === 'confirm') iconName = 'help-circle';
-        else if (type === 'prompt') iconName = 'keyboard';
+        let iconName = icon;
+        if (!iconName) {
+          const lowerTitle = (title || '').toLowerCase();
+          if (lowerTitle.includes('event')) iconName = 'calendar';
+          else if (lowerTitle.includes('member') || lowerTitle.includes('profile')) iconName = 'user-check';
+          else if (lowerTitle.includes('status') || lowerTitle.includes('level') || lowerTitle.includes('role')) iconName = 'shield-alert';
+          else if (lowerTitle.includes('pastoral') || lowerTitle.includes('note') || lowerTitle.includes('counseling') || lowerTitle.includes('details')) iconName = 'heart-pulse';
+          else if (lowerTitle.includes('task') || lowerTitle.includes('todo')) iconName = 'check-square';
+          else if (lowerTitle.includes('pipeline') || lowerTitle.includes('stage') || lowerTitle.includes('advance')) iconName = 'git-commit';
+          else if (lowerTitle.includes('lead') || lowerTitle.includes('crm') || lowerTitle.includes('contact')) iconName = 'users';
+          else if (lowerTitle.includes('delete') || lowerTitle.includes('remove') || lowerTitle.includes('discard') || lowerTitle.includes('clear')) iconName = 'trash-2';
+          else if (lowerTitle.includes('create') || lowerTitle.includes('add') || lowerTitle.includes('new')) iconName = 'plus-circle';
+          else if (lowerTitle.includes('save') || lowerTitle.includes('update') || lowerTitle.includes('edit')) iconName = 'save';
+          else if (type === 'success') iconName = 'check-circle-2';
+          else if (type === 'error' || type === 'danger') iconName = 'alert-triangle';
+          else if (type === 'confirm') iconName = 'help-circle';
+          else if (type === 'prompt') iconName = 'keyboard';
+          else iconName = 'info';
+        }
 
         if (!title) {
           if (type === 'success') title = 'Success';
@@ -10684,6 +11275,7 @@
         `;
 
         document.body.appendChild(overlay);
+        initPhonePrefixes(overlay);
         if (window.lucide) window.lucide.createIcons();
 
         const card = overlay.querySelector('.system-dialog-card');
@@ -10760,6 +11352,110 @@
       window.showSystemAlert(message, '', type);
     };
 
+    // Global Country Codes List
+    const COUNTRY_CODES = [
+      { name: 'United States', code: '+1', flag: '🇺🇸' },
+      { name: 'Canada', code: '+1', flag: '🇨🇦' },
+      { name: 'United Kingdom', code: '+44', flag: '🇬🇧' },
+      { name: 'Australia', code: '+61', flag: '🇦🇺' },
+      { name: 'Nigeria', code: '+234', flag: '🇳🇬' },
+      { name: 'South Africa', code: '+27', flag: '🇿🇦' },
+      { name: 'India', code: '+91', flag: '🇮🇳' },
+      { name: 'Germany', code: '+49', flag: '🇩🇪' },
+      { name: 'France', code: '+33', flag: '🇫🇷' },
+      { name: 'Brazil', code: '+55', flag: '🇧🇷' },
+      { name: 'China', code: '+86', flag: '🇨🇳' },
+      { name: 'Japan', code: '+81', flag: '🇯🇵' },
+      { name: 'Russia', code: '+7', flag: '🇷🇺' },
+      { name: 'Ghana', code: '+233', flag: '🇬🇭' },
+      { name: 'Kenya', code: '+254', flag: '🇰🇪' },
+      { name: 'Uganda', code: '+256', flag: '🇺🇬' },
+      { name: 'Rwanda', code: '+250', flag: '🇷🇼' },
+      { name: 'Cameroon', code: '+237', flag: '🇨🇲' },
+      { name: 'Zimbabwe', code: '+263', flag: '🇿🇼' },
+      { name: 'Philippines', code: '+63', flag: '🇵🇭' },
+      { name: 'Singapore', code: '+65', flag: '🇸🇬' },
+      { name: 'Malaysia', code: '+60', flag: '🇲🇾' },
+      { name: 'Indonesia', code: '+62', flag: '🇮🇩' },
+      { name: 'New Zealand', code: '+64', flag: '🇳🇿' },
+      { name: 'Ireland', code: '+353', flag: '🇮🇪' },
+      { name: 'Netherlands', code: '+31', flag: '🇳🇱' },
+      { name: 'Italy', code: '+39', flag: '🇮🇹' },
+      { name: 'Spain', code: '+34', flag: '🇪🇸' },
+      { name: 'Switzerland', code: '+41', flag: '🇨🇭' },
+      { name: 'Sweden', code: '+46', flag: '🇸🇪' },
+      { name: 'Norway', code: '+47', flag: '🇳🇴' },
+      { name: 'Denmark', code: '+45', flag: '🇩🇰' },
+      { name: 'Finland', code: '+358', flag: '🇫🇮' },
+      { name: 'Mexico', code: '+52', flag: '🇲🇽' },
+      { name: 'Argentina', code: '+54', flag: '🇦🇷' },
+      { name: 'Chile', code: '+56', flag: '🇨🇱' },
+      { name: 'Colombia', code: '+57', flag: '🇨🇴' },
+      { name: 'Peru', code: '+51', flag: '🇵🇪' },
+      { name: 'Venezuela', code: '+58', flag: '🇻🇪' },
+      { name: 'Saudi Arabia', code: '+966', flag: '🇸🇦' },
+      { name: 'United Arab Emirates', code: '+971', flag: '🇦🇪' },
+      { name: 'Egypt', code: '+20', flag: '🇪🇬' },
+      { name: 'Israel', code: '+972', flag: '🇮🇱' },
+      { name: 'Pakistan', code: '+92', flag: '🇵🇰' },
+      { name: 'Bangladesh', code: '+880', flag: '🇧🇩' }
+    ];
+
+    window.toggleCountryDropdown = function(btn) {
+      const dropdown = btn.parentElement.querySelector('.country-dropdown');
+      if (!dropdown) return;
+      const isHidden = dropdown.classList.contains('hidden');
+      document.querySelectorAll('.country-dropdown').forEach(d => d.classList.add('hidden')); // close all others
+      if (isHidden) {
+        dropdown.classList.remove('hidden');
+        const searchInput = dropdown.querySelector('input');
+        if (searchInput) {
+          searchInput.value = '';
+          searchInput.focus();
+          filterCountries(searchInput);
+        }
+      }
+    };
+
+    window.filterCountries = function(input) {
+      const query = input.value.toLowerCase().trim();
+      const list = input.parentElement.parentElement.querySelector('.country-list');
+      if (!list) return;
+      const hiddenPrefixInput = input.parentElement.parentElement.querySelector('input[type="hidden"]');
+      const prefixId = hiddenPrefixInput ? hiddenPrefixInput.id : '';
+      
+      list.innerHTML = COUNTRY_CODES.filter(c => 
+        c.name.toLowerCase().includes(query) || c.code.includes(query)
+      ).map(c => `
+        <div class="country-item" onclick="selectCountryForPhone('${prefixId}', '${c.code}', '${c.flag}', this)">
+          <span class="flag">${c.flag}</span>
+          <span class="name">${escapeHtml(c.name)}</span>
+          <span class="code">${c.code}</span>
+        </div>
+      `).join('');
+    };
+
+    window.selectCountryForPhone = function(prefixInputId, code, flag, itemEl) {
+      const prefixInput = document.getElementById(prefixInputId);
+      if (prefixInput) {
+        prefixInput.value = code;
+        const btn = prefixInput.parentElement.querySelector('.country-select-btn');
+        if (btn) {
+          btn.querySelector('.flag').textContent = flag;
+          btn.querySelector('.code').textContent = code;
+        }
+      }
+      const dropdown = itemEl.closest('.country-dropdown');
+      if (dropdown) dropdown.classList.add('hidden');
+    };
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.phone-input-wrapper')) {
+        document.querySelectorAll('.country-dropdown').forEach(d => d.classList.add('hidden'));
+      }
+    });
+
     function enhanceDashboardForms(root = document) {
       const scope = root.nodeType === Node.ELEMENT_NODE ? root : document;
       scope.querySelectorAll('.modal-content .field, .system-dialog-card .field').forEach((field) => {
@@ -10793,6 +11489,7 @@
           btn.classList.add('icon-only');
         }
       });
+      initPhonePrefixes(scope);
     }
 
     function closeModernSelects(except = null) {
@@ -10990,13 +11687,14 @@
     }
 
     const modules = [
-      { key: 'cms', resourceKey: 'core-website-cms', entitlementKey: 'website-cms', apiBase: '/api/cms', name: 'Core Website & CMS', icon: 'layout-template', category: 'Churchfront', desc: 'Create pages, manage navigation, publish content, reuse blocks, and control the public church website.', workspaces: ['Overview', 'Pages', 'Page Templates', 'Navigation', 'Footer', 'Reusable Sections', 'Publishing', 'Reports'], settings: [{ key: 'autoSave', label: 'Autosave drafts', type: 'toggle' }, { key: 'searchIndexing', label: 'Allow search indexing', type: 'toggle' }, { key: 'revisionLimit', label: 'Revision limit', type: 'range', min: 5, max: 50, value: 20 }] },
+      { key: 'domain-tenant-management', name: 'Church Details', icon: 'sliders-horizontal', category: 'Churchfront', desc: 'Configure domains, branding, modules, and launch readiness.', workspaces: ['Church Identity', 'Branding', 'Domain Setup'], settings: [] },
+      { key: 'cms', resourceKey: 'core-website-cms', entitlementKey: 'website-cms', apiBase: '/api/cms', name: 'Churchfront', icon: 'layout-template', category: 'Churchfront', desc: 'Create pages, manage navigation, publish content, reuse blocks, and control the public church website.', workspaces: ['Overview', 'Pages', 'Page Templates', 'Navigation', 'Footer', 'Reusable Sections', 'Publishing', 'Reports'], settings: [{ key: 'autoSave', label: 'Autosave drafts', type: 'toggle' }, { key: 'searchIndexing', label: 'Allow search indexing', type: 'toggle' }, { key: 'revisionLimit', label: 'Revision limit', type: 'range', min: 5, max: 50, value: 20 }] },
+      { key: 'tenant-themes', name: 'Themes', icon: 'palette', category: 'Churchfront', desc: 'Browse and install clean premium website theme templates designed for your church.', workspaces: ['Browse Themes'], settings: [] },
+      { key: 'theme-engine', name: 'Styling', icon: 'brush', category: 'Churchfront', desc: 'Customize themes, typography, colors, layouts, and CSS.', workspaces: ['Overview', 'Customize Colors', 'Typography', 'Logo & Layouts', 'Templates', 'Custom CSS', 'Settings', 'Audit Logs'], settings: [] },
+      { key: 'tenant-plugins', name: 'Plugins', icon: 'toy-brick', category: 'Churchfront', desc: 'Activate dynamic features and plugin extensions to expand your platform.', workspaces: ['Browse Plugins'], settings: [] },
+      { key: 'localization-multilingual-engine', name: 'Website Language', icon: 'languages', category: 'Churchfront', desc: 'Manage public website translations, languages, and multilingual page localization (frontend only).', workspaces: ['Language Registry', 'Translation Keys', 'AI Translation Jobs', 'Content Translations', 'Activity Logs'], settings: [{ key: 'autoDetectLocale', label: 'Auto-detect browser locale', type: 'toggle' }, { key: 'fallbackLocale', label: 'Fallback language code', type: 'select', options: ['en', 'es', 'fr', 'pt', 'ar'], value: 'en' }] },
       { key: 'user-role-management', name: 'Users & Roles', icon: 'shield-check', category: 'Church Admin', desc: 'Invite staff and manage secure role access.', settings: [{ key: 'enforce2fa', label: 'Enforce 2FA for staff', type: 'toggle' }, { key: 'sessionTimeout', label: 'Session timeout minutes', type: 'range', min: 15, max: 240, value: 60 }] },
-      { key: 'domain-tenant-management', name: 'Domain & Tenant', icon: 'globe', category: 'Churchfront', desc: 'Configure domains, branding, modules, and launch readiness.', workspaces: ['Domain Setup', 'Branding', 'Module Registry', 'Checklist'], settings: [] },
-      { key: 'theme-engine', name: 'Theme Engine', icon: 'palette', category: 'Churchfront', desc: 'Customize themes, typography, colors, layouts, and CSS.', workspaces: ['Overview', 'Install Themes', 'Customize Colors', 'Typography', 'Logo & Layouts', 'Templates', 'Custom CSS', 'Settings', 'Audit Logs'], settings: [] },
       { key: 'centralized-settings-engine', name: 'Settings Engine', icon: 'sliders-horizontal', category: 'Settings', desc: 'Manage dynamic settings across every active module.', workspaces: ['Settings Profiles', 'Dynamic Schemas', 'Audit Trails'], settings: [] },
-      { key: 'localization-multilingual-engine', name: 'Frontend Translation', icon: 'languages', category: 'Churchfront', desc: 'Manage public website translations, languages, and multilingual page localization (frontend only).', workspaces: ['Language Registry', 'Translation Keys', 'AI Translation Jobs', 'Content Translations', 'Activity Logs'], settings: [{ key: 'autoDetectLocale', label: 'Auto-detect browser locale', type: 'toggle' }, { key: 'fallbackLocale', label: 'Fallback language code', type: 'select', options: ['en', 'es', 'fr', 'pt', 'ar'], value: 'en' }] },
-      { key: 'plugin-extensions-engine', name: 'Plugin Engine', icon: 'package-open', category: 'Churchfront', desc: 'Install extensions, configure permissions, and manage webhooks.', workspaces: ['Platform Registry', 'Active Extensions', 'Event Webhooks'], settings: [] },
       { key: 'billing-subscription-management', name: 'Billing & Subscriptions', icon: 'credit-card', category: 'Admin', desc: 'Manage plans, add-ons, usage billing, coupons, invoices, paid feature access, and provider settings.', workspaces: ['Overview', 'Subscription Plans', 'Metered Usage', 'Add-ons', 'Coupons', 'Invoices', 'Reports'], settings: [{ key: 'enableUsageBilling', label: 'Usage billing', type: 'toggle' }, { key: 'trialDays', label: 'Default trial days', type: 'range', min: 0, max: 90, value: 14 }, { key: 'invoiceGraceDays', label: 'Invoice grace days', type: 'range', min: 0, max: 30, value: 7 }] },
       { key: 'giving', name: 'Giving', icon: 'hand-coins', category: 'Giving', desc: 'Manage donations, recurring gifts, campaigns, and receipts.', settings: [{ key: 'coverFees', label: 'Ask donors to cover fees', type: 'toggle' }, { key: 'receiptDelay', label: 'Receipt delay minutes', type: 'range', min: 0, max: 60, value: 5 }] },
       { key: 'events', name: 'Events', icon: 'calendar-days', category: 'Connect', desc: 'Publish events, registrations, reminders, capacity, and tickets.', settings: [{ key: 'autoReminders', label: 'Automatic reminders', type: 'toggle' }, { key: 'capacityWarning', label: 'Capacity warning percent', type: 'range', min: 50, max: 100, value: 85 }] },
@@ -11054,6 +11752,8 @@
        entitlements: {
          'domain-tenant-management': { paid: true, live: true },
          'theme-engine': { paid: true, live: true },
+         'tenant-themes': { paid: true, live: true },
+         'tenant-plugins': { paid: true, live: true },
          'centralized-settings-engine': { paid: true, live: true },
          'localization-multilingual-engine': { paid: true, live: true },
          'plugin-extensions-engine': { paid: true, live: true },
@@ -11265,7 +11965,7 @@
     }
 
     function switchView(view) {
-      if (typeof window.toggleSidebarDrawer === 'function') {
+      if (!window.preventSidebarDrawerClose && typeof window.toggleSidebarDrawer === 'function') {
         window.toggleSidebarDrawer(false);
       }
       currentView = view;
@@ -11424,6 +12124,11 @@
       const searchInput = document.getElementById('sidebarSearchInput');
       if (searchInput) searchInput.value = '';
       
+      const isMobileDrawer = window.innerWidth <= 900 && document.querySelector('.sidebar-wrapper')?.classList.contains('drawer-open');
+      if (isMobileDrawer) {
+        window.preventSidebarDrawerClose = true;
+      }
+      
       if (catKey === 'home') {
         switchView('overview');
       } else if (catKey === 'settings') {
@@ -11467,6 +12172,10 @@
         switchView('modules');
       }
       renderSidebarModules();
+
+      if (isMobileDrawer) {
+        window.preventSidebarDrawerClose = false;
+      }
     };
 
     window.handleSidebarSearch = function(query) {
@@ -11742,6 +12451,17 @@
                 </button>
               `;
             }).join('');
+
+            // Inject Marketplace end-user link for Churchfront / Site category
+            if (window.activeSidebarCategory === 'churchfront') {
+              contentHtml += `
+                <a href="/marketplace" target="_blank" class="sidebar-b-item text-decoration-none" style="text-decoration:none; display:flex; align-items:center; gap:12px;">
+                  <i data-lucide="store" style="color:var(--muted);"></i>
+                  <span>Marketplace</span>
+                  <i data-lucide="chevron-right" class="chevron-right" style="margin-left:auto;"></i>
+                </a>
+              `;
+            }
           }
         }
 
@@ -11790,10 +12510,8 @@
       const cmsConsole = document.getElementById('cmsConsoleContainer');
       const userRoleConsole = document.getElementById('userRoleConsoleContainer');
       const domainTenantConsole = document.getElementById('domainTenantConsoleContainer');
-      const themeEngineConsole = document.getElementById('themeEngineConsoleContainer');
       const centralizedSettingsConsole = document.getElementById('centralizedSettingsEngineConsoleContainer');
       const localizationConsole = document.getElementById('localizationConsoleContainer');
-      const pluginConsole = document.getElementById('pluginExtensionsConsoleContainer');
       const billingConsole = document.getElementById('billingSubscriptionConsoleContainer');
       const analyticsConsole = document.getElementById('analyticsConsoleContainer');
       const givingConsole = document.getElementById('givingConsoleContainer');
@@ -11830,6 +12548,9 @@
       const liveChatConsole = document.getElementById('liveChatConsoleContainer');
       const communicationConsole = document.getElementById('communicationConsoleContainer');
       const crmConsole = document.getElementById('crmConsoleContainer');
+      const tenantThemesConsole = document.getElementById('tenantThemesConsoleContainer');
+      const tenantPluginsConsole = document.getElementById('tenantPluginsConsoleContainer');
+      const themeEngineConsole = document.getElementById('themeEngineConsoleContainer');
 
       // Helper to hide all consoles
       function hideAllConsoles() {
@@ -11837,10 +12558,11 @@
         if (cmsConsole) cmsConsole.classList.add('hidden');
         if (userRoleConsole) userRoleConsole.classList.add('hidden');
         if (domainTenantConsole) domainTenantConsole.classList.add('hidden');
+        if (tenantThemesConsole) tenantThemesConsole.classList.add('hidden');
+        if (tenantPluginsConsole) tenantPluginsConsole.classList.add('hidden');
         if (themeEngineConsole) themeEngineConsole.classList.add('hidden');
         if (centralizedSettingsConsole) centralizedSettingsConsole.classList.add('hidden');
         if (localizationConsole) localizationConsole.classList.add('hidden');
-        if (pluginConsole) pluginConsole.classList.add('hidden');
         if (billingConsole) billingConsole.classList.add('hidden');
         if (analyticsConsole) analyticsConsole.classList.add('hidden');
         if (givingConsole) givingConsole.classList.add('hidden');
@@ -11896,6 +12618,16 @@
           domainTenantConsole.classList.remove('hidden');
           bootstrapDomainTenant();
         }
+      } else if (module.key === 'tenant-themes' && currentView === 'modules') {
+        if (tenantThemesConsole) {
+          tenantThemesConsole.classList.remove('hidden');
+          bootstrapTenantThemes();
+        }
+      } else if (module.key === 'tenant-plugins' && currentView === 'modules') {
+        if (tenantPluginsConsole) {
+          tenantPluginsConsole.classList.remove('hidden');
+          bootstrapTenantPlugins();
+        }
       } else if (module.key === 'theme-engine' && currentView === 'modules') {
         if (themeEngineConsole) {
           themeEngineConsole.classList.remove('hidden');
@@ -11910,11 +12642,6 @@
         if (localizationConsole) {
           localizationConsole.classList.remove('hidden');
           bootstrapLocalization();
-        }
-      } else if (module.key === 'plugin-extensions-engine' && currentView === 'modules') {
-        if (pluginConsole) {
-          pluginConsole.classList.remove('hidden');
-          bootstrapPlugins();
         }
       } else if (module.key === 'billing-subscription-management' && currentView === 'modules') {
         if (billingConsole) {
@@ -12455,7 +13182,7 @@
       selectedRoleId: '',
       activityLogs: [],
       permissions: [
-        { key: 'core-website-cms', label: 'Core Website & CMS (core-website-cms.*)' },
+        { key: 'core-website-cms', label: 'Churchfront (core-website-cms.*)' },
         { key: 'giving', label: 'Donations & Giving (giving.*)' },
         { key: 'members', label: 'Members CRM (members.*)' },
         { key: 'groups', label: 'Cell Groups (groups.*)' },
@@ -12839,7 +13566,7 @@
 
     // Native Domain & Tenant Management Console State & Integration Logic
     const dtState = {
-      activeTab: 'domain',
+      activeTab: 'identity',
       tenantInfo: null,
       branding: {
         logo: '',
@@ -12849,21 +13576,33 @@
         language: 'en'
       },
       domainInfo: null,
-      modules: [],
       checklist: {
         domainSetup: false,
         brandingSetup: false,
-        moduleRegistry: false,
         inviteTeam: false
       }
     };
 
+    // =========================================================================
+    // Church Details Image Cropping & Editing State
+    // =========================================================================
+    let cropperState = {
+      type: '',         // 'logo' or 'favicon'
+      zoom: 1.0,        // Zoom factor
+      rotation: 0,      // Rotation angle
+      panX: 0,          // X offset
+      panY: 0,          // Y offset
+      isDragging: false,
+      startX: 0,
+      startY: 0
+    };
+    let cropperEventsBound = false;
+
     async function bootstrapDomainTenant() {
-      // 1. Fetch domain and branding details
-      const [brandingRes, domainRes, modulesRes, checklistRes] = await Promise.all([
+      // 1. Fetch domain, branding and checklist details (excluding modules)
+      const [brandingRes, domainRes, checklistRes] = await Promise.all([
         cmsApiRequest('GET', '/api/tenant/branding'),
         cmsApiRequest('GET', '/api/tenant/domain'),
-        cmsApiRequest('GET', '/api/tenant/modules'),
         cmsApiRequest('GET', '/api/tenant/checklist')
       ]);
 
@@ -12874,10 +13613,6 @@
       
       if (domainRes && domainRes.ok && domainRes.data) {
         dtState.domainInfo = domainRes.data;
-      }
-
-      if (modulesRes && modulesRes.ok && modulesRes.data) {
-        dtState.modules = modulesRes.data;
       }
 
       if (checklistRes && checklistRes.ok && checklistRes.data) {
@@ -12899,34 +13634,89 @@
       const churchNameInput = document.getElementById('dtChurchNameInput');
       if (churchNameInput && dtState.tenantInfo) {
         churchNameInput.value = dtState.tenantInfo.name || '';
+        churchNameInput.removeEventListener('input', handleDtChurchNameInput);
+        churchNameInput.addEventListener('input', handleDtChurchNameInput);
       }
 
       const langSelect = document.getElementById('dtLanguageSelect');
       if (langSelect) langSelect.value = dtState.branding.language || 'en';
 
-      const logoUrlInput = document.getElementById('dtLogoUrlInput');
-      if (logoUrlInput) logoUrlInput.value = dtState.branding.logo || '';
+      // Populate new identity fields
+      const descriptionInput = document.getElementById('dtDescriptionInput');
+      if (descriptionInput) descriptionInput.value = dtState.branding.description || '';
 
-      const faviconUrlInput = document.getElementById('dtFaviconUrlInput');
-      if (faviconUrlInput) faviconUrlInput.value = dtState.branding.favicon || '';
+      const phoneInput = document.getElementById('dtPhoneInput');
+      const phonePrefixInput = document.getElementById('dtPhonePrefix');
+      if (phoneInput && phonePrefixInput) {
+        const fullPhone = dtState.branding.phone || '';
+        let matched = false;
+        const sortedCodes = [...COUNTRY_CODES].sort((a, b) => b.code.length - a.code.length);
+        for (const c of sortedCodes) {
+          if (fullPhone.startsWith(c.code + ' ') || fullPhone.startsWith(c.code)) {
+            phonePrefixInput.value = c.code;
+            const btn = phonePrefixInput.parentElement.querySelector('.country-select-btn');
+            if (btn) {
+              btn.querySelector('.flag').textContent = c.flag;
+              btn.querySelector('.code').textContent = c.code;
+            }
+            phoneInput.value = fullPhone.substring(c.code.length).trim();
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          phonePrefixInput.value = '+1';
+          const btn = phonePrefixInput.parentElement.querySelector('.country-select-btn');
+          if (btn) {
+            btn.querySelector('.flag').textContent = '🇺🇸';
+            btn.querySelector('.code').textContent = '+1';
+          }
+          phoneInput.value = fullPhone;
+        }
+      }
+
+      const addressInput = document.getElementById('dtAddressInput');
+      if (addressInput) addressInput.value = dtState.branding.address || '';
 
       const timezoneSelect = document.getElementById('dtTimezoneSelect');
       if (timezoneSelect) timezoneSelect.value = dtState.branding.timezone || 'UTC';
 
-      const accentInput = document.getElementById('dtAccentColorInput');
-      const accentPicker = document.getElementById('dtAccentColorPicker');
-      if (accentInput) accentInput.value = dtState.branding.accent || '#4f46e5';
-      if (accentPicker) accentPicker.value = dtState.branding.accent || '#4f46e5';
+      const logoUrlInput = document.getElementById('dtLogoUrlInput');
+      if (logoUrlInput) {
+        logoUrlInput.value = dtState.branding.logo || '';
+        const logoPreview = document.getElementById('dtLogoPreview');
+        const logoPreviewContainer = document.getElementById('dtLogoPreviewContainer');
+        if (dtState.branding.logo) {
+          if (logoPreview) {
+            logoPreview.src = dtState.branding.logo;
+            logoPreviewContainer?.classList.remove('hidden');
+          }
+        } else {
+          logoPreviewContainer?.classList.add('hidden');
+        }
+      }
 
-      // Set up Swatches and events
-      populateDtAccentSwatches();
+      const faviconUrlInput = document.getElementById('dtFaviconUrlInput');
+      if (faviconUrlInput) {
+        faviconUrlInput.value = dtState.branding.favicon || '';
+        const faviconPreview = document.getElementById('dtFaviconPreview');
+        const faviconPreviewContainer = document.getElementById('dtFaviconPreviewContainer');
+        if (dtState.branding.favicon) {
+          if (faviconPreview) {
+            faviconPreview.src = dtState.branding.favicon;
+            faviconPreviewContainer?.classList.remove('hidden');
+          }
+        } else {
+          faviconPreviewContainer?.classList.add('hidden');
+        }
+      }
+
       updateDomainStatusBadge();
       renderChecklist();
-      renderModulesListTable();
 
-      // Event listeners for tabs & color picker sync
+      // Event listeners for tabs & image cropper events
       bindDomainTenantTabEvents();
-      bindAccentColorSyncEvents();
+      initCropperEvents();
       
       switchDomainTenantTab(dtState.activeTab);
       refreshIcons();
@@ -13019,10 +13809,6 @@
         if (customDomainInput && dtState.tenantInfo) {
           customDomainInput.value = dtState.tenantInfo.customDomain || '';
         }
-      } else if (tabName === 'checklist') {
-        renderChecklist();
-      } else if (tabName === 'modules') {
-        renderModulesListTable();
       }
       refreshIcons();
     };
@@ -13080,30 +13866,34 @@
     };
 
     window.saveTenantBranding = async function() {
-      const name = document.getElementById('dtChurchNameInput').value.trim();
-      const language = document.getElementById('dtLanguageSelect').value;
-      const logo = document.getElementById('dtLogoUrlInput').value.trim();
-      const favicon = document.getElementById('dtFaviconUrlInput').value.trim();
-      const timezone = document.getElementById('dtTimezoneSelect').value;
-      const accent = document.getElementById('dtAccentColorInput').value;
+      const name = (document.getElementById('dtChurchNameInput')?.value || '').trim();
+      const language = document.getElementById('dtLanguageSelect')?.value || 'en';
+      const description = (document.getElementById('dtDescriptionInput')?.value || '').trim();
+      const phonePrefix = document.getElementById('dtPhonePrefix')?.value || '+1';
+      const phoneDigits = (document.getElementById('dtPhoneInput')?.value || '').trim();
+      const phone = phoneDigits ? `${phonePrefix} ${phoneDigits}` : '';
+      const address = (document.getElementById('dtAddressInput')?.value || '').trim();
+      const timezone = document.getElementById('dtTimezoneSelect')?.value || 'UTC';
+      const logo = (document.getElementById('dtLogoUrlInput')?.value || '').trim();
+      const favicon = (document.getElementById('dtFaviconUrlInput')?.value || '').trim();
 
       const res = await cmsApiRequest('PATCH', '/api/tenant/branding', {
         name,
         language,
-        logo,
-        favicon,
+        description,
+        phone,
+        address,
         timezone,
-        accent
+        logo,
+        favicon
       });
 
       if (res && res.ok) {
-        showToast('Branding preferences saved successfully');
+        showToast('Church details saved successfully');
         
         // Save local UI state settings & sync immediately
         state.tenant.name = name;
-        state.theme.accent = accent;
-        saveState('Tenant branding details updated');
-        applyTheme();
+        saveState('Tenant identity details updated');
 
         // Refresh checklist status
         const checklistRes = await cmsApiRequest('GET', '/api/tenant/checklist');
@@ -13112,23 +13902,8 @@
           renderChecklist();
         }
       } else {
-        alert(res?.data?.error || 'Failed to save branding specifications');
+        alert(res?.data?.error || 'Failed to save church details');
       }
-    };
-
-    window.generateMockBrandingAsset = async function(type) {
-      showToast(`Generating high-quality demo ${type} asset...`);
-      let mockUrl = '';
-      if (type === 'logo') {
-        mockUrl = 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=120&h=120&q=80';
-        const logoInput = document.getElementById('dtLogoUrlInput');
-        if (logoInput) logoInput.value = mockUrl;
-      } else {
-        mockUrl = 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=32&h=32&q=80';
-        const favInput = document.getElementById('dtFaviconUrlInput');
-        if (favInput) favInput.value = mockUrl;
-      }
-      showToast(`Demo ${type} generated successfully! Click Save to apply.`);
     };
 
     function renderChecklist() {
@@ -13137,14 +13912,12 @@
       // Update check icons in UI
       updateCheckIcon('checkIconDomain', checklist.domainSetup);
       updateCheckIcon('checkIconBranding', checklist.brandingSetup);
-      updateCheckIcon('checkIconModules', checklist.moduleRegistry);
       updateCheckIcon('checkIconInvite', checklist.inviteTeam);
 
       // Compute readiness progress percentage
-      const totalItems = 4;
+      const totalItems = 3;
       const completedItems = (checklist.domainSetup ? 1 : 0) + 
                              (checklist.brandingSetup ? 1 : 0) + 
-                             (checklist.moduleRegistry ? 1 : 0) + 
                              (checklist.inviteTeam ? 1 : 0);
       
       const percent = Math.round((completedItems / totalItems) * 100);
@@ -13166,77 +13939,335 @@
       }
     }
 
-    function renderModulesListTable() {
-      const tbody = document.getElementById('dtModulesList');
-      if (!tbody) return;
+    // =========================================================================
+    // Church Details Image Cropping & Editing Handlers
+    // =========================================================================
+    function handleDtChurchNameInput(e) {
+      // Reserved for future live preview bindings
+    }
 
-      if (dtState.modules.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="muted" style="text-align:center; padding:24px;">No modules registry items found</td></tr>`;
+    window.handleImageUpload = function(event, type) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        openCropperModal(e.target.result, type);
+      };
+      reader.readAsDataURL(file);
+      event.target.value = '';
+    };
+
+    window.openCropperModal = function(src, type) {
+      const modal = document.getElementById('dtCropModal');
+      const title = document.getElementById('dtCropModalTitle');
+      const img = document.getElementById('dtCropImage');
+      const frame = document.getElementById('dtCropFrame');
+      const zoomInput = document.getElementById('dtCropZoom');
+      
+      if (!modal || !img || !frame) return;
+      
+      cropperState.type = type;
+      cropperState.zoom = 1.0;
+      cropperState.rotation = 0;
+      cropperState.panX = 0;
+      cropperState.panY = 0;
+      
+      if (zoomInput) zoomInput.value = 1.0;
+      
+      title.textContent = type === 'favicon' ? 'Crop & Resize Favicon (Strict Square)' : 'Crop & Resize Church Logo (Free Control)';
+      
+      if (type === 'favicon') {
+        frame.style.width = '150px';
+        frame.style.height = '150px';
+        frame.style.left = 'calc(50% - 75px)';
+        frame.style.top = 'calc(50% - 75px)';
+      } else {
+        frame.style.width = '300px';
+        frame.style.height = '120px';
+        frame.style.left = 'calc(50% - 150px)';
+        frame.style.top = 'calc(50% - 60px)';
+      }
+      
+      img.src = src;
+      img.onload = function() {
+        let baseWidth = img.naturalWidth;
+        let baseHeight = img.naturalHeight;
+        let scaleFactor = 1.0;
+        if (baseWidth > 400 || baseHeight > 280) {
+          scaleFactor = Math.min(400 / baseWidth, 280 / baseHeight);
+          baseWidth = baseWidth * scaleFactor;
+          baseHeight = baseHeight * scaleFactor;
+        }
+        
+        img.style.width = baseWidth + 'px';
+        img.style.height = baseHeight + 'px';
+        updateCropperTransform();
+      };
+      
+      modal.classList.remove('hidden');
+    };
+
+    function updateCropperTransform() {
+      const img = document.getElementById('dtCropImage');
+      if (!img) return;
+      img.style.transform = `translate(${cropperState.panX}px, ${cropperState.panY}px) rotate(${cropperState.rotation}deg) scale(${cropperState.zoom})`;
+    }
+
+    window.rotateCropImage = function() {
+      cropperState.rotation = (cropperState.rotation + 90) % 360;
+      updateCropperTransform();
+    };
+
+    window.closeCropperModal = function() {
+      const modal = document.getElementById('dtCropModal');
+      if (modal) {
+        modal.classList.add('hidden');
+      }
+    };
+
+    window.applyCrop = function() {
+      const img = document.getElementById('dtCropImage');
+      if (!img || !img.src) return;
+      
+      const type = cropperState.type;
+      const cropWidth = type === 'favicon' ? 150 : 300;
+      const cropHeight = type === 'favicon' ? 150 : 120;
+      
+      let baseWidth = img.naturalWidth;
+      let baseHeight = img.naturalHeight;
+      let scaleFactor = 1.0;
+      if (baseWidth > 400 || baseHeight > 280) {
+        scaleFactor = Math.min(400 / baseWidth, 280 / baseHeight);
+        baseWidth = baseWidth * scaleFactor;
+        baseHeight = baseHeight * scaleFactor;
+      }
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = cropWidth;
+      canvas.height = cropHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      ctx.clearRect(0, 0, cropWidth, cropHeight);
+      ctx.translate(cropWidth / 2 + cropperState.panX, cropHeight / 2 + cropperState.panY);
+      ctx.rotate(cropperState.rotation * Math.PI / 180);
+      ctx.scale(cropperState.zoom, cropperState.zoom);
+      ctx.drawImage(img, -baseWidth / 2, -baseHeight / 2, baseWidth, baseHeight);
+      
+      const dataUrl = canvas.toDataURL('image/png');
+      
+      if (type === 'logo') {
+        const logoUrlInput = document.getElementById('dtLogoUrlInput');
+        const logoPreview = document.getElementById('dtLogoPreview');
+        const logoPreviewContainer = document.getElementById('dtLogoPreviewContainer');
+        const logoMockPreview = document.getElementById('dtLogoMockPreview');
+        const logoMockText = document.getElementById('dtLogoMockText');
+        
+        if (logoUrlInput) logoUrlInput.value = dataUrl;
+        if (logoPreview) logoPreview.src = dataUrl;
+        if (logoPreviewContainer) logoPreviewContainer.classList.remove('hidden');
+        if (logoMockPreview) {
+          logoMockPreview.src = dataUrl;
+          logoMockPreview.style.display = 'block';
+        }
+        if (logoMockText) logoMockText.style.display = 'none';
+        
+        showToast('Logo crop applied successfully');
+      } else {
+        const faviconUrlInput = document.getElementById('dtFaviconUrlInput');
+        const faviconPreview = document.getElementById('dtFaviconPreview');
+        const faviconPreviewContainer = document.getElementById('dtFaviconPreviewContainer');
+        
+        if (faviconUrlInput) faviconUrlInput.value = dataUrl;
+        if (faviconPreview) faviconPreview.src = dataUrl;
+        if (faviconPreviewContainer) faviconPreviewContainer.classList.remove('hidden');
+        
+        showToast('Favicon crop applied successfully');
+      }
+      
+      closeCropperModal();
+    };
+
+    function initCropperEvents() {
+      if (cropperEventsBound) return;
+      const ws = document.getElementById('dtCropWorkspace');
+      const zoomInput = document.getElementById('dtCropZoom');
+      
+      if (!ws || !zoomInput) return;
+      
+      zoomInput.addEventListener('input', (e) => {
+        cropperState.zoom = parseFloat(e.target.value);
+        updateCropperTransform();
+      });
+      
+      ws.addEventListener('mousedown', (e) => {
+        cropperState.isDragging = true;
+        cropperState.startX = e.clientX - cropperState.panX;
+        cropperState.startY = e.clientY - cropperState.panY;
+      });
+      
+      window.addEventListener('mousemove', (e) => {
+        if (!cropperState.isDragging) return;
+        cropperState.panX = e.clientX - cropperState.startX;
+        cropperState.panY = e.clientY - cropperState.startY;
+        updateCropperTransform();
+      });
+      
+      window.addEventListener('mouseup', () => {
+        cropperState.isDragging = false;
+      });
+      
+      ws.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          cropperState.isDragging = true;
+          cropperState.startX = e.touches[0].clientX - cropperState.panX;
+          cropperState.startY = e.touches[0].clientY - cropperState.panY;
+        }
+      });
+      
+      ws.addEventListener('touchmove', (e) => {
+        if (!cropperState.isDragging || e.touches.length !== 1) return;
+        e.preventDefault();
+        cropperState.panX = e.touches[0].clientX - cropperState.startX;
+        cropperState.panY = e.touches[0].clientY - cropperState.startY;
+        updateCropperTransform();
+      }, { passive: false });
+      
+      ws.addEventListener('touchend', () => {
+        cropperState.isDragging = false;
+      });
+      
+      cropperEventsBound = true;
+    }
+
+    // =========================================================================
+    // Tenant Themes & Plugins Catalog Workspace Logic
+    // =========================================================================
+    window.bootstrapTenantThemes = async function() {
+      showToast('Loading premium themes catalog...');
+      const res = await cmsApiRequest('GET', '/api/marketplace/assets?type=theme');
+      
+      const grid = document.getElementById('tenantThemesCatalogGrid');
+      if (!grid) return;
+
+      if (!res || !res.ok || !res.data || res.data.length === 0) {
+        grid.innerHTML = `
+          <div class="panel" style="grid-column: 1 / -1; text-align: center; padding: 48px; width: 100%;">
+            <i data-lucide="palette" style="width: 48px; height: 48px; color: var(--muted); margin-bottom: 12px; display: inline-block;"></i>
+            <h3>No Themes Available</h3>
+            <p>Approved themes will appear here once published by developers.</p>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
         return;
       }
 
-      tbody.innerHTML = dtState.modules.map(mod => {
-        const isBaseline = ['website-cms', 'theme-engine'].includes(mod.key);
-        const isActive = mod.status === 'active';
-        const badgeColor = isActive ? 'var(--status-published)' : mod.status === 'suspended' ? 'var(--danger)' : 'var(--muted)';
-        const badgeText = isActive ? 'Active' : mod.status === 'suspended' ? 'Suspended' : 'Inactive';
+      grid.innerHTML = res.data.map(asset => {
+        const ratingStars = '★'.repeat(Math.round(asset.averageRating || 5)) + '☆'.repeat(5 - Math.round(asset.averageRating || 5));
+        const priceLabel = asset.pricingType === 'paid' ? formatCurrency(asset.price) : 'Free';
         
-        const actionBtn = isBaseline 
-          ? `<span class="muted" style="font-size:12px;">System Baseline</span>` 
-          : `<button class="btn secondary btn-sm" onclick="toggleTenantModuleActivation('${mod.key}', '${isActive ? 'suspended' : 'active'}')">
-               ${isActive ? 'Suspend' : 'Activate'}
-             </button>`;
-
         return `
-          <tr>
-            <td style="font-weight:600; padding:14px 18px;">${escapeHtml(mod.name)} <code style="font-size:11px; font-weight:normal; color:var(--muted);">(${mod.key})</code></td>
-            <td style="padding:14px 18px;">${escapeHtml(mod.category)}</td>
-            <td style="padding:14px 18px;">
-              <span class="badge" style="background:${badgeColor}; color:${isActive ? '#111827' : '#fff'}; font-size:12px; font-weight:600;">
-                ${badgeText}
-              </span>
-            </td>
-            <td style="padding:14px 18px; text-transform:capitalize;">${escapeHtml(mod.billingRule)}</td>
-            <td style="text-align:right; padding-right:18px;">${actionBtn}</td>
-          </tr>
+          <div class="panel theme-card" style="display: flex; flex-direction: column; gap: 12px; position: relative; overflow: hidden; height: 100%;">
+            <div style="height: 140px; background: linear-gradient(135deg, var(--accent), #10b981); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff;">
+              <i data-lucide="palette" style="width: 48px; height: 48px;"></i>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-top: 8px;">
+              <h3 style="margin: 0; font-size: 16px; font-weight: 700;">${escapeHtml(asset.name)}</h3>
+              <span class="badge" style="background: var(--accent-soft); color: var(--accent); font-size: 11px;">${priceLabel}</span>
+            </div>
+            <p style="margin: 0; font-size: 13px; color: var(--muted); flex: 1;">${escapeHtml(asset.description || 'Elevate your church web layout with this beautiful modern template.')}</p>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--line); margin-top: auto;">
+              <div style="color: #f59e0b; font-size: 13px; font-weight: 700;">
+                ${ratingStars} <span style="color: var(--muted); font-size: 11px; font-weight: 600;">(${asset.totalFeedback || 0})</span>
+              </div>
+              <button class="btn btn-xs primary" onclick="installTenantAsset('${asset.id}', '${escapeHtml(asset.name)}', 'theme')">
+                <i data-lucide="download" style="width: 12px; height: 12px;"></i>Install
+              </button>
+            </div>
+          </div>
         `;
       }).join('');
-    }
+      
+      if (window.lucide) window.lucide.createIcons();
+    };
 
-    window.toggleTenantModuleActivation = async function(moduleKey, targetStatus) {
-      const confirmMsg = targetStatus === 'active' 
-        ? `Activate ${moduleKey} module access for your church tenant?` 
-        : `Are you sure you want to suspend access to the ${moduleKey} module? Staff members will lose workspace capabilities immediately.`;
+    window.bootstrapTenantPlugins = async function() {
+      showToast('Loading feature extensions catalog...');
+      const res = await cmsApiRequest('GET', '/api/marketplace/assets?type=plugin');
+      
+      const grid = document.getElementById('tenantPluginsCatalogGrid');
+      if (!grid) return;
 
-      if (confirm(confirmMsg)) {
-        const res = await cmsApiRequest('PATCH', `/api/tenant/modules/${moduleKey}`, { status: targetStatus });
-        if (res && res.ok) {
-          showToast(`Module '${moduleKey}' state toggled to ${targetStatus}`);
-          
-          // Re-fetch modules and checklist details
-          const [modulesRes, checklistRes] = await Promise.all([
-            cmsApiRequest('GET', '/api/tenant/modules'),
-            cmsApiRequest('GET', '/api/tenant/checklist')
-          ]);
-          
-          if (modulesRes && modulesRes.ok) dtState.modules = modulesRes.data;
-          if (checklistRes && checklistRes.ok) dtState.checklist = checklistRes.data;
+      if (!res || !res.ok || !res.data || res.data.length === 0) {
+        grid.innerHTML = `
+          <div class="panel" style="grid-column: 1 / -1; text-align: center; padding: 48px; width: 100%;">
+            <i data-lucide="toy-brick" style="width: 48px; height: 48px; color: var(--muted); margin-bottom: 12px; display: inline-block;"></i>
+            <h3>No Plugins Available</h3>
+            <p>Approved plugins will appear here once published by developers.</p>
+          </div>
+        `;
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
 
-          // Re-sync local entitlements to refresh sidebar navigation elements
-          if (targetStatus === 'active') {
-            state.entitlements[moduleKey] = { paid: true, live: true };
-          } else {
-            state.entitlements[moduleKey] = { paid: false, live: false };
-          }
-          saveState(`Entitlements synced for ${moduleKey}`);
-          
-          // Redraw workspace components
-          renderModulesListTable();
-          renderChecklist();
-          renderSidebar();
+      grid.innerHTML = res.data.map(asset => {
+        const priceLabel = asset.pricingType === 'paid' ? formatCurrency(asset.price) : 'Free';
+        let config = {};
+        try {
+          config = typeof asset.assetConfig === 'string' ? JSON.parse(asset.assetConfig) : asset.assetConfig || {};
+        } catch {}
+        
+        const reqPerms = config.requiredPermissions || [];
+        const permsHtml = reqPerms.length > 0 
+          ? `<div style="margin-top: 8px;"><small style="font-weight:700; color:var(--muted);">Permissions Required:</small> <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:4px;">${reqPerms.map(p => `<code style="font-size:10px; background:var(--panel-2); padding:2px 4px; border-radius:4px;">${escapeHtml(p)}</code>`).join('')}</div></div>` 
+          : '';
+
+        return `
+          <div class="panel" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent);">
+                <i data-lucide="toy-brick" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div style="flex: 1;">
+                <h3 style="margin: 0; font-size: 15px; font-weight: 700;">${escapeHtml(asset.name)}</h3>
+                <code style="font-size: 11px;">v${escapeHtml(asset.version)}</code>
+              </div>
+              <span class="badge" style="background: var(--accent-soft); color: var(--accent); font-size: 11px;">${priceLabel}</span>
+            </div>
+            
+            <p style="margin: 0; font-size: 13px; color: var(--muted); flex: 1;">${escapeHtml(asset.description || 'Integrate beautiful administrative features and layouts with this extension.')}</p>
+            
+            ${permsHtml}
+
+            <div style="display: flex; justify-content: flex-end; padding-top: 10px; border-top: 1px solid var(--line); margin-top: auto;">
+              <button class="btn btn-xs primary" onclick="installTenantAsset('${asset.id}', '${escapeHtml(asset.name)}', 'plugin')">
+                <i data-lucide="download" style="width: 12px; height: 12px;"></i>Install Plugin
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    window.installTenantAsset = async function(assetId, assetName, type) {
+      const confirmInstall = confirm(`Would you like to purchase and install ${assetName} to your ChurchOS workspace?`);
+      if (!confirmInstall) return;
+
+      showToast(`Installing ${assetName}...`);
+      const res = await cmsApiRequest('POST', `/api/marketplace/assets/${assetId}/purchase`);
+
+      if (res && res.ok) {
+        showToast(`${assetName} installed successfully!`);
+        if (type === 'theme') {
+          bootstrapTenantThemes();
         } else {
-          alert(res?.data?.error || 'Failed to toggle module registry entitlement status');
+          bootstrapTenantPlugins();
         }
+      } else {
+        alert(res?.data?.error || `Failed to install ${assetName}. Please check module settings or billing gateway configuration.`);
       }
     };
 
@@ -14429,11 +15460,11 @@
       const res = await cmsApiRequest('PATCH', '/api/theme-engine/settings', payload);
       if (res && res.ok) {
         themeEngineState.settings = res.data || {};
-        showToast('Theme Engine settings saved');
+        showToast('Styling settings saved');
         renderThemeEngineOverview();
         populateThemeEngineSettingsControls();
       } else {
-        alert(res?.data?.error || 'Failed to save Theme Engine settings');
+        alert(res?.data?.error || 'Failed to save Styling settings');
       }
     };
 
@@ -15069,7 +16100,7 @@
         surface.innerHTML = [
           ['Admin experience', 'Create pages, edit metadata, launch the page builder, manage menus, configure footer links, and review logs.'],
           ['Public experience', 'Only published pages are rendered through the public CMS renderer. Drafts stay private to the dashboard.'],
-          ['Integrations', 'Theme Engine, Media, Blog, Events, Giving, Partnerships, Campaigns, and Funnels connect through JSON content blocks and module links.'],
+          ['Integrations', 'Styling, Media, Blog, Events, Giving, Partnerships, Campaigns, and Funnels connect through JSON content blocks and module links.'],
           ['Settings placement', 'Module settings are available here and in Central Settings so church staff stay in one authenticated dashboard.']
         ].map(([label, copy]) => `
           <div class="setting-row">
@@ -15312,7 +16343,7 @@
         ...(state.settings.cms || {}),
         ...cmsState.publishingSettings
       };
-      saveState('Core Website & CMS settings saved');
+      saveState('Churchfront settings saved');
     }
 
     function renderCmsReports() {
@@ -20225,7 +21256,15 @@
           </div>
           <div class="field">
             <label>Phone</label>
-            <input type="text" id="memPhone" class="form-control" placeholder="e.g. 555-0155" style="width:100%;" />
+            <div class="phone-input-wrapper">
+              <div class="country-select-btn" onclick="toggleCountryDropdown(this)">
+                <span class="flag">🇺🇸</span>
+                <span class="code">+1</span>
+                <i data-lucide="chevron-down" style="width: 12px; height: 12px;"></i>
+              </div>
+              <input type="hidden" id="memPhonePrefix" value="+1" />
+              <input type="text" id="memPhone" class="form-control" placeholder="e.g. 555-0155" style="flex: 1;" />
+            </div>
           </div>
           <div class="field">
             <label>Gender</label>
@@ -20238,9 +21277,23 @@
             <label>Birthday</label>
             <input type="date" id="memBirthday" class="form-control" style="width:100%;" />
           </div>
-          <div class="field" style="grid-column: span 2;">
-            <label>Address</label>
-            <input type="text" id="memAddress" class="form-control" placeholder="e.g. 123 Main St" style="width:100%;" />
+          <div class="field" style="grid-column: span 2; display: grid; grid-template-columns: 1fr 2fr 2fr 2fr; gap: 8px;">
+            <div class="field" style="margin-bottom:0;">
+              <label>Block</label>
+              <input type="text" id="memAddressBlock" class="form-control" placeholder="e.g. 4B" style="width:100%;" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Street</label>
+              <input type="text" id="memAddressStreet" class="form-control" placeholder="e.g. Main St" style="width:100%;" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>City / Town</label>
+              <input type="text" id="memAddressCity" class="form-control" placeholder="e.g. London" style="width:100%;" />
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Country</label>
+              <input type="text" id="memAddressCountry" class="form-control" placeholder="e.g. United Kingdom" style="width:100%;" />
+            </div>
           </div>
         </div>
       `;
@@ -20256,10 +21309,19 @@
         const firstName = document.getElementById('memFirstName').value;
         const lastName = document.getElementById('memLastName').value;
         const email = document.getElementById('memEmail').value;
-        const phone = document.getElementById('memPhone').value;
+        
+        const phonePrefix = document.getElementById('memPhonePrefix').value;
+        const phoneDigits = document.getElementById('memPhone').value;
+        const phone = phoneDigits ? `${phonePrefix} ${phoneDigits}` : '';
+        
         const gender = document.getElementById('memGender').value;
         const birthday = document.getElementById('memBirthday').value;
-        const address = document.getElementById('memAddress').value;
+        
+        const block = document.getElementById('memAddressBlock').value;
+        const street = document.getElementById('memAddressStreet').value;
+        const city = document.getElementById('memAddressCity').value;
+        const country = document.getElementById('memAddressCountry').value;
+        const address = [block ? `Block ${block}` : '', street, city, country].filter(Boolean).join(', ');
 
         if (!firstName || !lastName) {
           alert('First name and last name are required.');
@@ -20389,7 +21451,15 @@
           </div>
           <div class="field">
             <label>Phone</label>
-            <input type="text" id="conPhone" class="form-control" placeholder="e.g. 555-0177" style="width:100%;" />
+            <div class="phone-input-wrapper">
+              <div class="country-select-btn" onclick="toggleCountryDropdown(this)">
+                <span class="flag">🇺🇸</span>
+                <span class="code">+1</span>
+                <i data-lucide="chevron-down" style="width: 12px; height: 12px;"></i>
+              </div>
+              <input type="hidden" id="conPhonePrefix" value="+1" />
+              <input type="text" id="conPhone" class="form-control" placeholder="e.g. 555-0177" style="flex: 1;" />
+            </div>
           </div>
           <div class="field">
             <label>Type / Segment</label>
@@ -20427,7 +21497,11 @@
         const firstName = document.getElementById('conFirstName').value;
         const lastName = document.getElementById('conLastName').value;
         const email = document.getElementById('conEmail').value;
-        const phone = document.getElementById('conPhone').value;
+        
+        const phonePrefix = document.getElementById('conPhonePrefix').value;
+        const phoneDigits = document.getElementById('conPhone').value;
+        const phone = phoneDigits ? `${phonePrefix} ${phoneDigits}` : '';
+        
         const type = document.getElementById('conType').value;
         const leadSource = document.getElementById('conSource').value;
         const notes = document.getElementById('conNotes').value;

@@ -1,6 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { authMiddleware } from '../middleware/auth';
 import { requirePermission } from '../middleware/rbac';
+import { requireModule } from '../middleware/entitlements';
+import prisma from '../lib/prisma';
+import { DigitalLibraryResourceCenterService } from '../services/digitalLibraryResourceCenter';
 import {
   createLibraryCategory,
   listLibraryCategories,
@@ -16,8 +19,9 @@ import {
 
 const router = Router();
 
-// Enforce auth globally for library endpoints
+// Enforce auth globally for library endpoints and check module activation
 router.use(authMiddleware);
+router.use(requireModule('digital-library-resource-center'));
 
 /**
  * ─────────────────────────────────────────────────────────────
@@ -26,14 +30,14 @@ router.use(authMiddleware);
  */
 
 // POST /api/library/categories — Create a category (Admin)
-router.post('/categories', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.post('/categories', requirePermission('digital-library-resource-center.create'), async (req: Request, res: Response) => {
   try {
     const { name, slug, description, parentId } = req.body;
     if (!name) {
       res.status(400).json({ error: 'name is required' });
       return;
     }
-    const category = await createLibraryCategory(req.tenantId!, { name, slug, description, parentId });
+    const category = await createLibraryCategory(req.tenantId!, { name, slug, description, parentId }, req.user?.userId);
     res.status(201).json({ data: category });
   } catch (err: any) {
     console.error('Create library category error:', err);
@@ -42,7 +46,7 @@ router.post('/categories', requirePermission('tenant.settings'), async (req: Req
 });
 
 // GET /api/library/categories — List categories
-router.get('/categories', async (req: Request, res: Response) => {
+router.get('/categories', requirePermission('digital-library-resource-center.read'), async (req: Request, res: Response) => {
   try {
     const categories = await listLibraryCategories(req.tenantId!);
     res.json({ data: categories });
@@ -59,7 +63,7 @@ router.get('/categories', async (req: Request, res: Response) => {
  */
 
 // POST /api/library/resources — Create a resource (Admin)
-router.post('/resources', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.post('/resources', requirePermission('digital-library-resource-center.create'), async (req: Request, res: Response) => {
   try {
     const { title, slug, description, author, fileUrl, fileSize, fileType, coverImageUrl, pricingType, price, visibility, status, categoryId } = req.body;
     if (!title || !fileUrl) {
@@ -68,7 +72,7 @@ router.post('/resources', requirePermission('tenant.settings'), async (req: Requ
     }
     const resource = await createResource(req.tenantId!, {
       title, slug, description, author, fileUrl, fileSize, fileType, coverImageUrl, pricingType, price, visibility, status, categoryId
-    });
+    }, req.user?.userId);
     res.status(201).json({ data: resource });
   } catch (err: any) {
     console.error('Create resource error:', err);
@@ -77,9 +81,9 @@ router.post('/resources', requirePermission('tenant.settings'), async (req: Requ
 });
 
 // PUT /api/library/resources/:id — Update a resource (Admin)
-router.put('/resources/:id', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.put('/resources/:id', requirePermission('digital-library-resource-center.update'), async (req: Request, res: Response) => {
   try {
-    const resource = await updateResource(req.params.id as string, req.tenantId!, req.body);
+    const resource = await updateResource(req.params.id as string, req.tenantId!, req.body, req.user?.userId);
     res.json({ data: resource });
   } catch (err: any) {
     console.error('Update resource error:', err);
@@ -88,9 +92,9 @@ router.put('/resources/:id', requirePermission('tenant.settings'), async (req: R
 });
 
 // DELETE /api/library/resources/:id — Delete a resource (Admin)
-router.delete('/resources/:id', requirePermission('tenant.settings'), async (req: Request, res: Response) => {
+router.delete('/resources/:id', requirePermission('digital-library-resource-center.delete'), async (req: Request, res: Response) => {
   try {
-    const resource = await deleteResource(req.params.id as string, req.tenantId!);
+    const resource = await deleteResource(req.params.id as string, req.tenantId!, req.user?.userId);
     res.json({ data: resource });
   } catch (err: any) {
     console.error('Delete resource error:', err);
@@ -197,7 +201,7 @@ router.post('/resources/:id/download', async (req: Request, res: Response) => {
       return;
     }
 
-    const updated = await incrementDownloadCount(resourceId, req.tenantId!);
+    const updated = await incrementDownloadCount(resourceId, req.tenantId!, req.user?.userId);
     res.json({
       data: {
         fileUrl: updated.fileUrl,
@@ -221,6 +225,69 @@ router.post('/resources/:id/purchase', async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error('Purchase resource error:', err);
     res.status(400).json({ error: err.message });
+  }
+});
+
+// GET /api/library/audit — Retrieve activity log audits (view_reports permission)
+router.get('/audit', requirePermission('digital-library-resource-center.view_reports'), async (req: Request, res: Response) => {
+  try {
+    const list = await prisma.digitalLibraryResourceCenterModuleActivity.findMany({
+      where: { tenantId: req.tenantId! },
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+    });
+    
+    const formatted = list.map(item => {
+      let title = 'System Config';
+      try {
+        const metadata = JSON.parse(item.metadataJson);
+        title = metadata.title || metadata.resourceId || title;
+      } catch (e) {}
+
+      return {
+        timestamp: item.createdAt.toISOString(),
+        resource: title,
+        user: item.userId,
+        role: item.userId === 'admin@demo.churchos.local' ? 'Tenant Owner' : 'Member',
+        action: item.actionType.replace('_', ' ').toUpperCase(),
+      };
+    });
+
+    res.json({ data: formatted });
+  } catch (err: any) {
+    console.error('List library audit logs error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/library/sales — Retrieve purchase records (view_reports permission)
+router.get('/sales', requirePermission('digital-library-resource-center.view_reports'), async (req: Request, res: Response) => {
+  try {
+    const list = await prisma.libraryPurchase.findMany({
+      where: { tenantId: req.tenantId! },
+      include: {
+        resource: true,
+        user: {
+          select: { email: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const formatted = list.map(item => {
+      return {
+        date: item.createdAt.toISOString().split('T')[0],
+        memberName: item.user.email,
+        resource: item.resource.title,
+        pricePaid: item.amountPaid,
+        txId: `TXN-${item.id.slice(0, 8).toUpperCase()}`,
+      };
+    });
+
+    res.json({ data: formatted });
+  } catch (err: any) {
+    console.error('List library sales error:', err);
+    res.status(500).json({ error: err.message });
   }
 });
 
