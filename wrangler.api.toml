@@ -1,0 +1,6 @@
+name = "churchos-api"
+main = "src/api-worker.ts"
+compatibility_date = "2026-05-28"
+compatibility_flags = [
+  "nodejs_compat"
+]
