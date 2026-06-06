@@ -6,6 +6,11 @@
   "scripts": {
     "build": "node scripts/build-cloudflare-assets.js",
     "build:api": "npx prisma generate && npx tsc",
+    "deploy": "wrangler deploy --config wrangler.toml",
+    "deploy:dry": "wrangler deploy --config wrangler.toml --dry-run",
+    "deploy:api": "wrangler deploy --config wrangler.api.toml",
+    "deploy:api:dry": "wrangler deploy --config wrangler.api.toml --dry-run",
+    "deploy:all": "npm run deploy:api && npm run deploy",
     "dev": "npx ts-node --files src/server.ts",
     "db:migrate": "npx prisma migrate dev",
     "db:seed": "npx ts-node src/seed.ts",
