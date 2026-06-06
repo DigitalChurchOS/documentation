@@ -10,7 +10,4 @@ directory = "./dist/public"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
 
-[[services]]
-binding = "API"
-service = "churchos-api"
 
