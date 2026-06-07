@@ -1,5 +1,17 @@
 import prisma from '../lib/prisma';
 import { trackEvent } from './analytics';
+import {
+  ECCLESIA_GLOBAL_CONTENT_KEY,
+  ECCLESIA_THEME_NAME,
+  createEcclesiaDefaultPages,
+  createEcclesiaFooterLinks,
+  createEcclesiaGlobalContent,
+  createEcclesiaNavigationItems,
+  createEcclesiaThemeSettings,
+  getEcclesiaPageTemplates,
+  getEcclesiaSectionTemplates,
+  getEcclesiaWidgets,
+} from '../themes/ecclesia';
 
 const MODULE_KEY = 'theme-engine';
 const VALID_STATUSES = new Set(['active', 'inactive', 'suspended']);
@@ -12,14 +24,18 @@ const DEFAULT_THEME_ENGINE_CONFIG = {
   allowMarketplaceThemes: true,
   allowCustomCss: true,
   publicPublishingRequiresActiveEntitlement: true,
+  systemThemeKey: 'ecclesia',
+  referenceTheme: ECCLESIA_THEME_NAME,
   defaultHeaderStyle: 'default',
   defaultFooterStyle: 'simple',
   mobileLayout: 'stacked',
   sections: [],
   pageTemplates: [],
+  widgets: getEcclesiaWidgets(),
 };
 
 export interface CustomizeThemeInput {
+  [key: string]: any;
   colors?: {
     primary?: string;
     secondary?: string;
@@ -308,6 +324,129 @@ function makePageContent(
 
 export class ThemeEngineService {
   /**
+   * Ensures the global platform reference theme exists for browsing and copying.
+   */
+  static async ensureEcclesiaSystemTheme() {
+    const existing = await prisma.theme.findFirst({
+      where: { tenantId: null, name: ECCLESIA_THEME_NAME },
+    });
+
+    if (existing) return existing;
+
+    return await prisma.theme.create({
+      data: {
+        tenantId: null,
+        name: ECCLESIA_THEME_NAME,
+        settings: JSON.stringify(createEcclesiaThemeSettings()),
+        isCustom: false,
+      },
+    });
+  }
+
+  /**
+   * Install and activate Ecclesia for a tenant, including default public website content.
+   */
+  static async provisionEcclesiaForTenant(tenantId: string, options: { websiteTitle?: string; domain?: string | null } = {}) {
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    if (!tenant) {
+      throw new Error('Tenant not found');
+    }
+
+    await this.ensureEcclesiaSystemTheme();
+
+    await prisma.moduleDefinition.upsert({
+      where: { key: 'website-cms' },
+      update: { name: 'Website CMS', category: 'Core', dependencies: '[]' },
+      create: { key: 'website-cms', name: 'Website CMS', category: 'Core', dependencies: '[]' },
+    });
+
+    await prisma.moduleDefinition.upsert({
+      where: { key: MODULE_KEY },
+      update: { name: 'Theme Engine', category: 'Core', dependencies: '["website-cms"]' },
+      create: { key: MODULE_KEY, name: 'Theme Engine', category: 'Core', dependencies: '["website-cms"]' },
+    });
+
+    await prisma.tenantModule.upsert({
+      where: { tenantId_moduleKey: { tenantId, moduleKey: 'website-cms' } },
+      update: { status: 'active', billingRule: 'free' },
+      create: { tenantId, moduleKey: 'website-cms', status: 'active', billingRule: 'free' },
+    });
+
+    await prisma.tenantModule.upsert({
+      where: { tenantId_moduleKey: { tenantId, moduleKey: MODULE_KEY } },
+      update: { status: 'active', billingRule: 'free' },
+      create: { tenantId, moduleKey: MODULE_KEY, status: 'active', billingRule: 'free' },
+    });
+
+    await prisma.themeEngineModuleSettings.upsert({
+      where: { tenantId_moduleKey: { tenantId, moduleKey: MODULE_KEY } },
+      update: {
+        enabled: true,
+        billingPlan: 'platform',
+        providerMode: 'platform_managed',
+        configJson: normalizeConfigJson(DEFAULT_THEME_ENGINE_CONFIG),
+      },
+      create: {
+        tenantId,
+        moduleKey: MODULE_KEY,
+        enabled: true,
+        billingPlan: 'platform',
+        providerMode: 'platform_managed',
+        configJson: normalizeConfigJson(DEFAULT_THEME_ENGINE_CONFIG),
+      },
+    });
+
+    let theme = await prisma.theme.findFirst({
+      where: { tenantId, name: ECCLESIA_THEME_NAME },
+    });
+
+    if (!theme) {
+      theme = await prisma.theme.create({
+        data: {
+          tenantId,
+          name: ECCLESIA_THEME_NAME,
+          settings: JSON.stringify(createEcclesiaThemeSettings({
+            installation: {
+              installedForTenantId: tenantId,
+              installedAt: new Date().toISOString(),
+              autoProvisioned: true,
+            },
+          })),
+          isCustom: false,
+        },
+      });
+    }
+
+    let website = await prisma.website.findFirst({
+      where: { tenantId, isActive: true },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    if (!website) {
+      website = await prisma.website.create({
+        data: {
+          tenantId,
+          themeId: theme.id,
+          title: options.websiteTitle || `${tenant.name} Website`,
+          description: createEcclesiaGlobalContent(tenant.name).churchIdentity.description,
+          domain: options.domain || tenant.customDomain || null,
+          isActive: true,
+        },
+      });
+    } else if (website.themeId !== theme.id) {
+      website = await prisma.website.update({
+        where: { id: website.id },
+        data: { themeId: theme.id },
+      });
+    }
+
+    await this.seedEcclesiaWebsiteContent(tenantId, website.id);
+    await this.logActivity(tenantId, null, 'provision_ecclesia', { themeId: theme.id, websiteId: website.id });
+
+    return { theme, website };
+  }
+
+  /**
    * Activate / Create a new Theme Engine module instance.
    */
   static async createThemeEngineModule(tenantId: string, data: ThemeEngineModuleInput) {
@@ -595,106 +734,94 @@ export class ThemeEngineService {
       data: { themeId },
     });
 
-    // 4. Seed default pages if website has no pages
+    await this.seedEcclesiaWebsiteContent(tenantId, websiteId);
+
+    return updatedWebsite;
+  }
+
+  private static async seedEcclesiaWebsiteContent(tenantId: string, websiteId: string) {
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+    const churchName = tenant?.name || 'Grace Community Church';
+    const globalContent = createEcclesiaGlobalContent(churchName);
+
     const pagesCount = await prisma.page.count({
-      where: { websiteId },
+      where: { websiteId, tenantId },
     });
 
     if (pagesCount === 0) {
-      const defaultPages = [
-        {
-          tenantId,
-          websiteId,
-          title: 'Home',
-          slug: '',
-          isHome: true,
-          content: makePageContent('Welcome to Grace Church', 'Experience spiritual growth, warm fellowship, and impactful ministries with us.', 'Home'),
-          status: 'published',
-          seoTitle: 'Welcome to Grace Church | Home',
-          seoDescription: 'Experience spiritual growth, warm fellowship, and impactful ministries with us.',
-        },
-        {
-          tenantId,
-          websiteId,
-          title: 'About',
-          slug: 'about',
-          isHome: false,
-          content: makePageContent('About Our Church', 'Learn about our mission, belief, and leadership team.', 'About'),
-          status: 'published',
-          seoTitle: 'About Our Church | About',
-          seoDescription: 'Learn about our mission, belief, and leadership team.',
-        },
-        {
-          tenantId,
-          websiteId,
-          title: 'Services',
-          slug: 'services',
-          isHome: false,
-          content: makePageContent('Church Services', 'Join us for worship and teaching throughout the week.', 'Services'),
-          status: 'published',
-          seoTitle: 'Church Services | Services',
-          seoDescription: 'Join us for worship and teaching throughout the week.',
-        },
-        {
-          tenantId,
-          websiteId,
-          title: 'Sermons',
-          slug: 'sermons',
-          isHome: false,
-          content: makePageContent('Sermons & Media', 'Browse our sermon archive, series, and study resources.', 'Sermons', 'Sermons / Media', 'Latest Sermons', 'List sermons', ['title', 'speaker', 'date']),
-          status: 'published',
-          seoTitle: 'Sermons & Media | Sermons',
-          seoDescription: 'Browse our sermon archive, series, and study resources.',
-        },
-        {
-          tenantId,
-          websiteId,
-          title: 'Events',
-          slug: 'events',
-          isHome: false,
-          content: makePageContent('Upcoming Events', 'Find out about conferences, youth groups, and community events.', 'Events', 'Events', 'Event Calendar', 'List events', ['title', 'date', 'location']),
-          status: 'published',
-          seoTitle: 'Upcoming Events | Events',
-          seoDescription: 'Find out about conferences, youth groups, and community events.',
-        },
-        {
-          tenantId,
-          websiteId,
-          title: 'Giving',
-          slug: 'giving',
-          isHome: false,
-          content: makePageContent('Give Securely', 'Partner with us to support local and global ministries.', 'Giving', 'Giving', 'Tithing & Campaigns', 'Accept donations', ['amount', 'frequency']),
-          status: 'published',
-          seoTitle: 'Give Securely | Giving',
-          seoDescription: 'Partner with us to support local and global ministries.',
-        },
-        {
-          tenantId,
-          websiteId,
-          title: 'Contact',
-          slug: 'contact',
-          isHome: false,
-          content: makePageContent('Get in Touch', 'Have a question? Reach out to our staff or submit a prayer request.', 'Contact'),
-          status: 'published',
-          seoTitle: 'Get in Touch | Contact',
-          seoDescription: 'Have a question? Reach out to our staff or submit a prayer request.',
-        },
-      ];
+      const defaultPages = createEcclesiaDefaultPages(tenantId, websiteId, churchName);
 
       for (const page of defaultPages) {
-        await prisma.page.create({
-          data: page,
+        const created = await prisma.page.create({ data: page });
+        await prisma.pageRevision.create({
+          data: {
+            tenantId,
+            pageId: created.id,
+            content: created.content,
+            version: 1,
+            createdById: null,
+          },
         });
       }
     }
 
-    return updatedWebsite;
+    await prisma.reusableBlock.upsert({
+      where: { tenantId_key: { tenantId, key: ECCLESIA_GLOBAL_CONTENT_KEY } },
+      update: {
+        name: 'Ecclesia Global Content',
+        content: JSON.stringify(globalContent),
+      },
+      create: {
+        tenantId,
+        name: 'Ecclesia Global Content',
+        key: ECCLESIA_GLOBAL_CONTENT_KEY,
+        content: JSON.stringify(globalContent),
+      },
+    });
+
+    const existingNavigation = await prisma.navigationMenu.findFirst({
+      where: { tenantId, websiteId, name: 'Main Navigation' },
+    });
+
+    if (!existingNavigation) {
+      await prisma.navigationMenu.create({
+        data: {
+          tenantId,
+          websiteId,
+          name: 'Main Navigation',
+          items: JSON.stringify(createEcclesiaNavigationItems()),
+          isActive: true,
+        },
+      });
+    }
+
+    const existingFooter = await prisma.cmsFooter.findFirst({
+      where: { tenantId, websiteId },
+    });
+
+    if (!existingFooter) {
+      const socialLinks = Object.entries(globalContent.social)
+        .filter(([, url]) => Boolean(url))
+        .map(([label, url]) => ({ label, url }));
+
+      await prisma.cmsFooter.create({
+        data: {
+          tenantId,
+          websiteId,
+          copyrightText: `Copyright ${new Date().getFullYear()} ${churchName}. All rights reserved.`,
+          socialLinks: JSON.stringify(socialLinks),
+          secondaryLinks: JSON.stringify(createEcclesiaFooterLinks()),
+        },
+      });
+    }
   }
 
   /**
    * List installed and custom themes in the tenant space (including global themes).
    */
   static async listTenantThemes(tenantId: string) {
+    await this.ensureEcclesiaSystemTheme();
+
     return await prisma.theme.findMany({
       where: {
         OR: [{ tenantId: null }, { tenantId }],
@@ -768,7 +895,7 @@ export class ThemeEngineService {
 
     // 3. Save to database
     return await prisma.theme.update({
-      where: { id: themeId },
+      where: { id: theme.id },
       data: {
         settings: JSON.stringify(updatedSettings),
       },
@@ -977,19 +1104,10 @@ export class ThemeEngineService {
   }
 
   private static defaultSectionTemplates() {
-    return [
-      { name: 'Hero Banner', key: 'hero-banner', type: 'section', structure: { title: 'string', subtitle: 'string', bgImage: 'string' } },
-      { name: 'Feature Grid', key: 'feature-grid', type: 'section', structure: { items: 'array' } },
-      { name: 'Sermon Player Widget', key: 'sermon-player', type: 'section', structure: { recentCount: 'number' } },
-      { name: 'Giving Callout', key: 'giving-callout', type: 'section', structure: { title: 'string', campaignId: 'string', buttonLabel: 'string' } },
-    ];
+    return getEcclesiaSectionTemplates();
   }
 
   private static defaultPageTemplates() {
-    return [
-      { name: 'Home Page', key: 'home-page', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'sermon-player'] } },
-      { name: 'Ministry Landing Page', key: 'ministry-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'giving-callout'] } },
-      { name: 'Event Landing Page', key: 'event-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid'] } },
-    ];
+    return getEcclesiaPageTemplates();
   }
 }

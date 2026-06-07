@@ -5,8 +5,37 @@ import { dnsMiddleware } from '../middleware/dns';
 import { authMiddleware } from '../middleware/auth';
 import { requireAnyPermission } from '../middleware/rbac';
 import { requireModule } from '../middleware/entitlements';
+import { ECCLESIA_GLOBAL_CONTENT_KEY, createEcclesiaGlobalContent } from '../themes/ecclesia';
 
 const router = Router();
+
+function safeJson<T>(value: string | null | undefined, fallback: T): T {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+async function ensureEcclesiaGlobalContent(tenantId: string) {
+  const existing = await prisma.reusableBlock.findUnique({
+    where: { tenantId_key: { tenantId, key: ECCLESIA_GLOBAL_CONTENT_KEY } },
+  });
+
+  if (existing) return existing;
+
+  const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+
+  return prisma.reusableBlock.create({
+    data: {
+      tenantId,
+      name: 'Ecclesia Global Content',
+      key: ECCLESIA_GLOBAL_CONTENT_KEY,
+      content: JSON.stringify(createEcclesiaGlobalContent(tenant?.name)),
+    },
+  });
+}
 
 // ─────────────────────────────────────────────────────────────
 // PUBLIC ENDPOINT: GET /api/cms/render
@@ -78,8 +107,15 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
       where: { websiteId },
     });
 
+    const globalContentBlock = await prisma.reusableBlock.findUnique({
+      where: { tenantId_key: { tenantId, key: ECCLESIA_GLOBAL_CONTENT_KEY } },
+    });
+
     const pageContent = isPreview ? (page.draftContent || page.content) : page.content;
     const themeSettings = (isPreview && page.website.theme.draftSettings) ? page.website.theme.draftSettings : page.website.theme.settings;
+    const globalContent = globalContentBlock
+      ? safeJson(globalContentBlock.content, createEcclesiaGlobalContent(page.website.title))
+      : createEcclesiaGlobalContent(page.website.title);
 
     res.json({
       data: {
@@ -87,25 +123,26 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
         title: page.title,
         slug: page.slug,
         isHome: page.isHome,
-        contentBlocks: JSON.parse(pageContent),
+        contentBlocks: safeJson(pageContent, []),
         isPreview,
         seoTitle: page.seoTitle,
         seoDescription: page.seoDescription,
         seoKeywords: page.seoKeywords,
+        globalContent,
         navigation: navMenu ? {
           id: navMenu.id,
           name: navMenu.name,
-          items: JSON.parse(navMenu.items),
+          items: safeJson(navMenu.items, []),
         } : null,
         footer: cmsFooter ? {
           id: cmsFooter.id,
           copyrightText: cmsFooter.copyrightText,
-          socialLinks: JSON.parse(cmsFooter.socialLinks),
-          secondaryLinks: JSON.parse(cmsFooter.secondaryLinks),
+          socialLinks: safeJson(cmsFooter.socialLinks, []),
+          secondaryLinks: safeJson(cmsFooter.secondaryLinks, []),
         } : null,
         theme: {
           name: page.website.theme.name,
-          settings: JSON.parse(themeSettings),
+          settings: safeJson(themeSettings, {}),
         },
       },
     });
@@ -123,6 +160,74 @@ router.use(requireModule('website-cms'));
 
 const requireCmsPermission = (...permissions: string[]) =>
   requireAnyPermission('tenant.settings', ...permissions);
+
+// Read persisted Website Builder global content.
+router.get('/global-content', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
+  try {
+    const block = await ensureEcclesiaGlobalContent(req.tenantId!);
+    res.json({
+      data: {
+        id: block.id,
+        key: block.key,
+        name: block.name,
+        content: safeJson(block.content, createEcclesiaGlobalContent()),
+      },
+    });
+  } catch (err) {
+    console.error('Get global content error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Save Website Builder global content without changing page or theme drafts.
+router.patch('/global-content', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const userId = req.user?.userId;
+    const current = await ensureEcclesiaGlobalContent(tenantId);
+    const incoming = req.body?.content && typeof req.body.content === 'object' ? req.body.content : req.body;
+    const existingContent = safeJson<Record<string, any>>(current.content, createEcclesiaGlobalContent());
+    const content = {
+      ...existingContent,
+      ...incoming,
+      churchIdentity: { ...(existingContent.churchIdentity || {}), ...(incoming.churchIdentity || {}) },
+      leadership: { ...(existingContent.leadership || {}), ...(incoming.leadership || {}) },
+      contact: { ...(existingContent.contact || {}), ...(incoming.contact || {}) },
+      social: { ...(existingContent.social || {}), ...(incoming.social || {}) },
+      services: { ...(existingContent.services || {}), ...(incoming.services || {}) },
+      callsToAction: { ...(existingContent.callsToAction || {}), ...(incoming.callsToAction || {}) },
+    };
+
+    const block = await prisma.reusableBlock.update({
+      where: { id: current.id },
+      data: {
+        name: 'Ecclesia Global Content',
+        content: JSON.stringify(content),
+      },
+    });
+
+    await prisma.cmsActivityLog.create({
+      data: {
+        tenantId,
+        userId,
+        actionType: 'global_content_update',
+        metadataJson: JSON.stringify({ key: ECCLESIA_GLOBAL_CONTENT_KEY }),
+      },
+    });
+
+    res.json({
+      data: {
+        id: block.id,
+        key: block.key,
+        name: block.name,
+        content,
+      },
+    });
+  } catch (err) {
+    console.error('Save global content error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Create a new Website profile
 router.post('/websites', requireCmsPermission('core-website-cms.create', 'core-website-cms.manage_settings'), async (req: Request, res: Response) => {

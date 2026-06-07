@@ -1,4 +1,5 @@
 import prisma from './lib/prisma';
+import { ThemeEngineService } from './services/themeEngine';
 
 /**
  * Seed Script
@@ -198,6 +199,7 @@ async function seed() {
       create: mod,
     });
   }
+  await ThemeEngineService.ensureEcclesiaSystemTheme();
   console.log(`✅ Seeded ${MODULES.length} modules.`);
 }
 

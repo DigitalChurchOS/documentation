@@ -3,31 +3,165 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
+const ecclesiaFullTheme = path.join(root, 'ecclesia-full-theme');
 const port = Number(process.env.PORT || 3000);
 
 const contentTypes = {
   '.html': 'text/html; charset=utf-8',
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.webp': 'image/webp',
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.mp3': 'audio/mpeg',
+  '.txt': 'text/plain; charset=utf-8',
 };
 
 const demoTenantId = 'demo-church-local';
 const demoWebsiteId = 'christ-embassy-next-main';
 const now = () => new Date().toISOString();
+const localEcclesiaGlobalContent = {
+  churchIdentity: {
+    churchName: 'Christ Embassy Next Church',
+    tagline: 'A place to belong, grow, serve, and encounter God.',
+    description: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.',
+    logoUrl: '',
+    faviconUrl: '',
+  },
+  leadership: {
+    leadPastor: 'Pastor Daniel Okafor',
+    pastorBio: 'Leads teaching, pastoral care, and strategic ministry development.',
+    pastorImage: '',
+  },
+  contact: {
+    phone: '+1 555 000 0000',
+    email: 'hello@nextchurch.local',
+    address: 'Next Church Campus, 221 Victory Avenue, Lagos',
+    mapUrl: '',
+  },
+  social: {
+    facebook: 'https://facebook.com/christembassynext',
+    instagram: 'https://instagram.com/christembassynext',
+    youtube: 'https://youtube.com/@christembassynext',
+    tiktok: '',
+    x: '',
+    linkedIn: '',
+  },
+  services: {
+    serviceTimes: [
+      { label: 'Sunday Celebration Service', time: '9:00 AM and 11:30 AM', location: 'Main Auditorium' },
+      { label: 'Wednesday Word & Prayer', time: '7:00 PM', location: 'Main Campus and online' },
+    ],
+    serviceLocations: [
+      { name: 'Next Church Campus', address: '221 Victory Avenue, Lagos' },
+    ],
+  },
+  callsToAction: {
+    primary: { label: 'Plan a Visit', url: '/new-visitor' },
+    secondary: { label: 'Watch Live', url: '/livestream' },
+    giving: { label: 'Give Now', url: '/giving' },
+  },
+};
+const localEcclesiaThemeSettings = {
+  metadata: { key: 'ecclesia', name: 'Ecclesia', version: '1.0.0', systemTheme: true, builderFirst: true, sourcePackage: 'ecclesia-full-theme' },
+  sourcePackage: {
+    assetBase: '/themes/ecclesia',
+    previewUrl: '/themes/ecclesia/index.html',
+    localPath: 'ecclesia-full-theme',
+    pages: [
+      'index.html', 'about.html', 'sermons.html', 'events.html', 'ministries.html', 'prayer.html', 'contact.html',
+      'giving.html', 'giving-partnership.html', 'livestream-page.html', 'media-archive.html', 'media-single.html',
+      'podcast-archive.html', 'podcast-episode.html', 'blog-archive.html', 'blog-single.html', 'services-archive.html',
+      'service-single.html', 'library-archive.html', 'resource-single.html', 'courses-archive.html', 'course-main.html',
+      'lesson-single.html', 'events-archive.html', 'event-single.html', 'event-register.html', 'prayer-home.html',
+      'prayer-wall.html', 'prayer-room.html', 'testimony-wall.html', 'testimony-single.html', 'testimony-submit.html',
+      'worship.html'
+    ],
+    stylesheets: [
+      '/themes/ecclesia/assets/styles.css',
+      '/themes/ecclesia/assets/media.css',
+      '/themes/ecclesia/assets/livestream.css',
+      '/themes/ecclesia/assets/podcast.css',
+      '/themes/ecclesia/assets/blog.css',
+      '/themes/ecclesia/assets/events.css',
+      '/themes/ecclesia/assets/giving.css',
+      '/themes/ecclesia/assets/library.css',
+      '/themes/ecclesia/assets/lms.css',
+      '/themes/ecclesia/assets/prayer.css',
+      '/themes/ecclesia/assets/services.css',
+      '/themes/ecclesia/assets/worship.css'
+    ],
+    scripts: [
+      '/themes/ecclesia/assets/app.js',
+      '/themes/ecclesia/assets/media.js',
+      '/themes/ecclesia/assets/livestream.js',
+      '/themes/ecclesia/assets/podcast.js',
+      '/themes/ecclesia/assets/blog.js',
+      '/themes/ecclesia/assets/events.js',
+      '/themes/ecclesia/assets/giving.js',
+      '/themes/ecclesia/assets/library.js',
+      '/themes/ecclesia/assets/lms.js',
+      '/themes/ecclesia/assets/prayer.js',
+      '/themes/ecclesia/assets/services.js',
+      '/themes/ecclesia/assets/worship.js'
+    ]
+  },
+  colorMode: 'light',
+  accentPreset: 'orange',
+  typographyPreset: 'sans',
+  edgeStyle: 'smooth',
+  glassHeader: true,
+  themeGlow: false,
+  pageBodyWidth: 'full',
+  design: { colorMode: 'light', accentPreset: 'orange', colorPalette: 'warm', typographyPreset: 'sans', fontPairing: 'outfitInter', glow: false, glass: true, layout: false },
+  colors: {
+    primary: '#f97316',
+    secondary: '#0f172a',
+    accent: '#f97316',
+    accentSecondary: '#facc15',
+    accentSoft: 'rgba(249,115,22,.14)',
+    background: '#fffaf3',
+    surface: '#ffffff',
+    mutedSurface: '#f6efe6',
+    textPrimary: '#1d1812',
+    textSecondary: '#74685e',
+    border: 'rgba(29,24,18,.12)',
+    gradientA: '#fff7ed',
+    gradientB: '#ffedd5',
+    gradientC: '#fed7aa',
+  },
+  fonts: { heading: 'Outfit', body: 'Inter' },
+  typography: { headingFont: 'Outfit', bodyFont: 'Inter', fontScale: 'fluid', lineHeight: '1.55', letterSpacing: '0' },
+  layout: { contentWidth: '1180px', headerStyle: 'sticky', footerStyle: 'expanded', mobileLayout: 'stacked', sectionPadding: '104px', pageBodyWidth: 'full' },
+  components: { buttonStyle: 'solid', cardStyle: 'shadow', borderRadius: '34px', edgeStyle: 'smooth', shadowDepth: 'soft' },
+  motion: { animationLevel: 'subtle', transitionSpeed: '220ms' },
+  header: { style: 'sticky', logoDisplay: 'markAndName', glass: true, ctaLabel: 'Watch Live', ctaUrl: '/livestream' },
+  footer: { style: 'expanded' },
+  customizer: {
+    storageKey: 'ecclesia-theme-customizer',
+    defaults: { mode: 'light', accent: 'orange', font: 'sans', radius: 'smooth', glow: false, glass: true, layout: false },
+    controls: {
+      mode: ['light', 'dark', 'sepia', 'slate'],
+      accent: ['orange', 'blue', 'green', 'red', 'purple', 'rose'],
+      font: ['sans', 'serif', 'geometric', 'slab'],
+      radius: ['sharp', 'medium', 'smooth', 'pillow']
+    }
+  },
+  websiteSettings: { homepageSlug: '', notFoundSlug: '404', maintenanceMode: false, language: 'en', rtlReady: true },
+  seo: { openGraph: true, twitterCards: true, canonicalUrls: true, structuredData: true, sitemap: true, robots: 'index,follow' },
+};
 const state = {
   themes: [
     {
-      id: 'theme-default',
-      name: 'Next Church Minimal Theme',
+      id: 'theme-ecclesia',
+      name: 'Ecclesia',
       tenantId: demoTenantId,
-      isCustom: true,
-      settings: {
-        colors: { primary: '#111827', secondary: '#4b5563', bg: '#ffffff', text: '#111827' },
-        fonts: { heading: 'Inter', body: 'Inter' },
-        layout: { headerStyle: 'default', footerStyle: 'simple', mobileLayout: 'stacked' },
-      },
+      isCustom: false,
+      settings: localEcclesiaThemeSettings,
       createdAt: now(),
     },
   ],
@@ -37,7 +171,7 @@ const state = {
       title: 'Christ Embassy Next Church',
       description: 'Digital-first demo church for testing every ChurchOS website and ministry workflow.',
       domain: 'nextchurch.localhost',
-      themeId: 'theme-default',
+      themeId: 'theme-ecclesia',
       createdAt: now(),
     },
   ],
@@ -61,17 +195,19 @@ const state = {
     updatedAt: now(),
   },
   themeEngineActivities: [
-    { id: 'theme-activity-1', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'activate_theme', metadataJson: JSON.stringify({ themeId: 'theme-default', websiteId: demoWebsiteId }), createdAt: now() },
-    { id: 'theme-activity-2', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'customize_theme', metadataJson: JSON.stringify({ themeId: 'theme-default' }), createdAt: now() },
+    { id: 'theme-activity-1', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'activate_theme', metadataJson: JSON.stringify({ themeId: 'theme-ecclesia', websiteId: demoWebsiteId }), createdAt: now() },
+    { id: 'theme-activity-2', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'provision_ecclesia', metadataJson: JSON.stringify({ themeId: 'theme-ecclesia' }), createdAt: now() },
   ],
   sectionTemplates: [
-    { name: 'Hero Banner', key: 'hero-banner', type: 'section', structure: { title: 'string', subtitle: 'string', bgImage: 'string' } },
-    { name: 'Feature Grid', key: 'feature-grid', type: 'section', structure: { items: 'array' } },
-    { name: 'Sermon Player Widget', key: 'sermon-player', type: 'section', structure: { recentCount: 'number' } },
+    { name: 'Hero Section', key: 'hero-section', type: 'section', category: 'Core', description: 'Headline, media, and primary calls to action.', structure: { type: 'hero', fields: ['kicker', 'title', 'subtitle', 'buttonText', 'buttonUrl'] } },
+    { name: 'Service Times', key: 'service-times', type: 'section', category: 'Church Identity', description: 'Global service rhythm and campus details.', structure: { type: 'service_times', source: 'global.services' } },
+    { name: 'Ministry Grid', key: 'ministry-grid', type: 'section', category: 'Ministries', description: 'Responsive ministry cards.', structure: { type: 'ministries_list', fields: ['items'] } },
+    { name: 'Giving CTA', key: 'giving-cta', type: 'section', category: 'Giving', description: 'Giving, campaign, and partnership prompt.', structure: { type: 'giving_cta', source: 'giving' } },
   ],
   pageTemplates: [
-    { name: 'Home Page', key: 'home-page', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'sermon-player'] } },
-    { name: 'Ministry Landing Page', key: 'ministry-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid'] } },
+    { name: 'Home', title: 'Home', key: 'home', slug: '', icon: 'home', description: 'Ecclesia homepage with worship, services, ministries, media, prayer, giving, and visitor paths.', type: 'page', status: 'published', structure: { sections: ['hero', 'service_times', 'ministries_list', 'giving_cta'], widgetAware: true, builderEditable: true } },
+    { name: 'About', title: 'About', key: 'about', slug: 'about', icon: 'badge-info', description: 'Mission, vision, values, story, and church identity.', type: 'page', status: 'published', structure: { sections: ['hero', 'about_template', 'leadership_team'], widgetAware: true, builderEditable: true } },
+    { name: 'Giving', title: 'Giving', key: 'giving', slug: 'giving', icon: 'hand-coins', description: 'Giving form, campaigns, recurring gifts, and impact stories.', type: 'page', status: 'published', structure: { sections: ['hero', 'giving_cta'], widgetAware: true, builderEditable: true } },
   ],
   marketplaceAssets: [
     { id: 'asset-neon-youth', name: 'Neon Youth Style', description: 'Vibrant gradients and bold typography for youth ministries.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#ff00ff', secondary: '#00ffff', accent: '#ffff00' }, fonts: { heading: 'Outfit', body: 'Inter' } }), version: '1.0.0' },
@@ -401,6 +537,13 @@ const state = {
     },
   ],
   reusableBlocks: [
+    {
+      id: 'block-ecclesia-global-content',
+      name: 'Ecclesia Global Content',
+      key: 'ecclesia-global-content',
+      content: localEcclesiaGlobalContent,
+      updatedAt: now(),
+    },
     {
       id: 'block-service-cta',
       name: 'Sunday Celebration CTA',
@@ -1334,6 +1477,86 @@ function billingOverviewPayload() {
   };
 }
 
+function mergeLocalThemeSettings(current, customizations) {
+  const merged = { ...(current || {}), ...(customizations || {}) };
+  [
+    'assets',
+    'colors',
+    'components',
+    'customizer',
+    'design',
+    'fonts',
+    'footer',
+    'header',
+    'layout',
+    'logo',
+    'logos',
+    'motion',
+    'seo',
+    'sourcePackage',
+    'typography',
+    'websiteSettings',
+  ].forEach((key) => {
+    merged[key] = {
+      ...((current || {})[key] || {}),
+      ...((customizations || {})[key] || {}),
+    };
+  });
+  return merged;
+}
+
+function titleFromEcclesiaFile(fileName) {
+  if (fileName === 'index.html') return 'Home';
+  return fileName
+    .replace(/\.html$/, '')
+    .split('-')
+    .map((part) => part ? part.charAt(0).toUpperCase() + part.slice(1) : part)
+    .join(' ');
+}
+
+function slugFromEcclesiaFile(fileName) {
+  if (fileName === 'index.html') return '';
+  return fileName
+    .replace(/\.html$/, '')
+    .replace(/-archive$/, '')
+    .replace(/-page$/, '')
+    .replace(/-single$/, '/sample')
+    .replace(/-main$/, '/main');
+}
+
+function localEcclesiaPageTemplatesPayload() {
+  const templates = new Map(state.pageTemplates.map((template) => [template.key, template]));
+  const pages = localEcclesiaThemeSettings.sourcePackage?.pages || [];
+  pages.forEach((fileName) => {
+    const key = fileName.replace(/\.html$/, '');
+    if (templates.has(key)) return;
+    const title = titleFromEcclesiaFile(fileName);
+    templates.set(key, {
+      name: title,
+      title,
+      key,
+      slug: slugFromEcclesiaFile(fileName),
+      icon: 'file-text',
+      description: `Source-backed Ecclesia page from ${fileName}.`,
+      type: 'page',
+      status: 'published',
+      sourceFile: fileName,
+      sourceUrl: `/themes/ecclesia/${fileName}`,
+      structure: {
+        template: key,
+        sections: ['hero', 'cta_section'],
+        widgetAware: true,
+        builderEditable: true,
+        staticSource: true,
+        sourceFile: fileName,
+        sourceUrl: `/themes/ecclesia/${fileName}`,
+        assetBase: '/themes/ecclesia',
+      },
+    });
+  });
+  return Array.from(templates.values());
+}
+
 function createPreviewInvoice(status = 'open') {
   const usage = billingUsageSnapshot();
   const plan = getBillingPlan();
@@ -1600,7 +1823,7 @@ async function handleThemeEngineApi(req, res, parsedUrl) {
   }
 
   if (pathname === '/api/theme-engine/page-templates' && method === 'GET') {
-    return sendJson(res, 200, { data: state.pageTemplates });
+    return sendJson(res, 200, { data: localEcclesiaPageTemplatesPayload() });
   }
 
   if (pathname === '/api/theme-engine/reports' && method === 'GET') {
@@ -1661,16 +1884,53 @@ async function handleThemeEngineApi(req, res, parsedUrl) {
     const theme = state.themes.find((item) => item.id === customizeMatch[1]);
     if (!theme) return sendJson(res, 404, { error: 'Theme not found' });
     const current = typeof theme.settings === 'string' ? JSON.parse(theme.settings || '{}') : (theme.settings || {});
-    theme.settings = {
-      ...current,
-      ...body,
-      colors: { ...(current.colors || {}), ...(body.colors || {}) },
-      fonts: { ...(current.fonts || {}), ...(body.fonts || {}) },
-      logos: { ...(current.logos || {}), ...(body.logos || {}) },
-      layout: { ...(current.layout || {}), ...(body.layout || {}) },
-    };
+    theme.settings = mergeLocalThemeSettings(current, body);
     theme.updatedAt = now();
     addThemeActivity('customize_theme', { themeId: theme.id });
+    return sendJson(res, 200, { data: theme });
+  }
+
+  const draftMatch = pathname.match(/^\/api\/theme-engine\/themes\/([^/]+)\/customization\/draft$/);
+  if (draftMatch && method === 'PATCH') {
+    const theme = state.themes.find((item) => item.id === draftMatch[1]);
+    if (!theme) return sendJson(res, 404, { error: 'Theme not found' });
+    const currentSettings = theme.draftSettings || theme.settings || {};
+    const current = typeof currentSettings === 'string' ? JSON.parse(currentSettings || '{}') : currentSettings;
+    theme.draftSettings = mergeLocalThemeSettings(current, body);
+    theme.updatedAt = now();
+    addThemeActivity('save_customization_draft', { themeId: theme.id });
+    return sendJson(res, 200, { data: theme });
+  }
+
+  const publishMatch = pathname.match(/^\/api\/theme-engine\/themes\/([^/]+)\/customization\/publish$/);
+  if (publishMatch && method === 'POST') {
+    const theme = state.themes.find((item) => item.id === publishMatch[1]);
+    if (!theme) return sendJson(res, 404, { error: 'Theme not found' });
+    if (theme.draftSettings) theme.settings = theme.draftSettings;
+    theme.draftSettings = null;
+    theme.updatedAt = now();
+    addThemeActivity('publish_customization', { themeId: theme.id });
+    return sendJson(res, 200, { data: theme });
+  }
+
+  const discardMatch = pathname.match(/^\/api\/theme-engine\/themes\/([^/]+)\/customization\/discard$/);
+  if (discardMatch && method === 'POST') {
+    const theme = state.themes.find((item) => item.id === discardMatch[1]);
+    if (!theme) return sendJson(res, 404, { error: 'Theme not found' });
+    theme.draftSettings = null;
+    theme.updatedAt = now();
+    addThemeActivity('discard_customization', { themeId: theme.id });
+    return sendJson(res, 200, { data: theme });
+  }
+
+  const resetMatch = pathname.match(/^\/api\/theme-engine\/themes\/([^/]+)\/customization\/reset$/);
+  if (resetMatch && method === 'POST') {
+    const theme = state.themes.find((item) => item.id === resetMatch[1]);
+    if (!theme) return sendJson(res, 404, { error: 'Theme not found' });
+    theme.settings = JSON.parse(JSON.stringify(localEcclesiaThemeSettings));
+    theme.draftSettings = null;
+    theme.updatedAt = now();
+    addThemeActivity('reset_customization', { themeId: theme.id });
     return sendJson(res, 200, { data: theme });
   }
 
@@ -2994,7 +3254,7 @@ async function handleDemoApi(req, res, parsedUrl) {
   }
 
   if (pathname === '/api/cms/websites' && method === 'POST') {
-    const website = { id: createId('website'), title: body.title || 'Church Website', description: body.description || '', domain: body.domain || 'localhost', themeId: body.themeId || 'theme-default' };
+    const website = { id: createId('website'), title: body.title || 'Church Website', description: body.description || '', domain: body.domain || 'localhost', themeId: body.themeId || 'theme-ecclesia' };
     state.websites.push(website);
     return sendJson(res, 201, { data: website });
   }
@@ -3022,6 +3282,27 @@ async function handleDemoApi(req, res, parsedUrl) {
     if (!existing) state.footers.push(footer);
     addActivity('Saved footer configuration');
     return sendJson(res, 200, { data: footer });
+  }
+
+  if (pathname === '/api/cms/global-content' && method === 'GET') {
+    let block = state.reusableBlocks.find((item) => item.key === 'ecclesia-global-content');
+    if (!block) {
+      block = { id: createId('block'), name: 'Ecclesia Global Content', key: 'ecclesia-global-content', content: localEcclesiaGlobalContent, updatedAt: now() };
+      state.reusableBlocks.unshift(block);
+    }
+    return sendJson(res, 200, { data: { ...block, content: block.content || localEcclesiaGlobalContent } });
+  }
+
+  if (pathname === '/api/cms/global-content' && method === 'PATCH') {
+    let block = state.reusableBlocks.find((item) => item.key === 'ecclesia-global-content');
+    if (!block) {
+      block = { id: createId('block'), name: 'Ecclesia Global Content', key: 'ecclesia-global-content', content: localEcclesiaGlobalContent, updatedAt: now() };
+      state.reusableBlocks.unshift(block);
+    }
+    block.content = { ...(block.content || {}), ...(body.content || body || {}) };
+    block.updatedAt = now();
+    addActivity('Saved Ecclesia global content');
+    return sendJson(res, 200, { data: { ...block, content: block.content } });
   }
 
   if (pathname === '/api/cms/reusable-blocks' && method === 'GET') {
@@ -3062,6 +3343,7 @@ async function handleDemoApi(req, res, parsedUrl) {
         isHome: page.isHome,
         contentBlocks,
         isPreview,
+        globalContent: state.reusableBlocks.find((item) => item.key === 'ecclesia-global-content')?.content || localEcclesiaGlobalContent,
         navigation: state.navigation[0] || null,
         footer: state.footers[0] || null,
         theme: state.themes[0] || null,
@@ -3098,11 +3380,23 @@ http
       return;
     }
 
-    let filePath = path.normalize(path.join(root, decodeURIComponent(urlPath)));
-    if (!filePath.startsWith(root)) {
-      res.writeHead(403);
-      res.end('Forbidden');
-      return;
+    let filePath;
+    if (urlPath === '/themes/ecclesia' || urlPath.startsWith('/themes/ecclesia/')) {
+      const themeRelativePath = urlPath.replace(/^\/themes\/ecclesia\/?/, '') || 'index.html';
+      filePath = path.normalize(path.join(ecclesiaFullTheme, decodeURIComponent(themeRelativePath)));
+      const relativeToTheme = path.relative(ecclesiaFullTheme, filePath);
+      if (relativeToTheme.startsWith('..') || path.isAbsolute(relativeToTheme)) {
+        res.writeHead(403);
+        res.end('Forbidden');
+        return;
+      }
+    } else {
+      filePath = path.normalize(path.join(root, decodeURIComponent(urlPath)));
+      if (!filePath.startsWith(root)) {
+        res.writeHead(403);
+        res.end('Forbidden');
+        return;
+      }
     }
 
     if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {

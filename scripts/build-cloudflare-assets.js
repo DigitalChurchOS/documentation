@@ -10,6 +10,7 @@ const churchFrontendPublic = path.join(appsRoot, 'church-frontend', 'public');
 const marketplaceFrontend = path.join(appsRoot, 'marketplace', 'frontend');
 const marketplaceDeveloper = path.join(appsRoot, 'marketplace', 'developer');
 const webPublic = path.join(appsRoot, 'web', 'public');
+const ecclesiaFullTheme = path.join(root, 'ecclesia-full-theme');
 
 function copyFile(source, target) {
   if (!fs.existsSync(source)) return;
@@ -55,7 +56,11 @@ copyFile(path.join(marketplaceFrontend, 'index.html'), path.join(outputDir, 'mar
 copyDirectory(marketplaceDeveloper, path.join(outputDir, 'developer'));
 copyFile(path.join(marketplaceDeveloper, 'index.html'), path.join(outputDir, 'developer', 'index.html'));
 
-// 6. Legacy / compatibility mappings
+// 6. Ecclesia reference theme package under '/themes/ecclesia'
+copyDirectory(ecclesiaFullTheme, path.join(outputDir, 'themes', 'ecclesia'));
+copyFile(path.join(ecclesiaFullTheme, 'index.html'), path.join(outputDir, 'themes', 'ecclesia', 'index.html'));
+
+// 7. Legacy / compatibility mappings
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'admin.html'));
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'dashboard.html'));
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'tenant-dashboard', 'index.html'));

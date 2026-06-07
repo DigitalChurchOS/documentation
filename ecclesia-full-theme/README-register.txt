@@ -1,0 +1,1 @@
+Open events-archive.html, event-single.html, and event-register.html. Includes archive/calendar, single event, and registration/ticket templates.

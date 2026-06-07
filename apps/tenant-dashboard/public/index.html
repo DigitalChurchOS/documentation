@@ -3850,7 +3850,7 @@ code,
   --theme-muted: #746b65;
   --theme-border: rgba(91,64,45,.12);
   --theme-accent: #f97316;
-  --theme-accent-2: #fb923c;
+  --theme-accent-2: #facc15;
   --theme-accent-soft: rgba(249,115,22,.12);
   --theme-gradient-a: #fff7ed;
   --theme-gradient-b: #ffedd5;
@@ -3972,28 +3972,33 @@ code,
   padding: 0;
   overflow: hidden;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 76px minmax(0, 1fr);
   background: rgba(252, 251, 255, .94);
 }
 .website-builder-sidebar .builder-workspace-nav {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  padding: 10px;
-  border-bottom: 1px solid var(--platform-border);
+  grid-auto-rows: minmax(62px, auto);
+  gap: 5px;
+  align-content: start;
+  padding: 8px 7px;
+  border-right: 1px solid var(--platform-border);
   background: rgba(255, 255, 255, .9);
+  overflow-y: auto;
 }
 .website-builder-sidebar .customizer-tab {
   flex: unset;
   min-width: 0;
-  min-height: 42px;
-  padding: 7px 8px;
+  min-height: 60px;
+  padding: 7px 4px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: 12px;
   border-bottom: 1px solid transparent;
-  justify-content: flex-start;
-  font-size: 11px;
-  line-height: 1;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 10px;
+  line-height: 1.05;
+  text-align: center;
+  gap: 5px;
 }
 .website-builder-sidebar .customizer-tab.active {
   border-color: rgba(124,58,237,.22);
@@ -4001,10 +4006,15 @@ code,
   color: #6d28d9;
   box-shadow: inset 0 0 0 1px rgba(124,58,237,.08);
 }
+.website-builder-sidebar .customizer-tab svg,
+.website-builder-sidebar .customizer-tab i {
+  width: 18px;
+  height: 18px;
+}
 .website-builder-sidebar .customizer-tab span {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 .builder-panel-scroll {
   min-height: 0;
@@ -4144,6 +4154,43 @@ code,
   resize: vertical;
   line-height: 1.4;
 }
+.builder-form-row input[type="file"] {
+  padding: 7px;
+  min-height: 40px;
+  font-size: 11px;
+}
+.builder-context-note {
+  border: 1px solid rgba(124,58,237,.18);
+  background: #f7f2ff;
+  color: #5b21b6;
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.builder-inspector-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.builder-image-preview {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  border: 1px solid var(--platform-border);
+  background: #f8f5ff;
+  object-fit: cover;
+  display: block;
+}
+.builder-file-drop {
+  border: 1px dashed rgba(124,58,237,.28);
+  background: #fbfaff;
+  border-radius: 12px;
+  padding: 10px;
+}
 .builder-section-actions {
   display: flex;
   gap: 6px;
@@ -4198,6 +4245,11 @@ code,
 .builder-block-row {
   cursor: grab;
 }
+.builder-block-row.active {
+  border-color: rgba(124,58,237,.36);
+  background: #f5f3ff;
+  box-shadow: inset 0 0 0 1px rgba(124,58,237,.08);
+}
 .builder-block-row:active {
   cursor: grabbing;
 }
@@ -4210,12 +4262,22 @@ code,
   font-size: 12px;
   font-weight: 750;
 }
-.website-builder .church-site [data-editable-block] {
+.website-builder .church-site [data-editable-block],
+.website-builder .church-site [data-editable-region] {
   position: relative;
+  cursor: pointer;
 }
-.website-builder .church-site [data-editable-block]:hover {
+.website-builder .church-site [data-editable-block]:hover,
+.website-builder .church-site [data-editable-block].selected,
+.website-builder .church-site [data-editable-region]:hover,
+.website-builder .church-site [data-editable-region].selected {
   outline: 2px solid color-mix(in srgb, var(--theme-accent) 40%, transparent);
   outline-offset: -2px;
+}
+.website-builder .church-site [data-editable-block].selected,
+.website-builder .church-site [data-editable-region].selected {
+  outline-color: var(--theme-accent);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--theme-accent) 28%, transparent);
 }
 .website-builder .site-section-toolbar {
   position: absolute;
@@ -4232,6 +4294,12 @@ code,
   opacity: 1;
   transform: translateY(0);
 }
+.website-builder .church-site [data-editable-block].selected .site-section-toolbar,
+.website-builder .church-site [data-editable-region].selected .site-section-toolbar,
+.website-builder .church-site [data-editable-region]:hover .site-section-toolbar {
+  opacity: 1;
+  transform: translateY(0);
+}
 .site-section-toolbar button {
   border: 0;
   border-radius: 999px;
@@ -4241,6 +4309,67 @@ code,
   font-weight: 900;
   padding: 7px 9px;
   box-shadow: 0 12px 28px rgba(31,25,61,.16);
+}
+.church-site [data-layout-width="boxed"] {
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: var(--theme-radius-card);
+}
+.church-site .hero[data-layout-width="boxed"] {
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+.church-site[data-page-width="boxed"] {
+  max-width: 1180px;
+  margin: 0 auto;
+  box-shadow: 0 28px 90px rgba(31,25,61,.12);
+}
+.church-site[data-page-width="wide"] {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.church-site[data-glass-header="false"] .site-header {
+  background: var(--theme-surface);
+  backdrop-filter: none;
+}
+.church-site[data-theme-glow="true"] .site-mark,
+.church-site[data-theme-glow="true"] .theme-btn,
+.church-site[data-theme-glow="true"] .module-card,
+.church-site[data-theme-glow="true"] .hero-media {
+  box-shadow: 0 30px 90px color-mix(in srgb, var(--theme-accent) 24%, transparent);
+}
+.builder-align-center { text-align: center; }
+.builder-align-center .section-title,
+.builder-align-center .hero-actions {
+  justify-content: center;
+}
+.builder-align-right { text-align: right; }
+.builder-align-right .section-title,
+.builder-align-right .hero-actions {
+  justify-content: flex-end;
+}
+.builder-font-serif h1,
+.builder-font-serif h2,
+.builder-font-serif h3 {
+  font-family: Georgia, serif;
+}
+.builder-font-display h1,
+.builder-font-display h2,
+.builder-font-display h3 {
+  font-family: Manrope, Inter, ui-sans-serif, system-ui, sans-serif;
+}
+.builder-heading-compact h1 { font-size: clamp(36px, 5vw, 58px); }
+.builder-heading-statement h1 { font-size: clamp(52px, 8vw, 92px); }
+.builder-heading-compact h2 { font-size: clamp(26px, 3vw, 34px); }
+.builder-heading-statement h2 { font-size: clamp(38px, 5vw, 58px); }
+.builder-preview-image {
+  width: 100%;
+  min-height: 280px;
+  max-height: 520px;
+  object-fit: cover;
+  border-radius: var(--theme-radius-card);
+  box-shadow: var(--theme-shadow);
 }
 
 /* Theme customizer */
@@ -4558,7 +4687,7 @@ body.customizer-open { overflow: hidden; }
 
 /* Public preview theme */
 .church-site { background: var(--theme-bg); color: var(--theme-ink); min-height: 100%; text-align: left; font-family: var(--theme-font-body); }
-.church-site.dark { --theme-bg:#141824; --theme-surface:#1f2433; --theme-soft:#242b3b; --theme-ink:#f8fafc; --theme-muted:#a6adbb; --theme-border:rgba(255,255,255,.10); --theme-gradient-a:#171b28; --theme-gradient-b:#1f2636; --theme-gradient-c:#172033; }
+.church-site.dark { color-scheme: dark; }
 .site-header { position:sticky; top:0; z-index:2; background: color-mix(in srgb, var(--theme-bg) 82%, transparent); backdrop-filter: blur(18px); border-bottom:1px solid var(--theme-border); display:flex; align-items:center; justify-content:space-between; padding: 20px clamp(20px, 5vw, 70px); }
 .church-site[data-header-style="minimal"] .site-header { position: relative; background: var(--theme-bg); backdrop-filter: none; }
 .church-site[data-header-style="centered"] .site-header { justify-content: center; gap: 34px; flex-wrap: wrap; }
@@ -4567,6 +4696,7 @@ body.customizer-open { overflow: hidden; }
 .church-site[data-logo-display="markOnly"] .site-brand span { display:none; }
 .church-site[data-logo-display="nameOnly"] .site-mark { display:none; }
 .site-mark { width:42px; height:42px; border-radius: calc(var(--theme-radius-card) * .55); background: linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2)); display:grid; place-items:center; color:#fff; box-shadow: var(--theme-shadow); }
+.site-mark img { width:100%; height:100%; object-fit:cover; border-radius:inherit; display:block; }
 .site-nav { display:flex; align-items:center; gap:24px; color:var(--theme-muted); font-weight:800; }
 .site-nav a { color:inherit; text-decoration:none; }
 .site-nav a.active { color: var(--theme-accent); }
@@ -8899,7 +9029,7 @@ body.customizer-open { overflow: hidden; }
                         <h3>Session Interactive Controls</h3>
                         <div style="display:flex; flex-wrap:wrap; gap:8px;">
                           <button class="btn" onclick="triggerSessionReaction('heart')"><i data-lucide="heart" style="color:var(--danger);"></i>Send Love</button>
-                          <button class="btn" onclick="triggerSessionReaction('hands')"><i data-lucide="hands-clapping" style="color:var(--warning);"></i>Send Praise</button>
+                          <button class="btn" onclick="triggerSessionReaction('hands')"><i data-lucide="sparkles" style="color:var(--warning);"></i>Send Praise</button>
                           <button class="btn" onclick="triggerSessionMuteAll()"><i data-lucide="mic-off"></i>Mute All</button>
                           <button class="btn" onclick="triggerConfirmPrayed()"><i data-lucide="badge-check" style="color:var(--success);"></i>I Prayed!</button>
                         </div>
@@ -13125,6 +13255,7 @@ body.customizer-open { overflow: hidden; }
         <aside class="settings-panel website-builder-sidebar">
           <nav class="customizer-tabs builder-workspace-nav" aria-label="Website Builder workspaces">
             <button class="customizer-tab active" id="tabThemeDesign" data-builder-workspace="design" type="button"><i data-lucide="palette"></i><span>Design</span></button>
+            <button class="customizer-tab" data-builder-workspace="inspect" type="button"><i data-lucide="sliders-horizontal"></i><span>Inspect</span></button>
             <button class="customizer-tab" id="tabPages" data-builder-workspace="pages" type="button"><i data-lucide="file-text"></i><span>Pages</span></button>
             <button class="customizer-tab" data-builder-workspace="widgets" type="button"><i data-lucide="blocks"></i><span>Widgets</span></button>
             <button class="customizer-tab" data-builder-workspace="templates" type="button"><i data-lucide="layout-template"></i><span>Templates</span></button>
@@ -13136,6 +13267,16 @@ body.customizer-open { overflow: hidden; }
           </nav>
 
           <div class="builder-panel-scroll thin-scroll">
+            <div class="settings-tab-content builder-workspace" data-builder-panel="inspect">
+              <div class="panel-heading">
+                <h3>Inspector</h3>
+                <p>Click a header, footer, or page section in the preview to edit its controls here.</p>
+              </div>
+              <div class="builder-panel-card" id="websiteBuilderInspectorPanel">
+                <div class="builder-empty">Select something in the preview to edit layout, media, copy, and style.</div>
+              </div>
+            </div>
+
             <div class="settings-tab-content builder-workspace active" id="customizerThemeDesignTab" data-builder-panel="design">
               <div class="panel-heading">
                 <h3>Design Workspace</h3>
@@ -13147,10 +13288,11 @@ body.customizer-open { overflow: hidden; }
                 <div class="group-content">
                   <div class="control">
                     <label>Color mode</label>
-                    <div class="option-grid three" data-setting="colorMode">
+                    <div class="option-grid" data-setting="colorMode">
                       <button class="option active" data-value="light" type="button"><i data-lucide="sun"></i>Light</button>
                       <button class="option" data-value="dark" type="button"><i data-lucide="moon"></i>Dark</button>
-                      <button class="option" data-value="system" type="button"><i data-lucide="monitor"></i>System</button>
+                      <button class="option" data-value="sepia" type="button"><i data-lucide="coffee"></i>Sepia</button>
+                      <button class="option" data-value="slate" type="button"><i data-lucide="cloud-moon"></i>Slate</button>
                     </div>
                   </div>
                   <div class="control">
@@ -13158,20 +13300,18 @@ body.customizer-open { overflow: hidden; }
                     <div class="option-grid" data-setting="accentPreset">
                       <button class="option active" data-value="orange" style="--swatch:#f97316" type="button"><span class="swatch"></span>Orange</button>
                       <button class="option" data-value="blue" style="--swatch:#2563eb" type="button"><span class="swatch"></span>Blue</button>
-                      <button class="option" data-value="purple" style="--swatch:#7c3aed" type="button"><span class="swatch"></span>Purple</button>
                       <button class="option" data-value="green" style="--swatch:#059669" type="button"><span class="swatch"></span>Green</button>
+                      <button class="option" data-value="red" style="--swatch:#dc2626" type="button"><span class="swatch"></span>Red</button>
+                      <button class="option" data-value="purple" style="--swatch:#7c3aed" type="button"><span class="swatch"></span>Purple</button>
                       <button class="option" data-value="rose" style="--swatch:#e11d48" type="button"><span class="swatch"></span>Rose</button>
-                      <button class="option" data-value="gold" style="--swatch:#d97706" type="button"><span class="swatch"></span>Gold</button>
                     </div>
                   </div>
                   <div class="control">
-                    <label>Color palette</label>
-                    <select class="select-like" data-select="colorPalette">
-                      <option value="warm">Warm</option>
-                      <option value="cool">Cool</option>
-                      <option value="neutral">Neutral</option>
-                      <option value="charcoal">Charcoal</option>
-                      <option value="ivory">Ivory</option>
+                    <label>Body width</label>
+                    <select class="select-like" data-select="pageBodyWidth">
+                      <option value="full">Full width</option>
+                      <option value="boxed">Boxed</option>
+                      <option value="wide">Wide</option>
                     </select>
                   </div>
                 </div>
@@ -13181,21 +13321,21 @@ body.customizer-open { overflow: hidden; }
                 <button class="group-toggle" type="button">Typography <i data-lucide="chevron-down"></i></button>
                 <div class="group-content">
                   <div class="control">
-                    <label>Typography</label>
+                    <label>Font family</label>
                     <select class="select-like" data-select="typography">
-                      <option value="modernSans">Modern Sans</option>
-                      <option value="editorialSerif">Editorial Serif</option>
-                      <option value="friendlyRounded">Friendly Rounded</option>
-                      <option value="classicChurch">Classic Church</option>
+                      <option value="sans">Sans</option>
+                      <option value="serif">Serif</option>
+                      <option value="geometric">Geometric</option>
+                      <option value="slab">Slab</option>
                     </select>
                   </div>
                   <div class="control">
-                    <label>Font pairing</label>
+                    <label>Heading pair</label>
                     <select class="select-like" data-select="fontPairing">
-                      <option value="interPlusSerif">Inter + Serif</option>
-                      <option value="serifPlusSans">Serif + Sans</option>
+                      <option value="outfitInter">Outfit + Inter</option>
+                      <option value="playfairInter">Playfair + Inter</option>
+                      <option value="slabInter">Roboto Slab + Inter</option>
                       <option value="singleSans">Single Sans</option>
-                      <option value="humanist">Humanist</option>
                     </select>
                   </div>
                 </div>
@@ -13224,10 +13364,11 @@ body.customizer-open { overflow: hidden; }
                   </div>
                   <div class="control">
                     <label>Edge style / radius</label>
-                    <div class="option-grid three" data-setting="edgeStyle">
-                      <button class="option" data-value="rounded" type="button">Round</button>
-                      <button class="option active" data-value="soft" type="button">Soft</button>
+                    <div class="option-grid" data-setting="edgeStyle">
                       <button class="option" data-value="sharp" type="button">Sharp</button>
+                      <button class="option" data-value="medium" type="button">Medium</button>
+                      <button class="option active" data-value="smooth" type="button">Smooth</button>
+                      <button class="option" data-value="pillow" type="button">Pillow</button>
                     </div>
                   </div>
                   <div class="control">
@@ -13293,10 +13434,24 @@ body.customizer-open { overflow: hidden; }
                     </div>
                   </div>
                   <div class="control">
+                    <label>Header glass</label>
+                    <div class="option-grid three" data-setting="glassHeader">
+                      <button class="option active" data-value="true" type="button">Glass</button>
+                      <button class="option" data-value="false" type="button">Solid</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Theme glow</label>
+                    <div class="option-grid three" data-setting="themeGlow">
+                      <button class="option" data-value="true" type="button">On</button>
+                      <button class="option active" data-value="false" type="button">Off</button>
+                    </div>
+                  </div>
+                  <div class="control">
                     <label>Footer style</label>
                     <div class="option-grid" data-setting="footerStyle">
-                      <button class="option active" data-value="simple" type="button">Simple</button>
-                      <button class="option" data-value="expanded" type="button">Expanded</button>
+                      <button class="option" data-value="simple" type="button">Simple</button>
+                      <button class="option active" data-value="expanded" type="button">Expanded</button>
                       <button class="option" data-value="newsletter" type="button">Newsletter</button>
                       <button class="option" data-value="minimal" type="button">Minimal</button>
                     </div>
@@ -14174,19 +14329,26 @@ body.customizer-open { overflow: hidden; }
       const targetModule = urlParams.get('module');
       if (targetModule === 'customizer') {
         // Deep link to Website Builder and auto-open it.
-        setTimeout(() => {
+        selectedModule = 'tenant-themes';
+        switchView('modules');
+        let customizeAttempts = 0;
+        const openCustomizerFromDeepLink = () => {
           const customizeBtn = document.getElementById('customizeBtn');
-          if (customizeBtn) {
+          if (customizeBtn && typeof customizeBtn.onclick === 'function') {
             customizeBtn.click();
-            // If tab=pages specified, auto-switch to Pages tab
+            // If tab is specified, auto-switch to the requested builder workspace.
             const targetTab = urlParams.get('tab');
-            if (targetTab === 'pages') {
+            if (targetTab) {
               setTimeout(() => {
-                if (typeof showTab === 'function') showTab('Pages');
+                if (typeof showWebsiteBuilderWorkspace === 'function') showWebsiteBuilderWorkspace(targetTab);
               }, 400);
             }
+          } else if (customizeAttempts < 10) {
+            customizeAttempts += 1;
+            setTimeout(openCustomizerFromDeepLink, 350);
           }
-        }, 800);
+        };
+        setTimeout(openCustomizerFromDeepLink, 800);
       } else if (targetModule) {
         selectedModule = normalizeModuleKey(targetModule);
         switchView('modules');
@@ -15248,7 +15410,7 @@ body.customizer-open { overflow: hidden; }
     const localCmsState = {
       websiteId: 'christ-embassy-next-main',
       websiteTitle: 'Christ Embassy Next Church',
-      theme: { id: 'theme-default', settings: { colors: { primary: '#4f46e5', secondary: '#0f172a', bg: '#ffffff', text: '#1e293b' } } }
+      theme: { id: 'theme-ecclesia', settings: { colors: { primary: '#f97316', secondary: '#0f172a', accent: '#f97316', background: '#fffaf4', textPrimary: '#201b18' } } }
     };
 
     const cmsPermissions = [
@@ -16394,9 +16556,9 @@ body.customizer-open { overflow: hidden; }
       colorMode: 'light',
       accentPreset: 'orange',
       colorPalette: 'warm',
-      typography: 'modernSans',
-      fontPairing: 'interPlusSerif',
-      edgeStyle: 'soft',
+      typography: 'sans',
+      fontPairing: 'outfitInter',
+      edgeStyle: 'smooth',
       cardStyle: 'shadow',
       spacingScale: 'comfortable',
       sectionSpacing: 'balanced',
@@ -16404,24 +16566,64 @@ body.customizer-open { overflow: hidden; }
       iconStyle: 'lucideLine',
       buttonStyle: 'solid',
       headerStyle: 'sticky',
-      footerStyle: 'simple',
+      footerStyle: 'expanded',
+      pageBodyWidth: 'full',
       animationPreference: 'subtle',
       shadowDepth: 'soft',
-      logoDisplay: 'markAndName'
+      logoDisplay: 'markAndName',
+      glassHeader: 'true',
+      themeGlow: 'false',
+      layoutStretch: 'false'
     };
 
     const customizerAccents = {
-      orange: ['#f97316', '#fb923c', 'rgba(249,115,22,.14)', '#fff7ed', '#ffedd5', '#fed7aa'],
+      orange: ['#f97316', '#facc15', 'rgba(249,115,22,.14)', '#fff7ed', '#ffedd5', '#fed7aa'],
       blue: ['#2563eb', '#38bdf8', 'rgba(37,99,235,.14)', '#eff6ff', '#dbeafe', '#bfdbfe'],
-      purple: ['#7c3aed', '#a855f7', 'rgba(124,58,237,.14)', '#f5f3ff', '#ede9fe', '#ddd6fe'],
       green: ['#059669', '#34d399', 'rgba(5,150,105,.14)', '#ecfdf5', '#d1fae5', '#a7f3d0'],
+      red: ['#dc2626', '#f97316', 'rgba(220,38,38,.14)', '#fef2f2', '#fee2e2', '#fecaca'],
+      purple: ['#7c3aed', '#a855f7', 'rgba(124,58,237,.14)', '#f5f3ff', '#ede9fe', '#ddd6fe'],
       rose: ['#e11d48', '#fb7185', 'rgba(225,29,72,.14)', '#fff1f2', '#ffe4e6', '#fecdd3'],
       gold: ['#d97706', '#fbbf24', 'rgba(217,119,6,.16)', '#fffbeb', '#fef3c7', '#fde68a']
     };
 
+    const customizerModes = {
+      light: ['#fffaf3', '#ffffff', '#f6efe6', '#1d1812', '#74685e', 'rgba(29,24,18,.12)', '#fff7ed', '#ffedd5', '#fed7aa'],
+      dark: ['#101018', '#171724', '#222233', '#fffaf3', '#c8beb2', 'rgba(255,255,255,.12)', '#151521', '#1d1d2b', '#27243a'],
+      sepia: ['#f4eadc', '#fff7ea', '#eadccb', '#2b2118', '#736456', 'rgba(43,33,24,.14)', '#fff7ea', '#f4eadc', '#eadccb'],
+      slate: ['#0f172a', '#172033', '#202b42', '#f8fafc', '#b6c1d4', 'rgba(255,255,255,.12)', '#111c33', '#172033', '#22304b']
+    };
+
+    const customizerFonts = {
+      sans: ['Outfit, Inter, ui-sans-serif, system-ui, sans-serif', 'Inter, ui-sans-serif, system-ui, sans-serif'],
+      serif: ['Playfair Display, Georgia, serif', 'Inter, ui-sans-serif, system-ui, sans-serif'],
+      geometric: ['Outfit, Inter, ui-sans-serif, system-ui, sans-serif', 'Outfit, Inter, ui-sans-serif, system-ui, sans-serif'],
+      slab: ['Roboto Slab, Georgia, serif', 'Inter, ui-sans-serif, system-ui, sans-serif'],
+      outfitInter: ['Outfit, Inter, ui-sans-serif, system-ui, sans-serif', 'Inter, ui-sans-serif, system-ui, sans-serif'],
+      playfairInter: ['Playfair Display, Georgia, serif', 'Inter, ui-sans-serif, system-ui, sans-serif'],
+      slabInter: ['Roboto Slab, Georgia, serif', 'Inter, ui-sans-serif, system-ui, sans-serif'],
+      singleSans: ['Inter, ui-sans-serif, system-ui, sans-serif', 'Inter, ui-sans-serif, system-ui, sans-serif'],
+      modernSans: ['Outfit, Inter, ui-sans-serif, system-ui, sans-serif', 'Inter, ui-sans-serif, system-ui, sans-serif'],
+      editorialSerif: ['Playfair Display, Georgia, serif', 'Inter, ui-sans-serif, system-ui, sans-serif']
+    };
+
+    const customizerRadii = {
+      sharp: ['0px', '0px', '0px'],
+      medium: ['16px', '12px', '10px'],
+      smooth: ['34px', '999px', '18px'],
+      pillow: ['50px', '999px', '24px'],
+      soft: ['16px', '12px', '10px'],
+      rounded: ['34px', '999px', '18px']
+    };
+
+    function isCustomizerToggleOn(value) {
+      return value === true || value === 'true' || value === 'on' || value === '1';
+    }
+
     const websiteBuilderState = {
       activeWorkspace: 'design',
       activePageId: '',
+      activeBlockIndex: null,
+      activeRegion: 'page',
       activeWidgetCategory: 'All',
       draggedBlockIndex: null,
       navigationItems: [],
@@ -16432,6 +16634,56 @@ body.customizer-open { overflow: hidden; }
         location: 'Main Campus and online'
       }
     };
+
+    function normalizeWebsiteBuilderGlobalContent(content = {}) {
+      const identity = content.churchIdentity || {};
+      const contact = content.contact || {};
+      const leadership = content.leadership || {};
+      const social = content.social || {};
+      const services = content.services || {};
+      const serviceTimes = Array.isArray(services.serviceTimes) ? services.serviceTimes : [];
+      const locations = Array.isArray(services.serviceLocations) ? services.serviceLocations : [];
+      const firstService = serviceTimes[0] || {};
+      const firstLocation = locations[0] || {};
+      return {
+        ...content,
+        churchIdentity: { churchName: content.churchName || localCmsState.websiteTitle, tagline: '', description: '', logoUrl: '', faviconUrl: '', ...identity },
+        leadership: { leadPastor: '', pastorBio: '', pastorImage: '', ...leadership },
+        contact: { phone: '', email: '', address: '', mapUrl: '', ...contact },
+        social: { facebook: '', youtube: '', instagram: '', tiktok: '', x: '', linkedIn: '', ...social },
+        services: { serviceTimes, serviceLocations: locations },
+        callsToAction: content.callsToAction || {},
+        churchName: identity.churchName || content.churchName || localCmsState.websiteTitle,
+        welcomeMessage: identity.description || content.welcomeMessage || 'Experience worship, word, prayer and community.',
+        serviceTimes: content.serviceTimes || (firstService.label ? `${firstService.label} - ${firstService.time || ''}`.trim() : 'Sunday 9:30 AM'),
+        location: content.location || firstLocation.address || contact.address || 'Main Campus and online'
+      };
+    }
+
+    function serializeWebsiteBuilderGlobalContent() {
+      const current = normalizeWebsiteBuilderGlobalContent(websiteBuilderState.globalContent);
+      return {
+        ...current,
+        churchIdentity: {
+          ...current.churchIdentity,
+          churchName: current.churchName,
+          description: current.welcomeMessage
+        },
+        contact: {
+          ...current.contact,
+          address: current.location
+        },
+        services: {
+          ...current.services,
+          serviceTimes: current.services.serviceTimes && current.services.serviceTimes.length
+            ? current.services.serviceTimes
+            : [{ label: current.serviceTimes, time: '', location: current.location }],
+          serviceLocations: current.services.serviceLocations && current.services.serviceLocations.length
+            ? current.services.serviceLocations
+            : [{ name: 'Main Campus', address: current.location }]
+        }
+      };
+    }
 
     function builderWidget(category, icon, name, description) {
       const type = String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
@@ -16567,6 +16819,7 @@ body.customizer-open { overflow: hidden; }
       });
 
       if (websiteBuilderState.activeWorkspace === 'pages') renderWebsiteBuilderPagesWorkspace();
+      if (websiteBuilderState.activeWorkspace === 'inspect') renderWebsiteBuilderInspectorWorkspace();
       if (websiteBuilderState.activeWorkspace === 'widgets') renderWebsiteBuilderWidgetsWorkspace();
       if (websiteBuilderState.activeWorkspace === 'templates') renderWebsiteBuilderTemplatesWorkspace();
       if (websiteBuilderState.activeWorkspace === 'navigation') renderWebsiteBuilderNavigationWorkspace();
@@ -16581,12 +16834,14 @@ body.customizer-open { overflow: hidden; }
     }
 
     function showTab(name) {
-      const map = { 'Theme Design': 'design', Design: 'design', Pages: 'pages', Widgets: 'widgets', Templates: 'templates', Navigation: 'navigation', SEO: 'seo', Settings: 'settings', Publish: 'publish' };
+      const map = { 'Theme Design': 'design', Design: 'design', Inspect: 'inspect', Inspector: 'inspect', Pages: 'pages', Widgets: 'widgets', Templates: 'templates', Navigation: 'navigation', Global: 'global', SEO: 'seo', Settings: 'settings', Publish: 'publish' };
       showWebsiteBuilderWorkspace(map[name] || String(name || 'design').toLowerCase());
     }
 
     function selectCustomizerPage(pageId) {
       websiteBuilderState.activePageId = pageId;
+      websiteBuilderState.activeBlockIndex = null;
+      websiteBuilderState.activeRegion = 'page';
       showWebsiteBuilderWorkspace('pages');
     }
 
@@ -16633,15 +16888,16 @@ body.customizer-open { overflow: hidden; }
     function renderBuilderSectionRow(block, index, total) {
       const label = block.title || block.headline || block.type || 'Section';
       const widget = getWidgetByType(block.type);
+      const isActive = websiteBuilderState.activeRegion === 'block' && websiteBuilderState.activeBlockIndex === index;
       return `
-        <div class="builder-block-row" draggable="true" ondragstart="startBuilderBlockDrag(${index})" ondragover="event.preventDefault()" ondrop="dropBuilderBlock(${index})">
+        <div class="builder-block-row ${isActive ? 'active' : ''}" draggable="true" onclick="selectBuilderBlock(event, ${index})" ondragstart="startBuilderBlockDrag(${index})" ondragover="event.preventDefault()" ondrop="dropBuilderBlock(${index})">
           <strong>${escapeHtml(label)}</strong>
           <span>${escapeHtml(widget ? widget.name : block.type || 'content block')}</span>
           <div class="builder-section-actions">
-            <button class="mini-action" type="button" onclick="moveBuilderBlock(${index}, -1)" ${index === 0 ? 'disabled' : ''} title="Move up"><i data-lucide="arrow-up"></i></button>
-            <button class="mini-action" type="button" onclick="moveBuilderBlock(${index}, 1)" ${index === total - 1 ? 'disabled' : ''} title="Move down"><i data-lucide="arrow-down"></i></button>
-            <button class="mini-action" type="button" onclick="editBuilderBlock(${index})" title="Edit"><i data-lucide="pencil"></i></button>
-            <button class="mini-action danger" type="button" onclick="removeBuilderBlock(${index})" title="Remove"><i data-lucide="trash-2"></i></button>
+            <button class="mini-action" type="button" onclick="stopBuilderPreviewEvent(event); moveBuilderBlock(${index}, -1)" ${index === 0 ? 'disabled' : ''} title="Move up"><i data-lucide="arrow-up"></i></button>
+            <button class="mini-action" type="button" onclick="stopBuilderPreviewEvent(event); moveBuilderBlock(${index}, 1)" ${index === total - 1 ? 'disabled' : ''} title="Move down"><i data-lucide="arrow-down"></i></button>
+            <button class="mini-action" type="button" onclick="stopBuilderPreviewEvent(event); editBuilderBlock(${index})" title="Edit"><i data-lucide="pencil"></i></button>
+            <button class="mini-action danger" type="button" onclick="stopBuilderPreviewEvent(event); removeBuilderBlock(${index})" title="Remove"><i data-lucide="trash-2"></i></button>
           </div>
         </div>
       `;
@@ -16781,9 +17037,12 @@ body.customizer-open { overflow: hidden; }
       const temp = blocks[index];
       blocks[index] = blocks[next];
       blocks[next] = temp;
+      if (websiteBuilderState.activeBlockIndex === index) websiteBuilderState.activeBlockIndex = next;
+      else if (websiteBuilderState.activeBlockIndex === next) websiteBuilderState.activeBlockIndex = index;
       setBuilderPageBlocks(page, blocks);
       renderWebsiteBuilderPagesWorkspace();
       renderWebsiteBuilderPreview(page);
+      if (websiteBuilderState.activeWorkspace === 'inspect') renderWebsiteBuilderInspectorWorkspace();
       await saveWebsiteBuilderDraft(page.id, { silent: true });
     }
 
@@ -16791,26 +17050,21 @@ body.customizer-open { overflow: hidden; }
       const page = getActiveBuilderPage();
       const blocks = getBuilderPageBlocks(page);
       blocks.splice(index, 1);
+      if (websiteBuilderState.activeBlockIndex === index) {
+        websiteBuilderState.activeBlockIndex = null;
+        websiteBuilderState.activeRegion = 'page';
+      } else if (typeof websiteBuilderState.activeBlockIndex === 'number' && websiteBuilderState.activeBlockIndex > index) {
+        websiteBuilderState.activeBlockIndex -= 1;
+      }
       setBuilderPageBlocks(page, blocks);
       renderWebsiteBuilderPagesWorkspace();
       renderWebsiteBuilderPreview(page);
+      if (websiteBuilderState.activeWorkspace === 'inspect') renderWebsiteBuilderInspectorWorkspace();
       await saveWebsiteBuilderDraft(page.id, { silent: true });
     }
 
     async function editBuilderBlock(index) {
-      const page = getActiveBuilderPage();
-      const blocks = getBuilderPageBlocks(page);
-      const block = blocks[index];
-      if (!block) return;
-      const current = block.title || block.headline || block.text || '';
-      const next = prompt('Edit section title or main text', current);
-      if (next === null) return;
-      if ('title' in block || !('headline' in block)) block.title = next;
-      else block.headline = next;
-      setBuilderPageBlocks(page, blocks);
-      renderWebsiteBuilderPagesWorkspace();
-      renderWebsiteBuilderPreview(page);
-      await saveWebsiteBuilderDraft(page.id, { silent: true });
+      selectBuilderBlock(null, index);
     }
 
     async function addWidgetToBuilder(type) {
@@ -16819,8 +17073,10 @@ body.customizer-open { overflow: hidden; }
       if (!widget || !page) return;
       const blocks = getBuilderPageBlocks(page);
       blocks.push(JSON.parse(JSON.stringify(widget.defaultContent)));
+      websiteBuilderState.activeBlockIndex = blocks.length - 1;
+      websiteBuilderState.activeRegion = 'block';
       setBuilderPageBlocks(page, blocks);
-      showWebsiteBuilderWorkspace('pages');
+      showWebsiteBuilderWorkspace('inspect');
       await saveWebsiteBuilderDraft(page.id, { silent: true });
       showToast(`${widget.name} added to ${page.title}`);
     }
@@ -16847,7 +17103,8 @@ body.customizer-open { overflow: hidden; }
     function renderWebsiteBuilderTemplatesWorkspace() {
       const list = document.getElementById('websiteBuilderTemplatesList');
       if (!list) return;
-      list.innerHTML = cmsTemplateCatalog.map(template => `
+      const templates = getWebsiteBuilderTemplateCatalog();
+      list.innerHTML = templates.map(template => `
         <article class="builder-template-card">
           <div class="builder-panel-title"><span><i data-lucide="${template.icon}"></i> ${escapeHtml(template.title)}</span><span class="builder-chip">${escapeHtml(cmsDisplaySlug(template.slug))}</span></div>
           <span>${escapeHtml(template.description)}</span>
@@ -16855,6 +17112,25 @@ body.customizer-open { overflow: hidden; }
         </article>
       `).join('');
       refreshIcons();
+    }
+
+    function getWebsiteBuilderTemplateCatalog() {
+      const engineTemplates = Array.isArray(themeEngineState?.pageTemplates) ? themeEngineState.pageTemplates : [];
+      if (engineTemplates.length) {
+        return engineTemplates.map(template => ({
+          key: template.key,
+          title: template.title || template.name || template.key,
+          name: template.name || template.title || template.key,
+          icon: template.icon || 'layout-template',
+          slug: template.slug || '',
+          description: template.description || 'Builder-aware Ecclesia page template.',
+          status: template.status || 'draft',
+          blocks: Array.isArray(template.blocks) ? template.blocks : [],
+          structure: template.structure || {}
+        }));
+      }
+
+      return cmsTemplateCatalog;
     }
 
     function ensureWebsiteBuilderNavigation() {
@@ -16914,15 +17190,28 @@ body.customizer-open { overflow: hidden; }
     function renderWebsiteBuilderGlobalWorkspace() {
       const panel = document.getElementById('websiteBuilderGlobalContent');
       if (!panel) return;
-      const g = websiteBuilderState.globalContent;
+      const g = normalizeWebsiteBuilderGlobalContent(websiteBuilderState.globalContent);
+      websiteBuilderState.globalContent = g;
       panel.innerHTML = `
         <div class="builder-form-row"><label>Church name</label><input value="${escapeHtml(g.churchName)}" onchange="websiteBuilderState.globalContent.churchName=this.value; localCmsState.websiteTitle=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage())"></div>
         <div class="builder-form-row"><label>Welcome message</label><textarea onchange="websiteBuilderState.globalContent.welcomeMessage=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage())">${escapeHtml(g.welcomeMessage)}</textarea></div>
         <div class="builder-form-row"><label>Service times</label><input value="${escapeHtml(g.serviceTimes)}" onchange="websiteBuilderState.globalContent.serviceTimes=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage())"></div>
         <div class="builder-form-row"><label>Location</label><input value="${escapeHtml(g.location)}" onchange="websiteBuilderState.globalContent.location=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage())"></div>
-        <button class="primary-btn builder-wide" type="button" onclick="localStorage.setItem('churchos.builder.globalContent', JSON.stringify(websiteBuilderState.globalContent)); showToast('Global content saved')"><i data-lucide="save"></i> Save Global Content</button>
+        <button class="primary-btn builder-wide" type="button" onclick="saveWebsiteBuilderGlobalContent()"><i data-lucide="save"></i> Save Global Content</button>
       `;
       refreshIcons();
+    }
+
+    async function saveWebsiteBuilderGlobalContent() {
+      const content = serializeWebsiteBuilderGlobalContent();
+      const res = await cmsApiRequest('PATCH', '/api/cms/global-content', { content });
+      if (res && res.ok) {
+        websiteBuilderState.globalContent = normalizeWebsiteBuilderGlobalContent(res.data.content || content);
+        renderWebsiteBuilderPreview(getActiveBuilderPage());
+        showToast('Global content saved');
+      } else {
+        alert(res?.data?.error || 'Failed to save global content.');
+      }
     }
 
     function renderWebsiteBuilderSeoWorkspace() {
@@ -16974,24 +17263,266 @@ body.customizer-open { overflow: hidden; }
       refreshIcons();
     }
 
+    function stopBuilderPreviewEvent(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
+
+    function getBuilderBlockLabel(block, index = 0) {
+      return block?.title || block?.headline || block?.name || block?.type || `Section ${index + 1}`;
+    }
+
+    function renderBuilderOptionButtons(field, options) {
+      return `<div class="option-grid ${options.length === 3 ? 'three' : ''}">${options.map(([value, label]) => `
+        <button class="option ${String(customizerState[field]) === String(value) ? 'active' : ''}" type="button" onclick="setBuilderThemeControl('${field}', '${value}')">${escapeHtml(label)}</button>
+      `).join('')}</div>`;
+    }
+
+    function renderBlockOptionButtons(field, value, options) {
+      return `<div class="option-grid ${options.length === 3 ? 'three' : ''}">${options.map(([optionValue, label]) => `
+        <button class="option ${value === optionValue ? 'active' : ''}" type="button" onclick="updateSelectedBuilderBlockField('${field}', '${optionValue}')">${escapeHtml(label)}</button>
+      `).join('')}</div>`;
+    }
+
+    function selectBuilderRegion(event, region) {
+      stopBuilderPreviewEvent(event);
+      websiteBuilderState.activeRegion = region || 'page';
+      websiteBuilderState.activeBlockIndex = null;
+      showWebsiteBuilderWorkspace('inspect');
+    }
+
+    function selectBuilderBlock(event, index) {
+      stopBuilderPreviewEvent(event);
+      const page = getActiveBuilderPage();
+      const blocks = getBuilderPageBlocks(page);
+      if (!blocks[index]) return;
+      websiteBuilderState.activeRegion = 'block';
+      websiteBuilderState.activeBlockIndex = index;
+      showWebsiteBuilderWorkspace('inspect');
+    }
+
+    function setBuilderThemeControl(field, value) {
+      customizerState[field] = value;
+      if (field === 'pageBodyWidth') {
+        customizerState.layoutStretch = value === 'wide' ? 'true' : 'false';
+      }
+      syncCustomizerUI();
+      renderWebsiteBuilderPreview(getActiveBuilderPage());
+      renderWebsiteBuilderInspectorWorkspace();
+      applyCustomizerTheme();
+      refreshIcons();
+    }
+
+    function updateBuilderGlobalField(field, value) {
+      const global = normalizeWebsiteBuilderGlobalContent(websiteBuilderState.globalContent);
+      global[field] = value;
+      if (field === 'churchName') {
+        global.churchIdentity.churchName = value;
+        localCmsState.websiteTitle = value;
+      }
+      if (field === 'welcomeMessage') global.churchIdentity.description = value;
+      if (field === 'location') global.contact.address = value;
+      websiteBuilderState.globalContent = global;
+      renderWebsiteBuilderPreview(getActiveBuilderPage());
+    }
+
+    function uploadWebsiteBuilderLogo(input) {
+      const file = input?.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const global = normalizeWebsiteBuilderGlobalContent(websiteBuilderState.globalContent);
+        global.churchIdentity.logoUrl = String(reader.result || '');
+        websiteBuilderState.globalContent = global;
+        renderWebsiteBuilderPreview(getActiveBuilderPage());
+        renderWebsiteBuilderInspectorWorkspace();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function renderWebsiteBuilderInspectorWorkspace() {
+      const panel = document.getElementById('websiteBuilderInspectorPanel');
+      if (!panel) return;
+      const region = websiteBuilderState.activeRegion || 'page';
+      if (region === 'header') panel.innerHTML = renderBuilderHeaderInspector();
+      else if (region === 'footer') panel.innerHTML = renderBuilderFooterInspector();
+      else if (region === 'block') panel.innerHTML = renderBuilderBlockInspector();
+      else panel.innerHTML = renderBuilderPageInspector();
+      refreshIcons();
+    }
+
+    function renderBuilderPageInspector() {
+      const page = getActiveBuilderPage();
+      return `
+        <div class="builder-context-note">Page body controls apply to the full preview canvas. Click any section for section-specific controls.</div>
+        <div class="builder-panel-title"><span>Page Body</span><span class="builder-chip">${escapeHtml(page?.title || 'Page')}</span></div>
+        <div class="builder-form-row"><label>Body width</label>
+          ${renderBuilderOptionButtons('pageBodyWidth', [['full','Full'], ['boxed','Boxed'], ['wide','Wide']])}
+        </div>
+        <div class="builder-form-row"><label>Section spacing</label>
+          ${renderBuilderOptionButtons('sectionSpacing', [['compact','Compact'], ['balanced','Balanced'], ['generous','Generous']])}
+        </div>
+        <div class="builder-form-row"><label>Page title</label><input value="${escapeHtml(page?.title || '')}" onchange="updateWebsiteBuilderPageField('title', this.value)"></div>
+        <button class="secondary-btn builder-wide" type="button" onclick="showWebsiteBuilderWorkspace('pages')"><i data-lucide="file-text"></i> Manage Page Sections</button>
+      `;
+    }
+
+    function renderBuilderHeaderInspector() {
+      const global = normalizeWebsiteBuilderGlobalContent(websiteBuilderState.globalContent);
+      const logoUrl = global.churchIdentity.logoUrl || '';
+      return `
+        <div class="builder-panel-title"><span>Header</span><span class="builder-chip">${escapeHtml(customizerState.headerStyle)}</span></div>
+        <div class="builder-form-row"><label>Header style</label>
+          ${renderBuilderOptionButtons('headerStyle', [['sticky','Sticky'], ['centered','Centered'], ['minimal','Minimal'], ['transparent','Transparent']])}
+        </div>
+        <div class="builder-form-row"><label>Glass treatment</label>
+          ${renderBuilderOptionButtons('glassHeader', [['true','Glass'], ['false','Solid']])}
+        </div>
+        <div class="builder-form-row"><label>Logo display</label>
+          ${renderBuilderOptionButtons('logoDisplay', [['markAndName','Mark + Name'], ['markOnly','Mark'], ['nameOnly','Name']])}
+        </div>
+        <div class="builder-form-row"><label>Church name</label><input value="${escapeHtml(global.churchName)}" onchange="updateBuilderGlobalField('churchName', this.value)"></div>
+        <div class="builder-form-row"><label>Logo URL</label><input value="${escapeHtml(logoUrl)}" placeholder="https://..." onchange="updateBuilderGlobalField('logoUrl', this.value); websiteBuilderState.globalContent.churchIdentity.logoUrl=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage());"></div>
+        ${logoUrl ? `<img class="builder-image-preview" src="${escapeHtml(logoUrl)}" alt="">` : ''}
+        <div class="builder-file-drop builder-form-row"><label>Upload logo</label><input type="file" accept="image/*" onchange="uploadWebsiteBuilderLogo(this)"></div>
+        <button class="primary-btn builder-wide" type="button" onclick="saveWebsiteBuilderGlobalContent()"><i data-lucide="save"></i> Save Header Content</button>
+      `;
+    }
+
+    function renderBuilderFooterInspector() {
+      const global = normalizeWebsiteBuilderGlobalContent(websiteBuilderState.globalContent);
+      return `
+        <div class="builder-panel-title"><span>Footer</span><span class="builder-chip">${escapeHtml(customizerState.footerStyle)}</span></div>
+        <div class="builder-form-row"><label>Footer style</label>
+          ${renderBuilderOptionButtons('footerStyle', [['simple','Simple'], ['expanded','Expanded'], ['newsletter','Newsletter'], ['minimal','Minimal']])}
+        </div>
+        <div class="builder-form-row"><label>Welcome text</label><textarea onchange="updateBuilderGlobalField('welcomeMessage', this.value)">${escapeHtml(global.welcomeMessage)}</textarea></div>
+        <div class="builder-form-row"><label>Service times</label><input value="${escapeHtml(global.serviceTimes)}" onchange="updateBuilderGlobalField('serviceTimes', this.value)"></div>
+        <div class="builder-form-row"><label>Location</label><input value="${escapeHtml(global.location)}" onchange="updateBuilderGlobalField('location', this.value)"></div>
+        <button class="primary-btn builder-wide" type="button" onclick="saveWebsiteBuilderGlobalContent()"><i data-lucide="save"></i> Save Footer Content</button>
+      `;
+    }
+
+    function renderBuilderBlockInspector() {
+      const page = getActiveBuilderPage();
+      const blocks = getBuilderPageBlocks(page);
+      const index = websiteBuilderState.activeBlockIndex;
+      const block = typeof index === 'number' ? blocks[index] : null;
+      if (!block) return `<div class="builder-empty">Click a section in the preview to edit it here.</div>`;
+      const textField = Object.prototype.hasOwnProperty.call(block, 'subtitle') ? 'subtitle' : 'text';
+      const textValue = block[textField] || block.storyText || '';
+      const imageUrl = block.imageUrl || block.bgImage || block.mediaUrl || '';
+      const items = Array.isArray(block.items) ? block.items : [];
+      return `
+        <div class="builder-panel-title"><span>${escapeHtml(getBuilderBlockLabel(block, index))}</span><span class="builder-chip">${escapeHtml(block.type || 'section')}</span></div>
+        <div class="builder-form-row"><label>Section title</label><input value="${escapeHtml(block.title || block.headline || '')}" onchange="updateSelectedBuilderBlockField('title', this.value)"></div>
+        <div class="builder-form-row"><label>Main copy</label><textarea onchange="updateSelectedBuilderBlockField('${textField}', this.value)">${escapeHtml(textValue)}</textarea></div>
+        <div class="builder-form-row"><label>Kicker / eyebrow</label><input value="${escapeHtml(block.kicker || '')}" onchange="updateSelectedBuilderBlockField('kicker', this.value)"></div>
+        <div class="builder-form-row"><label>Button label</label><input value="${escapeHtml(block.buttonText || '')}" onchange="updateSelectedBuilderBlockField('buttonText', this.value)"></div>
+        <div class="builder-form-row"><label>Button URL</label><input value="${escapeHtml(block.buttonUrl || '')}" onchange="updateSelectedBuilderBlockField('buttonUrl', this.value)"></div>
+        <div class="builder-form-row"><label>Layout width</label>${renderBlockOptionButtons('layoutWidth', block.layoutWidth || 'full', [['full','Full'], ['boxed','Boxed']])}</div>
+        <div class="builder-form-row"><label>Text align</label>${renderBlockOptionButtons('textAlign', block.textAlign || 'left', [['left','Left'], ['center','Center'], ['right','Right']])}</div>
+        <div class="builder-form-row"><label>Heading scale</label>${renderBlockOptionButtons('headingSize', block.headingSize || 'normal', [['compact','Compact'], ['normal','Normal'], ['statement','Statement']])}</div>
+        <div class="builder-form-row"><label>Font style</label>${renderBlockOptionButtons('fontStyle', block.fontStyle || 'theme', [['theme','Theme'], ['serif','Serif'], ['display','Display']])}</div>
+        <div class="builder-form-row"><label>Image URL</label><input value="${escapeHtml(imageUrl)}" placeholder="https://..." onchange="updateSelectedBuilderBlockField('imageUrl', this.value)"></div>
+        ${imageUrl ? `<img class="builder-image-preview" src="${escapeHtml(imageUrl)}" alt="">` : ''}
+        <div class="builder-file-drop builder-form-row"><label>Upload / replace image</label><input type="file" accept="image/*" onchange="uploadSelectedBuilderBlockImage(this)"></div>
+        ${items.length ? `<hr style="border:0;border-top:1px solid var(--platform-border);margin:14px 0;"><div class="builder-panel-title"><span>Cards / Items</span><span>${items.length}</span></div>${items.slice(0, 4).map((item, itemIndex) => `
+          <div class="builder-panel-card" style="box-shadow:none;margin-bottom:8px;">
+            <div class="builder-form-row"><label>Item ${itemIndex + 1} title</label><input value="${escapeHtml(item.name || item.title || '')}" onchange="updateSelectedBuilderBlockItem(${itemIndex}, 'name', this.value)"></div>
+            <div class="builder-form-row"><label>Item ${itemIndex + 1} text</label><textarea onchange="updateSelectedBuilderBlockItem(${itemIndex}, 'desc', this.value)">${escapeHtml(item.desc || item.text || '')}</textarea></div>
+          </div>
+        `).join('')}` : ''}
+        <div class="builder-inspector-actions">
+          <button class="secondary-btn" type="button" onclick="showWebsiteBuilderWorkspace('pages')"><i data-lucide="list"></i> Sections</button>
+          <button class="secondary-btn" type="button" onclick="saveSelectedBuilderBlockDraft()"><i data-lucide="save"></i> Save</button>
+          <button class="ghost-btn" type="button" onclick="moveBuilderBlock(${index}, -1)" ${index === 0 ? 'disabled' : ''}><i data-lucide="arrow-up"></i> Up</button>
+          <button class="ghost-btn" type="button" onclick="moveBuilderBlock(${index}, 1)" ${index === blocks.length - 1 ? 'disabled' : ''}><i data-lucide="arrow-down"></i> Down</button>
+        </div>
+        <button class="ghost-btn builder-wide" type="button" onclick="removeBuilderBlock(${index})"><i data-lucide="trash-2"></i> Remove Section</button>
+      `;
+    }
+
+    function updateSelectedBuilderBlockField(field, value) {
+      const page = getActiveBuilderPage();
+      const blocks = getBuilderPageBlocks(page);
+      const block = blocks[websiteBuilderState.activeBlockIndex];
+      if (!page || !block) return;
+      if (field === 'title' && Object.prototype.hasOwnProperty.call(block, 'headline') && !Object.prototype.hasOwnProperty.call(block, 'title')) block.headline = value;
+      else block[field] = value;
+      if (field === 'imageUrl') {
+        block.bgImage = value;
+        block.mediaUrl = value;
+      }
+      setBuilderPageBlocks(page, blocks);
+      renderWebsiteBuilderPreview(page);
+      renderWebsiteBuilderPagesWorkspace();
+      renderWebsiteBuilderInspectorWorkspace();
+    }
+
+    function updateSelectedBuilderBlockItem(itemIndex, field, value) {
+      const page = getActiveBuilderPage();
+      const blocks = getBuilderPageBlocks(page);
+      const block = blocks[websiteBuilderState.activeBlockIndex];
+      if (!page || !block) return;
+      if (!Array.isArray(block.items)) block.items = [];
+      if (!block.items[itemIndex]) block.items[itemIndex] = {};
+      block.items[itemIndex][field] = value;
+      if (field === 'name') block.items[itemIndex].title = value;
+      if (field === 'desc') block.items[itemIndex].text = value;
+      setBuilderPageBlocks(page, blocks);
+      renderWebsiteBuilderPreview(page);
+      renderWebsiteBuilderInspectorWorkspace();
+    }
+
+    function uploadSelectedBuilderBlockImage(input) {
+      const file = input?.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => updateSelectedBuilderBlockField('imageUrl', String(reader.result || ''));
+      reader.readAsDataURL(file);
+    }
+
+    async function saveSelectedBuilderBlockDraft() {
+      const page = getActiveBuilderPage();
+      if (!page) return;
+      await saveWebsiteBuilderDraft(page.id, { silent: true });
+      showToast('Section controls saved');
+    }
+
     function renderBuilderBlockPreview(block, index) {
-      const toolbar = `<div class="site-section-toolbar"><button type="button" onclick="editBuilderBlock(${index})">Edit</button><button type="button" onclick="removeBuilderBlock(${index})">Remove</button></div>`;
+      const isSelected = websiteBuilderState.activeRegion === 'block' && websiteBuilderState.activeBlockIndex === index;
+      const layoutWidth = block.layoutWidth || 'full';
+      const alignClass = block.textAlign ? ` builder-align-${block.textAlign}` : '';
+      const fontClass = block.fontStyle && block.fontStyle !== 'theme' ? ` builder-font-${block.fontStyle}` : '';
+      const headingClass = block.headingSize && block.headingSize !== 'normal' ? ` builder-heading-${block.headingSize}` : '';
+      const selectedClass = isSelected ? ' selected' : '';
+      const sectionAttrs = `data-editable-block="${index}" data-layout-width="${escapeHtml(layoutWidth)}" class="${selectedClass}${alignClass}${fontClass}${headingClass}" onclick="selectBuilderBlock(event, ${index})"`;
+      const sectionClassAttrs = `data-editable-block="${index}" data-layout-width="${escapeHtml(layoutWidth)}" class="section${selectedClass}${alignClass}${fontClass}${headingClass}" onclick="selectBuilderBlock(event, ${index})"`;
+      const toolbar = `<div class="site-section-toolbar"><button type="button" onclick="stopBuilderPreviewEvent(event); editBuilderBlock(${index})">Edit</button><button type="button" onclick="stopBuilderPreviewEvent(event); removeBuilderBlock(${index})">Remove</button></div>`;
       const title = escapeHtml(block.title || block.headline || 'Section');
       const text = escapeHtml(block.subtitle || block.text || block.storyText || 'Add church-specific content from the sidebar.');
+      const imageUrl = escapeHtml(block.imageUrl || block.bgImage || block.mediaUrl || '');
+      const mediaStyle = imageUrl ? ` style="background-image: linear-gradient(135deg, rgba(0,0,0,.18), rgba(0,0,0,.05)), url('${imageUrl}'); background-size: cover; background-position: center;"` : '';
       if (block.type === 'hero' || block.type === 'hero_section') {
-        return `<section class="hero" data-editable-block="${index}">${toolbar}<div class="hero-grid"><div><span class="kicker"><i data-lucide="sparkles"></i> ${escapeHtml(block.kicker || 'Welcome home')}</span><h1>${title}</h1><p>${text}</p><div class="hero-actions"><button class="theme-btn" type="button">${escapeHtml(block.buttonText || 'Plan a Visit')}</button><button class="theme-btn secondary" type="button">Give Now</button></div></div><div class="hero-media"><div class="floating-card"><strong>Next service</strong><span>${escapeHtml(websiteBuilderState.globalContent.serviceTimes)}</span></div></div></div></section>`;
+        return `<section ${sectionAttrs.replace('class="', 'class="hero ')}>${toolbar}<div class="hero-grid"><div><span class="kicker"><i data-lucide="sparkles"></i> ${escapeHtml(block.kicker || 'Welcome home')}</span><h1>${title}</h1><p>${text}</p><div class="hero-actions"><button class="theme-btn" type="button">${escapeHtml(block.buttonText || 'Plan a Visit')}</button><button class="theme-btn secondary" type="button">Give Now</button></div></div><div class="hero-media"${mediaStyle}><div class="floating-card"><strong>Next service</strong><span>${escapeHtml(websiteBuilderState.globalContent.serviceTimes)}</span></div></div></div></section>`;
+      }
+      if (block.type === 'image') {
+        return `<section ${sectionClassAttrs}>${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${text}</p></div></div>${imageUrl ? `<img class="builder-preview-image" src="${imageUrl}" alt="${escapeHtml(block.alt || title)}">` : `<div class="builder-empty">Upload or paste an image URL in the sidebar.</div>`}</section>`;
       }
       if (block.type === 'service_times') {
-        return `<section class="section" data-editable-block="${index}">${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${escapeHtml(block.sundayTimes || websiteBuilderState.globalContent.serviceTimes)} at ${escapeHtml(block.address || websiteBuilderState.globalContent.location)}</p></div><button class="theme-btn secondary" type="button">Plan a Visit</button></div></section>`;
+        return `<section ${sectionClassAttrs}>${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${escapeHtml(block.sundayTimes || websiteBuilderState.globalContent.serviceTimes)} at ${escapeHtml(block.address || websiteBuilderState.globalContent.location)}</p></div><button class="theme-btn secondary" type="button">Plan a Visit</button></div></section>`;
       }
       if (block.type === 'ministries_list' || block.type === 'feature_grid' || block.type === 'ministry_highlights') {
         const items = Array.isArray(block.items) && block.items.length ? block.items : [{ name: 'Worship', desc: 'Serve through music and production.' }, { name: 'Groups', desc: 'Find community throughout the week.' }, { name: 'Outreach', desc: 'Love the city through practical ministry.' }];
-        return `<section class="section" data-editable-block="${index}">${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${text}</p></div></div><div class="module-grid">${items.slice(0,3).map(item => `<article class="module-card"><div class="card-icon"><i data-lucide="sparkles"></i></div><h3>${escapeHtml(item.name || item.title || 'Ministry')}</h3><p>${escapeHtml(item.desc || item.text || 'Add details in the builder sidebar.')}</p></article>`).join('')}</div></section>`;
+        return `<section ${sectionClassAttrs}>${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${text}</p></div></div><div class="module-grid">${items.slice(0,3).map(item => `<article class="module-card"><div class="card-icon"><i data-lucide="sparkles"></i></div><h3>${escapeHtml(item.name || item.title || 'Ministry')}</h3><p>${escapeHtml(item.desc || item.text || 'Add details in the builder sidebar.')}</p></article>`).join('')}</div></section>`;
       }
       if (block.type === 'giving_cta' || block.type === 'giving_form_embed' || block.type === 'giving-callout') {
-        return `<section class="section" data-editable-block="${index}">${toolbar}<div class="giving-panel"><div><span class="kicker">Giving</span><h2 style="font-size:42px; letter-spacing:-.055em; margin:16px 0 10px;">${title}</h2><p style="color:var(--theme-muted); font-weight:650; line-height:1.6">${text}</p></div><form onsubmit="return false;"><input class="field" placeholder="Your name"><div class="amounts"><button type="button">$25</button><button type="button" class="active">$50</button><button type="button">$100</button></div><button class="theme-btn" type="button" style="width:100%;justify-content:center">Continue Giving</button></form></div></section>`;
+        return `<section ${sectionClassAttrs}>${toolbar}<div class="giving-panel"><div><span class="kicker">Giving</span><h2 style="font-size:42px; letter-spacing:-.055em; margin:16px 0 10px;">${title}</h2><p style="color:var(--theme-muted); font-weight:650; line-height:1.6">${text}</p></div><form onsubmit="return false;"><input class="field" placeholder="Your name"><div class="amounts"><button type="button">$25</button><button type="button" class="active">$50</button><button type="button">$100</button></div><button class="theme-btn" type="button" style="width:100%;justify-content:center">Continue Giving</button></form></div></section>`;
       }
-      return `<section class="section" data-editable-block="${index}">${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${text}</p></div><button class="theme-btn secondary" type="button">Learn More</button></div></section>`;
+      return `<section ${sectionClassAttrs}>${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${text}</p></div><button class="theme-btn secondary" type="button">${escapeHtml(block.buttonText || 'Learn More')}</button></div></section>`;
     }
 
     function renderWebsiteBuilderPreview(page = getActiveBuilderPage()) {
@@ -17002,14 +17533,21 @@ body.customizer-open { overflow: hidden; }
       const activeSlug = page ? cmsDisplaySlug(page.slug || '') : '/';
       const nav = websiteBuilderState.navigationItems.map(item => `<a class="${item.url === activeSlug ? 'active' : ''}">${escapeHtml(item.label)}</a>`).join('');
       const renderedBlocks = blocks.length ? blocks.map(renderBuilderBlockPreview).join('') : renderBuilderBlockPreview({ type: 'hero', title: page?.title || 'Welcome Home', subtitle: websiteBuilderState.globalContent.welcomeMessage }, 0);
+      const headerSelected = websiteBuilderState.activeRegion === 'header' ? ' selected' : '';
+      const footerSelected = websiteBuilderState.activeRegion === 'footer' ? ' selected' : '';
+      const regionToolbar = (region) => `<div class="site-section-toolbar"><button type="button" onclick="stopBuilderPreviewEvent(event); selectBuilderRegion(event, '${region}')">Edit</button></div>`;
+      const logoUrl = escapeHtml(websiteBuilderState.globalContent.churchIdentity?.logoUrl || '');
+      const brandMark = logoUrl ? `<img src="${logoUrl}" alt="">` : `<i data-lucide="church"></i>`;
       site.innerHTML = `
-        <header class="site-header">
-          <div class="site-brand"><div class="site-mark"><i data-lucide="church"></i></div><span>${escapeHtml(websiteBuilderState.globalContent.churchName || localCmsState.websiteTitle)}</span></div>
+        <header class="site-header${headerSelected}" data-editable-region="header" onclick="selectBuilderRegion(event, 'header')">
+          ${regionToolbar('header')}
+          <div class="site-brand"><div class="site-mark">${brandMark}</div><span>${escapeHtml(websiteBuilderState.globalContent.churchName || localCmsState.websiteTitle)}</span></div>
           <nav class="site-nav">${nav}</nav>
           <button class="theme-btn" type="button">Watch Live</button>
         </header>
         ${renderedBlocks}
-        <footer class="site-footer">
+        <footer class="site-footer${footerSelected}" data-editable-region="footer" onclick="selectBuilderRegion(event, 'footer')">
+          ${regionToolbar('footer')}
           <div><strong>${escapeHtml(websiteBuilderState.globalContent.churchName || localCmsState.websiteTitle)}</strong><span>${escapeHtml(websiteBuilderState.globalContent.welcomeMessage)}</span></div>
           <div><strong>Visit</strong><span>${escapeHtml(websiteBuilderState.globalContent.serviceTimes)}</span></div>
           <div><strong>Location</strong><span>${escapeHtml(websiteBuilderState.globalContent.location)}</span></div>
@@ -17023,47 +17561,58 @@ body.customizer-open { overflow: hidden; }
     function applyCustomizerTheme() {
       const root = document.documentElement;
       const a = customizerAccents[customizerState.accentPreset] || customizerAccents.orange;
+      const mode = customizerModes[customizerState.colorMode] || customizerModes.light;
       root.style.setProperty('--theme-accent', a[0]);
       root.style.setProperty('--theme-accent-2', a[1]);
       root.style.setProperty('--theme-accent-soft', a[2]);
-      root.style.setProperty('--theme-gradient-a', a[3]);
-      root.style.setProperty('--theme-gradient-b', a[4]);
-      root.style.setProperty('--theme-gradient-c', a[5]);
+      root.style.setProperty('--theme-bg', mode[0]);
+      root.style.setProperty('--theme-surface', mode[1]);
+      root.style.setProperty('--theme-soft', mode[2]);
+      root.style.setProperty('--theme-ink', mode[3]);
+      root.style.setProperty('--theme-muted', mode[4]);
+      root.style.setProperty('--theme-border', mode[5]);
+      root.style.setProperty('--theme-gradient-a', customizerState.backgroundStyle === 'solid' ? mode[0] : mode[6]);
+      root.style.setProperty('--theme-gradient-b', customizerState.backgroundStyle === 'solid' ? mode[0] : mode[7]);
+      root.style.setProperty('--theme-gradient-c', customizerState.backgroundStyle === 'solid' ? mode[0] : mode[8]);
 
-      const radius = customizerState.edgeStyle === 'rounded' 
-        ? ['34px', '999px', '22px'] 
-        : customizerState.edgeStyle === 'sharp' 
-          ? ['4px', '6px', '4px'] 
-          : ['22px', '16px', '14px'];
+      const radius = customizerRadii[customizerState.edgeStyle] || customizerRadii.smooth;
       root.style.setProperty('--theme-radius-card', radius[0]);
       root.style.setProperty('--theme-radius-button', radius[1]);
       root.style.setProperty('--theme-radius-field', radius[2]);
 
+      const glow = isCustomizerToggleOn(customizerState.themeGlow);
       const shadow = customizerState.shadowDepth === 'none' || customizerState.cardStyle === 'flat'
         ? 'none'
+        : glow
+          ? '0 30px 90px rgba(249, 115, 22, .22)'
         : customizerState.shadowDepth === 'deep'
-          ? '0 34px 90px rgba(31,25,61,.2)'
+          ? '0 34px 90px rgba(61,43,25,.18)'
           : customizerState.cardStyle === 'bordered'
             ? 'none'
-            : '0 22px 70px rgba(31,25,61,.12)';
+            : '0 24px 70px rgba(61,43,25,.12)';
       root.style.setProperty('--theme-shadow', shadow);
-      root.style.setProperty('--theme-section-pad', customizerState.sectionSpacing === 'generous' ? '92px' : customizerState.sectionSpacing === 'compact' ? '46px' : '70px');
-      root.style.setProperty('--theme-font-heading', customizerState.typography === 'editorialSerif' || customizerState.fontPairing === 'serifPlusSans' ? 'Georgia, serif' : 'Inter, ui-sans-serif, system-ui, sans-serif');
-      root.style.setProperty('--theme-font-body', 'Inter, ui-sans-serif, system-ui, sans-serif');
+      root.style.setProperty('--theme-section-pad', customizerState.sectionSpacing === 'generous' ? '128px' : customizerState.sectionSpacing === 'compact' ? '64px' : '104px');
+      const fontKey = customizerState.fontPairing && customizerState.fontPairing !== 'singleSans' ? customizerState.fontPairing : customizerState.typography;
+      const fonts = customizerFonts[fontKey] || customizerFonts[customizerState.typography] || customizerFonts.sans;
+      root.style.setProperty('--theme-font-heading', fonts[0]);
+      root.style.setProperty('--theme-font-body', fonts[1]);
 
       const churchSite = document.getElementById('churchSite');
       if (churchSite) {
-        churchSite.classList.toggle('dark', customizerState.colorMode === 'dark');
+        churchSite.classList.toggle('dark', customizerState.colorMode === 'dark' || customizerState.colorMode === 'slate');
         churchSite.dataset.buttonStyle = customizerState.buttonStyle;
         churchSite.dataset.headerStyle = customizerState.headerStyle;
         churchSite.dataset.footerStyle = customizerState.footerStyle;
         churchSite.dataset.logoDisplay = customizerState.logoDisplay;
+        churchSite.dataset.pageWidth = customizerState.pageBodyWidth || 'full';
         churchSite.dataset.motion = customizerState.animationPreference;
+        churchSite.dataset.glassHeader = String(isCustomizerToggleOn(customizerState.glassHeader));
+        churchSite.dataset.themeGlow = String(glow);
       }
 
       const fakeBrowser = document.getElementById('fakeBrowser');
       if (fakeBrowser) {
-        fakeBrowser.classList.toggle('dark', customizerState.colorMode === 'dark');
+        fakeBrowser.classList.toggle('dark', customizerState.colorMode === 'dark' || customizerState.colorMode === 'slate');
       }
     }
 
@@ -17093,7 +17642,7 @@ body.customizer-open { overflow: hidden; }
       document.querySelectorAll('[data-setting]').forEach(group => {
         const val = customizerState[group.dataset.setting];
         group.querySelectorAll('.option').forEach(btn => {
-          btn.classList.toggle('active', btn.dataset.value === val);
+          btn.classList.toggle('active', btn.dataset.value === String(val));
         });
       });
       // Select elements
@@ -17163,32 +17712,43 @@ body.customizer-open { overflow: hidden; }
         const badgeRow = document.getElementById('activeThemeBadges');
         if (badgeRow) {
           badgeRow.innerHTML = `
-            <div class="feature-item"><i data-lucide="sparkles"></i> <span>${settings.accentPreset || 'orange'} Accent</span></div>
-            <div class="feature-item"><i data-lucide="sun"></i> <span>${settings.colorMode || 'light'} Mode</span></div>
-            <div class="feature-item"><i data-lucide="corner-down-right"></i> <span>${settings.edgeStyle || 'soft'} edges</span></div>
-            <div class="feature-item"><i data-lucide="check"></i> <span>52/52 slots</span></div>
+            <div class="feature-item"><i data-lucide="sparkles"></i> <span>${settings.design?.accentPreset || settings.accentPreset || 'orange'} Accent</span></div>
+            <div class="feature-item"><i data-lucide="sun"></i> <span>${settings.design?.colorMode || settings.colorMode || 'light'} Mode</span></div>
+            <div class="feature-item"><i data-lucide="corner-down-right"></i> <span>${settings.components?.edgeStyle || settings.edgeStyle || 'smooth'} edges</span></div>
+            <div class="feature-item"><i data-lucide="layout-template"></i> <span>${settings.sourcePackage?.sourcePages?.length || 33} pages</span></div>
           `;
           if (window.lucide) window.lucide.createIcons({ node: badgeRow });
         }
 
         // Apply theme variables to browser preview
-        customizerState.colorMode = settings.colorMode || 'light';
-        customizerState.accentPreset = settings.accentPreset || 'orange';
-        customizerState.colorPalette = settings.colorPalette || 'warm';
-        customizerState.typography = settings.typography || 'modernSans';
-        customizerState.fontPairing = settings.fontPairing || 'interPlusSerif';
-        customizerState.edgeStyle = settings.edgeStyle || 'soft';
-        customizerState.cardStyle = settings.cardStyle || 'shadow';
-        customizerState.spacingScale = settings.spacingScale || 'comfortable';
-        customizerState.sectionSpacing = settings.sectionSpacing || 'balanced';
-        customizerState.backgroundStyle = settings.backgroundStyle || 'softGradient';
-        customizerState.iconStyle = settings.iconStyle || 'lucideLine';
-        customizerState.buttonStyle = settings.buttonStyle || 'solid';
-        customizerState.headerStyle = settings.headerStyle || 'sticky';
-        customizerState.footerStyle = settings.footerStyle || 'simple';
-        customizerState.animationPreference = settings.animationPreference || 'subtle';
-        customizerState.shadowDepth = settings.shadowDepth || 'soft';
-        customizerState.logoDisplay = settings.logoDisplay || 'markAndName';
+        const designSettings = settings.design || {};
+        const componentSettings = settings.components || {};
+        const layoutSettings = settings.layout || {};
+        const headerSettings = settings.header || {};
+        const footerSettings = settings.footer || {};
+        const customizerDefaults = settings.customizer?.defaults || {};
+        const typographyPreset = settings.typographyPreset || (typeof settings.typography === 'string' ? settings.typography : '');
+        customizerState.colorMode = designSettings.colorMode || customizerDefaults.mode || settings.colorMode || 'light';
+        customizerState.accentPreset = designSettings.accentPreset || customizerDefaults.accent || settings.accentPreset || 'orange';
+        customizerState.colorPalette = designSettings.colorPalette || settings.colorPalette || 'warm';
+        customizerState.typography = designSettings.typographyPreset || customizerDefaults.font || typographyPreset || 'sans';
+        customizerState.fontPairing = designSettings.fontPairing || settings.fontPairing || 'outfitInter';
+        customizerState.edgeStyle = componentSettings.edgeStyle || customizerDefaults.radius || settings.edgeStyle || 'smooth';
+        customizerState.cardStyle = componentSettings.cardStyle || settings.cardStyle || 'shadow';
+        customizerState.spacingScale = designSettings.spacingScale || settings.spacingScale || 'comfortable';
+        customizerState.sectionSpacing = designSettings.sectionSpacing || settings.sectionSpacing || 'balanced';
+        customizerState.backgroundStyle = designSettings.backgroundStyle || settings.backgroundStyle || 'softGradient';
+        customizerState.iconStyle = designSettings.iconStyle || settings.iconStyle || 'lucideLine';
+        customizerState.buttonStyle = componentSettings.buttonStyle || settings.buttonStyle || 'solid';
+        customizerState.headerStyle = headerSettings.style || layoutSettings.headerStyle || settings.headerStyle || 'sticky';
+        customizerState.footerStyle = footerSettings.style || layoutSettings.footerStyle || settings.footerStyle || 'expanded';
+        customizerState.pageBodyWidth = layoutSettings.pageBodyWidth || settings.pageBodyWidth || settings.bodyWidth || (customizerDefaults.layout ? 'wide' : 'full');
+        customizerState.animationPreference = designSettings.animationPreference || settings.animationPreference || 'subtle';
+        customizerState.shadowDepth = componentSettings.shadowDepth || settings.shadowDepth || 'soft';
+        customizerState.logoDisplay = headerSettings.logoDisplay || settings.logoDisplay || 'markAndName';
+        customizerState.glassHeader = String(headerSettings.glass ?? customizerDefaults.glass ?? settings.glassHeader ?? true);
+        customizerState.themeGlow = String(designSettings.glow ?? customizerDefaults.glow ?? settings.themeGlow ?? false);
+        customizerState.layoutStretch = String(customizerState.pageBodyWidth === 'wide' || Boolean(designSettings.layout ?? customizerDefaults.layout ?? settings.layoutStretch));
         applyCustomizerTheme();
       } else {
         const activeTitleEl = document.getElementById('activeThemeTitle');
@@ -17215,7 +17775,7 @@ body.customizer-open { overflow: hidden; }
               <article class="theme-card-redesigned">
                 <div class="theme-preview small">
                   <div class="fake-browser">
-                    <div class="fake-hero" style="grid-template-columns:1fr; padding:20px; --theme-accent: ${settings.colors?.accent || '#f97316'}; --theme-accent-2: ${settings.colors?.accent || '#fb923c'};">
+                    <div class="fake-hero" style="grid-template-columns:1fr; padding:20px; --theme-accent: ${settings.colors?.accent || '#f97316'}; --theme-accent-2: ${settings.colors?.accentSecondary || '#facc15'};">
                       <div class="fake-image" style="min-height: 100px; display:grid; place-items:center; color:#fff;">
                         <i data-lucide="palette"></i>
                       </div>
@@ -17306,6 +17866,8 @@ body.customizer-open { overflow: hidden; }
           btn.classList.add('active');
           customizerState[clone.dataset.setting] = btn.dataset.value;
           applyCustomizerTheme();
+          renderWebsiteBuilderPreview(getActiveBuilderPage());
+          if (websiteBuilderState.activeWorkspace === 'inspect') renderWebsiteBuilderInspectorWorkspace();
         });
       });
 
@@ -17316,6 +17878,8 @@ body.customizer-open { overflow: hidden; }
         clone.addEventListener('change', e => {
           customizerState[clone.dataset.select] = e.target.value;
           applyCustomizerTheme();
+          renderWebsiteBuilderPreview(getActiveBuilderPage());
+          if (websiteBuilderState.activeWorkspace === 'inspect') renderWebsiteBuilderInspectorWorkspace();
         });
       });
 
@@ -17344,10 +17908,13 @@ body.customizer-open { overflow: hidden; }
           if (!cmsState.pages.length) {
             await loadAllCmsData();
           }
-          try {
-            const storedGlobal = JSON.parse(localStorage.getItem('churchos.builder.globalContent') || 'null');
-            if (storedGlobal) websiteBuilderState.globalContent = { ...websiteBuilderState.globalContent, ...storedGlobal };
-          } catch (e) {}
+          if (!themeEngineState.pageTemplates.length && typeof bootstrapThemeEngine === 'function') {
+            await bootstrapThemeEngine();
+          }
+          const globalRes = await cmsApiRequest('GET', '/api/cms/global-content');
+          if (globalRes && globalRes.data) {
+            websiteBuilderState.globalContent = normalizeWebsiteBuilderGlobalContent(globalRes.data.content || globalRes.data);
+          }
           const activeTheme = themeEngineState.themes.find(t => t.id === themeEngineState.activeThemeId);
           if (activeTheme) {
             document.getElementById('customizerThemeName').textContent = activeTheme.name;
@@ -17355,23 +17922,34 @@ body.customizer-open { overflow: hidden; }
             try {
               settings = typeof activeTheme.settings === 'string' ? JSON.parse(activeTheme.settings) : (activeTheme.settings || {});
             } catch(e) {}
-            customizerState.colorMode = settings.colorMode || 'light';
-            customizerState.accentPreset = settings.accentPreset || 'orange';
-            customizerState.colorPalette = settings.colorPalette || 'warm';
-            customizerState.typography = settings.typography || 'modernSans';
-            customizerState.fontPairing = settings.fontPairing || 'interPlusSerif';
-            customizerState.edgeStyle = settings.edgeStyle || 'soft';
-            customizerState.cardStyle = settings.cardStyle || 'shadow';
-            customizerState.spacingScale = settings.spacingScale || 'comfortable';
-            customizerState.sectionSpacing = settings.sectionSpacing || 'balanced';
-            customizerState.backgroundStyle = settings.backgroundStyle || 'softGradient';
-            customizerState.iconStyle = settings.iconStyle || 'lucideLine';
-            customizerState.buttonStyle = settings.buttonStyle || 'solid';
-            customizerState.headerStyle = settings.headerStyle || 'sticky';
-            customizerState.footerStyle = settings.footerStyle || 'simple';
-            customizerState.animationPreference = settings.animationPreference || 'subtle';
-            customizerState.shadowDepth = settings.shadowDepth || 'soft';
-            customizerState.logoDisplay = settings.logoDisplay || 'markAndName';
+            const designSettings = settings.design || {};
+            const componentSettings = settings.components || {};
+            const layoutSettings = settings.layout || {};
+            const headerSettings = settings.header || {};
+            const footerSettings = settings.footer || {};
+            const customizerDefaults = settings.customizer?.defaults || {};
+            const typographyPreset = settings.typographyPreset || (typeof settings.typography === 'string' ? settings.typography : '');
+            customizerState.colorMode = designSettings.colorMode || customizerDefaults.mode || settings.colorMode || 'light';
+            customizerState.accentPreset = designSettings.accentPreset || customizerDefaults.accent || settings.accentPreset || 'orange';
+            customizerState.colorPalette = designSettings.colorPalette || settings.colorPalette || 'warm';
+            customizerState.typography = designSettings.typographyPreset || customizerDefaults.font || typographyPreset || 'sans';
+            customizerState.fontPairing = designSettings.fontPairing || settings.fontPairing || 'outfitInter';
+            customizerState.edgeStyle = componentSettings.edgeStyle || customizerDefaults.radius || settings.edgeStyle || 'smooth';
+            customizerState.cardStyle = componentSettings.cardStyle || settings.cardStyle || 'shadow';
+            customizerState.spacingScale = designSettings.spacingScale || settings.spacingScale || 'comfortable';
+            customizerState.sectionSpacing = designSettings.sectionSpacing || settings.sectionSpacing || 'balanced';
+            customizerState.backgroundStyle = designSettings.backgroundStyle || settings.backgroundStyle || 'softGradient';
+            customizerState.iconStyle = designSettings.iconStyle || settings.iconStyle || 'lucideLine';
+            customizerState.buttonStyle = componentSettings.buttonStyle || settings.buttonStyle || 'solid';
+            customizerState.headerStyle = headerSettings.style || layoutSettings.headerStyle || settings.headerStyle || 'sticky';
+            customizerState.footerStyle = footerSettings.style || layoutSettings.footerStyle || settings.footerStyle || 'expanded';
+            customizerState.pageBodyWidth = layoutSettings.pageBodyWidth || settings.pageBodyWidth || settings.bodyWidth || (customizerDefaults.layout ? 'wide' : 'full');
+            customizerState.animationPreference = designSettings.animationPreference || settings.animationPreference || 'subtle';
+            customizerState.shadowDepth = componentSettings.shadowDepth || settings.shadowDepth || 'soft';
+            customizerState.logoDisplay = headerSettings.logoDisplay || settings.logoDisplay || 'markAndName';
+            customizerState.glassHeader = String(headerSettings.glass ?? customizerDefaults.glass ?? settings.glassHeader ?? true);
+            customizerState.themeGlow = String(designSettings.glow ?? customizerDefaults.glow ?? settings.themeGlow ?? false);
+            customizerState.layoutStretch = String(customizerState.pageBodyWidth === 'wide' || Boolean(designSettings.layout ?? customizerDefaults.layout ?? settings.layoutStretch));
           }
           syncCustomizerUI();
           document.getElementById('customizer').classList.add('active');
@@ -17459,8 +18037,8 @@ body.customizer-open { overflow: hidden; }
       const previewBtn = document.getElementById('customizerPreviewBtn');
       if (previewBtn) {
         previewBtn.onclick = () => {
-          showToast('Generating public theme preview stylesheet...');
-          alert("Public rendering preview compiled successfully.\nOpen local-preview-site inside your browser to inspect layout spacing.");
+          showToast('Opening Ecclesia theme preview...');
+          window.open('/themes/ecclesia/index.html', '_blank', 'noopener');
         };
       }
 
@@ -17491,11 +18069,18 @@ body.customizer-open { overflow: hidden; }
       showToast(shouldPublish ? 'Publishing theme changes...' : 'Saving theme draft...');
       
       const accentColors = customizerAccents[customizerState.accentPreset] || customizerAccents.orange;
+      const modeColors = customizerModes[customizerState.colorMode] || customizerModes.light;
+      const fontKey = customizerState.fontPairing && customizerState.fontPairing !== 'singleSans' ? customizerState.fontPairing : customizerState.typography;
+      const fontPair = customizerFonts[fontKey] || customizerFonts[customizerState.typography] || customizerFonts.sans;
+      const radiusValues = customizerRadii[customizerState.edgeStyle] || customizerRadii.smooth;
+      const glowEnabled = isCustomizerToggleOn(customizerState.themeGlow);
+      const glassEnabled = isCustomizerToggleOn(customizerState.glassHeader);
+      const layoutEnabled = customizerState.pageBodyWidth === 'wide' || isCustomizerToggleOn(customizerState.layoutStretch);
       const payload = {
         colorMode: customizerState.colorMode,
         accentPreset: customizerState.accentPreset,
         colorPalette: customizerState.colorPalette,
-        typography: customizerState.typography,
+        typographyPreset: customizerState.typography,
         fontPairing: customizerState.fontPairing,
         edgeStyle: customizerState.edgeStyle,
         cardStyle: customizerState.cardStyle,
@@ -17506,13 +18091,93 @@ body.customizer-open { overflow: hidden; }
         buttonStyle: customizerState.buttonStyle,
         headerStyle: customizerState.headerStyle,
         footerStyle: customizerState.footerStyle,
+        pageBodyWidth: customizerState.pageBodyWidth,
         animationPreference: customizerState.animationPreference,
         shadowDepth: customizerState.shadowDepth,
         logoDisplay: customizerState.logoDisplay,
+        glassHeader: glassEnabled,
+        themeGlow: glowEnabled,
+        layoutStretch: layoutEnabled,
         colors: {
           primary: accentColors[0],
-          secondary: '#ffffff',
-          accent: accentColors[0]
+          secondary: modeColors[3],
+          accent: accentColors[0],
+          accentSecondary: accentColors[1],
+          accentSoft: accentColors[2],
+          background: modeColors[0],
+          surface: modeColors[1],
+          mutedSurface: modeColors[2],
+          textPrimary: modeColors[3],
+          textSecondary: modeColors[4],
+          border: modeColors[5],
+          gradientA: modeColors[6],
+          gradientB: modeColors[7],
+          gradientC: modeColors[8]
+        },
+        fonts: {
+          heading: fontPair[0].split(',')[0],
+          body: fontPair[1].split(',')[0]
+        },
+        typography: {
+          headingFont: fontPair[0],
+          bodyFont: fontPair[1],
+          fontScale: 'fluid',
+          lineHeight: '1.55',
+          letterSpacing: '0'
+        },
+        design: {
+          colorMode: customizerState.colorMode,
+          accentPreset: customizerState.accentPreset,
+          colorPalette: customizerState.colorPalette,
+          typographyPreset: customizerState.typography,
+          fontPairing: customizerState.fontPairing,
+          spacingScale: customizerState.spacingScale,
+          sectionSpacing: customizerState.sectionSpacing,
+          backgroundStyle: customizerState.backgroundStyle,
+          iconStyle: customizerState.iconStyle,
+          animationPreference: customizerState.animationPreference,
+          edgeStyle: customizerState.edgeStyle,
+          glow: glowEnabled,
+          glass: glassEnabled,
+          layout: layoutEnabled
+        },
+        components: {
+          buttonStyle: customizerState.buttonStyle,
+          cardStyle: customizerState.cardStyle,
+          edgeStyle: customizerState.edgeStyle,
+          radiusPreset: customizerState.edgeStyle,
+          borderRadius: radiusValues[0],
+          shadowDepth: customizerState.shadowDepth
+        },
+        layout: {
+          headerStyle: customizerState.headerStyle,
+          footerStyle: customizerState.footerStyle,
+          pageBodyWidth: customizerState.pageBodyWidth,
+          contentWidth: layoutEnabled ? '1440px' : '1180px',
+          sectionPadding: customizerState.sectionSpacing === 'generous' ? '128px' : customizerState.sectionSpacing === 'compact' ? '64px' : '104px',
+          mobileLayout: 'stacked'
+        },
+        header: {
+          style: customizerState.headerStyle,
+          logoDisplay: customizerState.logoDisplay,
+          glass: glassEnabled
+        },
+        footer: {
+          style: customizerState.footerStyle
+        },
+        customizer: {
+          defaults: {
+            mode: customizerState.colorMode,
+            accent: customizerState.accentPreset,
+            font: customizerState.typography,
+            radius: customizerState.edgeStyle,
+            glow: glowEnabled,
+            glass: glassEnabled,
+            layout: layoutEnabled
+          }
+        },
+        motion: {
+          animationLevel: customizerState.animationPreference
         }
       };
 
@@ -19021,15 +19686,19 @@ body.customizer-open { overflow: hidden; }
     }
 
     async function loadAllCmsData() {
-      const [pagesRes, blocksRes] = await Promise.all([
+      const [pagesRes, blocksRes, globalContentRes] = await Promise.all([
         cmsApiRequest('GET', '/api/cms/pages'),
-        cmsApiRequest('GET', '/api/cms/reusable-blocks')
+        cmsApiRequest('GET', '/api/cms/reusable-blocks'),
+        cmsApiRequest('GET', '/api/cms/global-content')
       ]);
       if (pagesRes && pagesRes.data) {
         cmsState.pages = pagesRes.data;
       }
       if (blocksRes && blocksRes.data) {
         cmsState.reusableBlocks = blocksRes.data;
+      }
+      if (globalContentRes && globalContentRes.data) {
+        websiteBuilderState.globalContent = normalizeWebsiteBuilderGlobalContent(globalContentRes.data.content || globalContentRes.data);
       }
 
       const websiteIds = Array.from(new Set(cmsState.pages.map(p => p.websiteId)));
@@ -19049,10 +19718,12 @@ body.customizer-open { overflow: hidden; }
 
     async function provisionDefaultWebsiteAndPages() {
       const themeRes = await cmsApiRequest('POST', '/api/cms/themes', {
-        name: 'Next Church Minimal Theme',
+        name: 'Ecclesia',
         settings: {
-          colors: { primary: '#111827', secondary: '#4b5563', bg: '#ffffff', text: '#111827' },
-          fonts: { header: 'Inter', body: 'Inter' }
+          metadata: { key: 'ecclesia', name: 'Ecclesia', systemTheme: true, builderFirst: true },
+          colors: { primary: '#f97316', secondary: '#0f172a', accent: '#f97316', background: '#fffaf4', textPrimary: '#201b18' },
+          fonts: { heading: 'Manrope', body: 'Inter' },
+          design: { colorMode: 'light', accentPreset: 'orange', colorPalette: 'warm' }
         }
       });
       if (!themeRes || !themeRes.data) return;
@@ -19588,7 +20259,7 @@ body.customizer-open { overflow: hidden; }
     function renderCmsTemplates() {
       const grid = document.getElementById('cmsTemplatesGrid');
       if (!grid) return;
-      grid.innerHTML = cmsTemplateCatalog.map(template => {
+      grid.innerHTML = getWebsiteBuilderTemplateCatalog().map(template => {
         const blockCount = template.blocks.length;
         const existing = cmsState.pages.some(page => String(page.slug || '') === String(template.slug || ''));
         return `
@@ -19615,7 +20286,7 @@ body.customizer-open { overflow: hidden; }
     }
 
     async function createCmsTemplatePage(templateKey) {
-      const template = cmsTemplateCatalog.find(item => item.key === templateKey);
+      const template = getWebsiteBuilderTemplateCatalog().find(item => item.key === templateKey);
       if (!template) return;
 
       const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;

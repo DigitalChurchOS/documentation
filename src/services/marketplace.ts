@@ -1,5 +1,6 @@
 import prisma from '../lib/prisma';
 import { randomUUID } from 'crypto';
+import { ThemeEngineService } from './themeEngine';
 
 /**
  * Register a new developer profile.
@@ -428,7 +429,7 @@ export async function createSandboxTenant(developerId: string): Promise<any> {
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + 30);
 
-  return await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     // 1. Create a brand new tenant
     const tenant = await tx.tenant.create({
       data: {
@@ -449,6 +450,12 @@ export async function createSandboxTenant(developerId: string): Promise<any> {
 
     return { tenant, sandbox };
   });
+
+  await ThemeEngineService.provisionEcclesiaForTenant(result.tenant.id, {
+    websiteTitle: `${result.tenant.name} Website`,
+  });
+
+  return result;
 }
 
 /**

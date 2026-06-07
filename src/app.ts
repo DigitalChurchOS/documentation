@@ -86,6 +86,7 @@ const apiLimiter = rateLimit({
 });
 
 // ── Serve static files ──────────────────────────────────────
+app.use('/themes/ecclesia', express.static(path.join(__dirname, '..', 'ecclesia-full-theme')));
 app.use(express.static(path.join(__dirname, '..')));
 
 app.get('/cms', (_req, res) => {

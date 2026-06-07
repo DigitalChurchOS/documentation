@@ -4,6 +4,7 @@ import { authMiddleware } from '../middleware/auth';
 import { requireAnyPermission } from '../middleware/rbac';
 import { requireModule } from '../middleware/entitlements';
 import { ThemeEngineService } from '../services/themeEngine';
+import { ECCLESIA_THEME_NAME, createEcclesiaThemeSettings } from '../themes/ecclesia';
 
 const router = Router();
 
@@ -13,6 +14,39 @@ router.use(requireModule('theme-engine'));
 
 const requireThemeEnginePermission = (...permissions: string[]) =>
   requireAnyPermission('tenant.settings', ...permissions);
+
+function mergeThemeSettings(baseSettings: Record<string, any>, customizations: Record<string, any>) {
+  const mergedSettings = {
+    ...baseSettings,
+    ...customizations,
+  };
+
+  [
+    'assets',
+    'colors',
+    'components',
+    'customizer',
+    'design',
+    'fonts',
+    'footer',
+    'header',
+    'layout',
+    'logo',
+    'logos',
+    'motion',
+    'seo',
+    'sourcePackage',
+    'typography',
+    'websiteSettings',
+  ].forEach((key) => {
+    mergedSettings[key] = {
+      ...(baseSettings[key] || {}),
+      ...(customizations[key] || {}),
+    };
+  });
+
+  return mergedSettings;
+}
 
 /**
  * GET /api/theme-engine
@@ -64,6 +98,23 @@ router.get('/overview', requireThemeEnginePermission('theme-engine.read'), async
     res.json({ data: overview });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/theme-engine/ecclesia/provision
+ * Idempotently installs and activates the Ecclesia reference theme for this tenant.
+ */
+router.post('/ecclesia/provision', requireThemeEnginePermission('theme-engine.update', 'theme-engine.create'), async (req: Request, res: Response) => {
+  try {
+    const result = await ThemeEngineService.provisionEcclesiaForTenant(req.tenantId!, {
+      websiteTitle: req.body?.websiteTitle,
+      domain: req.body?.domain,
+    });
+
+    res.json({ data: result });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
   }
 });
 
@@ -377,14 +428,7 @@ router.patch('/themes/:themeId/customization/draft', requireThemeEnginePermissio
       baseSettings = {};
     }
 
-    const mergedSettings = {
-      ...baseSettings,
-      ...customizations,
-      colors: { ...(baseSettings.colors || {}), ...(customizations.colors || {}) },
-      fonts: { ...(baseSettings.fonts || {}), ...(customizations.fonts || {}) },
-      logos: { ...(baseSettings.logos || {}), ...(customizations.logos || {}) },
-      layout: { ...(baseSettings.layout || {}), ...(customizations.layout || {}) },
-    };
+    const mergedSettings = mergeThemeSettings(baseSettings, customizations);
 
     const updated = await prisma.theme.update({
       where: { id: activeThemeId },
@@ -464,7 +508,10 @@ router.post('/themes/:themeId/customization/reset', requireThemeEnginePermission
 
     const updated = await prisma.theme.update({
       where: { id: theme.id },
-      data: { settings: '{}', draftSettings: null }
+      data: {
+        settings: theme.name === ECCLESIA_THEME_NAME ? JSON.stringify(createEcclesiaThemeSettings()) : '{}',
+        draftSettings: null
+      }
     });
     res.json({ data: updated });
   } catch (err: any) {
