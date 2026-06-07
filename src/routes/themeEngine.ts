@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import prisma from '../lib/prisma';
 import { authMiddleware } from '../middleware/auth';
 import { requireAnyPermission } from '../middleware/rbac';
 import { requireModule } from '../middleware/entitlements';
@@ -326,6 +327,146 @@ router.post('/themes/:themeId/preview/customize', requireThemeEnginePermission('
   try {
     const previewResult = await ThemeEngineService.customizePreview(req.tenantId!, req.params.themeId as string, req.body);
     res.json({ data: previewResult });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/theme-engine/themes/:themeId/customization/draft
+ * Save customization draft.
+ */
+router.patch('/themes/:themeId/customization/draft', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {
+  try {
+    const themeId = req.params.themeId as string;
+    const theme = await prisma.theme.findFirst({
+      where: {
+        id: themeId,
+        OR: [{ tenantId: req.tenantId! }, { tenantId: null }]
+      }
+    });
+    if (!theme) {
+      res.status(404).json({ error: 'Theme not found' });
+      return;
+    }
+
+    let activeThemeId = themeId;
+    let targetTheme = theme;
+    if (theme.tenantId === null) {
+      const newTheme = await prisma.theme.create({
+        data: {
+          tenantId: req.tenantId!,
+          name: `${theme.name} Custom`,
+          settings: theme.settings || '{}',
+          isCustom: true,
+        }
+      });
+      await prisma.website.updateMany({
+        where: { tenantId: req.tenantId!, themeId: theme.id },
+        data: { themeId: newTheme.id }
+      });
+      activeThemeId = newTheme.id;
+      targetTheme = newTheme;
+    }
+
+    const customizations = req.body;
+    let baseSettings: Record<string, any> = {};
+    try {
+      baseSettings = JSON.parse(targetTheme.settings || '{}');
+    } catch {
+      baseSettings = {};
+    }
+
+    const mergedSettings = {
+      ...baseSettings,
+      ...customizations,
+      colors: { ...(baseSettings.colors || {}), ...(customizations.colors || {}) },
+      fonts: { ...(baseSettings.fonts || {}), ...(customizations.fonts || {}) },
+      logos: { ...(baseSettings.logos || {}), ...(customizations.logos || {}) },
+      layout: { ...(baseSettings.layout || {}), ...(customizations.layout || {}) },
+    };
+
+    const updated = await prisma.theme.update({
+      where: { id: activeThemeId },
+      data: { draftSettings: JSON.stringify(mergedSettings) }
+    });
+    res.json({ data: updated });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/theme-engine/themes/:themeId/customization/publish
+ * Publish customizations.
+ */
+router.post('/themes/:themeId/customization/publish', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {
+  try {
+    const themeId = req.params.themeId as string;
+    const theme = await prisma.theme.findFirst({
+      where: { id: themeId, tenantId: req.tenantId! }
+    });
+    if (!theme) {
+      res.status(404).json({ error: 'Theme not found' });
+      return;
+    }
+
+    const nextSettings = theme.draftSettings || theme.settings;
+    const updated = await prisma.theme.update({
+      where: { id: theme.id },
+      data: { settings: nextSettings, draftSettings: null }
+    });
+    res.json({ data: updated });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/theme-engine/themes/:themeId/customization/discard
+ * Discard draft customization.
+ */
+router.post('/themes/:themeId/customization/discard', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {
+  try {
+    const themeId = req.params.themeId as string;
+    const theme = await prisma.theme.findFirst({
+      where: { id: themeId, tenantId: req.tenantId! }
+    });
+    if (!theme) {
+      res.status(404).json({ error: 'Theme not found' });
+      return;
+    }
+
+    const updated = await prisma.theme.update({
+      where: { id: theme.id },
+      data: { draftSettings: null }
+    });
+    res.json({ data: updated });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/theme-engine/themes/:themeId/customization/reset
+ * Reset theme to defaults.
+ */
+router.post('/themes/:themeId/customization/reset', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {
+  try {
+    const themeId = req.params.themeId as string;
+    const theme = await prisma.theme.findFirst({
+      where: { id: themeId, tenantId: req.tenantId! }
+    });
+    if (!theme) {
+      res.status(404).json({ error: 'Theme not found' });
+      return;
+    }
+
+    const updated = await prisma.theme.update({
+      where: { id: theme.id },
+      data: { settings: '{}', draftSettings: null }
+    });
+    res.json({ data: updated });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }

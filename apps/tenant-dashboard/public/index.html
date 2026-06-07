@@ -2385,7 +2385,7 @@
       gap: 16px;
     }
 
-    .page-builder-note {
+    .website-builder-note {
       display: flex;
       align-items: center;
       gap: 8px;
@@ -3927,6 +3927,322 @@ code,
 .market-view.active, .customizer.active, .themes-view.active { display:block; }
 .themes-view.hidden { display:none; }
 
+/* Website Builder workspace tabs and page items */
+.customizer-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  background: #fdfdfd;
+}
+.customizer-tab {
+  flex: 1;
+  padding: 12px 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--platform-muted);
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+.customizer-tab.active {
+  color: var(--platform-accent, #6366f1);
+  border-bottom-color: var(--platform-accent, #6366f1);
+  background: #f9f9fb;
+}
+.customizer-tab svg, .customizer-tab i {
+  width: 14px;
+  height: 14px;
+}
+.page-item-row:hover {
+  border-color: var(--platform-accent, #6366f1) !important;
+  background: #f9f9fb !important;
+}
+.page-item-row.active-page {
+  border-color: var(--platform-accent, #6366f1) !important;
+  background: #f5f3ff !important;
+  color: var(--platform-accent, #6366f1) !important;
+}
+
+.website-builder-sidebar {
+  padding: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: rgba(252, 251, 255, .94);
+}
+.website-builder-sidebar .builder-workspace-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 10px;
+  border-bottom: 1px solid var(--platform-border);
+  background: rgba(255, 255, 255, .9);
+}
+.website-builder-sidebar .customizer-tab {
+  flex: unset;
+  min-width: 0;
+  min-height: 42px;
+  padding: 7px 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  border-bottom: 1px solid transparent;
+  justify-content: flex-start;
+  font-size: 11px;
+  line-height: 1;
+}
+.website-builder-sidebar .customizer-tab.active {
+  border-color: rgba(124,58,237,.22);
+  background: #f5f3ff;
+  color: #6d28d9;
+  box-shadow: inset 0 0 0 1px rgba(124,58,237,.08);
+}
+.website-builder-sidebar .customizer-tab span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.builder-panel-scroll {
+  min-height: 0;
+  overflow: auto;
+}
+.builder-workspace {
+  display: none;
+  padding: 12px;
+}
+.builder-workspace.active {
+  display: block;
+}
+.builder-panel-card {
+  background: #fff;
+  border: 1px solid var(--platform-border);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 10px 28px rgba(31,25,61,.06);
+}
+.builder-panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #202033;
+  font-size: 12px;
+  font-weight: 900;
+}
+.builder-list {
+  display: grid;
+  gap: 8px;
+}
+.builder-list-row,
+.builder-block-row,
+.builder-widget-card,
+.builder-template-card {
+  border: 1px solid var(--platform-border);
+  border-radius: 10px;
+  background: #fbfaff;
+  padding: 10px;
+}
+.builder-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+}
+.builder-list-row.active {
+  border-color: rgba(124,58,237,.35);
+  background: #f5f3ff;
+  color: #6d28d9;
+}
+.builder-list-row strong,
+.builder-widget-card strong,
+.builder-template-card strong {
+  display: block;
+  font-size: 12px;
+  color: #202033;
+}
+.builder-list-row span,
+.builder-widget-card span,
+.builder-template-card span {
+  display: block;
+  margin-top: 3px;
+  color: var(--platform-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.builder-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(124,58,237,.18);
+  background: #f5f3ff;
+  color: #6d28d9;
+  padding: 4px 7px;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.mini-action {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--platform-border);
+  border-radius: 8px;
+  background: #fff;
+  color: #6d28d9;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+}
+.mini-action.danger {
+  color: #dc2626;
+}
+.mini-action i,
+.mini-action svg {
+  width: 14px;
+  height: 14px;
+}
+.builder-wide {
+  width: 100%;
+  justify-content: center;
+  margin-top: 10px;
+}
+.builder-form-row {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 9px;
+}
+.builder-form-row label {
+  color: #51485f;
+  font-size: 10.5px;
+  font-weight: 900;
+}
+.builder-form-row input,
+.builder-form-row textarea,
+.builder-form-row select {
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid var(--platform-border);
+  border-radius: 8px;
+  background: #fbfaff;
+  color: #202033;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 9px;
+  outline: none;
+  box-sizing: border-box;
+}
+.builder-form-row textarea {
+  min-height: 76px;
+  resize: vertical;
+  line-height: 1.4;
+}
+.builder-section-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+.builder-widget-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.builder-widget-filters button {
+  border: 1px solid var(--platform-border);
+  border-radius: 999px;
+  background: #fff;
+  color: #5f5870;
+  padding: 6px 9px;
+  font-size: 10.5px;
+  font-weight: 900;
+}
+.builder-widget-filters button.active {
+  color: #6d28d9;
+  border-color: rgba(124,58,237,.28);
+  background: #f5f3ff;
+}
+.builder-widget-registry,
+.builder-template-list {
+  display: grid;
+  gap: 8px;
+}
+.builder-widget-card {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  align-items: center;
+  gap: 9px;
+}
+.builder-widget-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #6d28d9;
+  background: #f5f3ff;
+}
+.builder-widget-icon i,
+.builder-widget-icon svg {
+  width: 15px;
+  height: 15px;
+}
+.builder-block-row {
+  cursor: grab;
+}
+.builder-block-row:active {
+  cursor: grabbing;
+}
+.builder-empty {
+  border: 1px dashed rgba(124,58,237,.28);
+  border-radius: 12px;
+  padding: 18px;
+  color: var(--platform-muted);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 750;
+}
+.website-builder .church-site [data-editable-block] {
+  position: relative;
+}
+.website-builder .church-site [data-editable-block]:hover {
+  outline: 2px solid color-mix(in srgb, var(--theme-accent) 40%, transparent);
+  outline-offset: -2px;
+}
+.website-builder .site-section-toolbar {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  z-index: 3;
+  display: flex;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: .18s ease;
+}
+.website-builder .church-site [data-editable-block]:hover .site-section-toolbar {
+  opacity: 1;
+  transform: translateY(0);
+}
+.site-section-toolbar button {
+  border: 0;
+  border-radius: 999px;
+  background: var(--theme-accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 7px 9px;
+  box-shadow: 0 12px 28px rgba(31,25,61,.16);
+}
+
 /* Theme customizer */
 body.customizer-open { overflow: hidden; }
 .customizer { position: fixed; inset: 0; z-index: 80; background: #f5f3fb; color: var(--platform-ink); }
@@ -3988,7 +4304,7 @@ body.customizer-open { overflow: hidden; }
   width: 15px;
   height: 15px;
 }
-.customizer-body { min-height: 0; display: grid; grid-template-columns: 340px 1fr; height: 100%; }
+.customizer-body { min-height: 0; display: grid; grid-template-columns: 380px 1fr; height: 100%; }
 .settings-panel { min-height:0; overflow:auto; background: rgba(255,255,255,.78); border-right:1px solid var(--platform-border); padding: 12px; scroll-behavior: smooth; }
 .panel-heading { margin: 0 0 10px; }
 .panel-heading h3 { margin:0; font-size: 15px; letter-spacing:-.03em; color: #202033; }
@@ -4241,32 +4557,40 @@ body.customizer-open { overflow: hidden; }
 
 
 /* Public preview theme */
-.church-site { background: var(--theme-bg); color: var(--theme-ink); min-height: 100%; text-align: left; }
+.church-site { background: var(--theme-bg); color: var(--theme-ink); min-height: 100%; text-align: left; font-family: var(--theme-font-body); }
 .church-site.dark { --theme-bg:#141824; --theme-surface:#1f2433; --theme-soft:#242b3b; --theme-ink:#f8fafc; --theme-muted:#a6adbb; --theme-border:rgba(255,255,255,.10); --theme-gradient-a:#171b28; --theme-gradient-b:#1f2636; --theme-gradient-c:#172033; }
 .site-header { position:sticky; top:0; z-index:2; background: color-mix(in srgb, var(--theme-bg) 82%, transparent); backdrop-filter: blur(18px); border-bottom:1px solid var(--theme-border); display:flex; align-items:center; justify-content:space-between; padding: 20px clamp(20px, 5vw, 70px); }
+.church-site[data-header-style="minimal"] .site-header { position: relative; background: var(--theme-bg); backdrop-filter: none; }
+.church-site[data-header-style="centered"] .site-header { justify-content: center; gap: 34px; flex-wrap: wrap; }
+.church-site[data-header-style="transparent"] .site-header { background: transparent; border-bottom-color: transparent; position: absolute; left: 0; right: 0; }
 .site-brand { display:flex; align-items:center; gap:12px; font-weight:950; }
+.church-site[data-logo-display="markOnly"] .site-brand span { display:none; }
+.church-site[data-logo-display="nameOnly"] .site-mark { display:none; }
 .site-mark { width:42px; height:42px; border-radius: calc(var(--theme-radius-card) * .55); background: linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2)); display:grid; place-items:center; color:#fff; box-shadow: var(--theme-shadow); }
 .site-nav { display:flex; align-items:center; gap:24px; color:var(--theme-muted); font-weight:800; }
 .site-nav a { color:inherit; text-decoration:none; }
 .site-nav a.active { color: var(--theme-accent); }
 .theme-btn { border:0; border-radius: var(--theme-radius-button); padding: 13px 18px; background: var(--theme-accent); color:#fff; font-weight:950; display:inline-flex; align-items:center; gap:9px; box-shadow: var(--theme-shadow); }
 .theme-btn.secondary { background: var(--theme-surface); color:var(--theme-ink); border:1px solid var(--theme-border); box-shadow:none; }
+.church-site[data-button-style="outline"] .theme-btn { background: transparent; color: var(--theme-accent); border: 1px solid var(--theme-accent); box-shadow: none; }
+.church-site[data-button-style="soft"] .theme-btn { background: var(--theme-accent-soft); color: var(--theme-accent); box-shadow: none; }
+.church-site[data-button-style="glass"] .theme-btn { background: color-mix(in srgb, var(--theme-accent) 22%, transparent); color: var(--theme-ink); border: 1px solid var(--theme-border); backdrop-filter: blur(14px); }
 .hero { position:relative; overflow:hidden; padding: clamp(44px, 8vw, 96px) clamp(22px, 6vw, 88px); background: radial-gradient(circle at 82% 18%, var(--theme-accent-soft), transparent 27%), linear-gradient(135deg,var(--theme-gradient-a),var(--theme-bg) 48%, var(--theme-gradient-b)); }
 .hero::before, .hero::after { content:""; position:absolute; border-radius:999px; filter: blur(2px); opacity:.55; pointer-events:none; }
 .hero::before { width:260px; height:260px; right:8%; top:10%; background: var(--theme-accent-soft); }
 .hero::after { width:150px; height:150px; left:10%; bottom:5%; background: color-mix(in srgb, var(--theme-accent) 18%, transparent); }
 .hero-grid { position:relative; display:grid; grid-template-columns: 1.05fr .95fr; gap:48px; align-items:center; max-width:1220px; margin:auto; }
 .kicker { display:inline-flex; align-items:center; gap:8px; color:var(--theme-accent); background:var(--theme-accent-soft); padding: 8px 12px; border-radius:999px; font-weight:950; font-size:13px; }
-.hero h1 { font-size: clamp(42px, 6vw, 78px); line-height:.96; letter-spacing:-.075em; margin:18px 0; max-width:760px; }
+.hero h1 { font-family: var(--theme-font-heading); font-size: clamp(42px, 6vw, 78px); line-height:.96; letter-spacing:-.075em; margin:18px 0; max-width:760px; }
 .hero p { color:var(--theme-muted); font-size: clamp(17px, 2vw, 21px); line-height:1.55; max-width:620px; margin:0 0 28px; font-weight:620; }
 .hero-actions { display:flex; flex-wrap:wrap; gap:12px; }
 .hero-media { min-height:420px; border-radius: var(--theme-radius-card); background: linear-gradient(135deg,var(--theme-accent),var(--theme-accent-2)); position:relative; box-shadow: var(--theme-shadow); overflow:hidden; }
 .hero-media::before { content:""; position:absolute; inset:0; background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.28), transparent 22%), linear-gradient(135deg, rgba(255,255,255,.22), transparent); }
 .floating-card { position:absolute; left:26px; bottom:26px; right:26px; background: rgba(255,255,255,.86); color:#201b18; border-radius: calc(var(--theme-radius-card) * .7); padding:18px; backdrop-filter:blur(14px); display:flex; align-items:center; justify-content:space-between; gap:18px; }
 .church-site.dark .floating-card { background:rgba(31,36,51,.86); color:#fff; }
-.section { padding: 70px clamp(22px, 6vw, 88px); max-width: 1320px; margin:auto; }
+.section { padding: var(--theme-section-pad) clamp(22px, 6vw, 88px); max-width: 1320px; margin:auto; }
 .section-title { display:flex; align-items:end; justify-content:space-between; gap:20px; margin-bottom:26px; }
-.section-title h2 { margin:0; font-size: clamp(30px,4vw,44px); letter-spacing:-.055em; }
+.section-title h2 { margin:0; font-family: var(--theme-font-heading); font-size: clamp(30px,4vw,44px); letter-spacing:-.055em; }
 .section-title p { margin:7px 0 0; color:var(--theme-muted); font-weight:650; }
 .module-grid { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:20px; }
 .module-card { background: var(--theme-surface); border:1px solid var(--theme-border); border-radius: var(--theme-radius-card); padding: 22px; box-shadow: var(--theme-shadow); transition:.25s ease; }
@@ -4281,6 +4605,9 @@ body.customizer-open { overflow: hidden; }
 .field:focus { border-color:var(--theme-accent); box-shadow:0 0 0 4px var(--theme-accent-soft); }
 .site-footer { padding: 50px clamp(22px,6vw,88px); border-top:1px solid var(--theme-border); background: var(--theme-surface); display:grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap:24px; color:var(--theme-muted); }
 .site-footer strong { color: var(--theme-ink); display:block; margin-bottom:8px; }
+.church-site[data-footer-style="minimal"] .site-footer { grid-template-columns: 1fr; padding-block: 28px; }
+.church-site[data-footer-style="expanded"] .site-footer { grid-template-columns: 1.5fr repeat(4, 1fr); }
+.church-site[data-motion="expressive"] .module-card:hover { transform: translateY(-4px); }
 
 @media (max-width: 1200px) {
   #tenantThemesConsoleContainer .grid { grid-template-columns: repeat(2, minmax(260px, 1fr)); }
@@ -5970,7 +6297,7 @@ body.customizer-open { overflow: hidden; }
               <div class="themes-view active" id="themesView">
                 <div class="section-head">
                   <h2>Theme Management</h2>
-                  <p>Preview the active theme, open the full customizer, or install new themes from the marketplace.</p>
+                  <p>Preview the active theme, open Website Builder, or install new themes from the marketplace.</p>
                 </div>
 
                 <div class="grid">
@@ -12767,21 +13094,21 @@ body.customizer-open { overflow: hidden; }
     </div>
   </div>
 
-  <!-- THEME CUSTOMIZER STANDALONE EXPERIENCE -->
-  <section class="customizer" id="customizer">
+  <!-- WEBSITE BUILDER STANDALONE EXPERIENCE -->
+  <section class="customizer website-builder" id="customizer" data-active-workspace="design">
     <button class="reveal-toolbar" id="revealTopbar" title="Show toolbar" type="button"><i data-lucide="sliders-horizontal"></i></button>
     <div class="customizer-shell">
       <header class="customizer-topbar">
         <div class="customizer-left-title">
-          <button class="back-btn" id="closeCustomizer" type="button"><i data-lucide="arrow-left"></i></button>
+          <button class="back-btn" id="closeCustomizer" type="button" title="Back to Themes"><i data-lucide="arrow-left"></i></button>
           <div class="draft-dot"></div>
           <div class="customizer-title">
-            <h2>Theme Customizer<span id="customizerThemeName" style="display:none;">Christo Theme</span></h2>
-            <p>Draft settings are preview-only until published</p>
+            <h2>Website Builder<span id="customizerThemeName" style="display:none;">Christo Theme</span></h2>
+            <p>Design, pages, widgets, navigation, SEO, and publishing in one visual workspace.</p>
           </div>
         </div>
         <div class="toolbar-right">
-          <div class="segmented" data-preview-toggle="stage">
+          <div class="segmented" data-preview-toggle="stage" aria-label="Preview device">
             <button class="segment active" data-device="desktop" title="Desktop" type="button"><i data-lucide="monitor"></i></button>
             <button class="segment" data-device="tablet" title="Tablet" type="button"><i data-lucide="tablet"></i></button>
             <button class="segment" data-device="mobile" title="Mobile" type="button"><i data-lucide="smartphone"></i></button>
@@ -12795,124 +13122,277 @@ body.customizer-open { overflow: hidden; }
         </div>
       </header>
       <div class="customizer-body">
-        <aside class="settings-panel">
-          <div class="panel-heading">
-            <h3>Universal Appearance</h3>
-            <p>These controls come from the platform theme settings contract and active theme capabilities.</p>
-          </div>
+        <aside class="settings-panel website-builder-sidebar">
+          <nav class="customizer-tabs builder-workspace-nav" aria-label="Website Builder workspaces">
+            <button class="customizer-tab active" id="tabThemeDesign" data-builder-workspace="design" type="button"><i data-lucide="palette"></i><span>Design</span></button>
+            <button class="customizer-tab" id="tabPages" data-builder-workspace="pages" type="button"><i data-lucide="file-text"></i><span>Pages</span></button>
+            <button class="customizer-tab" data-builder-workspace="widgets" type="button"><i data-lucide="blocks"></i><span>Widgets</span></button>
+            <button class="customizer-tab" data-builder-workspace="templates" type="button"><i data-lucide="layout-template"></i><span>Templates</span></button>
+            <button class="customizer-tab" data-builder-workspace="navigation" type="button"><i data-lucide="menu"></i><span>Navigation</span></button>
+            <button class="customizer-tab" data-builder-workspace="global" type="button"><i data-lucide="globe-2"></i><span>Global</span></button>
+            <button class="customizer-tab" data-builder-workspace="seo" type="button"><i data-lucide="search-check"></i><span>SEO</span></button>
+            <button class="customizer-tab" data-builder-workspace="settings" type="button"><i data-lucide="settings"></i><span>Settings</span></button>
+            <button class="customizer-tab" data-builder-workspace="publish" type="button"><i data-lucide="send"></i><span>Publish</span></button>
+          </nav>
 
-          <div class="setting-group">
-            <button class="group-toggle" type="button">Mode <i data-lucide="chevron-down"></i></button>
-            <div class="group-content">
-              <div class="control">
-                <label>Color mode</label>
-                <div class="option-grid three" data-setting="colorMode">
-                  <button class="option active" data-value="light" type="button"><i data-lucide="sun"></i>Light</button>
-                  <button class="option" data-value="dark" type="button"><i data-lucide="moon"></i>Dark</button>
-                  <button class="option" data-value="system" type="button"><i data-lucide="monitor"></i>System</button>
+          <div class="builder-panel-scroll thin-scroll">
+            <div class="settings-tab-content builder-workspace active" id="customizerThemeDesignTab" data-builder-panel="design">
+              <div class="panel-heading">
+                <h3>Design Workspace</h3>
+                <p>Global theme tokens update the live preview immediately and stay separate from page content.</p>
+              </div>
+
+              <div class="setting-group">
+                <button class="group-toggle" type="button">Mode & Accent <i data-lucide="chevron-down"></i></button>
+                <div class="group-content">
+                  <div class="control">
+                    <label>Color mode</label>
+                    <div class="option-grid three" data-setting="colorMode">
+                      <button class="option active" data-value="light" type="button"><i data-lucide="sun"></i>Light</button>
+                      <button class="option" data-value="dark" type="button"><i data-lucide="moon"></i>Dark</button>
+                      <button class="option" data-value="system" type="button"><i data-lucide="monitor"></i>System</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Accent preset</label>
+                    <div class="option-grid" data-setting="accentPreset">
+                      <button class="option active" data-value="orange" style="--swatch:#f97316" type="button"><span class="swatch"></span>Orange</button>
+                      <button class="option" data-value="blue" style="--swatch:#2563eb" type="button"><span class="swatch"></span>Blue</button>
+                      <button class="option" data-value="purple" style="--swatch:#7c3aed" type="button"><span class="swatch"></span>Purple</button>
+                      <button class="option" data-value="green" style="--swatch:#059669" type="button"><span class="swatch"></span>Green</button>
+                      <button class="option" data-value="rose" style="--swatch:#e11d48" type="button"><span class="swatch"></span>Rose</button>
+                      <button class="option" data-value="gold" style="--swatch:#d97706" type="button"><span class="swatch"></span>Gold</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Color palette</label>
+                    <select class="select-like" data-select="colorPalette">
+                      <option value="warm">Warm</option>
+                      <option value="cool">Cool</option>
+                      <option value="neutral">Neutral</option>
+                      <option value="charcoal">Charcoal</option>
+                      <option value="ivory">Ivory</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <button class="group-toggle" type="button">Typography <i data-lucide="chevron-down"></i></button>
+                <div class="group-content">
+                  <div class="control">
+                    <label>Typography</label>
+                    <select class="select-like" data-select="typography">
+                      <option value="modernSans">Modern Sans</option>
+                      <option value="editorialSerif">Editorial Serif</option>
+                      <option value="friendlyRounded">Friendly Rounded</option>
+                      <option value="classicChurch">Classic Church</option>
+                    </select>
+                  </div>
+                  <div class="control">
+                    <label>Font pairing</label>
+                    <select class="select-like" data-select="fontPairing">
+                      <option value="interPlusSerif">Inter + Serif</option>
+                      <option value="serifPlusSans">Serif + Sans</option>
+                      <option value="singleSans">Single Sans</option>
+                      <option value="humanist">Humanist</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <button class="group-toggle" type="button">Shape & Components <i data-lucide="chevron-down"></i></button>
+                <div class="group-content">
+                  <div class="control">
+                    <label>Button style</label>
+                    <div class="option-grid" data-setting="buttonStyle">
+                      <button class="option active" data-value="solid" type="button">Solid</button>
+                      <button class="option" data-value="outline" type="button">Outline</button>
+                      <button class="option" data-value="soft" type="button">Soft</button>
+                      <button class="option" data-value="glass" type="button">Glass</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Card style</label>
+                    <div class="option-grid" data-setting="cardStyle">
+                      <button class="option active" data-value="shadow" type="button">Shadow</button>
+                      <button class="option" data-value="bordered" type="button">Bordered</button>
+                      <button class="option" data-value="glass" type="button">Glass</button>
+                      <button class="option" data-value="flat" type="button">Flat</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Edge style / radius</label>
+                    <div class="option-grid three" data-setting="edgeStyle">
+                      <button class="option" data-value="rounded" type="button">Round</button>
+                      <button class="option active" data-value="soft" type="button">Soft</button>
+                      <button class="option" data-value="sharp" type="button">Sharp</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Shadow depth</label>
+                    <div class="option-grid three" data-setting="shadowDepth">
+                      <button class="option" data-value="none" type="button">None</button>
+                      <button class="option active" data-value="soft" type="button">Soft</button>
+                      <button class="option" data-value="deep" type="button">Deep</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <button class="group-toggle" type="button">Layout & Motion <i data-lucide="chevron-down"></i></button>
+                <div class="group-content">
+                  <div class="control">
+                    <label>Spacing scale</label>
+                    <div class="option-grid three" data-setting="spacingScale">
+                      <button class="option" data-value="compact" type="button">Compact</button>
+                      <button class="option active" data-value="comfortable" type="button">Comfort</button>
+                      <button class="option" data-value="spacious" type="button">Spacious</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Section spacing</label>
+                    <select class="select-like" data-select="sectionSpacing">
+                      <option value="balanced">Balanced</option>
+                      <option value="compact">Compact</option>
+                      <option value="generous">Generous</option>
+                    </select>
+                  </div>
+                  <div class="control">
+                    <label>Background style</label>
+                    <select class="select-like" data-select="backgroundStyle">
+                      <option value="softGradient">Soft gradient</option>
+                      <option value="solid">Solid</option>
+                      <option value="textured">Textured</option>
+                      <option value="parallax">Parallax-ready</option>
+                    </select>
+                  </div>
+                  <div class="control">
+                    <label>Animation preference</label>
+                    <div class="option-grid three" data-setting="animationPreference">
+                      <button class="option active" data-value="subtle" type="button">Subtle</button>
+                      <button class="option" data-value="none" type="button">None</button>
+                      <button class="option" data-value="expressive" type="button">Expressive</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="setting-group">
+                <button class="group-toggle" type="button">Header, Footer & Logo <i data-lucide="chevron-down"></i></button>
+                <div class="group-content">
+                  <div class="control">
+                    <label>Header style</label>
+                    <div class="option-grid" data-setting="headerStyle">
+                      <button class="option active" data-value="sticky" type="button">Sticky</button>
+                      <button class="option" data-value="centered" type="button">Centered</button>
+                      <button class="option" data-value="minimal" type="button">Minimal</button>
+                      <button class="option" data-value="transparent" type="button">Transparent</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Footer style</label>
+                    <div class="option-grid" data-setting="footerStyle">
+                      <button class="option active" data-value="simple" type="button">Simple</button>
+                      <button class="option" data-value="expanded" type="button">Expanded</button>
+                      <button class="option" data-value="newsletter" type="button">Newsletter</button>
+                      <button class="option" data-value="minimal" type="button">Minimal</button>
+                    </div>
+                  </div>
+                  <div class="control">
+                    <label>Icon style</label>
+                    <select class="select-like" data-select="iconStyle">
+                      <option value="lucideLine">Lucide line</option>
+                      <option value="minimal">Minimal</option>
+                      <option value="filled">Filled</option>
+                      <option value="duotone">Duotone</option>
+                    </select>
+                  </div>
+                  <div class="control">
+                    <label>Logo display</label>
+                    <div class="option-grid three" data-setting="logoDisplay">
+                      <button class="option active" data-value="markAndName" type="button">Mark + Name</button>
+                      <button class="option" data-value="markOnly" type="button">Mark</button>
+                      <button class="option" data-value="nameOnly" type="button">Name</button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="setting-group">
-            <button class="group-toggle" type="button">Accents & Palette <i data-lucide="chevron-down"></i></button>
-            <div class="group-content">
-              <div class="control">
-                <label>Accent preset</label>
-                <div class="option-grid" data-setting="accentPreset">
-                  <button class="option active" data-value="orange" style="--swatch:#f97316" type="button"><span class="swatch"></span>Orange</button>
-                  <button class="option" data-value="blue" style="--swatch:#2563eb" type="button"><span class="swatch"></span>Blue</button>
-                  <button class="option" data-value="purple" style="--swatch:#7c3aed" type="button"><span class="swatch"></span>Purple</button>
-                  <button class="option" data-value="green" style="--swatch:#059669" type="button"><span class="swatch"></span>Green</button>
-                  <button class="option" data-value="rose" style="--swatch:#e11d48" type="button"><span class="swatch"></span>Rose</button>
-                  <button class="option" data-value="gold" style="--swatch:#d97706" type="button"><span class="swatch"></span>Gold</button>
-                </div>
+            <div class="settings-tab-content builder-workspace" id="customizerPagesTab" data-builder-panel="pages">
+              <div class="panel-heading">
+                <h3>Pages Workspace</h3>
+                <p>Edit default theme pages, create new pages, reorder sections, and save page content as drafts.</p>
               </div>
-              <div class="control">
-                <label>Color palette</label>
-                <select class="select-like" data-select="colorPalette">
-                  <option value="warm">warm</option>
-                  <option value="cool">cool</option>
-                  <option value="neutral">neutral</option>
-                  <option value="charcoal">charcoal</option>
-                  <option value="ivory">ivory</option>
-                </select>
+              <div class="builder-panel-card">
+                <div class="builder-panel-title"><span>Pages</span><button class="mini-action" id="customizerAddPageBtn" type="button" onclick="createWebsiteBuilderPage()"><i data-lucide="plus"></i></button></div>
+                <div class="pages-list builder-list" id="customizerPagesList"></div>
+              </div>
+              <div class="builder-panel-card" id="customizerPageInspector"></div>
+            </div>
+
+            <div class="settings-tab-content builder-workspace" data-builder-panel="widgets">
+              <div class="panel-heading">
+                <h3>Widgets Workspace</h3>
+                <p>Approved public-site widgets only. Admin, billing, analytics, and developer tools stay out of page content.</p>
+              </div>
+              <div class="builder-widget-filters" id="websiteBuilderWidgetFilters"></div>
+              <div class="builder-widget-registry" id="websiteBuilderWidgetRegistry"></div>
+            </div>
+
+            <div class="settings-tab-content builder-workspace" data-builder-panel="templates">
+              <div class="panel-heading">
+                <h3>Templates Workspace</h3>
+                <p>Theme-supplied page templates inherit the active design system automatically.</p>
+              </div>
+              <div class="builder-template-list" id="websiteBuilderTemplatesList"></div>
+            </div>
+
+            <div class="settings-tab-content builder-workspace" data-builder-panel="navigation">
+              <div class="panel-heading">
+                <h3>Navigation Workspace</h3>
+                <p>Manage header links from the same builder surface.</p>
+              </div>
+              <div class="builder-panel-card">
+                <div class="builder-panel-title"><span>Header Menu</span><button class="mini-action" type="button" onclick="addWebsiteBuilderNavItem()"><i data-lucide="plus"></i></button></div>
+                <div class="builder-list" id="websiteBuilderNavigationList"></div>
+                <button class="primary-btn builder-wide" type="button" onclick="saveWebsiteBuilderNavigation()"><i data-lucide="save"></i> Save Navigation</button>
               </div>
             </div>
-          </div>
 
-          <div class="setting-group">
-            <button class="group-toggle" type="button">Edges & Shape <i data-lucide="chevron-down"></i></button>
-            <div class="group-content">
-              <div class="control">
-                <label>Edge style</label>
-                <div class="option-grid three" data-setting="edgeStyle">
-                  <button class="option" data-value="rounded" type="button">Rounded</button>
-                  <button class="option active" data-value="soft" type="button">Soft</button>
-                  <button class="option" data-value="sharp" type="button">Sharp</button>
-                </div>
-                <small>Affects cards, buttons, forms, images, modals, and plugin panels.</small>
+            <div class="settings-tab-content builder-workspace" data-builder-panel="global">
+              <div class="panel-heading">
+                <h3>Global Content</h3>
+                <p>Reusable identity content for headers, footers, service CTAs, and visitor moments.</p>
               </div>
+              <div class="builder-panel-card" id="websiteBuilderGlobalContent"></div>
             </div>
-          </div>
 
-          <div class="setting-group">
-            <button class="group-toggle" type="button">Surfaces & Layout <i data-lucide="chevron-down"></i></button>
-            <div class="group-content">
-              <div class="control">
-                <label>Card style</label>
-                <div class="option-grid" data-setting="cardStyle">
-                  <button class="option active" data-value="shadow" type="button">Shadow</button>
-                  <button class="option" data-value="bordered" type="button">Bordered</button>
-                  <button class="option" data-value="glass" type="button">Glass</button>
-                  <button class="option" data-value="flat" type="button">Flat</button>
-                </div>
+            <div class="settings-tab-content builder-workspace" data-builder-panel="seo">
+              <div class="panel-heading">
+                <h3>SEO Workspace</h3>
+                <p>Edit the selected page metadata without leaving the visual builder.</p>
               </div>
-              <div class="control">
-                <label>Spacing scale</label>
-                <div class="option-grid three" data-setting="spacingScale">
-                  <button class="option" data-value="compact" type="button">Compact</button>
-                  <button class="option active" data-value="comfortable" type="button">Comfort</button>
-                  <button class="option" data-value="spacious" type="button">Spacious</button>
-                </div>
-              </div>
+              <div class="builder-panel-card" id="websiteBuilderSeoPanel"></div>
             </div>
-          </div>
 
-          <div class="setting-group">
-            <button class="group-toggle" type="button">Backgrounds, Icons & Motion <i data-lucide="chevron-down"></i></button>
-            <div class="group-content">
-              <div class="control">
-                <label>Background style</label>
-                <select class="select-like" data-select="backgroundStyle">
-                  <option value="softGradient">softGradient</option>
-                  <option value="solid">solid</option>
-                  <option value="animatedGradient">animatedGradient</option>
-                  <option value="blobs">blobs</option>
-                  <option value="textured">textured</option>
-                  <option value="parallax">parallax</option>
-                </select>
+            <div class="settings-tab-content builder-workspace" data-builder-panel="settings">
+              <div class="panel-heading">
+                <h3>Builder Settings</h3>
+                <p>Publishing safeguards, template inheritance, responsive defaults, and tenant visibility.</p>
               </div>
-              <div class="control">
-                <label>Icon style</label>
-                <select class="select-like" data-select="iconStyle">
-                  <option value="lucideLine">lucideLine</option>
-                  <option value="filled">filled</option>
-                  <option value="outline">outline</option>
-                  <option value="duotone">duotone</option>
-                  <option value="minimal">minimal</option>
-                </select>
+              <div class="builder-panel-card" id="websiteBuilderSettingsPanel"></div>
+            </div>
+
+            <div class="settings-tab-content builder-workspace" data-builder-panel="publish">
+              <div class="panel-heading">
+                <h3>Publish Workspace</h3>
+                <p>Review drafts and publish design or page changes to the church frontend.</p>
               </div>
-              <div class="control">
-                <label>Button style</label>
-                <div class="option-grid" data-setting="buttonStyle">
-                  <button class="option active" data-value="solid" type="button">Solid</button>
-                  <button class="option" data-value="outline" type="button">Outline</button>
-                  <button class="option" data-value="soft" type="button">Soft</button>
-                  <button class="option" data-value="glass" type="button">Glass</button>
-                </div>
-              </div>
+              <div class="builder-panel-card" id="websiteBuilderPublishPanel"></div>
             </div>
           </div>
         </aside>
@@ -12923,97 +13403,24 @@ body.customizer-open { overflow: hidden; }
               <div class="device-status-bar">
                 <span class="status-time">9:41</span>
                 <div class="status-icons">
-                  <span class="status-icon signal">
-                    <span></span><span></span><span></span><span></span>
-                  </span>
-                  <span class="status-icon wifi">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20" stroke-width="3"></line></svg>
-                  </span>
-                  <span class="status-icon battery">
-                    <span class="battery-body"><span class="battery-level"></span></span>
-                    <span class="battery-cap"></span>
-                  </span>
+                  <span class="status-icon signal"><span></span><span></span><span></span><span></span></span>
+                  <span class="status-icon wifi"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20" stroke-width="3"></line></svg></span>
+                  <span class="status-icon battery"><span class="battery-body"><span class="battery-level"></span></span><span class="battery-cap"></span></span>
                 </div>
               </div>
-              <div class="church-site" id="churchSite">
-                <header class="site-header">
-                  <div class="site-brand"><div class="site-mark"><i data-lucide="church"></i></div><span>Christ Embassy Bunga</span></div>
-                  <nav class="site-nav"><a class="active">Home</a><a>About</a><a>Events</a><a>Sermons</a><a>Prayer</a><a>Giving</a></nav>
-                  <button class="theme-btn" type="button">Watch Live</button>
-                </header>
-                <section class="hero">
-                  <div class="hero-grid">
-                    <div>
-                      <span class="kicker"><i data-lucide="sparkles"></i> Welcome home</span>
-                      <h1>Experience worship, word, prayer and community.</h1>
-                      <p>A warm digital church experience built from platform contracts, theme slots, universal settings, and secure plugin injection.</p>
-                      <div class="hero-actions">
-                        <button class="theme-btn" type="button">Plan a Visit</button>
-                        <button class="theme-btn secondary" type="button">Give Now</button>
-                      </div>
-                    </div>
-                    <div class="hero-media"><div class="floating-card"><strong>Next service</strong><span>Sunday 9:30 AM</span></div></div>
-                  </div>
-                </section>
-                <section class="section">
-                  <div class="section-title">
-                    <div>
-                      <h2>Upcoming this week</h2>
-                      <p>Theme settings apply across modules without changing content.</p>
-                    </div>
-                    <button class="theme-btn secondary" type="button">View all</button>
-                  </div>
-                  <div class="module-grid">
-                    <article class="module-card">
-                      <div class="card-icon"><i data-lucide="calendar"></i></div>
-                      <h3>Super Sunday Service</h3>
-                      <p>Join us for worship, teaching, and prayer this Sunday morning.</p>
-                    </article>
-                    <article class="module-card">
-                      <div class="card-icon"><i data-lucide="video"></i></div>
-                      <h3>Livestream</h3>
-                      <p>Countdowns, live states and replays use the same active accent.</p>
-                    </article>
-                    <article class="module-card">
-                      <div class="card-icon"><i data-lucide="heart"></i></div>
-                      <h3>Prayer Wall</h3>
-                      <p>Prayer interactions, “I prayed”, and testimonies stay plugin-safe.</p>
-                    </article>
-                  </div>
-                </section>
-                <section class="section">
-                  <div class="giving-panel">
-                    <div>
-                      <span class="kicker">Giving</span>
-                      <h2 style="font-size:42px; letter-spacing:-.055em; margin:16px 0 10px;">Partner with the work of ministry.</h2>
-                      <p style="color:var(--theme-muted); font-weight:650; line-height:1.6">Giving forms use the same contract variables while the theme changes the visual style.</p>
-                    </div>
-                    <form onsubmit="return false;">
-                      <input class="field" placeholder="Your name" />
-                      <div class="amounts">
-                        <button type="button">$25</button>
-                        <button type="button" class="active">$50</button>
-                        <button type="button">$100</button>
-                      </div>
-                      <button class="theme-btn" type="button" style="width:100%; justify-content:center">Continue Giving</button>
-                    </form>
-                  </div>
-                </section>
-                <footer class="site-footer">
-                  <div><strong>Christ Embassy Bunga</strong><span>Experience God’s love and community.</span></div>
-                  <div><strong>Visit</strong><span>Sunday 9:30 AM</span></div>
-                  <div><strong>Connect</strong><span>Prayer · Groups · Events</span></div>
-                  <div><strong>Platform</strong><span>Theme-safe plugins enabled</span></div>
-                </footer>
+              <iframe id="customizerIframe" src="" style="width:100%; height:calc(100% - 24px); border:none; display:none; background:transparent;" onload="const spinner = document.getElementById('customizerLoading'); if (spinner) spinner.style.display = 'none';"></iframe>
+              <div id="customizerLoading" style="position:absolute; inset:24px 0 0 0; display:none; flex-direction:column; align-items:center; justify-content:center; background:#ffffff; z-index:100; font-family:system-ui,-apple-system,sans-serif;">
+                <div style="width:36px; height:36px; border:4px solid #f3f3f3; border-top:4px solid var(--platform-accent, #7C3AED); border-radius:50%; animation:customizer-spin 1s linear infinite; margin-bottom:12px;"></div>
+                <style>@keyframes customizer-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+                <div style="font-size:13px; font-weight:700; color:#1f2937;">Loading Website Builder...</div>
               </div>
+              <div class="church-site" id="churchSite"></div>
             </div>
           </div>
         </section>
-
       </div>
     </div>
   </section>
-
   <script>
     function initPhonePrefixes(container) {
       container.querySelectorAll('.phone-input-wrapper').forEach(wrapper => {
@@ -13765,7 +14172,22 @@ body.customizer-open { overflow: hidden; }
       
       // Check query parameter deep linking
       const targetModule = urlParams.get('module');
-      if (targetModule) {
+      if (targetModule === 'customizer') {
+        // Deep link to Website Builder and auto-open it.
+        setTimeout(() => {
+          const customizeBtn = document.getElementById('customizeBtn');
+          if (customizeBtn) {
+            customizeBtn.click();
+            // If tab=pages specified, auto-switch to Pages tab
+            const targetTab = urlParams.get('tab');
+            if (targetTab === 'pages') {
+              setTimeout(() => {
+                if (typeof showTab === 'function') showTab('Pages');
+              }, 400);
+            }
+          }
+        }, 800);
+      } else if (targetModule) {
         selectedModule = normalizeModuleKey(targetModule);
         switchView('modules');
       }
@@ -15972,12 +16394,20 @@ body.customizer-open { overflow: hidden; }
       colorMode: 'light',
       accentPreset: 'orange',
       colorPalette: 'warm',
+      typography: 'modernSans',
+      fontPairing: 'interPlusSerif',
       edgeStyle: 'soft',
       cardStyle: 'shadow',
       spacingScale: 'comfortable',
+      sectionSpacing: 'balanced',
       backgroundStyle: 'softGradient',
       iconStyle: 'lucideLine',
-      buttonStyle: 'solid'
+      buttonStyle: 'solid',
+      headerStyle: 'sticky',
+      footerStyle: 'simple',
+      animationPreference: 'subtle',
+      shadowDepth: 'soft',
+      logoDisplay: 'markAndName'
     };
 
     const customizerAccents = {
@@ -15988,6 +16418,607 @@ body.customizer-open { overflow: hidden; }
       rose: ['#e11d48', '#fb7185', 'rgba(225,29,72,.14)', '#fff1f2', '#ffe4e6', '#fecdd3'],
       gold: ['#d97706', '#fbbf24', 'rgba(217,119,6,.16)', '#fffbeb', '#fef3c7', '#fde68a']
     };
+
+    const websiteBuilderState = {
+      activeWorkspace: 'design',
+      activePageId: '',
+      activeWidgetCategory: 'All',
+      draggedBlockIndex: null,
+      navigationItems: [],
+      globalContent: {
+        churchName: localCmsState.websiteTitle,
+        welcomeMessage: 'Experience worship, word, prayer and community.',
+        serviceTimes: 'Sunday 9:30 AM',
+        location: 'Main Campus and online'
+      }
+    };
+
+    function builderWidget(category, icon, name, description) {
+      const type = String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+      return {
+        name,
+        icon,
+        category,
+        description,
+        defaultContent: { type, title: name, text: description, buttonText: '', buttonUrl: '#', items: [] },
+        editableFields: ['title', 'text', 'buttonText', 'buttonUrl'],
+        responsiveBehavior: 'Stacks cleanly on mobile and inherits theme spacing tokens.',
+        allowedPageContexts: ['all'],
+        tenantVisibilityRules: 'Public website tenants only; never shown in admin, billing, analytics, or developer tools.'
+      };
+    }
+
+    const websiteBuilderWidgetRegistry = [
+      ['Basic Content','panel-top','Section','A themed content band for grouping public website content.'],
+      ['Basic Content','box','Container','A constrained wrapper that inherits theme spacing and width.'],
+      ['Basic Content','columns-3','Columns','Responsive multi-column layout for content groups.'],
+      ['Basic Content','heading','Heading','Editable heading text using the active typography scale.'],
+      ['Basic Content','text','Text','Paragraph copy for public pages.'],
+      ['Basic Content','image','Image','Theme-framed image with alt text.'],
+      ['Basic Content','video','Video','Embedded video block for public pages.'],
+      ['Basic Content','mouse-pointer-click','Button','Call-to-action button using global button style.'],
+      ['Basic Content','sparkles','Icon','Lucide icon treatment controlled by theme icon style.'],
+      ['Basic Content','minus','Divider','Visual separator using theme border tokens.'],
+      ['Basic Content','space','Spacer','Responsive vertical spacing.'],
+      ['Basic Content','images','Gallery','Responsive image gallery.'],
+      ['Basic Content','gallery-horizontal','Carousel','Rotating public content carousel.'],
+      ['Basic Content','list-collapse','Accordion','Expandable FAQ or detail sections.'],
+      ['Basic Content','panel-top-open','Tabs','Tabbed public content areas.'],
+      ['Basic Content','quote','Quote','Highlighted quote or testimony pullout.'],
+      ['Basic Content','map-pin','Map','Location map embed.'],
+      ['Basic Content','contact','Contact Info','Public phone, email, and campus details.'],
+      ['Church Identity','badge','Church Logo','Displays the tenant logo from global content.'],
+      ['Church Identity','church','Church Name','Displays the public church name from global content.'],
+      ['Church Identity','user-round','Pastor Profile','Pastor photo, name, role, and bio.'],
+      ['Church Identity','users-round','Leadership Team','Staff and ministry leader cards.'],
+      ['Church Identity','clock','Service Times','Weekly worship schedule and location.'],
+      ['Church Identity','map-pin-house','Church Location','Campus address and visitor guidance.'],
+      ['Church Identity','hand-heart','Welcome Message','Warm welcome copy for visitors.'],
+      ['Church Identity','badge-info','About Church','Church story, mission, and values.'],
+      ['Church Identity','goal','Mission and Vision','Mission, vision, and values statement.'],
+      ['Church Identity','network','Ministry Highlights','Featured ministries and pathways.'],
+      ['Events','calendar-days','Upcoming Events','List of upcoming public events.'],
+      ['Events','calendar-star','Featured Event','One promoted event with CTA.'],
+      ['Events','calendar','Event Calendar','Calendar-style events module preview.'],
+      ['Events','ticket','Event Registration CTA','Registration call-to-action.'],
+      ['Events','timer','Event Countdown','Countdown to a featured event.'],
+      ['Sermon / Media','mic-2','Latest Sermon','Latest sermon card pulled from media.'],
+      ['Sermon / Media','layout-grid','Sermon Grid','Grid of recent sermon messages.'],
+      ['Sermon / Media','library','Sermon Series','Series collection preview.'],
+      ['Sermon / Media','play-square','Featured Video','Featured media player block.'],
+      ['Sermon / Media','podcast','Podcast Player','Podcast episode player.'],
+      ['Sermon / Media','folder-play','Media Library Preview','Preview of public media library.'],
+      ['Livestream','radio-tower','Livestream Player','Live video player area.'],
+      ['Livestream','timer-reset','Livestream Countdown','Countdown to next live service.'],
+      ['Livestream','radio','Live Service CTA','CTA for joining live worship.'],
+      ['Livestream','message-circle','Live Chat Embed','Live chat embed where tenant policy allows.'],
+      ['Prayer & Testimony','heart-handshake','Prayer Request Form','Public prayer request submission form.'],
+      ['Prayer & Testimony','heart','Prayer Wall','Moderated public prayer wall.'],
+      ['Prayer & Testimony','calendar-heart','Prayer Schedule','Prayer gathering schedule.'],
+      ['Prayer & Testimony','megaphone','Corporate Prayer CTA','Call-to-action for prayer participation.'],
+      ['Prayer & Testimony','messages-square','Testimony Wall','Testimony collection preview.'],
+      ['Prayer & Testimony','message-circle-heart','Featured Testimonies','Selected testimony highlights.'],
+      ['Giving / Partnership','hand-coins','Giving CTA','Giving prompt linked to tenant giving flow.'],
+      ['Giving / Partnership','credit-card','Giving Form Embed','Embeddable giving form surface.'],
+      ['Giving / Partnership','handshake','Partnership Projects','Partnership project cards.'],
+      ['Giving / Partnership','badge-dollar-sign','Campaign Preview','Campaign progress preview.'],
+      ['Giving / Partnership','chart-no-axes-combined','Donation Impact Section','Impact numbers and stories.'],
+      ['Membership / Visitor','clipboard-plus','New Visitor Form','Guest connection form.'],
+      ['Membership / Visitor','user-plus','Membership Signup CTA','Membership next-step CTA.'],
+      ['Membership / Visitor','hand','Volunteer Signup','Volunteer interest form CTA.'],
+      ['Membership / Visitor','mail','Contact Form','Public contact form.'],
+      ['Membership / Visitor','users','Join a Group CTA','CTA for group discovery.'],
+      ['Cell / Community','network','Cell Groups List','Cell group listing preview.'],
+      ['Cell / Community','users-round','Ministry Groups','Ministry group cards.'],
+      ['Cell / Community','building-2','Department Highlights','Department highlights section.'],
+      ['Cell / Community','search','Small Group Finder','Group finder CTA and filters.'],
+      ['Bible / Devotional','book-open','Daily Scripture','Daily scripture highlight.'],
+      ['Bible / Devotional','book-marked','Verse Highlight','Featured verse callout.'],
+      ['Bible / Devotional','list-checks','Bible Reading Plan','Bible reading plan preview.'],
+      ['Bible / Devotional','sunrise','Devotional Preview','Daily devotional preview.'],
+      ['Custom Layout','layout','Hero Section','Hero with headline, supporting copy, media, and CTA.'],
+      ['Custom Layout','send','CTA Section','Focused call-to-action section.'],
+      ['Custom Layout','layout-grid','Feature Grid','Grid for public feature highlights.'],
+      ['Custom Layout','chart-bar','Stats Section','Simple public metrics and impact.'],
+      ['Custom Layout','git-commit-horizontal','Timeline','Timeline for history or campaign steps.'],
+      ['Custom Layout','circle-help','FAQ','Frequently asked questions.'],
+      ['Custom Layout','mail-plus','Newsletter Signup','Email signup CTA.'],
+      ['Custom Layout','share-2','Social Links','Public social profile links.']
+    ].map(([category, icon, name, description]) => builderWidget(category, icon, name, description));
+
+    function getWebsiteBuilderPages() {
+      return Array.isArray(cmsState.pages) ? cmsState.pages : [];
+    }
+
+    function getActiveBuilderPage() {
+      const pages = getWebsiteBuilderPages();
+      if (!pages.length) return null;
+      let page = pages.find(item => item.id === websiteBuilderState.activePageId);
+      if (!page) {
+        page = pages.find(item => item.isHome) || pages[0];
+        websiteBuilderState.activePageId = page.id;
+      }
+      return page;
+    }
+
+    function getBuilderPageBlocks(page = getActiveBuilderPage()) {
+      if (!page) return [];
+      return parseMaybeJson(page.draftContent || page.content || [], []);
+    }
+
+    function setBuilderPageBlocks(page, blocks) {
+      if (page) page.draftContent = JSON.stringify(blocks || []);
+    }
+
+    function getWidgetByType(type) {
+      return websiteBuilderWidgetRegistry.find(widget => widget.defaultContent.type === type || widget.name === type);
+    }
+
+    function showWebsiteBuilderWorkspace(workspace = 'design') {
+      websiteBuilderState.activeWorkspace = String(workspace || 'design').toLowerCase();
+      const customizer = document.getElementById('customizer');
+      if (customizer) customizer.dataset.activeWorkspace = websiteBuilderState.activeWorkspace;
+
+      document.querySelectorAll('[data-builder-workspace]').forEach(button => {
+        button.classList.toggle('active', button.dataset.builderWorkspace === websiteBuilderState.activeWorkspace);
+      });
+      document.querySelectorAll('[data-builder-panel]').forEach(panel => {
+        panel.classList.toggle('active', panel.dataset.builderPanel === websiteBuilderState.activeWorkspace);
+      });
+
+      if (websiteBuilderState.activeWorkspace === 'pages') renderWebsiteBuilderPagesWorkspace();
+      if (websiteBuilderState.activeWorkspace === 'widgets') renderWebsiteBuilderWidgetsWorkspace();
+      if (websiteBuilderState.activeWorkspace === 'templates') renderWebsiteBuilderTemplatesWorkspace();
+      if (websiteBuilderState.activeWorkspace === 'navigation') renderWebsiteBuilderNavigationWorkspace();
+      if (websiteBuilderState.activeWorkspace === 'global') renderWebsiteBuilderGlobalWorkspace();
+      if (websiteBuilderState.activeWorkspace === 'seo') renderWebsiteBuilderSeoWorkspace();
+      if (websiteBuilderState.activeWorkspace === 'settings') renderWebsiteBuilderSettingsWorkspace();
+      if (websiteBuilderState.activeWorkspace === 'publish') renderWebsiteBuilderPublishWorkspace();
+
+      renderWebsiteBuilderPreview(getActiveBuilderPage());
+      applyCustomizerTheme();
+      refreshIcons();
+    }
+
+    function showTab(name) {
+      const map = { 'Theme Design': 'design', Design: 'design', Pages: 'pages', Widgets: 'widgets', Templates: 'templates', Navigation: 'navigation', SEO: 'seo', Settings: 'settings', Publish: 'publish' };
+      showWebsiteBuilderWorkspace(map[name] || String(name || 'design').toLowerCase());
+    }
+
+    function selectCustomizerPage(pageId) {
+      websiteBuilderState.activePageId = pageId;
+      showWebsiteBuilderWorkspace('pages');
+    }
+
+    function renderWebsiteBuilderPagesWorkspace() {
+      const pages = getWebsiteBuilderPages();
+      const activePage = getActiveBuilderPage();
+      const list = document.getElementById('customizerPagesList');
+      if (list) {
+        list.innerHTML = pages.length ? pages.map(page => `
+          <button class="builder-list-row page-item-row ${activePage && activePage.id === page.id ? 'active active-page' : ''}" type="button" onclick="selectCustomizerPage('${page.id}')">
+            <span><strong>${escapeHtml(page.title || 'Untitled page')}</strong><span>${escapeHtml(cmsDisplaySlug(page.slug || ''))}</span></span>
+            <span class="builder-chip">${escapeHtml(page.status || 'draft')}</span>
+          </button>
+        `).join('') : `<div class="builder-empty">No pages yet. Add a page to begin.</div>`;
+      }
+
+      const inspector = document.getElementById('customizerPageInspector');
+      if (!inspector) return;
+      if (!activePage) {
+        inspector.innerHTML = `<div class="builder-empty">Create a page to edit content, SEO, and widgets.</div>`;
+        return;
+      }
+
+      const blocks = getBuilderPageBlocks(activePage);
+      inspector.innerHTML = `
+        <div class="builder-panel-title"><span>Selected Page</span><span class="builder-chip">${escapeHtml(activePage.status || 'draft')}</span></div>
+        <div class="builder-form-row"><label>Title</label><input id="builderPageTitle" value="${escapeHtml(activePage.title || '')}" onchange="updateWebsiteBuilderPageField('title', this.value)"></div>
+        <div class="builder-form-row"><label>Slug</label><input id="builderPageSlug" value="${escapeHtml(activePage.slug || '')}" onchange="updateWebsiteBuilderPageField('slug', this.value)"></div>
+        <div class="builder-form-row"><label>Status</label><select id="builderPageStatus" onchange="updateWebsiteBuilderPageField('status', this.value)"><option value="draft" ${activePage.status === 'draft' ? 'selected' : ''}>Draft</option><option value="published" ${activePage.status === 'published' ? 'selected' : ''}>Published</option></select></div>
+        <div class="builder-form-row"><label>Template</label><select id="builderPageTemplate"><option>Default</option>${cmsTemplateCatalog.map(t => `<option value="${t.key}">${escapeHtml(t.title)}</option>`).join('')}</select></div>
+        <div class="builder-section-actions">
+          <button class="secondary-btn" type="button" onclick="duplicateWebsiteBuilderPage()"><i data-lucide="copy"></i> Duplicate</button>
+          <button class="primary-btn" type="button" onclick="saveWebsiteBuilderPageMeta()"><i data-lucide="save"></i> Save</button>
+        </div>
+        <hr style="border:0;border-top:1px solid var(--platform-border);margin:14px 0;">
+        <div class="builder-panel-title"><span>Sections</span><span>${blocks.length}</span></div>
+        <div class="builder-list" id="websiteBuilderSectionsList">
+          ${blocks.length ? blocks.map((block, index) => renderBuilderSectionRow(block, index, blocks.length)).join('') : `<div class="builder-empty">No sections yet. Add widgets from the Widgets workspace.</div>`}
+        </div>
+      `;
+      refreshIcons();
+    }
+
+    function renderBuilderSectionRow(block, index, total) {
+      const label = block.title || block.headline || block.type || 'Section';
+      const widget = getWidgetByType(block.type);
+      return `
+        <div class="builder-block-row" draggable="true" ondragstart="startBuilderBlockDrag(${index})" ondragover="event.preventDefault()" ondrop="dropBuilderBlock(${index})">
+          <strong>${escapeHtml(label)}</strong>
+          <span>${escapeHtml(widget ? widget.name : block.type || 'content block')}</span>
+          <div class="builder-section-actions">
+            <button class="mini-action" type="button" onclick="moveBuilderBlock(${index}, -1)" ${index === 0 ? 'disabled' : ''} title="Move up"><i data-lucide="arrow-up"></i></button>
+            <button class="mini-action" type="button" onclick="moveBuilderBlock(${index}, 1)" ${index === total - 1 ? 'disabled' : ''} title="Move down"><i data-lucide="arrow-down"></i></button>
+            <button class="mini-action" type="button" onclick="editBuilderBlock(${index})" title="Edit"><i data-lucide="pencil"></i></button>
+            <button class="mini-action danger" type="button" onclick="removeBuilderBlock(${index})" title="Remove"><i data-lucide="trash-2"></i></button>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateWebsiteBuilderPageField(field, value) {
+      const page = getActiveBuilderPage();
+      if (!page) return;
+      page[field] = value;
+      renderWebsiteBuilderPreview(page);
+      if (field === 'title' || field === 'status' || field === 'slug') renderWebsiteBuilderPagesWorkspace();
+    }
+
+    async function saveWebsiteBuilderPageMeta() {
+      const page = getActiveBuilderPage();
+      if (!page) return;
+      const payload = {
+        title: page.title || 'Untitled page',
+        slug: page.slug || '',
+        status: page.status || 'draft',
+        seoTitle: page.seoTitle || page.title || '',
+        seoDescription: page.seoDescription || '',
+        seoKeywords: page.seoKeywords || ''
+      };
+      const res = await cmsApiRequest('PATCH', `/api/cms/pages/${page.id}`, payload);
+      if (res && res.ok) {
+        showToast('Page saved in Website Builder');
+        await loadAllCmsData();
+        websiteBuilderState.activePageId = page.id;
+        renderWebsiteBuilderPagesWorkspace();
+      } else {
+        alert(res?.data?.error || 'Failed to save page.');
+      }
+    }
+
+    async function saveWebsiteBuilderDraft(pageId = websiteBuilderState.activePageId, options = {}) {
+      const page = getWebsiteBuilderPages().find(item => item.id === pageId);
+      if (!page) return;
+      const blocks = getBuilderPageBlocks(page);
+      const res = await cmsApiRequest('PATCH', `/api/cms/pages/${page.id}/draft`, { draftContent: blocks });
+      if (res && res.ok) {
+        page.draftContent = JSON.stringify(blocks);
+        if (!options.silent) showToast('Page draft saved');
+      } else if (!options.silent) {
+        alert(res?.data?.error || 'Failed to save page draft.');
+      }
+    }
+
+    async function publishWebsiteBuilderPage() {
+      const page = getActiveBuilderPage();
+      if (!page) return;
+      await saveWebsiteBuilderDraft(page.id, { silent: true });
+      const res = await cmsApiRequest('POST', `/api/cms/pages/${page.id}/publish`);
+      if (res && res.ok) {
+        showToast('Page published to church frontend');
+        await loadAllCmsData();
+        websiteBuilderState.activePageId = page.id;
+        showWebsiteBuilderWorkspace('publish');
+      } else {
+        alert(res?.data?.error || 'Failed to publish page.');
+      }
+    }
+
+    async function createWebsiteBuilderPage() {
+      const title = prompt('Page title', 'New Page');
+      if (!title) return;
+      const slug = String(title).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const payload = {
+        websiteId: cmsState.activeWebsiteId || cmsState.websites[0]?.id,
+        title,
+        slug: makeUniqueCmsSlug(slug),
+        status: 'draft',
+        content: [{ type: 'hero', title, subtitle: 'New page draft created in Website Builder.', buttonText: 'Get Started', buttonUrl: '#' }]
+      };
+      if (!payload.websiteId) {
+        alert('Create or load a website before adding pages.');
+        return;
+      }
+      const res = await cmsApiRequest('POST', '/api/cms/pages', payload);
+      if (res && res.data) {
+        showToast('New page created');
+        await loadAllCmsData();
+        websiteBuilderState.activePageId = res.data.id;
+        showWebsiteBuilderWorkspace('pages');
+      } else {
+        alert(res?.data?.error || 'Failed to create page.');
+      }
+    }
+
+    async function duplicateWebsiteBuilderPage() {
+      const page = getActiveBuilderPage();
+      if (!page) return;
+      const payload = {
+        websiteId: page.websiteId,
+        title: `${page.title || 'Page'} Copy`,
+        slug: makeUniqueCmsSlug(`${page.slug || 'page'}-copy`),
+        status: 'draft',
+        content: getBuilderPageBlocks(page),
+        seoTitle: page.seoTitle || '',
+        seoDescription: page.seoDescription || '',
+        seoKeywords: page.seoKeywords || ''
+      };
+      const res = await cmsApiRequest('POST', '/api/cms/pages', payload);
+      if (res && res.data) {
+        showToast('Page duplicated');
+        await loadAllCmsData();
+        websiteBuilderState.activePageId = res.data.id;
+        showWebsiteBuilderWorkspace('pages');
+      } else {
+        alert(res?.data?.error || 'Failed to duplicate page.');
+      }
+    }
+
+    function startBuilderBlockDrag(index) {
+      websiteBuilderState.draggedBlockIndex = index;
+    }
+
+    async function dropBuilderBlock(targetIndex) {
+      const from = websiteBuilderState.draggedBlockIndex;
+      if (from === null || from === targetIndex) return;
+      const page = getActiveBuilderPage();
+      const blocks = getBuilderPageBlocks(page);
+      const [item] = blocks.splice(from, 1);
+      blocks.splice(targetIndex, 0, item);
+      setBuilderPageBlocks(page, blocks);
+      websiteBuilderState.draggedBlockIndex = null;
+      renderWebsiteBuilderPagesWorkspace();
+      renderWebsiteBuilderPreview(page);
+      await saveWebsiteBuilderDraft(page.id, { silent: true });
+    }
+
+    async function moveBuilderBlock(index, direction) {
+      const page = getActiveBuilderPage();
+      const blocks = getBuilderPageBlocks(page);
+      const next = index + direction;
+      if (!page || next < 0 || next >= blocks.length) return;
+      const temp = blocks[index];
+      blocks[index] = blocks[next];
+      blocks[next] = temp;
+      setBuilderPageBlocks(page, blocks);
+      renderWebsiteBuilderPagesWorkspace();
+      renderWebsiteBuilderPreview(page);
+      await saveWebsiteBuilderDraft(page.id, { silent: true });
+    }
+
+    async function removeBuilderBlock(index) {
+      const page = getActiveBuilderPage();
+      const blocks = getBuilderPageBlocks(page);
+      blocks.splice(index, 1);
+      setBuilderPageBlocks(page, blocks);
+      renderWebsiteBuilderPagesWorkspace();
+      renderWebsiteBuilderPreview(page);
+      await saveWebsiteBuilderDraft(page.id, { silent: true });
+    }
+
+    async function editBuilderBlock(index) {
+      const page = getActiveBuilderPage();
+      const blocks = getBuilderPageBlocks(page);
+      const block = blocks[index];
+      if (!block) return;
+      const current = block.title || block.headline || block.text || '';
+      const next = prompt('Edit section title or main text', current);
+      if (next === null) return;
+      if ('title' in block || !('headline' in block)) block.title = next;
+      else block.headline = next;
+      setBuilderPageBlocks(page, blocks);
+      renderWebsiteBuilderPagesWorkspace();
+      renderWebsiteBuilderPreview(page);
+      await saveWebsiteBuilderDraft(page.id, { silent: true });
+    }
+
+    async function addWidgetToBuilder(type) {
+      const widget = getWidgetByType(type);
+      const page = getActiveBuilderPage();
+      if (!widget || !page) return;
+      const blocks = getBuilderPageBlocks(page);
+      blocks.push(JSON.parse(JSON.stringify(widget.defaultContent)));
+      setBuilderPageBlocks(page, blocks);
+      showWebsiteBuilderWorkspace('pages');
+      await saveWebsiteBuilderDraft(page.id, { silent: true });
+      showToast(`${widget.name} added to ${page.title}`);
+    }
+
+    function renderWebsiteBuilderWidgetsWorkspace() {
+      const categories = ['All', ...Array.from(new Set(websiteBuilderWidgetRegistry.map(widget => widget.category)))];
+      const filters = document.getElementById('websiteBuilderWidgetFilters');
+      if (filters) {
+        filters.innerHTML = categories.map(category => `<button type="button" class="${websiteBuilderState.activeWidgetCategory === category ? 'active' : ''}" onclick="websiteBuilderState.activeWidgetCategory='${escapeHtml(category)}'; renderWebsiteBuilderWidgetsWorkspace();">${escapeHtml(category)}</button>`).join('');
+      }
+      const registry = document.getElementById('websiteBuilderWidgetRegistry');
+      if (!registry) return;
+      const widgets = websiteBuilderWidgetRegistry.filter(widget => websiteBuilderState.activeWidgetCategory === 'All' || widget.category === websiteBuilderState.activeWidgetCategory);
+      registry.innerHTML = widgets.map(widget => `
+        <article class="builder-widget-card">
+          <div class="builder-widget-icon"><i data-lucide="${widget.icon}"></i></div>
+          <div><strong>${escapeHtml(widget.name)}</strong><span>${escapeHtml(widget.description)}</span></div>
+          <button class="mini-action" type="button" onclick="addWidgetToBuilder('${widget.defaultContent.type}')" title="Add widget"><i data-lucide="plus"></i></button>
+        </article>
+      `).join('');
+      refreshIcons();
+    }
+
+    function renderWebsiteBuilderTemplatesWorkspace() {
+      const list = document.getElementById('websiteBuilderTemplatesList');
+      if (!list) return;
+      list.innerHTML = cmsTemplateCatalog.map(template => `
+        <article class="builder-template-card">
+          <div class="builder-panel-title"><span><i data-lucide="${template.icon}"></i> ${escapeHtml(template.title)}</span><span class="builder-chip">${escapeHtml(cmsDisplaySlug(template.slug))}</span></div>
+          <span>${escapeHtml(template.description)}</span>
+          <button class="primary-btn builder-wide" type="button" onclick="createCmsTemplatePage('${template.key}')"><i data-lucide="plus"></i> Create Page</button>
+        </article>
+      `).join('');
+      refreshIcons();
+    }
+
+    function ensureWebsiteBuilderNavigation() {
+      if (websiteBuilderState.navigationItems.length) return;
+      websiteBuilderState.navigationItems = getWebsiteBuilderPages()
+        .filter(page => page.status === 'published' || page.isHome)
+        .slice(0, 6)
+        .map(page => ({ label: page.isHome ? 'Home' : page.title, url: page.slug ? `/${page.slug}` : '/' }));
+      if (!websiteBuilderState.navigationItems.length) {
+        websiteBuilderState.navigationItems = [{ label: 'Home', url: '/' }, { label: 'Giving', url: '/giving' }];
+      }
+    }
+
+    function renderWebsiteBuilderNavigationWorkspace() {
+      ensureWebsiteBuilderNavigation();
+      const list = document.getElementById('websiteBuilderNavigationList');
+      if (!list) return;
+      list.innerHTML = websiteBuilderState.navigationItems.map((item, index) => `
+        <div class="builder-list-row">
+          <span style="display:grid;gap:6px;flex:1;">
+            <input class="form-control" value="${escapeHtml(item.label)}" onchange="updateWebsiteBuilderNavItem(${index}, 'label', this.value)">
+            <input class="form-control" value="${escapeHtml(item.url)}" onchange="updateWebsiteBuilderNavItem(${index}, 'url', this.value)">
+          </span>
+          <button class="mini-action danger" type="button" onclick="removeWebsiteBuilderNavItem(${index})"><i data-lucide="trash-2"></i></button>
+        </div>
+      `).join('');
+      refreshIcons();
+    }
+
+    function updateWebsiteBuilderNavItem(index, field, value) {
+      websiteBuilderState.navigationItems[index][field] = value;
+      renderWebsiteBuilderPreview(getActiveBuilderPage());
+    }
+
+    function addWebsiteBuilderNavItem() {
+      ensureWebsiteBuilderNavigation();
+      websiteBuilderState.navigationItems.push({ label: 'New Link', url: '/new-page' });
+      renderWebsiteBuilderNavigationWorkspace();
+      renderWebsiteBuilderPreview(getActiveBuilderPage());
+    }
+
+    function removeWebsiteBuilderNavItem(index) {
+      websiteBuilderState.navigationItems.splice(index, 1);
+      renderWebsiteBuilderNavigationWorkspace();
+      renderWebsiteBuilderPreview(getActiveBuilderPage());
+    }
+
+    async function saveWebsiteBuilderNavigation() {
+      ensureWebsiteBuilderNavigation();
+      const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
+      if (!websiteId) return alert('Load a website before saving navigation.');
+      const res = await cmsApiRequest('POST', '/api/cms/navigation', { websiteId, name: 'Header Navigation', items: websiteBuilderState.navigationItems, isActive: true });
+      if (res && res.ok) showToast('Navigation saved');
+      else alert(res?.data?.error || 'Failed to save navigation.');
+    }
+
+    function renderWebsiteBuilderGlobalWorkspace() {
+      const panel = document.getElementById('websiteBuilderGlobalContent');
+      if (!panel) return;
+      const g = websiteBuilderState.globalContent;
+      panel.innerHTML = `
+        <div class="builder-form-row"><label>Church name</label><input value="${escapeHtml(g.churchName)}" onchange="websiteBuilderState.globalContent.churchName=this.value; localCmsState.websiteTitle=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage())"></div>
+        <div class="builder-form-row"><label>Welcome message</label><textarea onchange="websiteBuilderState.globalContent.welcomeMessage=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage())">${escapeHtml(g.welcomeMessage)}</textarea></div>
+        <div class="builder-form-row"><label>Service times</label><input value="${escapeHtml(g.serviceTimes)}" onchange="websiteBuilderState.globalContent.serviceTimes=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage())"></div>
+        <div class="builder-form-row"><label>Location</label><input value="${escapeHtml(g.location)}" onchange="websiteBuilderState.globalContent.location=this.value; renderWebsiteBuilderPreview(getActiveBuilderPage())"></div>
+        <button class="primary-btn builder-wide" type="button" onclick="localStorage.setItem('churchos.builder.globalContent', JSON.stringify(websiteBuilderState.globalContent)); showToast('Global content saved')"><i data-lucide="save"></i> Save Global Content</button>
+      `;
+      refreshIcons();
+    }
+
+    function renderWebsiteBuilderSeoWorkspace() {
+      const panel = document.getElementById('websiteBuilderSeoPanel');
+      const page = getActiveBuilderPage();
+      if (!panel) return;
+      if (!page) {
+        panel.innerHTML = `<div class="builder-empty">Select a page to edit SEO.</div>`;
+        return;
+      }
+      panel.innerHTML = `
+        <div class="builder-panel-title"><span>${escapeHtml(page.title || 'Page')} SEO</span><span class="builder-chip">${page.seoTitle && page.seoDescription ? 'Ready' : 'Needs copy'}</span></div>
+        <div class="builder-form-row"><label>SEO title</label><input value="${escapeHtml(page.seoTitle || '')}" onchange="updateWebsiteBuilderPageField('seoTitle', this.value)"></div>
+        <div class="builder-form-row"><label>SEO description</label><textarea onchange="updateWebsiteBuilderPageField('seoDescription', this.value)">${escapeHtml(page.seoDescription || '')}</textarea></div>
+        <div class="builder-form-row"><label>SEO keywords</label><input value="${escapeHtml(page.seoKeywords || '')}" onchange="updateWebsiteBuilderPageField('seoKeywords', this.value)"></div>
+        <button class="primary-btn builder-wide" type="button" onclick="saveWebsiteBuilderPageMeta()"><i data-lucide="save"></i> Save SEO</button>
+      `;
+      refreshIcons();
+    }
+
+    function renderWebsiteBuilderSettingsWorkspace() {
+      const panel = document.getElementById('websiteBuilderSettingsPanel');
+      if (!panel) return;
+      panel.innerHTML = `
+        <div class="builder-list">
+          <label class="builder-list-row"><span><strong>Autosave drafts</strong><span>Save page blocks while editing</span></span><input type="checkbox" checked></label>
+          <label class="builder-list-row"><span><strong>Responsive preview default</strong><span>Desktop, tablet, and mobile toggles stay in the toolbar</span></span><span class="builder-chip">Enabled</span></label>
+          <label class="builder-list-row"><span><strong>Approved widgets only</strong><span>Backend and admin widgets are blocked from public pages</span></span><span class="builder-chip">Locked</span></label>
+          <label class="builder-list-row"><span><strong>Separate engines</strong><span>Design tokens stay in themes; sections stay in page drafts</span></span><span class="builder-chip">Clean</span></label>
+        </div>
+      `;
+    }
+
+    function renderWebsiteBuilderPublishWorkspace() {
+      const panel = document.getElementById('websiteBuilderPublishPanel');
+      const page = getActiveBuilderPage();
+      if (!panel) return;
+      const draftPages = getWebsiteBuilderPages().filter(item => item.draftContent).length;
+      panel.innerHTML = `
+        <div class="builder-list">
+          <div class="builder-list-row"><span><strong>Design draft</strong><span>Global theme settings draft for active theme</span></span><span class="builder-chip">Ready</span></div>
+          <div class="builder-list-row"><span><strong>Page drafts</strong><span>${draftPages} page${draftPages === 1 ? '' : 's'} with draft content</span></span><span class="builder-chip">${draftPages}</span></div>
+          <div class="builder-list-row"><span><strong>Selected page</strong><span>${escapeHtml(page ? page.title : 'No page selected')}</span></span><span class="builder-chip">${escapeHtml(page ? page.status || 'draft' : 'none')}</span></div>
+        </div>
+        <button class="secondary-btn builder-wide" type="button" onclick="saveCustomizerSettings(false)"><i data-lucide="save"></i> Save Design Draft</button>
+        <button class="secondary-btn builder-wide" type="button" onclick="publishWebsiteBuilderPage()"><i data-lucide="file-check"></i> Publish Selected Page</button>
+        <button class="primary-btn builder-wide" type="button" onclick="saveCustomizerSettings(true)"><i data-lucide="send"></i> Publish Website Design</button>
+      `;
+      refreshIcons();
+    }
+
+    function renderBuilderBlockPreview(block, index) {
+      const toolbar = `<div class="site-section-toolbar"><button type="button" onclick="editBuilderBlock(${index})">Edit</button><button type="button" onclick="removeBuilderBlock(${index})">Remove</button></div>`;
+      const title = escapeHtml(block.title || block.headline || 'Section');
+      const text = escapeHtml(block.subtitle || block.text || block.storyText || 'Add church-specific content from the sidebar.');
+      if (block.type === 'hero' || block.type === 'hero_section') {
+        return `<section class="hero" data-editable-block="${index}">${toolbar}<div class="hero-grid"><div><span class="kicker"><i data-lucide="sparkles"></i> ${escapeHtml(block.kicker || 'Welcome home')}</span><h1>${title}</h1><p>${text}</p><div class="hero-actions"><button class="theme-btn" type="button">${escapeHtml(block.buttonText || 'Plan a Visit')}</button><button class="theme-btn secondary" type="button">Give Now</button></div></div><div class="hero-media"><div class="floating-card"><strong>Next service</strong><span>${escapeHtml(websiteBuilderState.globalContent.serviceTimes)}</span></div></div></div></section>`;
+      }
+      if (block.type === 'service_times') {
+        return `<section class="section" data-editable-block="${index}">${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${escapeHtml(block.sundayTimes || websiteBuilderState.globalContent.serviceTimes)} at ${escapeHtml(block.address || websiteBuilderState.globalContent.location)}</p></div><button class="theme-btn secondary" type="button">Plan a Visit</button></div></section>`;
+      }
+      if (block.type === 'ministries_list' || block.type === 'feature_grid' || block.type === 'ministry_highlights') {
+        const items = Array.isArray(block.items) && block.items.length ? block.items : [{ name: 'Worship', desc: 'Serve through music and production.' }, { name: 'Groups', desc: 'Find community throughout the week.' }, { name: 'Outreach', desc: 'Love the city through practical ministry.' }];
+        return `<section class="section" data-editable-block="${index}">${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${text}</p></div></div><div class="module-grid">${items.slice(0,3).map(item => `<article class="module-card"><div class="card-icon"><i data-lucide="sparkles"></i></div><h3>${escapeHtml(item.name || item.title || 'Ministry')}</h3><p>${escapeHtml(item.desc || item.text || 'Add details in the builder sidebar.')}</p></article>`).join('')}</div></section>`;
+      }
+      if (block.type === 'giving_cta' || block.type === 'giving_form_embed' || block.type === 'giving-callout') {
+        return `<section class="section" data-editable-block="${index}">${toolbar}<div class="giving-panel"><div><span class="kicker">Giving</span><h2 style="font-size:42px; letter-spacing:-.055em; margin:16px 0 10px;">${title}</h2><p style="color:var(--theme-muted); font-weight:650; line-height:1.6">${text}</p></div><form onsubmit="return false;"><input class="field" placeholder="Your name"><div class="amounts"><button type="button">$25</button><button type="button" class="active">$50</button><button type="button">$100</button></div><button class="theme-btn" type="button" style="width:100%;justify-content:center">Continue Giving</button></form></div></section>`;
+      }
+      return `<section class="section" data-editable-block="${index}">${toolbar}<div class="section-title"><div><h2>${title}</h2><p>${text}</p></div><button class="theme-btn secondary" type="button">Learn More</button></div></section>`;
+    }
+
+    function renderWebsiteBuilderPreview(page = getActiveBuilderPage()) {
+      const site = document.getElementById('churchSite');
+      if (!site) return;
+      const blocks = getBuilderPageBlocks(page);
+      ensureWebsiteBuilderNavigation();
+      const activeSlug = page ? cmsDisplaySlug(page.slug || '') : '/';
+      const nav = websiteBuilderState.navigationItems.map(item => `<a class="${item.url === activeSlug ? 'active' : ''}">${escapeHtml(item.label)}</a>`).join('');
+      const renderedBlocks = blocks.length ? blocks.map(renderBuilderBlockPreview).join('') : renderBuilderBlockPreview({ type: 'hero', title: page?.title || 'Welcome Home', subtitle: websiteBuilderState.globalContent.welcomeMessage }, 0);
+      site.innerHTML = `
+        <header class="site-header">
+          <div class="site-brand"><div class="site-mark"><i data-lucide="church"></i></div><span>${escapeHtml(websiteBuilderState.globalContent.churchName || localCmsState.websiteTitle)}</span></div>
+          <nav class="site-nav">${nav}</nav>
+          <button class="theme-btn" type="button">Watch Live</button>
+        </header>
+        ${renderedBlocks}
+        <footer class="site-footer">
+          <div><strong>${escapeHtml(websiteBuilderState.globalContent.churchName || localCmsState.websiteTitle)}</strong><span>${escapeHtml(websiteBuilderState.globalContent.welcomeMessage)}</span></div>
+          <div><strong>Visit</strong><span>${escapeHtml(websiteBuilderState.globalContent.serviceTimes)}</span></div>
+          <div><strong>Location</strong><span>${escapeHtml(websiteBuilderState.globalContent.location)}</span></div>
+          <div><strong>Connect</strong><span>Prayer / Groups / Events</span></div>
+        </footer>
+      `;
+      applyCustomizerTheme();
+      refreshIcons();
+    }
 
     function applyCustomizerTheme() {
       const root = document.documentElement;
@@ -16008,11 +17039,26 @@ body.customizer-open { overflow: hidden; }
       root.style.setProperty('--theme-radius-button', radius[1]);
       root.style.setProperty('--theme-radius-field', radius[2]);
 
-      root.style.setProperty('--theme-shadow', customizerState.cardStyle === 'flat' ? 'none' : customizerState.cardStyle === 'bordered' ? 'none' : '0 22px 70px rgba(31,25,61,.12)');
+      const shadow = customizerState.shadowDepth === 'none' || customizerState.cardStyle === 'flat'
+        ? 'none'
+        : customizerState.shadowDepth === 'deep'
+          ? '0 34px 90px rgba(31,25,61,.2)'
+          : customizerState.cardStyle === 'bordered'
+            ? 'none'
+            : '0 22px 70px rgba(31,25,61,.12)';
+      root.style.setProperty('--theme-shadow', shadow);
+      root.style.setProperty('--theme-section-pad', customizerState.sectionSpacing === 'generous' ? '92px' : customizerState.sectionSpacing === 'compact' ? '46px' : '70px');
+      root.style.setProperty('--theme-font-heading', customizerState.typography === 'editorialSerif' || customizerState.fontPairing === 'serifPlusSans' ? 'Georgia, serif' : 'Inter, ui-sans-serif, system-ui, sans-serif');
+      root.style.setProperty('--theme-font-body', 'Inter, ui-sans-serif, system-ui, sans-serif');
 
       const churchSite = document.getElementById('churchSite');
       if (churchSite) {
         churchSite.classList.toggle('dark', customizerState.colorMode === 'dark');
+        churchSite.dataset.buttonStyle = customizerState.buttonStyle;
+        churchSite.dataset.headerStyle = customizerState.headerStyle;
+        churchSite.dataset.footerStyle = customizerState.footerStyle;
+        churchSite.dataset.logoDisplay = customizerState.logoDisplay;
+        churchSite.dataset.motion = customizerState.animationPreference;
       }
 
       const fakeBrowser = document.getElementById('fakeBrowser');
@@ -16128,8 +17174,21 @@ body.customizer-open { overflow: hidden; }
         // Apply theme variables to browser preview
         customizerState.colorMode = settings.colorMode || 'light';
         customizerState.accentPreset = settings.accentPreset || 'orange';
+        customizerState.colorPalette = settings.colorPalette || 'warm';
+        customizerState.typography = settings.typography || 'modernSans';
+        customizerState.fontPairing = settings.fontPairing || 'interPlusSerif';
         customizerState.edgeStyle = settings.edgeStyle || 'soft';
         customizerState.cardStyle = settings.cardStyle || 'shadow';
+        customizerState.spacingScale = settings.spacingScale || 'comfortable';
+        customizerState.sectionSpacing = settings.sectionSpacing || 'balanced';
+        customizerState.backgroundStyle = settings.backgroundStyle || 'softGradient';
+        customizerState.iconStyle = settings.iconStyle || 'lucideLine';
+        customizerState.buttonStyle = settings.buttonStyle || 'solid';
+        customizerState.headerStyle = settings.headerStyle || 'sticky';
+        customizerState.footerStyle = settings.footerStyle || 'simple';
+        customizerState.animationPreference = settings.animationPreference || 'subtle';
+        customizerState.shadowDepth = settings.shadowDepth || 'soft';
+        customizerState.logoDisplay = settings.logoDisplay || 'markAndName';
         applyCustomizerTheme();
       } else {
         const activeTitleEl = document.getElementById('activeThemeTitle');
@@ -16230,6 +17289,12 @@ body.customizer-open { overflow: hidden; }
         });
       });
 
+      document.querySelectorAll('[data-builder-workspace]').forEach(button => {
+        const clone = button.cloneNode(true);
+        button.parentNode.replaceChild(clone, button);
+        clone.addEventListener('click', () => showWebsiteBuilderWorkspace(clone.dataset.builderWorkspace));
+      });
+
       // Settings Accents/Modes click options
       document.querySelectorAll('[data-setting]').forEach(group => {
         const clone = group.cloneNode(true);
@@ -16275,7 +17340,14 @@ body.customizer-open { overflow: hidden; }
       // Customize Theme button
       const customizeBtn = document.getElementById('customizeBtn');
       if (customizeBtn) {
-        customizeBtn.onclick = () => {
+        customizeBtn.onclick = async () => {
+          if (!cmsState.pages.length) {
+            await loadAllCmsData();
+          }
+          try {
+            const storedGlobal = JSON.parse(localStorage.getItem('churchos.builder.globalContent') || 'null');
+            if (storedGlobal) websiteBuilderState.globalContent = { ...websiteBuilderState.globalContent, ...storedGlobal };
+          } catch (e) {}
           const activeTheme = themeEngineState.themes.find(t => t.id === themeEngineState.activeThemeId);
           if (activeTheme) {
             document.getElementById('customizerThemeName').textContent = activeTheme.name;
@@ -16286,18 +17358,26 @@ body.customizer-open { overflow: hidden; }
             customizerState.colorMode = settings.colorMode || 'light';
             customizerState.accentPreset = settings.accentPreset || 'orange';
             customizerState.colorPalette = settings.colorPalette || 'warm';
+            customizerState.typography = settings.typography || 'modernSans';
+            customizerState.fontPairing = settings.fontPairing || 'interPlusSerif';
             customizerState.edgeStyle = settings.edgeStyle || 'soft';
             customizerState.cardStyle = settings.cardStyle || 'shadow';
             customizerState.spacingScale = settings.spacingScale || 'comfortable';
+            customizerState.sectionSpacing = settings.sectionSpacing || 'balanced';
             customizerState.backgroundStyle = settings.backgroundStyle || 'softGradient';
             customizerState.iconStyle = settings.iconStyle || 'lucideLine';
             customizerState.buttonStyle = settings.buttonStyle || 'solid';
+            customizerState.headerStyle = settings.headerStyle || 'sticky';
+            customizerState.footerStyle = settings.footerStyle || 'simple';
+            customizerState.animationPreference = settings.animationPreference || 'subtle';
+            customizerState.shadowDepth = settings.shadowDepth || 'soft';
+            customizerState.logoDisplay = settings.logoDisplay || 'markAndName';
           }
           syncCustomizerUI();
-          applyCustomizerTheme();
           document.getElementById('customizer').classList.add('active');
           document.body.classList.add('customizer-open');
           setStageDevice('desktop');
+          showWebsiteBuilderWorkspace(websiteBuilderState.activeWorkspace || 'design');
         };
       }
 
@@ -16415,12 +17495,20 @@ body.customizer-open { overflow: hidden; }
         colorMode: customizerState.colorMode,
         accentPreset: customizerState.accentPreset,
         colorPalette: customizerState.colorPalette,
+        typography: customizerState.typography,
+        fontPairing: customizerState.fontPairing,
         edgeStyle: customizerState.edgeStyle,
         cardStyle: customizerState.cardStyle,
         spacingScale: customizerState.spacingScale,
+        sectionSpacing: customizerState.sectionSpacing,
         backgroundStyle: customizerState.backgroundStyle,
         iconStyle: customizerState.iconStyle,
         buttonStyle: customizerState.buttonStyle,
+        headerStyle: customizerState.headerStyle,
+        footerStyle: customizerState.footerStyle,
+        animationPreference: customizerState.animationPreference,
+        shadowDepth: customizerState.shadowDepth,
+        logoDisplay: customizerState.logoDisplay,
         colors: {
           primary: accentColors[0],
           secondary: '#ffffff',
@@ -18346,7 +19434,7 @@ body.customizer-open { overflow: hidden; }
       const coverage = document.getElementById('cmsSpecCoverage');
       if (coverage) {
         coverage.innerHTML = [
-          ['layout-template', 'Page Builder', 'Visual editor launches from every page and passes title, slug, status, theme, and accent context.'],
+          ['layout-template', 'Website Builder', 'Visual editor launches from every page and passes title, slug, status, theme, and accent context.'],
           ['menu', 'Navigation & Footer', 'Header menus, social links, and secondary footer links are managed inside the same console.'],
           ['search-check', 'SEO & Publishing', 'Page metadata, draft/published status, search filters, and preview controls are available for editors.'],
           ['blocks', 'Reusable Blocks', 'Saved content sections can be created, edited, and reused across pages.'],
@@ -18366,7 +19454,7 @@ body.customizer-open { overflow: hidden; }
       const surface = document.getElementById('cmsOperationalSurface');
       if (surface) {
         surface.innerHTML = [
-          ['Admin experience', 'Create pages, edit metadata, launch the page builder, manage menus, configure footer links, and review logs.'],
+          ['Admin experience', 'Create pages, edit metadata, launch Website Builder, manage menus, configure footer links, and review logs.'],
           ['Public experience', 'Only published pages are rendered through the public CMS renderer. Drafts stay private to the dashboard.'],
           ['Integrations', 'Styling, Media, Blog, Events, Giving, Partnerships, Campaigns, and Funnels connect through JSON content blocks and module links.'],
           ['Settings placement', 'Module settings are available here and in Central Settings so church staff stay in one authenticated dashboard.']
@@ -18662,16 +19750,17 @@ body.customizer-open { overflow: hidden; }
     function openVisualEditor(pageId) {
       const page = cmsState.pages.find(p => p.id === pageId);
       if (!page) return;
-      const params = new URLSearchParams({
-        pageId: page.id,
-        title: page.title || '',
-        slug: page.slug || '',
-        status: page.status || 'draft',
-        theme: state.theme.mode,
-        accent: state.theme.accent,
-        v: Date.now().toString()
-      });
-      window.location.href = `/page-builder/?${params.toString()}`;
+      // Open Website Builder and navigate to the selected page.
+      const customizeBtn = document.getElementById('customizeBtn');
+      if (customizeBtn) {
+        customizeBtn.click();
+        setTimeout(() => {
+          if (typeof showTab === 'function') showTab('Pages');
+          setTimeout(() => {
+            if (typeof selectCustomizerPage === 'function') selectCustomizerPage(pageId);
+          }, 300);
+        }, 300);
+      }
     }
 
     function createNewPageModal() {

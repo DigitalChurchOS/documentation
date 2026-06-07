@@ -522,4 +522,74 @@ describe('ChurchOS Theme Engine Module', () => {
       expect(res.body.data.allowMarketplaceThemes).toBe(true);
     });
   });
+
+  describe('Theme Customization Draft & Publish Workflow', () => {
+    let tenantThemeId: string;
+
+    beforeAll(async () => {
+      const themes = await prisma.theme.findMany({ where: { tenantId } });
+      tenantThemeId = themes[0].id;
+    });
+
+    it('should save theme customization changes to draftSettings without affecting settings', async () => {
+      const draftRes = await request(app)
+        .patch(`/api/theme-engine/themes/${tenantThemeId}/customization/draft`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          colors: { primary: '#ff4444' }
+        });
+      expect(draftRes.status).toBe(200);
+      expect(draftRes.body.data.draftSettings).toContain('#ff4444');
+
+      const dbTheme = await prisma.theme.findUnique({ where: { id: tenantThemeId } });
+      const settings = JSON.parse(dbTheme!.settings || '{}');
+      expect(settings.colors?.primary).not.toBe('#ff4444');
+    });
+
+    it('should discard theme draft settings successfully', async () => {
+      const discardRes = await request(app)
+        .post(`/api/theme-engine/themes/${tenantThemeId}/customization/discard`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+      expect(discardRes.status).toBe(200);
+      expect(discardRes.body.data.draftSettings).toBeNull();
+    });
+
+    it('should promote draftSettings to live settings on publish', async () => {
+      await request(app)
+        .patch(`/api/theme-engine/themes/${tenantThemeId}/customization/draft`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ colors: { primary: '#ff5555' } });
+
+      const pubRes = await request(app)
+        .post(`/api/theme-engine/themes/${tenantThemeId}/customization/publish`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+      expect(pubRes.status).toBe(200);
+      expect(pubRes.body.data.draftSettings).toBeNull();
+      const settings = JSON.parse(pubRes.body.data.settings);
+      expect(settings.colors.primary).toBe('#ff5555');
+    });
+
+    it('should reset customizations to empty config on reset', async () => {
+      const resetRes = await request(app)
+        .post(`/api/theme-engine/themes/${tenantThemeId}/customization/reset`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+      expect(resetRes.status).toBe(200);
+      expect(resetRes.body.data.settings).toBe('{}');
+      expect(resetRes.body.data.draftSettings).toBeNull();
+    });
+
+    it('should enforce tenant isolation and block unauthorized tenant users from theme customization actions', async () => {
+      const draftRes = await request(app)
+        .patch(`/api/theme-engine/themes/${tenantThemeId}/customization/draft`)
+        .set('x-tenant-id', otherTenantId)
+        .set('Authorization', `Bearer ${otherAdminToken}`)
+        .send({ colors: { primary: '#ff6666' } });
+      expect(draftRes.status).toBe(404);
+    });
+  });
 });

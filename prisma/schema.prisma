@@ -655,13 +655,14 @@ model TenantModule {
 // 15. THEME  (visual stylesheet vars)
 // ─────────────────────────────────────────────────────────────
 model Theme {
-  id        String   @id @default(uuid())
-  tenantId  String?  @map("tenant_id") // null = global platform system theme
-  name      String
-  settings  String   @default("{}") // JSON string of custom color palettes and fonts
-  isCustom  Boolean  @default(true) @map("is_custom")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(uuid())
+  tenantId      String?  @map("tenant_id") // null = global platform system theme
+  name          String
+  settings      String   @default("{}") // JSON string of custom color palettes and fonts
+  draftSettings String?  @map("draft_settings")
+  isCustom      Boolean  @default(true) @map("is_custom")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
   tenant Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
@@ -707,6 +708,7 @@ model Page {
   slug           String // e.g. "about", "give" (home is "")
   title          String
   content        String   @default("[]") // JSON string array of layouts and content blocks
+  draftContent   String?  @map("draft_content")
   status         String   @default("draft") // draft | published
   isHome         Boolean  @default(false) @map("is_home")
   seoTitle       String?  @map("seo_title")

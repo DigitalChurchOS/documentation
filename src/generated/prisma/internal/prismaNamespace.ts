@@ -19859,6 +19859,7 @@ export const ThemeScalarFieldEnum = {
   tenantId: 'tenantId',
   name: 'name',
   settings: 'settings',
+  draftSettings: 'draftSettings',
   isCustom: 'isCustom',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -19889,6 +19890,7 @@ export const PageScalarFieldEnum = {
   slug: 'slug',
   title: 'title',
   content: 'content',
+  draftContent: 'draftContent',
   status: 'status',
   isHome: 'isHome',
   seoTitle: 'seoTitle',

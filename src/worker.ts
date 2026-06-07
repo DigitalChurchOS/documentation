@@ -21,6 +21,13 @@ export default {
       });
     }
 
+    if (pathname === '/page-builder' || pathname.startsWith('/page-builder/')) {
+      const redirectUrl = new URL('/admin', request.url);
+      redirectUrl.searchParams.set('module', 'customizer');
+      redirectUrl.searchParams.set('tab', 'pages');
+      return Response.redirect(redirectUrl.toString(), 302);
+    }
+
     // 2. API requests proxy to service binding
     if (pathname.startsWith('/api/')) {
       if (env.API) {
@@ -56,8 +63,6 @@ export default {
       targetPath = '/live.html';
     } else if (pathname === '/church' || pathname.startsWith('/church/')) {
       targetPath = '/church/index.html';
-    } else if (pathname === '/page-builder' || pathname.startsWith('/page-builder/')) {
-      targetPath = '/page-builder/index.html';
     }
 
     // Rewrite request URL and fetch from assets

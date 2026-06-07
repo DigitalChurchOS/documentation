@@ -96,12 +96,16 @@ app.get('/dashboard', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'dashboard.html'));
 });
 
+app.get(/^\/admin(?:\/.*)?$/, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'apps', 'tenant-dashboard', 'public', 'index.html'));
+});
+
 app.get('/marketplace', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'marketplace.html'));
 });
 
 app.get('/page-builder', (_req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'page-builder', 'index.html'));
+  res.redirect('/admin?module=customizer&tab=pages');
 });
 
 app.get('/live/:id', (_req, res) => {

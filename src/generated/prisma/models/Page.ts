@@ -31,6 +31,7 @@ export type PageMinAggregateOutputType = {
   slug: string | null
   title: string | null
   content: string | null
+  draftContent: string | null
   status: string | null
   isHome: boolean | null
   seoTitle: string | null
@@ -47,6 +48,7 @@ export type PageMaxAggregateOutputType = {
   slug: string | null
   title: string | null
   content: string | null
+  draftContent: string | null
   status: string | null
   isHome: boolean | null
   seoTitle: string | null
@@ -63,6 +65,7 @@ export type PageCountAggregateOutputType = {
   slug: number
   title: number
   content: number
+  draftContent: number
   status: number
   isHome: number
   seoTitle: number
@@ -81,6 +84,7 @@ export type PageMinAggregateInputType = {
   slug?: true
   title?: true
   content?: true
+  draftContent?: true
   status?: true
   isHome?: true
   seoTitle?: true
@@ -97,6 +101,7 @@ export type PageMaxAggregateInputType = {
   slug?: true
   title?: true
   content?: true
+  draftContent?: true
   status?: true
   isHome?: true
   seoTitle?: true
@@ -113,6 +118,7 @@ export type PageCountAggregateInputType = {
   slug?: true
   title?: true
   content?: true
+  draftContent?: true
   status?: true
   isHome?: true
   seoTitle?: true
@@ -202,6 +208,7 @@ export type PageGroupByOutputType = {
   slug: string
   title: string
   content: string
+  draftContent: string | null
   status: string
   isHome: boolean
   seoTitle: string | null
@@ -239,6 +246,7 @@ export type PageWhereInput = {
   slug?: Prisma.StringFilter<"Page"> | string
   title?: Prisma.StringFilter<"Page"> | string
   content?: Prisma.StringFilter<"Page"> | string
+  draftContent?: Prisma.StringNullableFilter<"Page"> | string | null
   status?: Prisma.StringFilter<"Page"> | string
   isHome?: Prisma.BoolFilter<"Page"> | boolean
   seoTitle?: Prisma.StringNullableFilter<"Page"> | string | null
@@ -259,6 +267,7 @@ export type PageOrderByWithRelationInput = {
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  draftContent?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -283,6 +292,7 @@ export type PageWhereUniqueInput = Prisma.AtLeast<{
   slug?: Prisma.StringFilter<"Page"> | string
   title?: Prisma.StringFilter<"Page"> | string
   content?: Prisma.StringFilter<"Page"> | string
+  draftContent?: Prisma.StringNullableFilter<"Page"> | string | null
   status?: Prisma.StringFilter<"Page"> | string
   isHome?: Prisma.BoolFilter<"Page"> | boolean
   seoTitle?: Prisma.StringNullableFilter<"Page"> | string | null
@@ -303,6 +313,7 @@ export type PageOrderByWithAggregationInput = {
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  draftContent?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -325,6 +336,7 @@ export type PageScalarWhereWithAggregatesInput = {
   slug?: Prisma.StringWithAggregatesFilter<"Page"> | string
   title?: Prisma.StringWithAggregatesFilter<"Page"> | string
   content?: Prisma.StringWithAggregatesFilter<"Page"> | string
+  draftContent?: Prisma.StringNullableWithAggregatesFilter<"Page"> | string | null
   status?: Prisma.StringWithAggregatesFilter<"Page"> | string
   isHome?: Prisma.BoolWithAggregatesFilter<"Page"> | boolean
   seoTitle?: Prisma.StringNullableWithAggregatesFilter<"Page"> | string | null
@@ -339,6 +351,7 @@ export type PageCreateInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -359,6 +372,7 @@ export type PageUncheckedCreateInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -375,6 +389,7 @@ export type PageUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -395,6 +410,7 @@ export type PageUncheckedUpdateInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -413,6 +429,7 @@ export type PageCreateManyInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -427,6 +444,7 @@ export type PageUpdateManyMutationInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -443,6 +461,7 @@ export type PageUncheckedUpdateManyInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -474,6 +493,7 @@ export type PageCountOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  draftContent?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrder
@@ -490,6 +510,7 @@ export type PageMaxOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  draftContent?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrder
@@ -506,6 +527,7 @@ export type PageMinOrderByAggregateInput = {
   slug?: Prisma.SortOrder
   title?: Prisma.SortOrder
   content?: Prisma.SortOrder
+  draftContent?: Prisma.SortOrder
   status?: Prisma.SortOrder
   isHome?: Prisma.SortOrder
   seoTitle?: Prisma.SortOrder
@@ -644,6 +666,7 @@ export type PageCreateWithoutTenantInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -662,6 +685,7 @@ export type PageUncheckedCreateWithoutTenantInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -708,6 +732,7 @@ export type PageScalarWhereInput = {
   slug?: Prisma.StringFilter<"Page"> | string
   title?: Prisma.StringFilter<"Page"> | string
   content?: Prisma.StringFilter<"Page"> | string
+  draftContent?: Prisma.StringNullableFilter<"Page"> | string | null
   status?: Prisma.StringFilter<"Page"> | string
   isHome?: Prisma.BoolFilter<"Page"> | boolean
   seoTitle?: Prisma.StringNullableFilter<"Page"> | string | null
@@ -722,6 +747,7 @@ export type PageCreateWithoutWebsiteInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -740,6 +766,7 @@ export type PageUncheckedCreateWithoutWebsiteInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -781,6 +808,7 @@ export type PageCreateWithoutFunnelStepsInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -800,6 +828,7 @@ export type PageUncheckedCreateWithoutFunnelStepsInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -831,6 +860,7 @@ export type PageUpdateWithoutFunnelStepsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -850,6 +880,7 @@ export type PageUncheckedUpdateWithoutFunnelStepsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -865,6 +896,7 @@ export type PageCreateWithoutRevisionsInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -884,6 +916,7 @@ export type PageUncheckedCreateWithoutRevisionsInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -915,6 +948,7 @@ export type PageUpdateWithoutRevisionsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -934,6 +968,7 @@ export type PageUncheckedUpdateWithoutRevisionsInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -950,6 +985,7 @@ export type PageCreateManyTenantInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -964,6 +1000,7 @@ export type PageUpdateWithoutTenantInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -982,6 +1019,7 @@ export type PageUncheckedUpdateWithoutTenantInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -999,6 +1037,7 @@ export type PageUncheckedUpdateManyWithoutTenantInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1014,6 +1053,7 @@ export type PageCreateManyWebsiteInput = {
   slug: string
   title: string
   content?: string
+  draftContent?: string | null
   status?: string
   isHome?: boolean
   seoTitle?: string | null
@@ -1028,6 +1068,7 @@ export type PageUpdateWithoutWebsiteInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1046,6 +1087,7 @@ export type PageUncheckedUpdateWithoutWebsiteInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1063,6 +1105,7 @@ export type PageUncheckedUpdateManyWithoutWebsiteInput = {
   slug?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   content?: Prisma.StringFieldUpdateOperationsInput | string
+  draftContent?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.StringFieldUpdateOperationsInput | string
   isHome?: Prisma.BoolFieldUpdateOperationsInput | boolean
   seoTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1119,6 +1162,7 @@ export type PageSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   slug?: boolean
   title?: boolean
   content?: boolean
+  draftContent?: boolean
   status?: boolean
   isHome?: boolean
   seoTitle?: boolean
@@ -1140,6 +1184,7 @@ export type PageSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   slug?: boolean
   title?: boolean
   content?: boolean
+  draftContent?: boolean
   status?: boolean
   isHome?: boolean
   seoTitle?: boolean
@@ -1158,6 +1203,7 @@ export type PageSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   slug?: boolean
   title?: boolean
   content?: boolean
+  draftContent?: boolean
   status?: boolean
   isHome?: boolean
   seoTitle?: boolean
@@ -1176,6 +1222,7 @@ export type PageSelectScalar = {
   slug?: boolean
   title?: boolean
   content?: boolean
+  draftContent?: boolean
   status?: boolean
   isHome?: boolean
   seoTitle?: boolean
@@ -1185,7 +1232,7 @@ export type PageSelectScalar = {
   updatedAt?: boolean
 }
 
-export type PageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "websiteId" | "slug" | "title" | "content" | "status" | "isHome" | "seoTitle" | "seoDescription" | "seoKeywords" | "createdAt" | "updatedAt", ExtArgs["result"]["page"]>
+export type PageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "websiteId" | "slug" | "title" | "content" | "draftContent" | "status" | "isHome" | "seoTitle" | "seoDescription" | "seoKeywords" | "createdAt" | "updatedAt", ExtArgs["result"]["page"]>
 export type PageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   website?: boolean | Prisma.WebsiteDefaultArgs<ExtArgs>
@@ -1217,6 +1264,7 @@ export type $PagePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     slug: string
     title: string
     content: string
+    draftContent: string | null
     status: string
     isHome: boolean
     seoTitle: string | null
@@ -1657,6 +1705,7 @@ export interface PageFieldRefs {
   readonly slug: Prisma.FieldRef<"Page", 'String'>
   readonly title: Prisma.FieldRef<"Page", 'String'>
   readonly content: Prisma.FieldRef<"Page", 'String'>
+  readonly draftContent: Prisma.FieldRef<"Page", 'String'>
   readonly status: Prisma.FieldRef<"Page", 'String'>
   readonly isHome: Prisma.FieldRef<"Page", 'Boolean'>
   readonly seoTitle: Prisma.FieldRef<"Page", 'String'>

@@ -29,6 +29,7 @@ export type ThemeMinAggregateOutputType = {
   tenantId: string | null
   name: string | null
   settings: string | null
+  draftSettings: string | null
   isCustom: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -39,6 +40,7 @@ export type ThemeMaxAggregateOutputType = {
   tenantId: string | null
   name: string | null
   settings: string | null
+  draftSettings: string | null
   isCustom: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -49,6 +51,7 @@ export type ThemeCountAggregateOutputType = {
   tenantId: number
   name: number
   settings: number
+  draftSettings: number
   isCustom: number
   createdAt: number
   updatedAt: number
@@ -61,6 +64,7 @@ export type ThemeMinAggregateInputType = {
   tenantId?: true
   name?: true
   settings?: true
+  draftSettings?: true
   isCustom?: true
   createdAt?: true
   updatedAt?: true
@@ -71,6 +75,7 @@ export type ThemeMaxAggregateInputType = {
   tenantId?: true
   name?: true
   settings?: true
+  draftSettings?: true
   isCustom?: true
   createdAt?: true
   updatedAt?: true
@@ -81,6 +86,7 @@ export type ThemeCountAggregateInputType = {
   tenantId?: true
   name?: true
   settings?: true
+  draftSettings?: true
   isCustom?: true
   createdAt?: true
   updatedAt?: true
@@ -164,6 +170,7 @@ export type ThemeGroupByOutputType = {
   tenantId: string | null
   name: string
   settings: string
+  draftSettings: string | null
   isCustom: boolean
   createdAt: Date
   updatedAt: Date
@@ -195,6 +202,7 @@ export type ThemeWhereInput = {
   tenantId?: Prisma.StringNullableFilter<"Theme"> | string | null
   name?: Prisma.StringFilter<"Theme"> | string
   settings?: Prisma.StringFilter<"Theme"> | string
+  draftSettings?: Prisma.StringNullableFilter<"Theme"> | string | null
   isCustom?: Prisma.BoolFilter<"Theme"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Theme"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Theme"> | Date | string
@@ -207,6 +215,7 @@ export type ThemeOrderByWithRelationInput = {
   tenantId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   settings?: Prisma.SortOrder
+  draftSettings?: Prisma.SortOrderInput | Prisma.SortOrder
   isCustom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -222,6 +231,7 @@ export type ThemeWhereUniqueInput = Prisma.AtLeast<{
   tenantId?: Prisma.StringNullableFilter<"Theme"> | string | null
   name?: Prisma.StringFilter<"Theme"> | string
   settings?: Prisma.StringFilter<"Theme"> | string
+  draftSettings?: Prisma.StringNullableFilter<"Theme"> | string | null
   isCustom?: Prisma.BoolFilter<"Theme"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Theme"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Theme"> | Date | string
@@ -234,6 +244,7 @@ export type ThemeOrderByWithAggregationInput = {
   tenantId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   settings?: Prisma.SortOrder
+  draftSettings?: Prisma.SortOrderInput | Prisma.SortOrder
   isCustom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -250,6 +261,7 @@ export type ThemeScalarWhereWithAggregatesInput = {
   tenantId?: Prisma.StringNullableWithAggregatesFilter<"Theme"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"Theme"> | string
   settings?: Prisma.StringWithAggregatesFilter<"Theme"> | string
+  draftSettings?: Prisma.StringNullableWithAggregatesFilter<"Theme"> | string | null
   isCustom?: Prisma.BoolWithAggregatesFilter<"Theme"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Theme"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Theme"> | Date | string
@@ -259,6 +271,7 @@ export type ThemeCreateInput = {
   id?: string
   name: string
   settings?: string
+  draftSettings?: string | null
   isCustom?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -271,6 +284,7 @@ export type ThemeUncheckedCreateInput = {
   tenantId?: string | null
   name: string
   settings?: string
+  draftSettings?: string | null
   isCustom?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -281,6 +295,7 @@ export type ThemeUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -293,6 +308,7 @@ export type ThemeUncheckedUpdateInput = {
   tenantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -304,6 +320,7 @@ export type ThemeCreateManyInput = {
   tenantId?: string | null
   name: string
   settings?: string
+  draftSettings?: string | null
   isCustom?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -313,6 +330,7 @@ export type ThemeUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -323,6 +341,7 @@ export type ThemeUncheckedUpdateManyInput = {
   tenantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -343,6 +362,7 @@ export type ThemeCountOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   settings?: Prisma.SortOrder
+  draftSettings?: Prisma.SortOrder
   isCustom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -353,6 +373,7 @@ export type ThemeMaxOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   settings?: Prisma.SortOrder
+  draftSettings?: Prisma.SortOrder
   isCustom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -363,6 +384,7 @@ export type ThemeMinOrderByAggregateInput = {
   tenantId?: Prisma.SortOrder
   name?: Prisma.SortOrder
   settings?: Prisma.SortOrder
+  draftSettings?: Prisma.SortOrder
   isCustom?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -433,6 +455,7 @@ export type ThemeCreateWithoutTenantInput = {
   id?: string
   name: string
   settings?: string
+  draftSettings?: string | null
   isCustom?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -443,6 +466,7 @@ export type ThemeUncheckedCreateWithoutTenantInput = {
   id?: string
   name: string
   settings?: string
+  draftSettings?: string | null
   isCustom?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -482,6 +506,7 @@ export type ThemeScalarWhereInput = {
   tenantId?: Prisma.StringNullableFilter<"Theme"> | string | null
   name?: Prisma.StringFilter<"Theme"> | string
   settings?: Prisma.StringFilter<"Theme"> | string
+  draftSettings?: Prisma.StringNullableFilter<"Theme"> | string | null
   isCustom?: Prisma.BoolFilter<"Theme"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Theme"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Theme"> | Date | string
@@ -491,6 +516,7 @@ export type ThemeCreateWithoutWebsitesInput = {
   id?: string
   name: string
   settings?: string
+  draftSettings?: string | null
   isCustom?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -502,6 +528,7 @@ export type ThemeUncheckedCreateWithoutWebsitesInput = {
   tenantId?: string | null
   name: string
   settings?: string
+  draftSettings?: string | null
   isCustom?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -527,6 +554,7 @@ export type ThemeUpdateWithoutWebsitesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -538,6 +566,7 @@ export type ThemeUncheckedUpdateWithoutWebsitesInput = {
   tenantId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -547,6 +576,7 @@ export type ThemeCreateManyTenantInput = {
   id?: string
   name: string
   settings?: string
+  draftSettings?: string | null
   isCustom?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -556,6 +586,7 @@ export type ThemeUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -566,6 +597,7 @@ export type ThemeUncheckedUpdateWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -576,6 +608,7 @@ export type ThemeUncheckedUpdateManyWithoutTenantInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   settings?: Prisma.StringFieldUpdateOperationsInput | string
+  draftSettings?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isCustom?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -617,6 +650,7 @@ export type ThemeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   tenantId?: boolean
   name?: boolean
   settings?: boolean
+  draftSettings?: boolean
   isCustom?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -630,6 +664,7 @@ export type ThemeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   tenantId?: boolean
   name?: boolean
   settings?: boolean
+  draftSettings?: boolean
   isCustom?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -641,6 +676,7 @@ export type ThemeSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   tenantId?: boolean
   name?: boolean
   settings?: boolean
+  draftSettings?: boolean
   isCustom?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -652,12 +688,13 @@ export type ThemeSelectScalar = {
   tenantId?: boolean
   name?: boolean
   settings?: boolean
+  draftSettings?: boolean
   isCustom?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ThemeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "settings" | "isCustom" | "createdAt" | "updatedAt", ExtArgs["result"]["theme"]>
+export type ThemeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tenantId" | "name" | "settings" | "draftSettings" | "isCustom" | "createdAt" | "updatedAt", ExtArgs["result"]["theme"]>
 export type ThemeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.Theme$tenantArgs<ExtArgs>
   websites?: boolean | Prisma.Theme$websitesArgs<ExtArgs>
@@ -681,6 +718,7 @@ export type $ThemePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     tenantId: string | null
     name: string
     settings: string
+    draftSettings: string | null
     isCustom: boolean
     createdAt: Date
     updatedAt: Date
@@ -1113,6 +1151,7 @@ export interface ThemeFieldRefs {
   readonly tenantId: Prisma.FieldRef<"Theme", 'String'>
   readonly name: Prisma.FieldRef<"Theme", 'String'>
   readonly settings: Prisma.FieldRef<"Theme", 'String'>
+  readonly draftSettings: Prisma.FieldRef<"Theme", 'String'>
   readonly isCustom: Prisma.FieldRef<"Theme", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Theme", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Theme", 'DateTime'>

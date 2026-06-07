@@ -2923,13 +2923,51 @@ async function handleDemoApi(req, res, parsedUrl) {
     return sendJson(res, 201, { data: page });
   }
 
+  const draftMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/draft$/);
+  if (draftMatch && method === 'PATCH') {
+    const page = state.pages.find((item) => item.id === draftMatch[1]);
+    if (!page) return sendJson(res, 404, { error: 'Page not found' });
+    page.draftContent = typeof body.draftContent === 'string' ? body.draftContent : JSON.stringify(body.draftContent || []);
+    page.updatedAt = now();
+    addActivity(`Updated page draft: ${page.title}`);
+    return sendJson(res, 200, { data: page });
+  }
+
+  const publishMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/publish$/);
+  if (publishMatch && method === 'POST') {
+    const page = state.pages.find((item) => item.id === publishMatch[1]);
+    if (!page) return sendJson(res, 404, { error: 'Page not found' });
+    const nextContent = page.draftContent || page.content;
+    page.content = typeof nextContent === 'string' ? JSON.parse(nextContent || '[]') : nextContent;
+    page.draftContent = null;
+    page.status = 'published';
+    page.updatedAt = now();
+    addActivity(`Published page: ${page.title}`);
+    return sendJson(res, 200, { data: page });
+  }
+
+  const previewMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/preview$/);
+  if (previewMatch && method === 'POST') {
+    const page = state.pages.find((item) => item.id === previewMatch[1]);
+    if (!page) return sendJson(res, 404, { error: 'Page not found' });
+    return sendJson(res, 200, {
+      data: {
+        previewToken: 'local-preview-token',
+        previewUrl: `/api/cms/render?slug=${page.slug}&previewToken=local-preview-token`,
+      },
+    });
+  }
+
   const pageMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)$/);
-  if (pageMatch && method === 'PATCH') {
+  if (pageMatch) {
     const page = state.pages.find((item) => item.id === pageMatch[1]);
     if (!page) return sendJson(res, 404, { error: 'Page not found' });
-    Object.assign(page, body, { updatedAt: now() });
-    addActivity(`Updated page: ${page.title}`);
-    return sendJson(res, 200, { data: page });
+    if (method === 'GET') return sendJson(res, 200, { data: page });
+    if (method === 'PATCH') {
+      Object.assign(page, body, { updatedAt: now() });
+      addActivity(`Updated page: ${page.title}`);
+      return sendJson(res, 200, { data: page });
+    }
   }
 
   const revisionsMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/revisions$/);
@@ -3011,14 +3049,19 @@ async function handleDemoApi(req, res, parsedUrl) {
   }
 
   if (pathname === '/api/cms/render' && method === 'GET') {
-    const slug = parsedUrl.searchParams.get('slug') || 'home';
+    const slug = parsedUrl.searchParams.get('slug') || '';
+    const isPreview = Boolean(parsedUrl.searchParams.get('previewToken'));
     const page = state.pages.find((item) => item.slug === slug || (!slug && item.isHome)) || state.pages[0];
+    const contentBlocks = isPreview && page.draftContent
+      ? JSON.parse(page.draftContent || '[]')
+      : (typeof page.content === 'string' ? JSON.parse(page.content || '[]') : (page.content || []));
     return sendJson(res, 200, {
       data: {
         title: page.title,
         slug: page.slug,
         isHome: page.isHome,
-        contentBlocks: page.content || [],
+        contentBlocks,
+        isPreview,
         navigation: state.navigation[0] || null,
         footer: state.footers[0] || null,
         theme: state.themes[0] || null,
@@ -3039,6 +3082,8 @@ http
     let urlPath = (req.url || '/').split('?')[0];
     if (urlPath === '/') {
       urlPath = '/index.html';
+    } else if (urlPath === '/admin' || urlPath.startsWith('/admin/')) {
+      urlPath = '/apps/tenant-dashboard/public/index.html';
     } else if (urlPath === '/dashboard') {
       urlPath = '/dashboard.html';
     } else if (urlPath === '/marketplace') {
@@ -3048,7 +3093,9 @@ http
       res.end();
       return;
     } else if (urlPath === '/page-builder') {
-      urlPath = '/page-builder/';
+      res.writeHead(302, { Location: '/admin?module=customizer&tab=pages' });
+      res.end();
+      return;
     }
 
     let filePath = path.normalize(path.join(root, decodeURIComponent(urlPath)));

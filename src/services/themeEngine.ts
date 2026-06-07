@@ -181,6 +181,131 @@ function normalizeTemplate(input: ThemeEngineTemplateInput, type: 'section' | 'p
   };
 }
 
+function makePageContent(
+  title: string,
+  subtitle: string,
+  badgeText = 'Christ Embassy',
+  moduleName: string | null = null,
+  blockName: string | null = null,
+  actionName: string | null = null,
+  fieldsList: string[] = []
+): string {
+  const elements = [
+    {
+      id: 'flex_hero_' + Math.random().toString(36).substring(2, 7),
+      type: 'flexbox',
+      props: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '16px' },
+      styles: {
+        desktop: {
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '20px',
+          paddingTop: '80px',
+          paddingBottom: '80px',
+          paddingLeft: '40px',
+          paddingRight: '40px',
+          minHeight: '350px',
+          borderRadius: '8px',
+          backgroundColor: '#f8fafc',
+          borderStyle: 'solid',
+          borderWidth: '1px',
+          borderColor: '#e5e7eb'
+        },
+        mobile: {
+          paddingTop: '40px',
+          paddingBottom: '40px',
+          paddingLeft: '20px',
+          paddingRight: '20px'
+        }
+      },
+      children: [
+        {
+          id: 'hero_badge_' + Math.random().toString(36).substring(2, 7),
+          type: 'button',
+          props: { text: badgeText, url: '#' },
+          styles: {
+            desktop: {
+              backgroundColor: '#eff6ff',
+              color: '#1d4ed8',
+              paddingLeft: '14px',
+              paddingRight: '14px',
+              paddingTop: '6px',
+              paddingBottom: '6px',
+              borderRadius: '999px',
+              fontSize: '11px',
+              fontWeight: '700',
+              textAlign: 'center',
+              borderStyle: 'solid',
+              borderWidth: '1px',
+              borderColor: '#bfdbfe',
+              textTransform: 'uppercase'
+            }
+          },
+          children: []
+        },
+        {
+          id: 'hero_heading_' + Math.random().toString(36).substring(2, 7),
+          type: 'heading',
+          props: { text: title, level: 'h1' },
+          styles: {
+            desktop: {
+              fontSize: '44px',
+              fontWeight: '800',
+              color: '#111827',
+              textAlign: 'center',
+              lineHeight: '1.2'
+            }
+          },
+          children: []
+        },
+        {
+          id: 'hero_desc_' + Math.random().toString(36).substring(2, 7),
+          type: 'paragraph',
+          props: { text: subtitle },
+          styles: {
+            desktop: {
+              fontSize: '15px',
+              color: '#4b5563',
+              textAlign: 'center',
+              lineHeight: '1.6'
+            }
+          },
+          children: []
+        }
+      ]
+    }
+  ];
+
+  if (moduleName) {
+    elements.push({
+      id: 'flex_module_' + Math.random().toString(36).substring(2, 7),
+      type: 'flexbox',
+      props: {},
+      styles: {},
+      children: [
+        {
+          id: 'module_title_' + Math.random().toString(36).substring(2, 7),
+          type: 'heading',
+          props: { text: blockName, level: 'h2' },
+          styles: {},
+          children: []
+        },
+        {
+          id: 'module_block_' + Math.random().toString(36).substring(2, 7),
+          type: 'dynamic_church_block',
+          props: { module: moduleName, blockName, action: actionName, fields: fieldsList },
+          styles: {},
+          children: []
+        }
+      ]
+    } as any);
+  }
+
+  return JSON.stringify(elements);
+}
+
 export class ThemeEngineService {
   /**
    * Activate / Create a new Theme Engine module instance.
@@ -465,10 +590,105 @@ export class ThemeEngineService {
     }
 
     // 3. Update website active themeId
-    return await prisma.website.update({
+    const updatedWebsite = await prisma.website.update({
       where: { id: websiteId },
       data: { themeId },
     });
+
+    // 4. Seed default pages if website has no pages
+    const pagesCount = await prisma.page.count({
+      where: { websiteId },
+    });
+
+    if (pagesCount === 0) {
+      const defaultPages = [
+        {
+          tenantId,
+          websiteId,
+          title: 'Home',
+          slug: '',
+          isHome: true,
+          content: makePageContent('Welcome to Grace Church', 'Experience spiritual growth, warm fellowship, and impactful ministries with us.', 'Home'),
+          status: 'published',
+          seoTitle: 'Welcome to Grace Church | Home',
+          seoDescription: 'Experience spiritual growth, warm fellowship, and impactful ministries with us.',
+        },
+        {
+          tenantId,
+          websiteId,
+          title: 'About',
+          slug: 'about',
+          isHome: false,
+          content: makePageContent('About Our Church', 'Learn about our mission, belief, and leadership team.', 'About'),
+          status: 'published',
+          seoTitle: 'About Our Church | About',
+          seoDescription: 'Learn about our mission, belief, and leadership team.',
+        },
+        {
+          tenantId,
+          websiteId,
+          title: 'Services',
+          slug: 'services',
+          isHome: false,
+          content: makePageContent('Church Services', 'Join us for worship and teaching throughout the week.', 'Services'),
+          status: 'published',
+          seoTitle: 'Church Services | Services',
+          seoDescription: 'Join us for worship and teaching throughout the week.',
+        },
+        {
+          tenantId,
+          websiteId,
+          title: 'Sermons',
+          slug: 'sermons',
+          isHome: false,
+          content: makePageContent('Sermons & Media', 'Browse our sermon archive, series, and study resources.', 'Sermons', 'Sermons / Media', 'Latest Sermons', 'List sermons', ['title', 'speaker', 'date']),
+          status: 'published',
+          seoTitle: 'Sermons & Media | Sermons',
+          seoDescription: 'Browse our sermon archive, series, and study resources.',
+        },
+        {
+          tenantId,
+          websiteId,
+          title: 'Events',
+          slug: 'events',
+          isHome: false,
+          content: makePageContent('Upcoming Events', 'Find out about conferences, youth groups, and community events.', 'Events', 'Events', 'Event Calendar', 'List events', ['title', 'date', 'location']),
+          status: 'published',
+          seoTitle: 'Upcoming Events | Events',
+          seoDescription: 'Find out about conferences, youth groups, and community events.',
+        },
+        {
+          tenantId,
+          websiteId,
+          title: 'Giving',
+          slug: 'giving',
+          isHome: false,
+          content: makePageContent('Give Securely', 'Partner with us to support local and global ministries.', 'Giving', 'Giving', 'Tithing & Campaigns', 'Accept donations', ['amount', 'frequency']),
+          status: 'published',
+          seoTitle: 'Give Securely | Giving',
+          seoDescription: 'Partner with us to support local and global ministries.',
+        },
+        {
+          tenantId,
+          websiteId,
+          title: 'Contact',
+          slug: 'contact',
+          isHome: false,
+          content: makePageContent('Get in Touch', 'Have a question? Reach out to our staff or submit a prayer request.', 'Contact'),
+          status: 'published',
+          seoTitle: 'Get in Touch | Contact',
+          seoDescription: 'Have a question? Reach out to our staff or submit a prayer request.',
+        },
+      ];
+
+      for (const page of defaultPages) {
+        await prisma.page.create({
+          data: page,
+        });
+      }
+    }
+
+    return updatedWebsite;
   }
 
   /**
@@ -571,7 +791,7 @@ export class ThemeEngineService {
       throw new Error('Theme not found');
     }
 
-    const settings = safeParseJson<Record<string, any>>(theme.settings, {});
+    const settings = safeParseJson<Record<string, any>>(theme.draftSettings || theme.settings, {});
 
     return {
       themeId: theme.id,
@@ -689,6 +909,71 @@ export class ThemeEngineService {
     const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);
 
     return [...this.defaultPageTemplates(), ...(config.pageTemplates || [])];
+  }
+
+  static async customizeThemeDraft(tenantId: string, themeId: string, customConfig: CustomizeThemeInput) {
+    validateCustomization(customConfig);
+
+    let theme = await prisma.theme.findFirst({
+      where: {
+        id: themeId,
+        OR: [{ tenantId }, { tenantId: null }],
+      },
+    });
+
+    if (!theme) {
+      throw new Error('Customizable tenant theme not found');
+    }
+
+    if (theme.tenantId === null) {
+      theme = await prisma.theme.create({
+        data: {
+          tenantId,
+          name: `${theme.name} Custom`,
+          settings: theme.settings || '{}',
+          draftSettings: theme.draftSettings || null,
+          isCustom: true,
+        },
+      });
+
+      await prisma.website.updateMany({
+        where: { tenantId, themeId },
+        data: { themeId: theme.id },
+      });
+    }
+
+    const baseSettings = safeParseJson<Record<string, any>>(theme.draftSettings || theme.settings, {});
+    const updatedSettings = {
+      ...baseSettings,
+      ...customConfig,
+      colors: { ...(baseSettings.colors || {}), ...(customConfig.colors || {}) },
+      fonts: { ...(baseSettings.fonts || {}), ...(customConfig.fonts || {}) },
+      logos: { ...(baseSettings.logos || {}), ...(customConfig.logos || {}) },
+      layout: { ...(baseSettings.layout || {}), ...(customConfig.layout || {}) },
+    };
+
+    return prisma.theme.update({
+      where: { id: theme.id },
+      data: { draftSettings: JSON.stringify(updatedSettings) },
+    });
+  }
+
+  static async publishThemeCustomization(tenantId: string, themeId: string) {
+    const theme = await prisma.theme.findFirst({
+      where: { id: themeId, tenantId },
+    });
+
+    if (!theme) {
+      throw new Error('Tenant theme not found');
+    }
+
+    return prisma.theme.update({
+      where: { id: theme.id },
+      data: {
+        settings: theme.draftSettings || theme.settings,
+        draftSettings: null,
+      },
+    });
   }
 
   private static defaultSectionTemplates() {

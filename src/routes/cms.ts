@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import prisma from '../lib/prisma';
+import jwt from 'jsonwebtoken';
 import { dnsMiddleware } from '../middleware/dns';
 import { authMiddleware } from '../middleware/auth';
 import { requireAnyPermission } from '../middleware/rbac';
@@ -18,6 +19,7 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
     const tenantId = req.tenantId;
     const websiteId = (req as any).websiteId as string | undefined;
     const slug = (req.query.slug as string) || ''; // default to home page ""
+    const previewToken = req.query.previewToken as string | undefined;
 
     if (!tenantId || !websiteId) {
       res.status(404).json({ error: 'Website context not found' });
@@ -34,12 +36,25 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
       return;
     }
 
-    // Retrieve published page layout
+    let isPreview = false;
+    if (previewToken) {
+      try {
+        const decoded = jwt.verify(previewToken, process.env.JWT_SECRET || 'fallback-secret') as any;
+        if (decoded && decoded.pageId) {
+          isPreview = true;
+        }
+      } catch (err) {
+        res.status(401).json({ error: 'Invalid or expired preview token' });
+        return;
+      }
+    }
+
+    // Retrieve page layout
     const page = await prisma.page.findFirst({
       where: {
         websiteId,
         slug,
-        status: 'published',
+        ...(isPreview ? {} : { status: 'published' }),
       },
       include: {
         website: {
@@ -63,13 +78,17 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
       where: { websiteId },
     });
 
+    const pageContent = isPreview ? (page.draftContent || page.content) : page.content;
+    const themeSettings = (isPreview && page.website.theme.draftSettings) ? page.website.theme.draftSettings : page.website.theme.settings;
+
     res.json({
       data: {
         pageId: page.id,
         title: page.title,
         slug: page.slug,
         isHome: page.isHome,
-        contentBlocks: JSON.parse(page.content),
+        contentBlocks: JSON.parse(pageContent),
+        isPreview,
         seoTitle: page.seoTitle,
         seoDescription: page.seoDescription,
         seoKeywords: page.seoKeywords,
@@ -86,7 +105,7 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
         } : null,
         theme: {
           name: page.website.theme.name,
-          settings: JSON.parse(page.website.theme.settings),
+          settings: JSON.parse(themeSettings),
         },
       },
     });
@@ -293,7 +312,24 @@ router.get('/pages', requireCmsPermission('core-website-cms.read'), async (req: 
   }
 });
 
-// Update page layout block content, slug, status, and SEO settings
+// Get page details by ID (including draft and metadata)
+router.get('/pages/:id', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const tenantId = req.tenantId!;
+    const page = await prisma.page.findFirst({
+      where: { id, tenantId },
+    });
+    if (!page) {
+      res.status(404).json({ error: 'Page not found' });
+      return;
+    }
+    res.json({ data: page });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 router.patch('/pages/:id', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
@@ -732,6 +768,115 @@ router.get('/activity-logs', requireCmsPermission('core-website-cms.view_reports
   } catch (err) {
     console.error('Get CMS activity logs error:', err);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Save page visual changes to draftContent
+router.patch('/pages/:id/draft', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const tenantId = req.tenantId!;
+    const { draftContent } = req.body;
+
+    const page = await prisma.page.findFirst({
+      where: { id, tenantId },
+    });
+    if (!page) {
+      res.status(404).json({ error: 'Page not found' });
+      return;
+    }
+
+    const contentStr = typeof draftContent === 'string' ? draftContent : JSON.stringify(draftContent);
+
+    const updated = await prisma.page.update({
+      where: { id },
+      data: {
+        draftContent: contentStr,
+      },
+    });
+
+    res.json({ data: updated });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Promote page draftContent to live content, set status to published, and clear draftContent
+router.post('/pages/:id/publish', requireCmsPermission('core-website-cms.update'), async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const tenantId = req.tenantId!;
+    const userId = req.user?.userId;
+
+    const page = await prisma.page.findFirst({
+      where: { id, tenantId },
+    });
+    if (!page) {
+      res.status(404).json({ error: 'Page not found' });
+      return;
+    }
+
+    const nextContent = page.draftContent || page.content;
+
+    const updated = await prisma.page.update({
+      where: { id },
+      data: {
+        content: nextContent,
+        draftContent: null,
+        status: 'published',
+      },
+    });
+
+    // Save page revision snapshot
+    await savePageRevision(tenantId, page.id, nextContent, userId);
+
+    // Log activity
+    await prisma.cmsActivityLog.create({
+      data: {
+        tenantId,
+        userId,
+        actionType: 'page_publish',
+        pageId: page.id,
+        metadataJson: JSON.stringify({ title: page.title, slug: page.slug }),
+      },
+    });
+
+    res.json({ data: updated });
+  } catch (err: any) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Generate 15-minute temporary preview JWT token
+router.post('/pages/:id/preview', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const tenantId = req.tenantId!;
+
+    const page = await prisma.page.findFirst({
+      where: { id, tenantId },
+    });
+    if (!page) {
+      res.status(404).json({ error: 'Page not found' });
+      return;
+    }
+
+    const payload = {
+      pageId: page.id,
+      tenantId: page.tenantId,
+      exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'fallback-secret');
+
+    res.json({
+      data: {
+        previewToken: token,
+        previewUrl: `/api/cms/render?slug=${page.slug}&previewToken=${token}`,
+      },
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 });
 

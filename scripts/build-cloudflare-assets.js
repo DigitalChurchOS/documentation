@@ -6,7 +6,6 @@ const outputDir = path.join(root, 'dist', 'public');
 const appsRoot = path.join(root, 'apps');
 const superAdminPublic = path.join(appsRoot, 'super-admin', 'public');
 const tenantDashboardPublic = path.join(appsRoot, 'tenant-dashboard', 'public');
-const tenantDashboardBuilder = path.join(appsRoot, 'tenant-dashboard', 'src');
 const churchFrontendPublic = path.join(appsRoot, 'church-frontend', 'public');
 const marketplaceFrontend = path.join(appsRoot, 'marketplace', 'frontend');
 const marketplaceDeveloper = path.join(appsRoot, 'marketplace', 'developer');
@@ -69,7 +68,5 @@ copyDirectory(marketplaceDeveloper, path.join(outputDir, 'marketplace', 'develop
 copyFile(path.join(root, 'index.html'), path.join(outputDir, 'legacy-index.html'));
 copyFile(path.join(root, 'dark.png'), path.join(outputDir, 'dark.png'));
 copyFile(path.join(root, 'light.png'), path.join(outputDir, 'light.png'));
-copyDirectory(tenantDashboardBuilder, path.join(outputDir, 'page-builder'));
-
 console.log(`Cloudflare assets prepared in ${path.relative(root, outputDir)}`);
 

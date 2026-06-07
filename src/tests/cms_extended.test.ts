@@ -443,4 +443,95 @@ describe('ChurchOS CMS Extended Module - Revisions, Menus, Footers & Blocks', ()
       expect(res.body.data.footer.socialLinks).toEqual([{ name: 'facebook', url: 'https://fb.com/grace' }]);
     });
   });
+
+  // ─────────────────────────────────────────────────────────────
+  // 7. WEBSITE BUILDER DRAFT/PUBLISH/PREVIEW FLOWS
+  // ─────────────────────────────────────────────────────────────
+  describe('Website Builder Draft, Publish & Preview Token Flow', () => {
+    let draftPageId: string;
+    let previewToken: string;
+    let previewUrl: string;
+
+    beforeAll(async () => {
+      const pageRes = await request(app)
+        .post('/api/cms/pages')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          websiteId,
+          title: 'Customizer Studio Page',
+          slug: 'studio-test',
+          content: JSON.stringify([{ type: 'text', content: 'Initial Content' }]),
+          status: 'draft',
+        });
+
+      expect(pageRes.status).toBe(201);
+      draftPageId = pageRes.body.data.id;
+    });
+
+    it('should save page layout changes to draftContent without affecting public content', async () => {
+      const draftContent = [
+        { type: 'hero', props: { title: 'Updated Draft Hero' } },
+        { type: 'paragraph', props: { text: 'New draft description text.' } },
+      ];
+
+      const saveRes = await request(app)
+        .patch(`/api/cms/pages/${draftPageId}/draft`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ draftContent });
+
+      expect(saveRes.status).toBe(200);
+      expect(JSON.parse(saveRes.body.data.draftContent)).toEqual(draftContent);
+
+      const dbPage = await prisma.page.findUnique({ where: { id: draftPageId } });
+      expect(dbPage?.content).toContain('Initial Content');
+      expect(dbPage?.draftContent).toContain('Updated Draft Hero');
+    });
+
+    it('should issue a preview token that renders draft content privately', async () => {
+      const tokenRes = await request(app)
+        .post(`/api/cms/pages/${draftPageId}/preview`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(tokenRes.status).toBe(200);
+      previewToken = tokenRes.body.data.previewToken;
+      previewUrl = tokenRes.body.data.previewUrl;
+      expect(previewToken).toBeTruthy();
+      expect(previewUrl).toContain('previewToken=');
+
+      const renderRes = await request(app)
+        .get(previewUrl)
+        .set('Host', 'gracechurch.org');
+
+      expect(renderRes.status).toBe(200);
+      expect(renderRes.body.data.isPreview).toBe(true);
+      expect(renderRes.body.data.contentBlocks[0].props.title).toBe('Updated Draft Hero');
+    });
+
+    it('should publish draftContent into live content and clear the draft', async () => {
+      const publishRes = await request(app)
+        .post(`/api/cms/pages/${draftPageId}/publish`)
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(publishRes.status).toBe(200);
+      expect(publishRes.body.data.status).toBe('published');
+      expect(publishRes.body.data.draftContent).toBeNull();
+
+      const renderRes = await request(app)
+        .get('/api/cms/render?slug=studio-test')
+        .set('Host', 'gracechurch.org');
+
+      expect(renderRes.status).toBe(200);
+      expect(renderRes.body.data.contentBlocks[0].props.title).toBe('Updated Draft Hero');
+
+      const revision = await prisma.pageRevision.findFirst({
+        where: { pageId: draftPageId },
+        orderBy: { version: 'desc' },
+      });
+      expect(revision?.content).toContain('Updated Draft Hero');
+    });
+  });
 });
