@@ -496,6 +496,34 @@
       box-shadow: 0 20px 50px rgba(99, 102, 241, 0.06) !important;
     }
   </style>
+  <style>
+    /* Global Input Overrides for consistent styling */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="tel"]),
+    select,
+    textarea,
+    .form-control,
+    .input {
+      border-radius: 10px !important;
+      background: color-mix(in srgb, var(--panel-2) 82%, transparent) !important;
+      border: 1px solid var(--line) !important;
+      min-height: 40px !important;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease !important;
+    }
+
+    input:not([type="checkbox"]):not([type="radio"]):not([type="tel"]):focus,
+    select:focus,
+    textarea:focus,
+    .form-control:focus,
+    .input:focus {
+      border-color: var(--accent) !important;
+      box-shadow: 0 0 0 3px var(--accent-soft) !important;
+      outline: none !important;
+    }
+    /* Global Border Radius for Buttons, Cards, Dropdowns */
+    .btn, button, .card, .panel, .cms-content-panel, .dropdown-menu, .menu, .system-dialog-card, .modal-content, .metric-card, .settings-card, .module-card, .event-card, .song-card, .modern-select-trigger, .modern-select-menu, .modern-select-option, .modern-select-option.active::after, .cms-nav-item, .sidebar-a-btn, .sidebar-b-item, .website-selector {
+      border-radius: 10px !important;
+    }
+  </style>
 </head>
 <body class="font-sans dark">
   <div class="flex h-screen overflow-hidden">
