@@ -62,7 +62,7 @@ copyFile(path.join(ecclesiaFullTheme, 'index.html'), path.join(outputDir, 'theme
 
 // 7. Legacy / compatibility mappings
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'admin.html'));
-copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'dashboard.html'));
+
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'tenant-dashboard', 'index.html'));
 copyFile(path.join(superAdminPublic, 'index.html'), path.join(outputDir, 'super-admin', 'index.html'));
 copyFile(path.join(churchFrontendPublic, 'index.html'), path.join(outputDir, 'churchos.html'));

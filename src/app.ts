@@ -61,7 +61,7 @@ import developerMarketplaceRoutes from './routes/developerMarketplace';
 import domainTenantManagementRoutes from './routes/domainTenantManagement';
 import digitalLibraryResourceCenterRoutes from './routes/digitalLibraryResourceCenter';
 import dynamicBlogPublishingEngineRoutes from './routes/dynamicBlogPublishingEngine';
-
+import superAdminRoutes from './routes/superAdmin';
 
 // Load .env before anything else
 dotenv.config();
@@ -93,16 +93,28 @@ app.get('/cms', (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'cms.html'));
 });
 
-app.get('/dashboard', (_req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'dashboard.html'));
-});
-
 app.get(/^\/admin(?:\/.*)?$/, (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'apps', 'tenant-dashboard', 'public', 'index.html'));
 });
 
-app.get('/marketplace', (_req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'marketplace.html'));
+app.get(/^\/central(?:\/.*)?$/, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'apps', 'super-admin', 'public', 'index.html'));
+});
+
+app.get(/^\/church(?:\/.*)?$/, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'apps', 'church-frontend', 'public', 'index.html'));
+});
+
+app.get(/^\/marketplace(?:\/.*)?$/, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'apps', 'marketplace', 'frontend', 'index.html'));
+});
+
+app.get(/^\/developer(?:\/.*)?$/, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'apps', 'marketplace', 'developer', 'index.html'));
+});
+
+app.get(/^\/web(?:\/.*)?$/, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'apps', 'web', 'public', 'index.html'));
 });
 
 app.get('/page-builder', (_req, res) => {
@@ -179,6 +191,8 @@ app.use('/api/developer-marketplace', developerMarketplaceRoutes);
 app.use('/api/domain-tenant-management', domainTenantManagementRoutes);
 app.use('/api/digital-library-resource-center', digitalLibraryResourceCenterRoutes);
 app.use('/api/dynamic-blog-publishing-engine', dynamicBlogPublishingEngineRoutes);
+app.use('/api/super-admin', superAdminRoutes);
+
 // ── Global error handler ──────────────────────────────────
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Unhandled error:', err);

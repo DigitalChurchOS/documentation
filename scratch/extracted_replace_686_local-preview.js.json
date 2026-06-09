@@ -1,0 +1,10 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Redirect standalone /page-builder requests to Customizer in local preview server\"",
+  "EndLine": "3158",
+  "Instruction": "\"Check if mode=embed parameter is missing and redirect standalone index/root page builder requests to Customizer\"",
+  "ReplacementContent": "\"    } else if (urlPath === '/page-builder' || urlPath.startsWith('/page-builder/')) {\\n      const relative = urlPath.slice(13) || 'index.html';\\n      if (relative === 'index.html' || relative === '' || relative === '/') {\\n        if (parsedUrl.searchParams.get('mode') !== 'embed') {\\n          res.writeHead(302, { Location: '/admin?module=customizer&tab=pages' });\\n          res.end();\\n          return;\\n        }\\n      }\\n      filePath = path.join(root, 'page-builder', relative);\\n      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {\\n        filePath = path.join(filePath, 'index.html');\\n      } else if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {\\n        filePath = path.join(root, 'page-builder', 'index.html');\\n      }\"",
+  "StartLine": "3150",
+  "TargetContent": "\"    } else if (urlPath === '/page-builder' || urlPath.startsWith('/page-builder/')) {\\n      const relative = urlPath.slice(13) || 'index.html';\\n      filePath = path.join(root, 'page-builder', relative);\\n      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {\\n        filePath = path.join(filePath, 'index.html');\\n      } else if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {\\n        filePath = path.join(root, 'page-builder', 'index.html');\\n      }\"",
+  "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\scripts\\\\local-preview.js\""
+}

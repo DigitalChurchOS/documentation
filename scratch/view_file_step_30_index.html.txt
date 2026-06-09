@@ -1,0 +1,58 @@
+Created At: 2026-06-06T14:27:56Z
+Completed At: 2026-06-06T14:27:56Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 12750 to 12950
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12750:           <input type="text" id="editUserName" class="form-control" readonly style="opacity: 0.7; background: var(--panel-2);">
+12751:         </div>
+12752:         <div class="field">
+12753:           <label for="editUserEmail">User Email</label>
+12754:           <input type="text" id="editUserEmail" class="form-control" readonly style="opacity: 0.7; background: var(--panel-2);">
+12755:         </div>
+12756:         <div class="field">
+12757:           <label for="editUserRoleSelect">Assign New Role</label>
+12758:           <select id="editUserRoleSelect" class="form-control">
+12759:             <!-- Populated dynamically -->
+12760:           </select>
+12761:         </div>
+12762:       </div>
+12763:       <div class="modal-footer">
+12764:         <button class="btn" onclick="closeUserRoleModal('userRoleEditModal')">Cancel</button>
+12765:         <button class="btn primary" onclick="saveUserRoleChange()"><i data-lucide="check"></i>Update Role</button>
+12766:       </div>
+12767:     </div>
+12768:   </div>
+12769: 
+12770:   <!-- THEME CUSTOMIZER STANDALONE EXPERIENCE -->
+12771:   <section class="customizer" id="customizer">
+12772:     <button class="reveal-toolbar" id="revealTopbar" title="Show toolbar" type="button"><i data-lucide="sliders-horizontal"></i></button>
+12773:     <div class="customizer-shell">
+12774:       <header class="customizer-topbar">
+12775:         <div class="customizer-left-title">
+12776:           <button class="back-btn" id="closeCustomizer" type="button"><i data-lucide="arrow-left"></
+<truncated 10046 bytes>
+12929:                   <span class="status-icon wifi">
+12930:                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20" stroke-width="3"></line></svg>
+12931:                   </span>
+12932:                   <span class="status-icon battery">
+12933:                     <span class="battery-body"><span class="battery-level"></span></span>
+12934:                     <span class="battery-cap"></span>
+12935:                   </span>
+12936:                 </div>
+12937:               </div>
+12938:               <div class="church-site" id="churchSite">
+12939:                 <header class="site-header">
+12940:                   <div class="site-brand"><div class="site-mark"><i data-lucide="church"></i></div><span>Christ Embassy Bunga</span></div>
+12941:                   <nav class="site-nav"><a class="active">Home</a><a>About</a><a>Events</a><a>Sermons</a><a>Prayer</a><a>Giving</a></nav>
+12942:                   <button class="theme-btn" type="button">Watch Live</button>
+12943:                 </header>
+12944:                 <section class="hero">
+12945:                   <div class="hero-grid">
+12946:                     <div>
+12947:                       <span class="kicker"><i data-lucide="sparkles"></i> Welcome home</span>
+12948:                       <h1>Experience worship, word, prayer and community.</h1>
+12949:                       <p>A warm digital church experience built from platform contracts, theme slots, universal settings, and secure plugin injection.</p>
+12950:                       <div class="hero-actions">
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

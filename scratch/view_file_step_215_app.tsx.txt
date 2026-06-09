@@ -1,0 +1,95 @@
+Created At: 2026-06-06T14:52:23Z
+Completed At: 2026-06-06T14:52:23Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx`
+Total Lines: 880
+Total Bytes: 33665
+Showing lines 335 to 430
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+335:     }
+336:   ]
+337: };
+338: 
+339: export const App: React.FC = () => {
+340:   const pageContext = new URLSearchParams(window.location.search);
+341:   const initialTitle = pageContext.get('title') || 'Sunday Experience Landing Page';
+342:   const initialSlug = pageContext.get('slug') || '';
+343:   const initialStatus = pageContext.get('status') || 'draft';
+344:   
+345:   let queryTheme = pageContext.get('theme');
+346:   let queryAccent = pageContext.get('accent');
+347: 
+348:   if (!queryTheme || !queryAccent) {
+349:     try {
+350:       const savedState = localStorage.getItem('churchos.unifiedDashboard.v1');
+351:       if (savedState) {
+352:         const parsed = JSON.parse(savedState);
+353:         if (parsed && parsed.theme) {
+354:           if (!queryTheme) queryTheme = parsed.theme.mode;
+355:           if (!queryAccent) queryAccent = parsed.theme.accent;
+356:         }
+357:       }
+358:     } catch (e) {
+359:       console.error(e);
+360:     }
+361:   }
+362: 
+363:   const initialTheme = (queryTheme as 'dark' | 'light') || 'light';
+364:   const initialAccent = queryAccent || '#7C3AED';
+365: 
+366:   const [elements, setElements] = useState<ElementSchema[]>([]);
+367:   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+368:   const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
+369:   const [activeTemplate, setActiveTemplate] = useState<string>('hero');
+370: 
+371:   // Page Settings
+372:   const [pageTitle, setPageTitle] = useState(initialTitle);
+373:   const [pageDesc, setPa
+<truncated 650 bytes>
+de', themeMode === 'light');
+385:   }, [themeMode]);
+386: 
+387:   useEffect(() => {
+388:     document.documentElement.style.setProperty('--accent', brandAccent);
+389:   }, [brandAccent]);
+390: 
+391:   // Listen for message events for real-time theme updates
+392:   useEffect(() => {
+393:     const handleMessage = (event: MessageEvent) => {
+394:       if (event.data && event.data.type === 'themeChange') {
+395:         const { theme: nextTheme, accent: nextAccent } = event.data;
+396:         if (nextTheme) setThemeMode(nextTheme);
+397:         if (nextAccent) setBrandAccent(nextAccent);
+398:       }
+399:     };
+400:     window.addEventListener('message', handleMessage);
+401:     return () => window.removeEventListener('message', handleMessage);
+402:   }, []);
+403: 
+404:   // History states for undo/redo
+405:   const [history, setHistory] = useState<HistoryState[]>([]);
+406:   const [historyIndex, setHistoryIndex] = useState<number>(-1);
+407: 
+408:   // Publish / Save State
+409:   const [isSaving, setIsSaving] = useState(false);
+410:   const [isPublishing, setIsPublishing] = useState(false);
+411:   const [compiledSchema, setCompiledSchema] = useState<string | null>(null);
+412: 
+413:   // Toast State
+414:   const [toast, setToast] = useState<{ message: string; show: boolean }>({ message: '', show: false });
+415: 
+416:   const showToastNotification = (msg: string) => {
+417:     setToast({ message: msg, show: true });
+418:   };
+419: 
+420:   useEffect(() => {
+421:     if (toast.show) {
+422:       const timer = setTimeout(() => {
+423:         setToast(prev => ({ ...prev, show: false }));
+424:       }, 3500);
+425:       return () => clearTimeout(timer);
+426:     }
+427:   }, [toast.show]);
+428: 
+429:   // Load template helper
+430:   const loadTemplate = (tempKey: 'hero' | 'church_landing') => {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

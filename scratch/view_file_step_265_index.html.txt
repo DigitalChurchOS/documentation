@@ -1,0 +1,44 @@
+Created At: 2026-06-06T14:53:33Z
+Completed At: 2026-06-06T14:53:33Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31841
+Total Bytes: 1550442
+Showing lines 12930 to 12965
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12930:                   <option value="softGradient">softGradient</option>
+12931:                   <option value="solid">solid</option>
+12932:                   <option value="animatedGradient">animatedGradient</option>
+12933:                   <option value="blobs">blobs</option>
+12934:                   <option value="textured">textured</option>
+12935:                   <option value="parallax">parallax</option>
+12936:                 </select>
+12937:               </div>
+12938:               <div class="control">
+12939:                 <label>Icon style</label>
+12940:                 <select class="select-like" data-select="iconStyle">
+12941:                   <option value="lucideLine">lucideLine</option>
+12942:                   <option value="filled">filled</option>
+12943:                   <option value="outline">outline</option>
+12944:                   <option value="duotone">duotone</option>
+12945:                   <option value="minimal">minimal</option>
+12946:                 </select>
+12947:               </div>
+12948:               <div class="control">
+12949:                 <label>Button style</label>
+12950:                 <div class="option-grid" data-setting="buttonStyle">
+12951:                   <button class="option active" data-value="solid" type="button">Solid</button>
+12952:                   <button class="option" data-value="outline" type="button">Outline</button>
+12953:                   <button class="option" data-value="soft" type="button">Soft</button>
+12954:                   <button class="option" data-value="glass" type="button">Glass</button>
+12955:                 </div>
+12956:               </div>
+12957:             </div>
+12958:           </div>
+12959:         </aside>
+12960: 
+12961:         <section class="preview-stage">
+12962:           <div class="preview-canvas" id="previewCanvas">
+12963:             <div class="preview-frame" id="previewFrame">
+12964:               <div class="device-status-bar">
+12965:                 <span class="status-time">9:41</span>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

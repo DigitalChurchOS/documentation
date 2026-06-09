@@ -913,6 +913,98 @@
         min-height: auto;
       }
     }
+
+    /* Form Background and Centered Layout */
+    .signup-wrapper {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px;
+      border-radius: var(--radius);
+      background: var(--solid);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      z-index: 2;
+    }
+    .signup-section-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 50%);
+      mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    /* Input Groups & Utilities */
+    .input-group {
+      display: flex;
+      align-items: center;
+      background: color-mix(in srgb, var(--solid) 68%, transparent);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding-right: 15px;
+      transition: border .25s ease, box-shadow .25s ease;
+    }
+    .input-group:focus-within {
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      box-shadow: 0 0 0 5px var(--accent-soft);
+    }
+    .input-group input {
+      border: none;
+      box-shadow: none;
+      background: transparent;
+      padding-right: 5px;
+      flex: 1;
+    }
+    .input-group input:focus {
+      box-shadow: none;
+      transform: none;
+    }
+    .input-suffix {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .password-wrapper {
+      position: relative;
+    }
+    .password-wrapper input {
+      padding-right: 45px;
+    }
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+    .password-toggle:hover {
+      color: var(--accent);
+    }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .step-count {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+      background: var(--soft);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+
   </style>
 </head>
 <body data-theme="light">
@@ -1125,59 +1217,50 @@
     </section>
 
     <!-- Interactive Signup & Login Panel Section -->
-    <section class="section shell" id="signup">
-      <div class="signup-container">
-        <!-- Information side -->
-        <div class="panel signup-copy reveal visible">
-          <div>
-            <div class="eyebrow"><i data-lucide="shield-check"></i> Secure Onboarding</div>
-            <h2 id="copyTitle">Provision your church workspace in 30 seconds.</h2>
-            <p class="section-copy" id="copyDesc">
-              Enter your details, choose a unique church subdomain, and proceed directly to the interactive onboarding wizard.
-            </p>
-          </div>
+    
+    <!-- Interactive Signup & Login Panel Section -->
+    <section class="section shell" id="signup" style="position: relative; padding: 100px 20px;">
+      <div class="signup-section-bg"></div>
+      
+      <div style="text-align: center; position: relative; z-index: 2; margin-bottom: 40px;">
+        <h2 id="copyTitle">Provision your church workspace in 30 seconds.</h2>
+        <p class="section-copy" id="copyDesc" style="margin: 0 auto;">
+          Enter your details, choose a unique church subdomain, and proceed directly to the interactive onboarding wizard.
+        </p>
+      </div>
 
-          <div class="timeline" id="timelineList">
-            <div class="timeline-item">
-              <div class="timeline-icon"><i data-lucide="badge-check"></i></div>
-              <div><strong>Validate subdomain</strong><span>Ensure your preferred church URL is available and secure.</span></div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-icon"><i data-lucide="database"></i></div>
-              <div><strong>Workspace setup</strong><span>Transactional setup of your custom database and default website template.</span></div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-icon"><i data-lucide="wand-2"></i></div>
-              <div><strong>Onboarding Wizard</strong><span>Quick configuration of design styles, modules, and team details.</span></div>
-            </div>
-          </div>
+      <div class="signup-wrapper">
+        <div class="form-tabs" style="margin-bottom: 30px;">
+          <button class="form-tab active" id="tabRegister" type="button">Register Church</button>
+          <button class="form-tab" id="tabLogin" type="button">Sign In</button>
         </div>
 
-        <!-- Forms side -->
-        <div class="panel form-panel reveal visible">
-          <div class="form-tabs">
-            <button class="form-tab active" id="tabRegister" type="button">Register Church</button>
-            <button class="form-tab" id="tabLogin" type="button">Sign In</button>
-          </div>
-
-          <!-- Registration Form -->
-          <form id="signupForm" class="form-grid">
+        <!-- Registration Form -->
+        <form id="signupForm" class="form-grid">
+          
+          <!-- Step 1 -->
+          <div id="step1" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+            <div class="step-header">
+              <h3 style="margin: 0;">Step 1: Church Details</h3>
+              <div class="step-count">1 of 2</div>
+            </div>
+            
             <div class="field full">
               <label for="churchName">Church Name</label>
               <input id="churchName" placeholder="e.g. Christ Embassy Calgary" required />
             </div>
 
-            <div class="field">
+            <div class="field full">
               <label for="ownerName">Pastor/Owner Full Name</label>
               <input id="ownerName" placeholder="e.g. Pastor David Cole" required />
             </div>
 
-            <div class="field">
+            <div class="field full">
               <label for="ownerEmail">Owner Email Address</label>
               <input id="ownerEmail" type="email" placeholder="e.g. pastor@church.org" required />
             </div>
 
-            <div class="field">
+            <div class="field full">
               <label for="plan">Plan Option</label>
               <select id="plan" required>
                 <option value="starter">Starter</option>
@@ -1187,64 +1270,102 @@
               </select>
             </div>
 
-            <div class="field">
+            <div class="field full">
               <label for="country">Country</label>
-              <input id="country" placeholder="e.g. Canada" required />
+              <select id="country" required>
+                <option value="" disabled selected>Select a country</option>
+              </select>
             </div>
 
+            <div class="field full" style="margin-top: 10px;">
+              <button class="btn btn-primary" type="button" id="btnProceed" style="width:100%; min-height:56px;">
+                Proceed <i data-lucide="arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div id="step2" style="display: none; grid-template-columns: 1fr; gap: 20px;">
+            <div class="step-header">
+              <h3 style="margin: 0;">Step 2: Workspace Setup</h3>
+              <div class="step-count">2 of 2</div>
+            </div>
+            
             <div class="field full">
               <label for="subdomain">Preferred Subdomain</label>
-              <input id="subdomain" placeholder="e.g. cecalgary" required />
-              <div class="domain-preview">
-                <code id="domainText">cecalgary.churchos.com</code>
-                <span class="pill ok" id="domainStatus"><i data-lucide="check-circle-2"></i> Available</span>
+              <div class="input-group">
+                <input id="subdomain" placeholder="e.g. cecalgary" required />
+                <span class="input-suffix">.churched.online</span>
               </div>
             </div>
 
-            <div class="field">
+            <div class="field full">
               <label for="password">Password</label>
-              <input id="password" type="password" placeholder="••••••••" required minlength="8" />
+              <div class="password-wrapper">
+                <input id="password" type="password" placeholder="••••••••" required minlength="8" />
+                <button type="button" class="password-toggle" data-target="password">
+                  <i data-lucide="eye"></i>
+                </button>
+              </div>
             </div>
 
-            <div class="field">
+            <div class="field full">
+              <label for="repeatPassword">Repeat Password</label>
+              <div class="password-wrapper">
+                <input id="repeatPassword" type="password" placeholder="••••••••" required minlength="8" />
+                <button type="button" class="password-toggle" data-target="repeatPassword">
+                  <i data-lucide="eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="field full">
               <label for="city">City</label>
               <input id="city" placeholder="e.g. Calgary" required />
             </div>
 
-            <div class="field full" style="margin-top: 10px;">
-              <button class="btn btn-primary" type="submit" style="width:100%; min-height:56px;">
+            <div class="field full" style="display: grid; grid-template-columns: auto 1fr; gap: 15px; margin-top: 10px;">
+              <button class="btn" type="button" id="btnBack" style="min-height:56px; padding: 0 20px;">
+                <i data-lucide="arrow-left"></i> Back
+              </button>
+              <button class="btn btn-primary" type="submit" style="min-height:56px;">
                 <i data-lucide="rocket"></i> Create Workspace & Start
               </button>
             </div>
-          </form>
+          </div>
+        </form>
 
-          <!-- Login Form (Initially Hidden) -->
-          <form id="loginForm" class="form-grid" style="display: none;">
-            <div class="field full">
-              <label for="loginSubdomain">Church Subdomain</label>
+        <!-- Login Form (Initially Hidden) -->
+        <form id="loginForm" class="form-grid" style="display: none; grid-template-columns: 1fr;">
+          <div class="field full">
+            <label for="loginSubdomain">Church Subdomain</label>
+            <div class="input-group" style="margin-bottom: 20px;">
               <input id="loginSubdomain" placeholder="e.g. cecalgary" required />
-              <div class="domain-preview" style="margin-bottom: 10px;">
-                <code id="loginDomainText">cecalgary.churchos.com</code>
-              </div>
+              <span class="input-suffix">.churched.online</span>
             </div>
+          </div>
 
-            <div class="field full">
-              <label for="loginEmail">Email Address</label>
-              <input id="loginEmail" type="email" placeholder="e.g. pastor@church.org" required />
-            </div>
+          <div class="field full">
+            <label for="loginEmail">Email Address</label>
+            <input id="loginEmail" type="email" placeholder="e.g. pastor@church.org" required />
+          </div>
 
-            <div class="field full">
-              <label for="loginPassword">Password</label>
+          <div class="field full">
+            <label for="loginPassword">Password</label>
+            <div class="password-wrapper">
               <input id="loginPassword" type="password" placeholder="••••••••" required />
-            </div>
-
-            <div class="field full" style="margin-top: 20px;">
-              <button class="btn btn-primary" type="submit" style="width:100%; min-height:56px;">
-                <i data-lucide="log-in"></i> Sign In to Dashboard
+              <button type="button" class="password-toggle" data-target="loginPassword">
+                <i data-lucide="eye"></i>
               </button>
             </div>
-          </form>
-        </div>
+          </div>
+
+          <div class="field full" style="margin-top: 20px;">
+            <button class="btn btn-primary" type="submit" style="width:100%; min-height:56px;">
+              <i data-lucide="log-in"></i> Sign In to Dashboard
+            </button>
+          </div>
+        </form>
       </div>
     </section>
   </main>
@@ -1265,8 +1386,8 @@
     const churchNameInput = document.getElementById("churchName");
     const heroPreviewName = document.getElementById("heroPreviewName");
     const subdomainInput = document.getElementById("subdomain");
-    const domainText = document.getElementById("domainText");
-    const domainStatus = document.getElementById("domainStatus");
+    
+    
     const planSelect = document.getElementById("plan");
     const previewUrl = document.getElementById("previewUrl");
 
@@ -1276,10 +1397,10 @@
     const loginForm = document.getElementById("loginForm");
     const copyTitle = document.getElementById("copyTitle");
     const copyDesc = document.getElementById("copyDesc");
-    const timelineList = document.getElementById("timelineList");
+    
 
     const loginSubdomain = document.getElementById("loginSubdomain");
-    const loginDomainText = document.getElementById("loginDomainText");
+    
 
     function icon(name) {
       return `<i data-lucide="${name}"></i>`;
@@ -1300,69 +1421,82 @@
       syncThemeIcon();
     });
 
+    
     // Subdomain formatting and validation
     function cleanSubdomain(value) {
       return value.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-");
     }
 
-    let checkTimeout;
-    function updateDomain() {
-      const clean = cleanSubdomain(subdomainInput.value);
-      subdomainInput.value = clean;
-      domainText.textContent = `${clean || "cecalgary"}.churchos.com`;
-      previewUrl.textContent = `${clean || "churchname"}.churchos.com`;
+    subdomainInput.addEventListener("input", () => {
+      subdomainInput.value = cleanSubdomain(subdomainInput.value);
+    });
 
-      if (clean.length < 4) {
-        domainStatus.className = "pill bad";
-        domainStatus.innerHTML = `${icon("x-circle")} Too short (min 4)`;
-        lucide.createIcons();
-        return;
-      }
-
-      // Debounced live check
-      clearTimeout(checkTimeout);
-      domainStatus.className = "pill";
-      domainStatus.innerHTML = `${icon("loader")} Checking...`;
-      lucide.createIcons();
-
-      checkTimeout = setTimeout(() => {
-        fetch('/api/public/check-subdomain', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subdomain: clean })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.available) {
-            domainStatus.className = "pill ok";
-            domainStatus.innerHTML = `${icon("check-circle-2")} Available`;
-          } else {
-            domainStatus.className = "pill bad";
-            domainStatus.innerHTML = `${icon("x-circle")} ${data.error || "Not available"}`;
-          }
-          lucide.createIcons();
-        })
-        .catch(err => {
-          console.error(err);
-          domainStatus.className = "pill bad";
-          domainStatus.innerHTML = `${icon("alert-circle")} Check failed`;
-          lucide.createIcons();
-        });
-      }, 400);
+    // Populate countries
+    const countries = [
+      "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Côte d'Ivoire", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Holy See", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine State", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+    ];
+    const countrySelect = document.getElementById("country");
+    if (countrySelect) {
+      countries.forEach(c => {
+        const option = document.createElement("option");
+        option.value = c;
+        option.textContent = c;
+        countrySelect.appendChild(option);
+      });
     }
 
-    subdomainInput.addEventListener("input", updateDomain);
-    subdomainInput.addEventListener("blur", updateDomain);
+    // Two-step logic
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const btnProceed = document.getElementById("btnProceed");
+    const btnBack = document.getElementById("btnBack");
 
-    churchNameInput.addEventListener("input", () => {
-      heroPreviewName.textContent = churchNameInput.value ? `${churchNameInput.value}, beautifully launched.` : "Your church, beautifully launched.";
+    if (btnProceed) {
+      btnProceed.addEventListener("click", () => {
+        // Validate step 1 fields
+        const s1Inputs = step1.querySelectorAll('input, select');
+        let valid = true;
+        s1Inputs.forEach(input => {
+          if (!input.checkValidity()) {
+            input.reportValidity();
+            valid = false;
+          }
+        });
+        if (valid) {
+          step1.style.display = "none";
+          step2.style.display = "grid";
+        }
+      });
+    }
+
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        step2.style.display = "none";
+        step1.style.display = "grid";
+      });
+    }
+
+    // Password visibility toggles
+    document.querySelectorAll(".password-toggle").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        if (input.type === "password") {
+          input.type = "text";
+          btn.innerHTML = icon("eye-off");
+        } else {
+          input.type = "password";
+          btn.innerHTML = icon("eye");
+        }
+        lucide.createIcons();
+      });
     });
 
     // Login subdomain mirror
     loginSubdomain.addEventListener("input", () => {
       const clean = cleanSubdomain(loginSubdomain.value);
       loginSubdomain.value = clean;
-      loginDomainText.textContent = `${clean || "cecalgary"}.churchos.com`;
+      
     });
 
     // Billing toggle
@@ -1399,7 +1533,7 @@
       loginForm.style.display = "none";
       copyTitle.textContent = "Provision your church workspace in 30 seconds.";
       copyDesc.textContent = "Enter your details, choose a unique church subdomain, and proceed directly to the interactive onboarding wizard.";
-      timelineList.style.display = "grid";
+      
     });
 
     tabLogin.addEventListener("click", () => {
@@ -1409,7 +1543,7 @@
       loginForm.style.display = "grid";
       copyTitle.textContent = "Welcome back to your Church Office.";
       copyDesc.textContent = "Enter your workspace details and credentials to manage your website, giving gateway, membership logs, and plugins.";
-      timelineList.style.display = "none";
+      
     });
 
     // Toast utility

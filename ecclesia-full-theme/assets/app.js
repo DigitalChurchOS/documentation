@@ -331,7 +331,15 @@ function navigateToPage(url, isBack = false) {
       contentOutlet.innerHTML = newMain ? newMain.innerHTML : '';
       document.title = newTitle;
 
-      // 2. Extract and dynamically inject stylesheets from fetched document
+      // 2. Clean up previous page-specific stylesheets to prevent styling leaks
+      document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href.includes('assets/') && !href.includes('styles.css')) {
+          link.remove();
+        }
+      });
+
+      // 3. Extract and dynamically inject stylesheets from fetched document
       doc.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
         const href = link.getAttribute('href');
         if (href && !document.querySelector(`link[href="${href}"]`)) {

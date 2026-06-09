@@ -1,0 +1,51 @@
+Created At: 2026-06-06T14:53:54Z
+Completed At: 2026-06-06T14:53:54Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31897
+Total Bytes: 1555827
+Showing lines 13000 to 13050
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+13000:           </div>
+13001: 
+13002:           <div class="settings-tab-content page-inspector-tab" id="customizerInspectorPanel" style="display:none; flex:1; overflow-y:auto; padding: 16px;">
+13003:             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+13004:               <h3 style="margin: 0; font-size: 14px; font-weight: 850; color:#202033;" id="inspectorElementTitle">Element Inspector</h3>
+13005:               <button class="ghost-btn" id="inspectorBackBtn" style="padding: 4px 8px; font-size: 11px; height: 28px; border-radius: 6px;" type="button">Back</button>
+13006:             </div>
+13007:             <div id="inspectorFieldsContainer" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+13008:               <!-- Dynamic Fields based on Element Type -->
+13009:             </div>
+13010:             <div style="margin-top: 20px; display: flex; gap: 8px;">
+13011:               <button class="ghost-btn flex-1 justify-center" id="inspectorDuplicateBtn" type="button" style="flex:1; border-radius:10px; height:38px;"><i data-lucide="copy"></i> Duplicate</button>
+13012:               <button class="ghost-btn flex-1 justify-center" id="inspectorDeleteBtn" type="button" style="flex:1; border-radius:10px; height:38px; color: #dc2626; border-color: #fca5a5; background: #fef2f2;"><i data-lucide="trash-2"></i> Delete</button>
+13013:             </div>
+13014:           </div>
+13015:         </aside>
+13016: 
+13017:         <section class="previ
+<truncated 717 bytes>
+"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20" stroke-width="3"></line></svg>
+13028:                   </span>
+13029:                   <span class="status-icon battery">
+13030:                     <span class="battery-body"><span class="battery-level"></span></span>
+13031:                     <span class="battery-cap"></span>
+13032:                   </span>
+13033:                 </div>
+13034:               </div>
+13035:               <div class="church-site" id="churchSite">
+13036:                 <header class="site-header">
+13037:                   <div class="site-brand"><div class="site-mark"><i data-lucide="church"></i></div><span>Christ Embassy Bunga</span></div>
+13038:                   <nav class="site-nav"><a class="active">Home</a><a>About</a><a>Events</a><a>Sermons</a><a>Prayer</a><a>Giving</a></nav>
+13039:                   <button class="theme-btn" type="button">Watch Live</button>
+13040:                 </header>
+13041:                 <section class="hero">
+13042:                   <div class="hero-grid">
+13043:                     <div>
+13044:                       <span class="kicker"><i data-lucide="sparkles"></i> Welcome home</span>
+13045:                       <h1>Experience worship, word, prayer and community.</h1>
+13046:                       <p>A warm digital church experience built from platform contracts, theme slots, universal settings, and secure plugin injection.</p>
+13047:                       <div class="hero-actions">
+13048:                         <button class="theme-btn" type="button">Plan a Visit</button>
+13049:                         <button class="theme-btn secondary" type="button">Give Now</button>
+13050:                       </div>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

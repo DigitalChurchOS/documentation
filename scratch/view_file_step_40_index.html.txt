@@ -1,0 +1,82 @@
+Created At: 2026-06-06T14:28:06Z
+Completed At: 2026-06-06T14:28:06Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 16050 to 16250
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+16050:           btn.classList.toggle('active', btn.dataset.value === val);
+16051:         });
+16052:       });
+16053:       // Select elements
+16054:       document.querySelectorAll('[data-select]').forEach(sel => {
+16055:         const val = customizerState[sel.dataset.select];
+16056:         sel.value = val || sel.options[0]?.value;
+16057:       });
+16058:     }
+16059: 
+16060:     window.bootstrapTenantThemes = async function() {
+16061:       showToast('Loading premium themes catalog...');
+16062:       const [overviewRes, themesRes, marketplaceRes] = await Promise.all([
+16063:         cmsApiRequest('GET', '/api/theme-engine/overview'),
+16064:         cmsApiRequest('GET', '/api/theme-engine/themes'),
+16065:         cmsApiRequest('GET', '/api/marketplace/assets?type=theme')
+16066:       ]);
+16067: 
+16068:       const themes = (themesRes && themesRes.ok && themesRes.data) ? themesRes.data : [];
+16069:       let marketplaceThemes = (marketplaceRes && marketplaceRes.ok && marketplaceRes.data) ? marketplaceRes.data : [];
+16070:       if (!marketplaceThemes || marketplaceThemes.length === 0) {
+16071:         marketplaceThemes = themeEngineState.marketplaceThemes || [];
+16072:       }
+16073: 
+16074:       themeEngineState.themes = themes;
+16075: 
+16076:       const overview = (overviewRes && overviewRes.ok && overviewRes.data) ? overviewRes.data : {};
+16077:       const activeWebsite = overview.activeWebsite;
+16078:       let activeThemeId = activeWebsite ? activeWebsite.themeId : null;
+16079:       if (!activeThemeI
+<truncated 7789 bytes>
+          </article>
+16209:           `;
+16210:         }).join('');
+16211:       }
+16212: 
+16213:       setupThemeEventListeners();
+16214:       if (window.lucide) window.lucide.createIcons();
+16215:     };
+16216: 
+16217:     function setupThemeEventListeners() {
+16218:       // Preview Toggle
+16219:       document.querySelectorAll('[data-preview-toggle]').forEach(group => {
+16220:         const clone = group.cloneNode(true);
+16221:         group.parentNode.replaceChild(clone, group);
+16222:         clone.addEventListener('click', e => {
+16223:           const btn = e.target.closest('.segment');
+16224:           if (!btn) return;
+16225:           if (clone.dataset.previewToggle === 'stage') {
+16226:             setStageDevice(btn.dataset.device);
+16227:           } else {
+16228:             setCardDevice(btn.dataset.device);
+16229:           }
+16230:         });
+16231:       });
+16232: 
+16233:       // Settings Accents/Modes click options
+16234:       document.querySelectorAll('[data-setting]').forEach(group => {
+16235:         const clone = group.cloneNode(true);
+16236:         group.parentNode.replaceChild(clone, group);
+16237:         clone.addEventListener('click', e => {
+16238:           const btn = e.target.closest('.option');
+16239:           if (!btn) return;
+16240:           clone.querySelectorAll('.option').forEach(b => b.classList.remove('active'));
+16241:           btn.classList.add('active');
+16242:           customizerState[clone.dataset.setting] = btn.dataset.value;
+16243:           applyCustomizerTheme();
+16244:         });
+16245:       });
+16246: 
+16247:       // Settings select dropdown change
+16248:       document.querySelectorAll('[data-select]').forEach(sel => {
+16249:         const clone = sel.cloneNode(true);
+16250:         sel.parentNode.replaceChild(clone, sel);
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

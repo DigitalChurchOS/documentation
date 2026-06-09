@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Instead of navigating to standalone /page-builder, open the Theme Customizer's Pages tab and auto-select the page — keeping the user inside the unified experience\"",
+  "EndLine": "19299",
+  "Instruction": "\"Change openVisualEditor to open the customizer with Pages tab and select the page, instead of navigating away to /page-builder\"",
+  "ReplacementContent": "\"    function openVisualEditor(pageId) {\\n      const page = cmsState.pages.find(p => p.id === pageId);\\n      if (!page) return;\\n      // Open the unified Theme Customizer and navigate to the page\\n      const customizeBtn = document.getElementById('customizeBtn');\\n      if (customizeBtn) {\\n        customizeBtn.click();\\n        setTimeout(() => {\\n          if (typeof showTab === 'function') showTab('Pages');\\n          setTimeout(() => {\\n            if (typeof selectCustomizerPage === 'function') selectCustomizerPage(pageId);\\n          }, 300);\\n        }, 300);\\n      }\\n    }\"",
+  "StartLine": "19286",
+  "TargetContent": "\"    function openVisualEditor(pageId) {\\n      const page = cmsState.pages.find(p => p.id === pageId);\\n      if (!page) return;\\n      const params = new URLSearchParams({\\n        pageId: page.id,\\n        title: page.title || '',\\n        slug: page.slug || '',\\n        status: page.status || 'draft',\\n        theme: state.theme.mode,\\n        accent: state.theme.accent,\\n        v: Date.now().toString()\\n      });\\n      window.location.href = `/page-builder/?${params.toString()}`;\\n    }\"",
+  "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\apps\\\\tenant-dashboard\\\\public\\\\index.html\"",
+  "toolAction": "\"Fixing visual editor nav\"",
+  "toolSummary": "\"Unified editor navigation\""
+}

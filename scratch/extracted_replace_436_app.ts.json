@@ -1,0 +1,10 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Add redirect from /page-builder to /page-builder/ to prevent path resolution issues in client app\"",
+  "EndLine": "95",
+  "Instruction": "\"Add a redirect handler for exact match /page-builder to /page-builder/\"",
+  "ReplacementContent": "\"// Serve Page Builder static files and index\\napp.use('/page-builder', express.static(path.join(__dirname, '..', 'page-builder')));\\napp.get('/page-builder', (req, res) => {\\n  res.redirect('/page-builder/');\\n});\\napp.get('/page-builder{/*path}', (_req, res) => {\\n  res.sendFile(path.join(__dirname, '..', 'page-builder', 'index.html'));\\n});\"",
+  "StartLine": "90",
+  "TargetContent": "\"// Serve Page Builder static files and index\\napp.use('/page-builder', express.static(path.join(__dirname, '..', 'page-builder')));\\napp.get('/page-builder{/*path}', (_req, res) => {\\n  res.sendFile(path.join(__dirname, '..', 'page-builder', 'index.html'));\\n});\"",
+  "TargetFile": "\"c:/Users/Administrator/Documents/ChurchOS/src/app.ts\""
+}

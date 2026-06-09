@@ -1,0 +1,24 @@
+Created At: 2026-06-06T16:36:12Z
+Completed At: 2026-06-06T16:36:12Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 345 to 360
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+345:       createdAt: now(),
+346:       updatedAt: now(),
+347:     },
+348:     {
+349:       id: 'page-member-dashboard',
+350:       websiteId: demoWebsiteId,
+351:       title: 'Member Dashboard',
+352:       slug: 'member-dashboard',
+353:       status: 'draft',
+354:       isHome: false,
+355:       seoTitle: 'Member Dashboard | Christ Embassy Next Church',
+356:       seoDescription: 'Personalized member actions, events, groups, courses, giving history, and prayer sessions.',
+357:       content: [
+358:         { type: 'dynamic_member_dashboard', title: 'Personalized Member Dashboard', sourceModule: 'Member Management', fields: ['profile', 'events', 'givingHistory', 'groups', 'courses', 'notifications'] },
+359:       ],
+360:       createdAt: now(),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

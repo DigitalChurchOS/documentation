@@ -13,7 +13,7 @@ const prisma = require('../dist/lib/prisma').default;
 
 const port = Number(process.env.PORT || 3100);
 const tenantId = 'demo-church-local';
-const adminEmail = 'admin@demo.churchos.local';
+const adminEmail = 'admin@demo.churched.online';
 const adminPassword = 'churchos-demo-password';
 
 function readSourcePermissions() {
@@ -121,25 +121,6 @@ async function upsertDemoData() {
     });
   }
 
-  const passwordHash = await bcrypt.hash(adminPassword, 10);
-  const user = await prisma.user.upsert({
-    where: { tenantId_email: { tenantId, email: adminEmail } },
-    update: { passwordHash, status: 'active' },
-    create: { tenantId, email: adminEmail, passwordHash, status: 'active' },
-  });
-
-  await prisma.userRole.upsert({
-    where: { userId_roleId: { userId: user.id, roleId: role.id } },
-    update: {},
-    create: { userId: user.id, roleId: role.id },
-  });
-
-  await prisma.member.upsert({
-    where: { userId: user.id },
-    update: { firstName: 'Demo', lastName: 'Admin', membershipStatus: 'leader' },
-    create: { tenantId, userId: user.id, firstName: 'Demo', lastName: 'Admin', email: adminEmail, membershipStatus: 'leader' },
-  });
-
   for (const moduleKey of modules) {
     await prisma.moduleDefinition.upsert({
       where: { key: moduleKey },
@@ -153,8 +134,7 @@ async function upsertDemoData() {
     });
   }
 
-  const token = jwt.sign({ userId: user.id, tenantId, email: adminEmail }, process.env.JWT_SECRET, { expiresIn: '7d' });
-  return { tenantId: tenant.id, email: adminEmail, password: adminPassword, token, modules: modules.length, permissions: allPermissions.length };
+  return { tenantId: tenant.id, modules: modules.length, permissions: allPermissions.length };
 }
 
 const host = express();

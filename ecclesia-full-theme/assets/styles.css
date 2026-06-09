@@ -23,6 +23,7 @@ body {
   background: radial-gradient(circle at 20% 0%, rgba(249,115,22,.13), transparent 28%), radial-gradient(circle at 90% 10%, rgba(250,204,21,.12), transparent 25%), var(--bg);
   color: var(--text);
   overflow-x: hidden;
+  padding-bottom: 0;
   transition: opacity 0.15s ease-in-out;
 }
 body:not(.shell-loaded) {

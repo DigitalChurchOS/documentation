@@ -1,0 +1,51 @@
+Created At: 2026-06-06T16:13:06Z
+Completed At: 2026-06-06T16:13:07Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 32335
+Total Bytes: 1577785
+Showing lines 12960 to 13040
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12960:                   <button class="option" data-value="glass" type="button">Glass</button>
+12961:                 </div>
+12962:               </div>
+12963:           </div>
+12964:           </div> <!-- Close #customizerThemeDesignTab -->
+12965: 
+12966:           <div class="settings-tab-content pages-tab" id="customizerPagesTab" style="display:none; flex:1; overflow-y:auto; padding: 16px;">
+12967:             <div class="panel-heading" style="padding: 0 0 16px 0;">
+12968:               <h3 style="margin:0; font-size:14px; font-weight:850; color:#202033;">Pages & Navigation</h3>
+12969:               <p style="margin:4px 0 0; font-size:11px; font-weight:700; color:var(--platform-muted);">Select a page to edit its content visually. Changes are saved as drafts until published.</p>
+12970:             </div>
+12971:             <div class="pages-list" id="customizerPagesList" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+12972:               <!-- Dynamic Page List -->
+12973:             </div>
+12974:             <button class="primary-btn w-full justify-center" id="customizerAddPageBtn" type="button" style="width:100%; border-radius:10px; height:38px;"><i data-lucide="plus"></i> Add New Page</button>
+12975:             
+12976:             <hr style="margin: 20px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.08);" />
+12977:             
+12978:             <div class="panel-heading" style="padding: 0 0 16px 0;">
+12979:               <h3 style="margin:0; font-size:14px; font-weight:850; colo
+<truncated 4003 bytes>
+13019:             <div class="preview-frame" id="previewFrame">
+13020:               <div class="device-status-bar">
+13021:                 <span class="status-time">9:41</span>
+13022:                 <div class="status-icons">
+13023:                   <span class="status-icon signal">
+13024:                     <span></span><span></span><span></span><span></span>
+13025:                   </span>
+13026:                   <span class="status-icon wifi">
+13027:                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20" stroke-width="3"></line></svg>
+13028:                   </span>
+13029:                   <span class="status-icon battery">
+13030:                     <span class="battery-body"><span class="battery-level"></span></span>
+13031:                     <span class="battery-cap"></span>
+13032:                   </span>
+13033:                 </div>
+13034:               </div>
+13035:               <iframe id="customizerIframe" src="" style="width:100%; height:calc(100% - 24px); border:none; display:none; background:transparent;"></iframe>
+13036:               <div class="church-site" id="churchSite">
+13037:                 <header class="site-header">
+13038:                   <div class="site-brand"><div class="site-mark"><i data-lucide="church"></i></div><span>Christ Embassy Bunga</span></div>
+13039:                   <nav class="site-nav"><a class="active">Home</a><a>About</a><a>Events</a><a>Sermons</a><a>Prayer</a><a>Giving</a></nav>
+13040:                   <button class="theme-btn" type="button">Watch Live</button>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

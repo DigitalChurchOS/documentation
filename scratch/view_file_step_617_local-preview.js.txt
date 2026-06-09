@@ -1,0 +1,69 @@
+Created At: 2026-06-06T16:20:25Z
+Completed At: 2026-06-06T16:20:25Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/dev-dashboard.js`
+Total Lines: 1692
+Total Bytes: 49687
+Showing lines 80 to 140
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+80:     });
+81:   });
+82: }
+83: 
+84: // API Server Spawner
+85: function startApi() {
+86:   if (apiProcess) {
+87:     addLog('system', 'API Server process already exists.');
+88:     return;
+89:   }
+90:   apiStatus = 'starting';
+91:   addLog('system', 'Spawning API Server: npm run dev');
+92:   
+93:   const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+94:   apiProcess = spawn(npmCmd, ['run', 'dev'], {
+95:     cwd: root,
+96:     env: { ...process.env },
+97:     shell: true
+98:   });
+99:   
+100:   apiProcess.stdout.on('data', (data) => {
+101:     addLog('api', data.toString());
+102:   });
+103:   
+104:   apiProcess.stderr.on('data', (data) => {
+105:     addLog('api', data.toString());
+106:   });
+107:   
+108:   apiProcess.on('error', (err) => {
+109:     addLog('system', `API Server spawn error: ${err.message}`);
+110:     apiProcess = null;
+111:     apiStatus = 'stopped';
+112:   });
+113:   
+114:   apiProcess.on('exit', (code, signal) => {
+115:     addLog('system', `API Server exited (code: ${code}, signal: ${signal})`);
+116:     apiProcess = null;
+117:     apiStatus = 'stopped';
+118:   });
+119: }
+120: 
+121: // Preview Server Spawner
+122: function startPreview() {
+123:   if (previewProcess) {
+124:     addLog('system', 'Preview Server process already exists.');
+125:     return;
+126:   }
+127:   previewStatus = 'starting';
+128:   addLog('system', 'Spawning Preview Server: node scripts/local-preview.js');
+129:   
+130:   // Explicitly override PORT to 3000 to prevent conflicts with 3001
+131:   previewProcess = spawn(process.execPath, ['scripts/local-preview.js'], {
+132:     cwd: root,
+133:     env: { ...process.env, PORT: '3000' }
+134:   });
+135:   
+136:   previewProcess.stdout.on('data', (data) => {
+137:     addLog('preview', data.toString());
+138:   });
+139:   
+140:   previewProcess.stderr.on('data', (data) => {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

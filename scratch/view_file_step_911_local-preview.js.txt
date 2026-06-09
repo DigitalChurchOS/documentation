@@ -1,0 +1,29 @@
+Created At: 2026-06-06T16:36:00Z
+Completed At: 2026-06-06T16:36:00Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 270 to 290
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+270:       updatedAt: now(),
+271:     },
+272:     {
+273:       id: 'page-volunteer',
+274:       websiteId: demoWebsiteId,
+275:       title: 'Volunteer',
+276:       slug: 'volunteer',
+277:       status: 'published',
+278:       isHome: false,
+279:       seoTitle: 'Volunteer | Christ Embassy Next Church',
+280:       seoDescription: 'Volunteer opportunities, ministry signup, team assignment, schedules, and serving interests.',
+281:       content: [
+282:         { type: 'dynamic_volunteer_opportunities', title: 'Serve With Us', sourceModule: 'Volunteers', fields: ['teams', 'openRoles', 'availability', 'applicationForm'] },
+283:       ],
+284:       createdAt: now(),
+285:       updatedAt: now(),
+286:     },
+287:     {
+288:       id: 'page-announcements',
+289:       websiteId: demoWebsiteId,
+290:       title: 'Announcements',
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

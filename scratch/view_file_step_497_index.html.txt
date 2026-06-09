@@ -1,0 +1,58 @@
+Created At: 2026-06-06T16:13:42Z
+Completed At: 2026-06-06T16:13:42Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 32335
+Total Bytes: 1577785
+Showing lines 3920 to 4050
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+3920: .stat span { display:block; color: var(--platform-muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing:.06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+3921: .stat strong { display:block; margin-top: 5px; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+3922: .active-features { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+3923: .feature-item { display: flex; align-items: center; gap: 8px; color: var(--platform-ink); font-size: 13px; font-weight: 580; }
+3924: .feature-item svg, .feature-item i { width: 15px; height: 15px; color: #7c3aed; opacity: 0.85; }
+3925: 
+3926: .market-view, .customizer { display:none; }
+3927: .market-view.active, .customizer.active, .themes-view.active { display:block; }
+3928: .themes-view.hidden { display:none; }
+3929: 
+3930: /* Theme Customizer + Page Builder Tabs & Page Items styling */
+3931: .customizer-tabs {
+3932:   display: flex;
+3933:   border-bottom: 1px solid rgba(0,0,0,0.08);
+3934:   background: #fdfdfd;
+3935: }
+3936: .customizer-tab {
+3937:   flex: 1;
+3938:   padding: 12px 6px;
+3939:   font-size: 13px;
+3940:   font-weight: 700;
+3941:   color: var(--platform-muted);
+3942:   border: none;
+3943:   background: transparent;
+3944:   border-bottom: 2px solid transparent;
+3945:   cursor: pointer;
+3946:   display: flex;
+3947:   align-items: center;
+3948:   justify-content: center;
+3949:   gap: 6px;
+3950:   transition: all 0.2s;
+3951: }
+3952: .customizer-tab.active {
+
+<truncated 3999 bytes>
+-muted); font-size: 11px; line-height:1.35; }
+4037: .setting-group { background:#fff; border:1px solid var(--platform-border); border-radius:12px; margin-bottom:8px; overflow:hidden; }
+4038: .group-toggle { width:100%; border:0; background:transparent; min-height:38px; padding:0 10px; display:flex; align-items:center; justify-content:space-between; font-weight:900; color: var(--platform-ink); font-size: 12px; }
+4039: .group-toggle i, .group-toggle svg { width: 14px; height: 14px; }
+4040: .group-content { padding: 0 10px 10px; display: grid; gap: 10px; }
+4041: .control { display:grid; gap: 4px; }
+4042: .control label { font-size: 11px; font-weight: 900; color:#51485f; display:flex; align-items:center; justify-content:space-between; }
+4043: .control small { color: var(--platform-muted); line-height:1.3; font-size: 10px; font-weight:650; }
+4044: .option-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:6px; }
+4045: .option-grid.three { grid-template-columns: repeat(3, minmax(0,1fr)); }
+4046: .option { border:1px solid var(--platform-border); background:#faf9ff; border-radius:8px; min-height:32px; padding: 4px 8px; display:flex; align-items:center; gap:6px; color:#5f5870; font-weight:800; font-size: 12px; transition:.2s ease; }
+4047: .option i, .option svg { width: 14px; height: 14px; }
+4048: .option.active { background:#efe8ff; border-color:rgba(124,58,237,.32); color:#6d28d9; box-shadow: inset 0 0 0 1px rgba(124,58,237,.12); }
+4049: .swatch { width:14px; height:14px; border-radius: 5px; background: var(--swatch); box-shadow: inset 0 0 0 1px rgba(255,255,255,.45), 0 0 0 1px rgba(0,0,0,.06); }
+4050: .select-like { width:100%; border:1px solid var(--platform-border); border-radius:8px; background:#faf9ff; height:32px; padding:0 8px; color:#534c64; font-weight:800; font-size: 12px; outline:none; }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

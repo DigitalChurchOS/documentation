@@ -1,0 +1,33 @@
+Created At: 2026-06-06T16:47:42Z
+Completed At: 2026-06-06T16:47:42Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 1 to 25
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: const http = require('http');
+2: const fs = require('fs');
+3: const path = require('path');
+4: 
+5: const root = path.resolve(__dirname, '..');
+6: const port = Number(process.env.PORT || 3000);
+7: 
+8: const contentTypes = {
+9:   '.html': 'text/html; charset=utf-8',
+10:   '.png': 'image/png',
+11:   '.css': 'text/css; charset=utf-8',
+12:   '.js': 'application/javascript; charset=utf-8',
+13:   '.json': 'application/json; charset=utf-8',
+14: };
+15: 
+16: const demoTenantId = 'demo-church-local';
+17: const demoWebsiteId = 'christ-embassy-next-main';
+18: const now = () => new Date().toISOString();
+19: const state = {
+20:   themes: [
+21:     {
+22:       id: 'theme-default',
+23:       name: 'Next Church Minimal Theme',
+24:       tenantId: demoTenantId,
+25:       isCustom: true,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

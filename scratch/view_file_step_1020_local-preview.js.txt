@@ -1,0 +1,21 @@
+Created At: 2026-06-06T16:47:38Z
+Completed At: 2026-06-06T16:47:38Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 70 to 82
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+70:     { name: 'Sermon Player Widget', key: 'sermon-player', type: 'section', structure: { recentCount: 'number' } },
+71:   ],
+72:   pageTemplates: [
+73:     { name: 'Home Page', key: 'home-page', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'sermon-player'] } },
+74:     { name: 'Ministry Landing Page', key: 'ministry-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid'] } },
+75:   ],
+76:   marketplaceAssets: [
+77:     { id: 'asset-neon-youth', name: 'Neon Youth Style', description: 'Vibrant gradients and bold typography for youth ministries.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#ff00ff', secondary: '#00ffff', accent: '#ffff00' }, fonts: { heading: 'Outfit', body: 'Inter' } }), version: '1.0.0' },
+78:     { id: 'asset-traditional-hymnal', name: 'Traditional Hymnal', description: 'Classic serif fonts and clean layout styles for traditional services.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#4b5563', secondary: '#ffffff', accent: '#7c3aed' }, fonts: { heading: 'Playfair Display', body: 'Georgia' } }), version: '1.0.0' },
+79:     { id: 'asset-modern-dynamic', name: 'Modern Dynamic', description: 'Sleek dark overlays and custom blocks for media ministries.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#0f172a', secondary: '#f8fafc', accent: '#14b8a6' }, fonts: { heading: 'Montserrat', body: 'Inter' } }), version: '1.0.0' },
+80:   ],
+81:   pages: [
+82:     {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

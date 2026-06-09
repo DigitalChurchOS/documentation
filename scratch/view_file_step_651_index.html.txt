@@ -1,0 +1,58 @@
+Created At: 2026-06-06T16:20:56Z
+Completed At: 2026-06-06T16:20:56Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 32425
+Total Bytes: 1582581
+Showing lines 18530 to 18630
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+18530:             <td style="padding:14px 18px;"><code style="font-size:12px; color:var(--accent); font-weight:600;">${escapeHtml(log.actionType)}</code></td>
+18531:             <td style="padding:14px 18px; font-size:13px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHtml(details)}</td>
+18532:             <td style="padding:14px 18px; font-size:13px;" class="muted">${escapeHtml(log.createdAt.replace('T', ' ').substring(0, 19))}</td>
+18533:           </tr>
+18534:         `;
+18535:       }).join('');
+18536:     }
+18537: 
+18538:     async function bootstrapCms() {
+18539:       let tenantId = localStorage.getItem('churchos.tenantId');
+18540:       let token = localStorage.getItem('churchos.token');
+18541:       
+18542:       if (!tenantId || !token) {
+18543:         try {
+18544:           const res = await fetch('/dev/bootstrap', { method: 'POST' });
+18545:           const data = await res.json();
+18546:           localStorage.setItem('churchos.tenantId', data.tenantId);
+18547:           localStorage.setItem('churchos.token', data.token);
+18548:         } catch (err) {
+18549:           console.warn('CMS bootstrap failed, using local fallback credentials', err);
+18550:           localStorage.setItem('churchos.tenantId', 'demo-church-local');
+18551:           localStorage.setItem('churchos.token', 'local-preview-token');
+18552:         }
+18553:       }
+18554:       
+18555:       bindCmsTabEvents();
+18556:       await loadAllCmsData();
+18557:     }
+18558: 
+18559:     asyn
+<truncated 2396 bytes>
+          slug: '',
+18613:           isHome: true,
+18614:           status: 'published',
+18615:           seoTitle: 'Christ Embassy Next Church | Home',
+18616:           seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and ministry features.',
+18617:           content: [
+18618:             { type: 'hero', title: 'Christ Embassy Next Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },
+18619:             { type: 'service_times', title: 'Weekly Service Rhythm', sundayTimes: 'Sunday Celebration Service - 9:00 AM and 11:30 AM', midweekTimes: 'Wednesday Word & Prayer - 7:00 PM, Friday Youth Ignite - 6:30 PM', address: 'Next Church Campus, 221 Victory Avenue, Lagos' },
+18620:             { type: 'ministries_list', title: 'Featured Ministry Pathways', items: [{ name: 'NextGen Youth', desc: 'Youth services, mentorship, creative teams, and campus outreach.' }, { name: 'Prayer & Testimony Hub', desc: 'Prayer requests, testimony moderation, prayer rooms, and corporate prayer schedules.' }, { name: 'Digital Media Team', desc: 'Livestream, sermon clips, podcast publishing, and social media campaigns.' }] }
+18621:           ]
+18622:         },
+18623:         {
+18624:           title: 'About Next Church',
+18625:           slug: 'about',
+18626:           isHome: false,
+18627:           status: 'published',
+18628:           seoTitle: 'About Christ Embassy Next Church',
+18629:           seoDescription: 'Learn the mission, leadership, values, and digital ministry culture of Christ Embassy Next Church.',
+18630:           content: [
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

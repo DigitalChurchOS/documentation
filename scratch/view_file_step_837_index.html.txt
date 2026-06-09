@@ -1,0 +1,51 @@
+Created At: 2026-06-06T16:28:30Z
+Completed At: 2026-06-06T16:28:30Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 32432
+Total Bytes: 1582809
+Showing lines 12901 to 13000
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12901:                 </div>
+12902:                 <small>Affects cards, buttons, forms, images, modals, and plugin panels.</small>
+12903:               </div>
+12904:             </div>
+12905:           </div>
+12906: 
+12907:           <div class="setting-group">
+12908:             <button class="group-toggle" type="button">Surfaces & Layout <i data-lucide="chevron-down"></i></button>
+12909:             <div class="group-content">
+12910:               <div class="control">
+12911:                 <label>Card style</label>
+12912:                 <div class="option-grid" data-setting="cardStyle">
+12913:                   <button class="option active" data-value="shadow" type="button">Shadow</button>
+12914:                   <button class="option" data-value="bordered" type="button">Bordered</button>
+12915:                   <button class="option" data-value="glass" type="button">Glass</button>
+12916:                   <button class="option" data-value="flat" type="button">Flat</button>
+12917:                 </div>
+12918:               </div>
+12919:               <div class="control">
+12920:                 <label>Spacing scale</label>
+12921:                 <div class="option-grid three" data-setting="spacingScale">
+12922:                   <button class="option" data-value="compact" type="button">Compact</button>
+12923:                   <button class="option active" data-value="comfortable" type="button">Comfort</button>
+12924:                   <button class="option" data-value="spacious" type="button">Spacious</but
+<truncated 4162 bytes>
+r: pointer; text-align: center; font-size: 11px; font-weight: 700; color: #202033; transition: all 0.2s;">
+12984:                 <i data-lucide="layout" style="width: 20px; height: 20px; margin: 0 auto 6px; display: block; color: #7c3aed;"></i>
+12985:                 Hero Banner
+12986:               </div>
+12987:               <div class="catalog-item" data-section-type="feature-grid" style="padding: 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; background: #ffffff; cursor: pointer; text-align: center; font-size: 11px; font-weight: 700; color: #202033; transition: all 0.2s;">
+12988:                 <i data-lucide="grid" style="width: 20px; height: 20px; margin: 0 auto 6px; display: block; color: #7c3aed;"></i>
+12989:                 Feature Grid
+12990:               </div>
+12991:               <div class="catalog-item" data-section-type="sermon-player" style="padding: 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; background: #ffffff; cursor: pointer; text-align: center; font-size: 11px; font-weight: 700; color: #202033; transition: all 0.2s;">
+12992:                 <i data-lucide="play-circle" style="width: 20px; height: 20px; margin: 0 auto 6px; display: block; color: #7c3aed;"></i>
+12993:                 Sermons Grid
+12994:               </div>
+12995:               <div class="catalog-item" data-section-type="giving-callout" style="padding: 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; background: #ffffff; cursor: pointer; text-align: center; font-size: 11px; font-weight: 700; color: #202033; transition: all 0.2s;">
+12996:                 <i data-lucide="heart" style="width: 20px; height: 20px; margin: 0 auto 6px; display: block; color: #7c3aed;"></i>
+12997:                 Giving CTA
+12998:               </div>
+12999:             </div>
+13000:           </div>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

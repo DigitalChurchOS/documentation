@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Import jsonwebtoken in cms.ts to support preview token generation.\"",
+  "EndLine": "7",
+  "Instruction": "\"Add import jwt from 'jsonwebtoken'; to the imports list in cms.ts\"",
+  "ReplacementContent": "\"import { Router, Request, Response } from 'express';\\nimport jwt from 'jsonwebtoken';\\nimport prisma from '../lib/prisma';\\nimport { dnsMiddleware } from '../middleware/dns';\\nimport { authMiddleware } from '../middleware/auth';\\nimport { requireAnyPermission } from '../middleware/rbac';\\nimport { requireModule } from '../middleware/entitlements';\"",
+  "StartLine": "1",
+  "TargetContent": "\"import { Router, Request, Response } from 'express';\\nimport prisma from '../lib/prisma';\\nimport { dnsMiddleware } from '../middleware/dns';\\nimport { authMiddleware } from '../middleware/auth';\\nimport { requireAnyPermission } from '../middleware/rbac';\\nimport { requireModule } from '../middleware/entitlements';\"",
+  "TargetFile": "\"C:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\src\\\\routes\\\\cms.ts\"",
+  "toolAction": "\"Import jsonwebtoken in cms routes\"",
+  "toolSummary": "\"Edit cms.ts\""
+}

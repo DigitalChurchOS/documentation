@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { handleSuperAdminApi } = require('./local-super-admin-preview');
 
 const root = path.resolve(__dirname, '..');
 const ecclesiaFullTheme = path.join(root, 'ecclesia-full-theme');
@@ -26,7 +27,7 @@ const demoWebsiteId = 'christ-embassy-next-main';
 const now = () => new Date().toISOString();
 const localEcclesiaGlobalContent = {
   churchIdentity: {
-    churchName: 'Christ Embassy Next Church',
+    churchName: 'Demo Church',
     tagline: 'A place to belong, grow, serve, and encounter God.',
     description: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.',
     logoUrl: '',
@@ -168,9 +169,9 @@ const state = {
   websites: [
     {
       id: demoWebsiteId,
-      title: 'Christ Embassy Next Church',
+      title: 'Demo Church',
       description: 'Digital-first demo church for testing every ChurchOS website and ministry workflow.',
-      domain: 'nextchurch.localhost',
+      domain: 'nextchurch.churched.online',
       themeId: 'theme-ecclesia',
       createdAt: now(),
     },
@@ -222,10 +223,10 @@ const state = {
       slug: 'home',
       status: 'published',
       isHome: true,
-      seoTitle: 'Christ Embassy Next Church | Home',
+      seoTitle: 'Demo Church | Home',
       seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and ministry features.',
       content: [
-        { type: 'hero', title: 'Christ Embassy Next Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },
+        { type: 'hero', title: 'Demo Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },
         { type: 'service_times', title: 'Weekly Service Rhythm', sundayTimes: 'Sunday Celebration Service - 9:00 AM and 11:30 AM', midWeekTimes: 'Wednesday Word & Prayer - 7:00 PM, Friday Youth Ignite - 6:30 PM', address: 'Next Church Campus, 221 Victory Avenue, Lagos' },
         { type: 'ministries_list', title: 'Featured Ministry Pathways', items: [{ name: 'NextGen Youth', desc: 'Youth services, mentorship, creative teams, and campus outreach.' }, { name: 'Prayer & Testimony Hub', desc: 'Prayer requests, testimony moderation, prayer rooms, and corporate prayer schedules.' }, { name: 'Digital Media Team', desc: 'Livestream, sermon clips, podcast publishing, and social media campaigns.' }] },
       ],
@@ -239,10 +240,10 @@ const state = {
       slug: 'about',
       status: 'published',
       isHome: false,
-      seoTitle: 'About Christ Embassy Next Church',
-      seoDescription: 'Learn the mission, leadership, values, and digital ministry culture of Christ Embassy Next Church.',
+      seoTitle: 'About Demo Church',
+      seoDescription: 'Learn the mission, leadership, values, and digital ministry culture of Demo Church.',
       content: [
-        { type: 'about_template', headline: 'A Church Built for the Next Generation', storyText: 'Christ Embassy Next Church is a demo ministry environment for testing how a modern church can run public pages, member experiences, media, giving, events, groups, and pastoral care from one operating system.', valuesList: ['Word', 'Worship', 'Prayer', 'Innovation', 'Community'] },
+        { type: 'about_template', headline: 'A Church Built for the Next Generation', storyText: 'Demo Church is a demo ministry environment for testing how a modern church can run public pages, member experiences, media, giving, events, groups, and pastoral care from one operating system.', valuesList: ['Word', 'Worship', 'Prayer', 'Innovation', 'Community'] },
         { type: 'leadership_team', headline: 'Pastoral & Ministry Leadership', members: [{ name: 'Pastor Daniel Okafor', role: 'Resident Pastor', bio: 'Leads teaching, pastoral care, and strategic ministry development.' }, { name: 'Minister Amara Cole', role: 'Digital Ministry Director', bio: 'Oversees livestream, page publishing, content, and volunteer media teams.' }] },
       ],
       createdAt: now(),
@@ -255,7 +256,7 @@ const state = {
       slug: 'services',
       status: 'published',
       isHome: false,
-      seoTitle: 'Services | Christ Embassy Next Church',
+      seoTitle: 'Services | Demo Church',
       seoDescription: 'Service times, locations, countdowns, livestream links, and order of service.',
       content: [
         { type: 'service_times', title: 'Service Times & Locations', sundayTimes: 'Sunday Celebration - 9:00 AM and 11:30 AM', midWeekTimes: 'Wednesday Word & Prayer - 7:00 PM', address: '221 Victory Avenue, Lagos and online' },
@@ -271,7 +272,7 @@ const state = {
       slug: 'live',
       status: 'published',
       isHome: false,
-      seoTitle: 'Watch Live | Christ Embassy Next Church',
+      seoTitle: 'Watch Live | Demo Church',
       seoDescription: 'Livestream player, live prayer, sermon notes, chat, and giving CTA test page.',
       content: [
         { type: 'hero', title: 'Watch Live', subtitle: 'Live service player placeholder with prayer, chat, notes, reactions, and giving actions.', bgImage: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join Live Service', buttonUrl: '#live-player' },
@@ -287,7 +288,7 @@ const state = {
       slug: 'sermons',
       status: 'published',
       isHome: false,
-      seoTitle: 'Sermons & Media | Christ Embassy Next Church',
+      seoTitle: 'Sermons & Media | Demo Church',
       seoDescription: 'Sermon grid, series pages, podcast feed, media filters, and replay content.',
       content: [
         { type: 'dynamic_sermon_grid', title: 'Latest Sermons', sourceModule: 'Sermons / Media', filters: ['series', 'speaker', 'topic', 'date'] },
@@ -303,7 +304,7 @@ const state = {
       slug: 'events',
       status: 'published',
       isHome: false,
-      seoTitle: 'Events | Christ Embassy Next Church',
+      seoTitle: 'Events | Demo Church',
       seoDescription: 'Event grid, registration, countdowns, venue maps, reminders, and capacity testing.',
       content: [
         { type: 'hero', title: 'Upcoming Events', subtitle: 'Conference nights, worship experiences, youth events, and leadership training.', bgImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=80', buttonText: 'Register Now', buttonUrl: '#events' },
@@ -319,7 +320,7 @@ const state = {
       slug: 'give',
       status: 'published',
       isHome: false,
-      seoTitle: 'Give | Christ Embassy Next Church',
+      seoTitle: 'Give | Demo Church',
       seoDescription: 'Giving forms, campaigns, pledges, recurring giving, confirmations, and receipts.',
       content: [
         { type: 'hero', title: 'Give Securely', subtitle: 'Support ministry, missions, outreach, media, welfare, and discipleship work.', bgImage: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80', buttonText: 'Start Giving', buttonUrl: '#giving-form' },
@@ -335,7 +336,7 @@ const state = {
       slug: 'prayer',
       status: 'published',
       isHome: false,
-      seoTitle: 'Prayer & Testimonies | Christ Embassy Next Church',
+      seoTitle: 'Prayer & Testimonies | Demo Church',
       seoDescription: 'Prayer request form, prayer wall, testimony wall, prayer sessions, and reactions.',
       content: [
         { type: 'hero', title: 'Prayer & Testimonies', subtitle: 'Submit prayer requests, join corporate prayer, and share testimonies for moderation.', bgImage: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1400&q=80', buttonText: 'Request Prayer', buttonUrl: '#prayer-request' },
@@ -351,7 +352,7 @@ const state = {
       slug: 'ministries',
       status: 'published',
       isHome: false,
-      seoTitle: 'Ministries | Christ Embassy Next Church',
+      seoTitle: 'Ministries | Demo Church',
       seoDescription: 'Ministry directory, volunteer opportunities, leaders, events, and media connections.',
       content: [
         { type: 'ministries_list', title: 'Find Your Ministry', items: [{ name: 'Worship & Creative Arts', desc: 'Choir, music direction, stage design, dance, and creative production.' }, { name: 'Hospitality & First Impressions', desc: 'Guest welcome, ushers, follow-up, and visitor care.' }, { name: 'Outreach & Missions', desc: 'Evangelism campaigns, local care, and missions support.' }] },
@@ -367,7 +368,7 @@ const state = {
       slug: 'groups',
       status: 'published',
       isHome: false,
-      seoTitle: 'Cell Groups | Christ Embassy Next Church',
+      seoTitle: 'Cell Groups | Demo Church',
       seoDescription: 'Cell group finder, leader cards, meeting schedules, and join requests.',
       content: [
         { type: 'dynamic_cell_finder', title: 'Find a Cell Group', sourceModule: 'Cell Groups', fields: ['location', 'language', 'day', 'leader', 'joinRequest'] },
@@ -382,7 +383,7 @@ const state = {
       slug: 'courses',
       status: 'published',
       isHome: false,
-      seoTitle: 'Courses | Christ Embassy Next Church',
+      seoTitle: 'Courses | Demo Church',
       seoDescription: 'Course list, lesson player, progress, quizzes, certificates, and recommendations.',
       content: [
         { type: 'dynamic_course_list', title: 'Discipleship Tracks', sourceModule: 'Discipleship / Courses', fields: ['enrollment', 'lessonProgress', 'quizzes', 'certificates'] },
@@ -397,7 +398,7 @@ const state = {
       slug: 'branches',
       status: 'published',
       isHome: false,
-      seoTitle: 'Branches | Christ Embassy Next Church',
+      seoTitle: 'Branches | Demo Church',
       seoDescription: 'Branch finder, branch service schedules, campus pastors, maps, and location-aware content.',
       content: [
         { type: 'dynamic_branch_finder', title: 'Find a Next Church Branch', sourceModule: 'Branches', fields: ['nearestBranch', 'pastor', 'serviceTimes', 'map', 'contact'] },
@@ -412,7 +413,7 @@ const state = {
       slug: 'volunteer',
       status: 'published',
       isHome: false,
-      seoTitle: 'Volunteer | Christ Embassy Next Church',
+      seoTitle: 'Volunteer | Demo Church',
       seoDescription: 'Volunteer opportunities, ministry signup, team assignment, schedules, and serving interests.',
       content: [
         { type: 'dynamic_volunteer_opportunities', title: 'Serve With Us', sourceModule: 'Volunteers', fields: ['teams', 'openRoles', 'availability', 'applicationForm'] },
@@ -427,7 +428,7 @@ const state = {
       slug: 'announcements',
       status: 'published',
       isHome: false,
-      seoTitle: 'Announcements | Christ Embassy Next Church',
+      seoTitle: 'Announcements | Demo Church',
       seoDescription: 'Featured announcements, alert banners, notification signup, and branch messages.',
       content: [
         { type: 'dynamic_announcement_list', title: 'Latest Church Updates', sourceModule: 'Announcements', fields: ['featured', 'branch', 'alertBanner', 'notificationSignup'] },
@@ -442,7 +443,7 @@ const state = {
       slug: 'mobile-app',
       status: 'draft',
       isHome: false,
-      seoTitle: 'Mobile App Screen | Christ Embassy Next Church',
+      seoTitle: 'Mobile App Screen | Demo Church',
       seoDescription: 'Mobile app screen composition for member dashboard, giving, livestream, prayer, and notifications.',
       content: [
         { type: 'dynamic_mobile_home', title: 'Next Church Mobile Home', sourceModule: 'Mobile App', fields: ['quickActions', 'liveService', 'giving', 'prayer', 'notifications'] },
@@ -457,7 +458,7 @@ const state = {
       slug: 'first-time',
       status: 'draft',
       isHome: false,
-      seoTitle: 'First-Time Visitor | Christ Embassy Next Church',
+      seoTitle: 'First-Time Visitor | Demo Church',
       seoDescription: 'Visitor capture, welcome flow, CRM routing, pastoral follow-up, and next steps.',
       content: [
         { type: 'contact_form', header: 'Plan Your First Visit', email: 'hello@nextchurch.example', phone: '+234 800 000 0000', showMap: true },
@@ -473,10 +474,10 @@ const state = {
       slug: 'contact',
       status: 'published',
       isHome: false,
-      seoTitle: 'Contact | Christ Embassy Next Church',
+      seoTitle: 'Contact | Demo Church',
       seoDescription: 'Contact form, location map, branch details, pastoral care request, and communication opt-in.',
       content: [
-        { type: 'contact_form', header: 'Contact Christ Embassy Next Church', email: 'hello@nextchurch.example', phone: '+234 800 000 0000', showMap: true },
+        { type: 'contact_form', header: 'Contact Demo Church', email: 'hello@nextchurch.example', phone: '+234 800 000 0000', showMap: true },
       ],
       createdAt: now(),
       updatedAt: now(),
@@ -488,7 +489,7 @@ const state = {
       slug: 'member-dashboard',
       status: 'draft',
       isHome: false,
-      seoTitle: 'Member Dashboard | Christ Embassy Next Church',
+      seoTitle: 'Member Dashboard | Demo Church',
       seoDescription: 'Personalized member actions, events, groups, courses, giving history, and prayer sessions.',
       content: [
         { type: 'dynamic_member_dashboard', title: 'Personalized Member Dashboard', sourceModule: 'Member Management', fields: ['profile', 'events', 'givingHistory', 'groups', 'courses', 'notifications'] },
@@ -521,7 +522,7 @@ const state = {
     {
       id: 'footer-main',
       websiteId: demoWebsiteId,
-      copyrightText: `&copy; ${new Date().getFullYear()} Christ Embassy Next Church. All rights reserved.`,
+      copyrightText: `&copy; ${new Date().getFullYear()} Demo Church. All rights reserved.`,
       socialLinks: [
         { name: 'facebook', url: 'https://facebook.com/christembassynext' },
         { name: 'instagram', url: 'https://instagram.com/christembassynext' },
@@ -548,7 +549,7 @@ const state = {
       id: 'block-service-cta',
       name: 'Sunday Celebration CTA',
       key: 'sunday-service-cta',
-      content: { type: 'hero', title: 'Join Christ Embassy Next Church This Sunday', subtitle: 'Two services, one family, one mission.', buttonText: 'Plan a Visit' },
+      content: { type: 'hero', title: 'Join Demo Church This Sunday', subtitle: 'Two services, one family, one mission.', buttonText: 'Plan a Visit' },
       updatedAt: now(),
     },
   ],
@@ -997,7 +998,7 @@ const state = {
     { id: 'church-services-activity-2', tenantId: demoTenantId, userId: 'Local Preview', actionType: 'settings_updated', metadataJson: JSON.stringify({ providerMode: 'hybrid' }), createdAt: now() },
   ],
   activityLogs: [
-    { id: 'activity-1', actionType: 'page_create', metadataJson: 'Seeded Christ Embassy Next Church homepage', createdAt: now(), actor: 'Local Preview' },
+    { id: 'activity-1', actionType: 'page_create', metadataJson: 'Seeded Demo Church homepage', createdAt: now(), actor: 'Local Preview' },
     { id: 'activity-2', actionType: 'page_update', metadataJson: 'Configured navigation for service, livestream, events, sermons, prayer, and giving', createdAt: now(), actor: 'Local Preview' },
     { id: 'activity-3', actionType: 'page_publish', metadataJson: 'Published demo pages for CMS testing', createdAt: now(), actor: 'Local Preview' },
   ],
@@ -3120,7 +3121,18 @@ async function handleDemoApi(req, res, parsedUrl) {
     return sendJson(res, 200, {
       tenantId: demoTenantId,
       token: 'local-preview-token',
-      email: 'admin@demo.churchos.local',
+      email: 'admin@demo.churched.online',
+    });
+  }
+
+  if (pathname.startsWith('/api/super-admin')) {
+    return handleSuperAdminApi(req, res, parsedUrl, {
+      state,
+      sendJson,
+      readJsonBody,
+      createId,
+      now,
+      demoTenantId,
     });
   }
 
@@ -3347,7 +3359,7 @@ async function handleDemoApi(req, res, parsedUrl) {
         navigation: state.navigation[0] || null,
         footer: state.footers[0] || null,
         theme: state.themes[0] || null,
-        churchName: 'Christ Embassy Next Church',
+        churchName: 'Demo Church',
       },
     });
   }
@@ -3363,13 +3375,25 @@ http
 
     let urlPath = (req.url || '/').split('?')[0];
     if (urlPath === '/') {
-      urlPath = '/index.html';
+      urlPath = '/apps/web/public/index.html';
     } else if (urlPath === '/admin' || urlPath.startsWith('/admin/')) {
       urlPath = '/apps/tenant-dashboard/public/index.html';
+    } else if (urlPath === '/central' || urlPath.startsWith('/central/')) {
+      urlPath = '/apps/super-admin/public/index.html';
     } else if (urlPath === '/dashboard') {
       urlPath = '/dashboard.html';
-    } else if (urlPath === '/marketplace') {
-      urlPath = '/marketplace.html';
+    } else if (urlPath === '/marketplace/developer' || urlPath.startsWith('/marketplace/developer/')) {
+      res.writeHead(301, { Location: '/developer' });
+      res.end();
+      return;
+    } else if (urlPath === '/marketplace' || urlPath.startsWith('/marketplace/')) {
+      urlPath = '/apps/marketplace/frontend/index.html';
+    } else if (urlPath === '/developer' || urlPath.startsWith('/developer/')) {
+      urlPath = '/apps/marketplace/developer/index.html';
+    } else if (urlPath === '/super-admin' || urlPath.startsWith('/super-admin/')) {
+      res.writeHead(301, { Location: '/central' });
+      res.end();
+      return;
     } else if (urlPath === '/cms') {
       res.writeHead(302, { Location: '/dashboard.html?module=cms' });
       res.end();

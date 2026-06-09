@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Make content parsing robust for both array and string inputs in TypeScript file\"",
+  "EndLine": "421",
+  "Instruction": "\"Replace JSON.parse call to support both string and array format for page content in TypeScript app\"",
+  "ReplacementContent": "\"            const contentJson = pageData.draftContent || pageData.content || '[]';\\n            const parsedElements = typeof contentJson === 'string' ? JSON.parse(contentJson) : contentJson;\"",
+  "StartLine": "414",
+  "TargetContent": "\"            const contentJson = pageData.draftContent || pageData.content || '[]';\\n            const parsedElements = JSON.parse(contentJson);\"",
+  "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\page-builder\\\\app.tsx\"",
+  "toolAction": "\"Updating content parsing in app.tsx\"",
+  "toolSummary": "\"Update content parsing in app.tsx\""
+}

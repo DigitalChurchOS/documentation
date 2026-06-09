@@ -1,0 +1,53 @@
+Created At: 2026-06-06T16:16:00Z
+Completed At: 2026-06-06T16:16:00Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 32335
+Total Bytes: 1577785
+Showing lines 16326 to 16370
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+16326:             setCardDevice(btn.dataset.device);
+16327:           }
+16328:         });
+16329:       });
+16330: 
+16331:       // Settings Accents/Modes click options
+16332:       document.querySelectorAll('[data-setting]').forEach(group => {
+16333:         const clone = group.cloneNode(true);
+16334:         group.parentNode.replaceChild(clone, group);
+16335:         clone.addEventListener('click', e => {
+16336:           const btn = e.target.closest('.option');
+16337:           if (!btn) return;
+16338:           clone.querySelectorAll('.option').forEach(b => b.classList.remove('active'));
+16339:           btn.classList.add('active');
+16340:           customizerState[clone.dataset.setting] = btn.dataset.value;
+16341:           applyCustomizerTheme();
+16342:         });
+16343:       });
+16344: 
+16345:       // Settings select dropdown change
+16346:       document.querySelectorAll('[data-select]').forEach(sel => {
+16347:         const clone = sel.cloneNode(true);
+16348:         sel.parentNode.replaceChild(clone, sel);
+16349:         clone.addEventListener('change', e => {
+16350:           customizerState[clone.dataset.select] = e.target.value;
+16351:           applyCustomizerTheme();
+16352:         });
+16353:       });
+16354: 
+16355:       // Accordion collapsibles toggles
+16356:       document.querySelectorAll('.group-toggle').forEach(btn => {
+16357:         const clone = btn.cloneNode(true);
+16358:         btn.parentNode.replaceChild(clone, btn);
+16359:         clone.addEventListener('click', () => {
+16360:           const content = clone.nextElementSibling;
+16361:           if (content) {
+16362:             content.classList.toggle('hidden');
+16363:             const icon = clone.querySelector('[data-lucide="chevron-down"], i');
+16364:             if (icon) {
+16365:               const isHidden = content.classList.contains('hidden');
+16366:               icon.style.transform = isHidden ? 'rotate(-90deg)' : 'none';
+16367:               icon.style.transition = 'transform 0.2s';
+16368:             }
+16369:           }
+16370:         });
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

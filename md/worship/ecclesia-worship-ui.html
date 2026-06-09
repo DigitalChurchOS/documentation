@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ecclesia Worship Experience UI</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root{
+      --bg:#f7f2ea; --panel:rgba(255,255,255,.72); --panel-strong:#fffaf2; --text:#241914; --muted:#846f61;
+      --accent:#b77935; --accent-2:#6f3f22; --soft:#eadac7; --line:rgba(80,52,35,.12); --shadow:0 30px 80px rgba(85,54,26,.14);
+      --radius:30px; --radius-sm:18px;
+    }
+    [data-theme="dark"]{
+      --bg:#120e0b; --panel:rgba(35,25,20,.72); --panel-strong:#1f1712; --text:#fff2df; --muted:#c8aa91;
+      --accent:#e0a85e; --accent-2:#f3d6a2; --soft:rgba(224,168,94,.16); --line:rgba(255,235,204,.12); --shadow:0 30px 90px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box} body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;background:radial-gradient(circle at top left,var(--soft),transparent 35%),var(--bg);color:var(--text);overflow-x:hidden}
+    .app{display:grid;grid-template-columns:290px 1fr;min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;padding:28px;border-right:1px solid var(--line);backdrop-filter:blur(24px);background:rgba(255,255,255,.24)}
+    [data-theme="dark"] .sidebar{background:rgba(20,14,10,.42)}.brand{display:flex;align-items:center;gap:12px;margin-bottom:34px}.brand-icon{width:46px;height:46px;border-radius:17px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:white;box-shadow:var(--shadow)}.brand h1{font-size:18px;margin:0}.brand p{font-size:12px;color:var(--muted);margin:2px 0 0}.nav{display:grid;gap:8px}.nav a{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--muted);padding:13px 14px;border-radius:16px;font-weight:650}.nav a.active,.nav a:hover{background:var(--panel);color:var(--text);box-shadow:0 12px 30px rgba(60,40,20,.06)}.side-card{position:absolute;left:28px;right:28px;bottom:28px;padding:20px;border-radius:24px;background:var(--panel);box-shadow:var(--shadow)}
+    .main{padding:32px 42px 80px}.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}.crumb{color:var(--muted);font-weight:700;font-size:13px}.actions{display:flex;gap:10px;align-items:center}.btn{border:0;border-radius:999px;padding:12px 18px;background:var(--text);color:var(--bg);font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:9px;box-shadow:0 18px 40px rgba(52,32,15,.12)}.btn.secondary{background:var(--panel);color:var(--text);border:1px solid var(--line);box-shadow:none}.theme-toggle{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer}
+    .hero{position:relative;display:grid;grid-template-columns:1.2fr .8fr;gap:44px;align-items:center;min-height:360px;padding:52px;border-radius:44px;background:linear-gradient(135deg,var(--panel-strong),var(--panel));box-shadow:var(--shadow);overflow:hidden}.hero:after{content:"";position:absolute;inset:auto -80px -120px auto;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,var(--soft),transparent 70%)}.watermark{position:absolute;right:56px;top:48px;opacity:.13;transform:translateY(var(--wm,0px));}.watermark svg{width:160px;height:160px}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:.12em}.hero h2{font-size:58px;line-height:.95;margin:18px 0 18px;letter-spacing:-.06em}.hero p{font-size:18px;line-height:1.7;color:var(--muted);max-width:650px}.hero-art{position:relative;z-index:2;border-radius:36px;background:linear-gradient(145deg,#3a2418,#c28a4b);min-height:250px;padding:24px;display:flex;flex-direction:column;justify-content:space-between;color:white;box-shadow:0 30px 80px rgba(70,38,14,.28)}.hero-art .disc{width:92px;height:92px;border-radius:50%;background:radial-gradient(circle at center,#fff 0 8px,rgba(255,255,255,.35) 9px 22px,rgba(0,0,0,.22) 23px 100%);align-self:flex-end}.hero-art h3{font-size:30px;margin:0}.hero-art p{color:rgba(255,255,255,.75);font-size:14px;margin:6px 0 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}.stat{padding:22px;border-radius:26px;background:var(--panel);box-shadow:0 18px 50px rgba(75,48,25,.07)}.stat strong{font-size:30px}.stat span{display:block;color:var(--muted);font-weight:700;margin-top:5px}.section{margin-top:42px}.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:20px}.section h3{font-size:30px;margin:0;letter-spacing:-.04em}.section p{color:var(--muted)}.chips{display:flex;gap:10px;overflow:auto;padding-bottom:6px}.chip{border:1px solid var(--line);background:var(--panel);color:var(--muted);padding:11px 16px;border-radius:999px;font-weight:800;white-space:nowrap;cursor:pointer}.chip.active{background:var(--text);color:var(--bg)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.song-card{background:var(--panel);border-radius:30px;overflow:hidden;box-shadow:0 20px 60px rgba(60,40,20,.08);transition:.35s ease;cursor:pointer}.song-card:hover{transform:translateY(-7px)}.cover{height:210px;background:linear-gradient(135deg,#5c331d,#d8a054);display:grid;place-items:center;color:white;position:relative;overflow:hidden}.cover:before{content:"";width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.18);position:absolute}.cover svg{position:relative;width:54px;height:54px}.song-body{padding:22px}.song-body h4{font-size:21px;margin:0 0 6px}.meta{color:var(--muted);font-weight:700;font-size:14px}.song-footer{display:flex;justify-content:space-between;align-items:center;margin-top:20px}.play-mini{width:45px;height:45px;border-radius:50%;border:0;background:var(--text);color:var(--bg);display:grid;place-items:center;cursor:pointer}.player-wrap{display:grid;grid-template-columns:370px 1fr;gap:34px;align-items:start}.album{padding:26px;border-radius:34px;background:var(--panel);box-shadow:var(--shadow)}.album-cover{height:320px;border-radius:28px;background:linear-gradient(135deg,#372015,#e1aa5b);display:grid;place-items:center;color:white}.album-cover svg{width:82px;height:82px}.audio-controls{margin-top:22px}.progress{height:8px;background:var(--soft);border-radius:999px;overflow:hidden;margin:18px 0}.progress span{display:block;height:100%;width:45%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}.controls{display:flex;align-items:center;justify-content:center;gap:14px}.round{width:45px;height:45px;border-radius:50%;border:0;background:var(--panel-strong);color:var(--text);cursor:pointer}.round.big{width:64px;height:64px;background:var(--text);color:var(--bg)}.lyrics-panel{padding:42px;border-radius:40px;background:var(--panel);box-shadow:var(--shadow);min-height:620px}.lyrics-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}.lyrics{font-size:30px;line-height:1.9;letter-spacing:-.03em}.lyric-line{display:block;color:var(--muted);transition:.25s ease}.lyric-line.active{color:var(--accent);font-size:38px;font-weight:900;text-shadow:0 0 25px rgba(183,121,53,.25)}.label{font-size:13px;color:var(--accent);font-weight:950;text-transform:uppercase;letter-spacing:.16em;margin:22px 0 10px}.admin{display:grid;grid-template-columns:1fr 1fr;gap:24px}.admin-card{padding:28px;border-radius:30px;background:var(--panel);box-shadow:0 18px 55px rgba(60,40,20,.07)}.form{display:grid;gap:14px}.input, textarea, select{width:100%;padding:15px 16px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.35);color:var(--text);font:inherit}textarea{min-height:170px;resize:vertical}.timing-row{display:grid;grid-template-columns:95px 1fr 38px;gap:10px;align-items:center;margin-bottom:10px}.fullscreen{position:fixed;inset:0;background:radial-gradient(circle at center,rgba(183,121,53,.18),transparent 42%),#110c09;color:#fff;display:none;z-index:30;align-items:center;justify-content:center;text-align:center;padding:30px}.fullscreen.show{display:flex}.fs-close{position:absolute;right:28px;top:28px}.fs-lines{font-size:54px;line-height:1.55;font-weight:850}.fs-lines span{display:block;opacity:.35}.fs-lines .active{opacity:1;color:#ffd695;font-size:68px}
+    @media(max-width:1050px){.app{grid-template-columns:1fr}.sidebar{display:none}.main{padding:22px}.hero,.player-wrap,.admin{grid-template-columns:1fr}.grid,.stats{grid-template-columns:repeat(2,1fr)}.hero h2{font-size:44px}}@media(max-width:640px){.hero{padding:30px;border-radius:30px}.grid,.stats{grid-template-columns:1fr}.hero h2{font-size:36px}.lyrics{font-size:23px}.lyric-line.active{font-size:29px}.player-wrap{gap:18px}.album-cover{height:250px}.fs-lines{font-size:32px}.fs-lines .active{font-size:42px}.topbar{align-items:flex-start;gap:14px;flex-direction:column}}
+  
+    body.archive-page #player{display:none}
+    body.player-page .hero, body.player-page .stats, body.player-page #library{display:none}
+    body.player-page #player{display:block;margin-top:0}
+    .back-row{margin-bottom:22px}
+  
+    #archiveView .player-panel,
+    #archiveView .lyrics-shell,
+    #archiveView .audio-player,
+    #archiveView .mini-player,
+    #archiveView audio,
+    #library .player-panel,
+    #library .lyrics-shell,
+    #library .audio-player,
+    #library .mini-player,
+    #library audio {
+      display: none !important;
+    }
+
+  
+    /* Player page update: 2/5 layout + video-like lyric frame */
+    body.player-page #player .player-wrap{
+      grid-template-columns:minmax(260px, 2fr) minmax(480px, 5fr) !important;
+      align-items:stretch !important;
+      gap:34px !important;
+    }
+
+    body.player-page #player .album{
+      height:100%;
+      min-height:560px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    body.player-page #player .album-cover{
+      min-height:330px;
+      flex:1;
+    }
+
+    body.player-page #player .lyrics-panel{
+      position:relative;
+      min-height:560px;
+      overflow:hidden;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      padding:38px;
+      border-radius:40px;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255,255,255,.26), transparent 34%),
+        linear-gradient(135deg, var(--accent), var(--accent-2));
+      color:#fff8ec;
+      box-shadow:var(--shadow);
+    }
+
+    body.player-page #player .lyrics-panel::before{
+      content:"";
+      position:absolute;
+      inset:18px;
+      border-radius:30px;
+      border:1px solid rgba(255,255,255,.25);
+      pointer-events:none;
+      z-index:1;
+    }
+
+    body.player-page #player .lyrics-panel::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.28)),
+        radial-gradient(circle at 82% 84%, rgba(255,255,255,.16), transparent 35%);
+      pointer-events:none;
+      z-index:0;
+    }
+
+    body.player-page #player .lyrics-top,
+    body.player-page #player .lyrics,
+    body.player-page #player .stage-bottom{
+      position:relative;
+      z-index:2;
+    }
+
+    body.player-page #player .lyrics-top{
+      margin-bottom:0;
+      color:rgba(255,248,236,.86);
+    }
+
+    body.player-page #player .lyrics-top .eyebrow{
+      background:rgba(255,255,255,.14);
+      color:#fff8ec;
+      backdrop-filter:blur(12px);
+    }
+
+    body.player-page #player .lyrics-top .btn{
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.22);
+      color:#fff8ec;
+      box-shadow:none;
+      backdrop-filter:blur(12px);
+    }
+
+    body.player-page #player .lyrics{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      line-height:1.15;
+      min-height:360px;
+      padding:28px 10px;
+    }
+
+    body.player-page #player .label{
+      display:inline-flex;
+      margin-bottom:24px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+      color:#fff7e8;
+      font-size:12px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+    }
+
+    body.player-page #player .lyric-line{
+      display:none;
+      color:#fff9ef;
+      font-size:clamp(30px, 4.1vw, 58px);
+      line-height:1.15;
+      font-weight:900;
+      letter-spacing:-.065em;
+      text-shadow:0 18px 50px rgba(0,0,0,.26);
+      margin:7px 0;
+    }
+
+    body.player-page #player .lyric-line.visible{
+      display:block;
+    }
+
+    body.player-page #player .lyric-line.active{
+      display:block;
+      color:#ffffff;
+      font-size:clamp(33px, 4.5vw, 64px);
+      transform:scale(1.025);
+      text-shadow:0 0 36px rgba(255,255,255,.35), 0 18px 50px rgba(0,0,0,.26);
+    }
+
+    body.player-page #player .stage-bottom{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      color:rgba(255,248,236,.82);
+      font-weight:850;
+      font-size:13px;
+    }
+
+    body.player-page #player .stage-track{
+      flex:1;
+      height:7px;
+      max-width:360px;
+      border-radius:999px;
+      background:rgba(255,255,255,.22);
+      overflow:hidden;
+    }
+
+    body.player-page #player .stage-track span{
+      display:block;
+      width:45%;
+      height:100%;
+      border-radius:999px;
+      background:#fff8ec;
+    }
+
+    @media(max-width:900px){
+      body.player-page #player .player-wrap{
+        grid-template-columns:1fr !important;
+      }
+
+      body.player-page #player .album{
+        min-height:auto;
+      }
+
+      body.player-page #player .lyrics-panel{
+        min-height:460px;
+        padding:28px;
+      }
+
+      body.player-page #player .lyrics{
+        min-height:300px;
+      }
+    }
+
+    @media(max-width:620px){
+      body.player-page #player .lyrics-panel{
+        border-radius:30px;
+        padding:22px 16px;
+      }
+
+      body.player-page #player .lyrics-panel::before{
+        inset:12px;
+        border-radius:22px;
+      }
+
+      body.player-page #player .lyrics{
+        min-height:300px;
+      }
+
+      body.player-page #player .lyric-line{
+        font-size:clamp(30px, 10vw, 46px);
+      }
+
+      body.player-page #player .lyric-line.active{
+        font-size:clamp(33px, 11vw, 50px);
+      }
+    }
+
+  
+    /* Update: Verse/Chorus pill replaces  + full preview progress */
+    body.player-page #player .lyrics-top{
+      display:flex !important;
+      align-items:flex-start !important;
+      justify-content:space-between !important;
+      gap:18px !important;
+      margin-bottom:0 !important;
+      position:relative;
+      z-index:3;
+    }
+
+    body.player-page #player .lyrics-top .eyebrow{
+      display:none !important;
+    }
+
+    body.player-page #player .section-tabs{
+      display:inline-flex;
+      align-items:center;
+      gap:0;
+      padding:4px;
+      border-radius:999px;
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.22);
+      backdrop-filter:blur(14px);
+      box-shadow:0 16px 42px rgba(0,0,0,.18);
+    }
+
+    body.player-page #player .section-tab{
+      appearance:none;
+      border:0;
+      border-radius:999px;
+      padding:12px 22px;
+      background:transparent;
+      color:#fff8ec;
+      font-size:13px;
+      font-weight:950;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      cursor:pointer;
+      box-shadow:none;
+      transition:.25s ease;
+    }
+
+    body.player-page #player .section-tab.active{
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      color:#fff;
+      box-shadow:0 14px 34px rgba(0,0,0,.22);
+    }
+
+    body.player-page #player .label{
+      display:none !important;
+    }
+
+    body.player-page #player .stage-bottom{
+      margin-top:18px;
+      padding:0 2px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      color:rgba(255,248,236,.92);
+      font-weight:900;
+      font-size:14px;
+      position:relative;
+      z-index:3;
+    }
+
+    body.player-page #player .stage-track{
+      flex:1;
+      max-width:none !important;
+      height:8px !important;
+      border-radius:999px;
+      background:rgba(255,255,255,.24) !important;
+      overflow:hidden;
+    }
+
+    body.player-page #player .stage-track span{
+      display:block;
+      height:100%;
+      width:45%;
+      border-radius:999px;
+      background:#fff8ec !important;
+      box-shadow:0 0 18px rgba(255,255,255,.38);
+    }
+
+    #fullscreen .fs-progress-wrap,
+    .fullscreen .fs-progress-wrap{
+      position:absolute;
+      left:54px;
+      right:54px;
+      bottom:34px;
+      z-index:5;
+      display:flex;
+      align-items:center;
+      gap:22px;
+      color:rgba(255,248,236,.92);
+      font-weight:900;
+      font-size:15px;
+      text-shadow:0 12px 30px rgba(0,0,0,.45);
+    }
+
+    #fullscreen .fs-track,
+    .fullscreen .fs-track{
+      flex:1;
+      height:8px;
+      border-radius:999px;
+      background:rgba(255,255,255,.24);
+      overflow:hidden;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+
+    #fullscreen .fs-track span,
+    .fullscreen .fs-track span{
+      display:block;
+      height:100%;
+      width:45%;
+      border-radius:999px;
+      background:#fff8ec;
+      box-shadow:0 0 20px rgba(255,255,255,.5);
+    }
+
+    @media(max-width:700px){
+      body.player-page #player .lyrics-top{
+        flex-direction:column;
+        align-items:stretch !important;
+      }
+
+      body.player-page #player .section-tabs{
+        width:max-content;
+      }
+
+      body.player-page #player .section-tab{
+        padding:10px 16px;
+        font-size:11px;
+      }
+
+      #fullscreen .fs-progress-wrap,
+      .fullscreen .fs-progress-wrap{
+        left:20px;
+        right:20px;
+        bottom:20px;
+        gap:12px;
+        font-size:12px;
+      }
+    }
+
+  
+    /* Static song section indicator: not a button, not a toggle */
+    body.player-page #player .section-tabs,
+    body.player-page #player .section-tab{
+      display:none !important;
+    }
+
+    body.player-page #player .section-indicator{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:max-content;
+      padding:12px 24px;
+      border-radius:999px;
+      background:linear-gradient(135deg, var(--accent), var(--accent-2));
+      color:#fff8ec;
+      font-size:13px;
+      font-weight:950;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      box-shadow:0 14px 34px rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.22);
+      pointer-events:none;
+      user-select:none;
+    }
+
+    @media(max-width:700px){
+      body.player-page #player .section-indicator{
+        padding:10px 18px;
+        font-size:11px;
+      }
+    }
+
+  
+    /* Single song page header cleanup */
+    .player-page-actions{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      width:100%;
+      margin:28px 0 34px;
+    }
+
+    .player-fullscreen-icon{
+      width:58px !important;
+      height:58px !important;
+      padding:0 !important;
+      justify-content:center !important;
+      border-radius:50% !important;
+    }
+
+    .player-fullscreen-icon svg{
+      width:24px;
+      height:24px;
+    }
+
+    body.player-page .section-head:has(h1:empty),
+    body.player-page .section-head:has(h2:empty){
+      display:none !important;
+    }
+
+    body.player-page h1:empty,
+    body.player-page h2:empty,
+    body.player-page p:empty{
+      display:none !important;
+    }
+
+    @media(max-width:620px){
+      .player-page-actions{
+        margin:18px 0 24px;
+      }
+
+      .player-fullscreen-icon{
+        width:52px !important;
+        height:52px !important;
+      }
+    }
+
+  
+    /* Header update: title + icon-only back, fullscreen moved into lyrics card */
+    body.player-page .player-page-actions{
+      justify-content:flex-start !important;
+      margin:24px 0 42px !important;
+      gap:16px !important;
+    }
+
+    body.player-page .player-page-actions::after{
+      content:"Worship Experience";
+      font-size:20px;
+      font-weight:900;
+      letter-spacing:-.035em;
+      color:var(--muted);
+    }
+
+    body.player-page .player-back-icon{
+      width:46px !important;
+      height:46px !important;
+      padding:0 !important;
+      border-radius:50% !important;
+      justify-content:center !important;
+      background:transparent !important;
+      border:0 !important;
+      box-shadow:none !important;
+      color:var(--ink) !important;
+    }
+
+    body.player-page .player-back-icon svg{
+      width:28px;
+      height:28px;
+    }
+
+    body.player-page .player-fullscreen-icon{
+      display:none !important;
+    }
+
+    body.player-page #player .lyrics-fullscreen-icon{
+      width:58px;
+      height:58px;
+      padding:0;
+      border-radius:50%;
+      display:inline-grid;
+      place-items:center;
+      cursor:pointer;
+      color:#fff8ec;
+      background:rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.24);
+      box-shadow:0 16px 42px rgba(0,0,0,.18);
+      backdrop-filter:blur(14px);
+      transition:.25s ease;
+    }
+
+    body.player-page #player .lyrics-fullscreen-icon:hover{
+      transform:translateY(-2px);
+      background:rgba(255,255,255,.22);
+    }
+
+    body.player-page #player .lyrics-fullscreen-icon svg{
+      width:25px;
+      height:25px;
+    }
+
+    body.player-page #player .lyrics-top{
+      align-items:flex-start !important;
+    }
+
+    @media(max-width:620px){
+      body.player-page .player-page-actions{
+        margin:16px 0 28px !important;
+      }
+
+      body.player-page .player-page-actions::after{
+        font-size:18px;
+      }
+
+      body.player-page .player-back-icon{
+        width:42px !important;
+        height:42px !important;
+      }
+
+      body.player-page #player .lyrics-fullscreen-icon{
+        width:52px;
+        height:52px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon"><i data-lucide="church"></i></div><div><h1>Ecclesia</h1><p>Digital Church OS</p></div></div>
+    <nav class="nav">
+      <a href="#" class="active"><i data-lucide="music-2"></i> Worship</a><a href="#"><i data-lucide="calendar-days"></i> Services</a><a href="#"><i data-lucide="book-open"></i> Bible</a><a href="#"><i data-lucide="heart-handshake"></i> Prayer</a><a href="#"><i data-lucide="settings"></i> Settings</a>
+    </nav>
+    <div class="side-card"><strong>Now Playing</strong><p class="meta">Worthy Is The Lamb · 03:12</p><div class="progress"><span></span></div></div>
+  </aside>
+  <main class="main">
+    <div class="topbar"><div><div class="crumb">Worship Experience</div></div><div class="actions"><button class="theme-toggle" onclick="toggleTheme()"><i data-lucide="moon"></i></button></div></div>
+    <section class="hero">
+      <div class="watermark"><i data-lucide="music-2"></i></div>
+      <div><span class="eyebrow"><i data-lucide="sparkles"></i> Worship Experience</span><h2>Songs, MP3 playback and living lyrics.</h2><p>A simple Ecclesia worship app for churches to upload songs, add lyrics, and display them beautifully as the audio plays.</p><div class="actions"><button class="btn" onclick="openPlayer()"><i data-lucide="play"></i> Open Player</button><button class="btn secondary" onclick="scrollToSection('library')">Browse Songs</button></div></div>
+      <div class="hero-art"><div class="disc"></div><div><h3>Worthy Is The Lamb</h3><p>Church Worship Team · Lyrics synced</p></div></div>
+    </section>
+    <div class="stats"><div class="stat"><strong>128</strong><span>Songs</span></div><div class="stat"><strong>12</strong><span>Categories</span></div><div class="stat"><strong>18</strong><span>Recently Added</span></div><div class="stat"><strong>56</strong><span>Favorites</span></div></div>
+    <section class="section" id="library"><div class="section-head"><div><h3>Song Library</h3><p>Select a worship song and open the lyric player.</p></div></div><div class="chips"><button class="chip active">All</button><button class="chip">Praise</button><button class="chip">Worship</button><button class="chip">Prayer</button><button class="chip">Thanksgiving</button><button class="chip">Communion</button></div><div class="grid" style="margin-top:22px" id="songGrid"></div></section>
+    <section class="section" id="player"><div class="back-row"><div class="player-page-actions"><button class="btn secondary player-back-icon" onclick="showArchive()" class="btn secondary player-back-icon" aria-label="Back to Song Library" title="Back to Song Library"><i data-lucide="arrow-left"></i></button></div></div><div class="section-head"><div></div></div><div class="player-wrap"><div class="album"><div class="album-cover"><i data-lucide="music"></i></div><h3 style="font-size:28px;margin:22px 0 5px">Worthy Is The Lamb</h3><div class="meta">Church Worship Team · 5:32</div><div class="audio-controls"><div class="progress"><span id="bar"></span></div><div class="meta" style="display:flex;justify-content:space-between"><span id="time">03:12</span><span>05:32</span></div><div class="controls"><button class="round"><i data-lucide="skip-back"></i></button><button class="round big" onclick="togglePlay()" id="playBtn"><i data-lucide="pause"></i></button><button class="round"><i data-lucide="skip-forward"></i></button></div></div></div><div class="lyrics-panel"><div class="lyrics-top"><div class="section-indicator" id="sectionIndicator">VERSE</div><div><span class="eyebrow"></span></div><button class="lyrics-fullscreen-icon" onclick="openFullscreen()" aria-label="Fullscreen Worship" title="Fullscreen Worship"><i data-lucide="maximize"></i></button></div><div class="lyrics" id="lyricsBox"></div><div class="stage-bottom"><span id="stageTime">03:12</span><div class="stage-track"><span id="stageBar"></span></div><span>05:32</span></div></div></div></section>
+  </main>
+</div>
+<div class="fullscreen" id="fs"><button class="btn secondary fs-close" onclick="closeFullscreen()"><i data-lucide="x"></i> Close</button><div class="fs-lines"><span>You are holy</span><span class="active" id="fsActive">You are worthy</span><span>You deserve the glory</span></div><div class="fs-progress-wrap"><span id="fsTime">02:48</span><div class="fs-track"><span id="fsBar"></span></div><span id="fsDuration">05:32</span></div></div>
+<script>
+  const songs=[['Worthy Is The Lamb','Church Worship Team','Worship','5:32'],['Holy Spirit Move','Prayer Choir','Prayer','6:18'],['Thank You Jesus','Youth Worship','Thanksgiving','4:44'],['Glory To The King','Main Choir','Praise','5:04'],['At The Cross','Communion Team','Communion','4:58'],['You Are Good','Sunday Worship','Praise','3:52']];
+  const lines=[['Verse 1',true],['You are holy'],['You are worthy'],['You deserve the glory'],['Lord of all'],['Chorus',true],['Worthy is the Lamb'],['Seated on the throne'],['We lift our hands in worship'],['Jesus Christ our Lord']];
+  const grid=document.getElementById('songGrid');songs.forEach((s,i)=>{grid.innerHTML+=`<article class="song-card" onclick="openPlayer()"><div class="cover"><i data-lucide="music-2"></i></div><div class="song-body"><h4>${s[0]}</h4><div class="meta">${s[1]}</div><div class="song-footer"><span class="meta">${s[2]} · ${s[3]}</span><button class="play-mini"><i data-lucide="play"></i></button></div></div></article>`});
+  const lyricsBox=document.getElementById('lyricsBox');
+  const lyricSections=[];
+  let currentSection=null;
+  lines.forEach((l)=>{
+    if(l[1]){
+      currentSection={label:l[0], lines:[]};
+      lyricSections.push(currentSection);
+    }else if(currentSection){
+      currentSection.lines.push(l[0]);
+    }
+  });
+
+  let playing=true, active=1, activeSection=0, progress=45;
+
+  function renderLyricFrame(){
+    const section=lyricSections[activeSection] || lyricSections[0];
+    const sectionIndicator=document.getElementById('sectionIndicator'); if(sectionIndicator && section) sectionIndicator.textContent=section.label;
+    if(!section) return;
+
+    let linesToShow=section.lines.slice(0,5);
+    if(section.lines.length>5){
+      const start=Math.max(0, Math.min(active-2, section.lines.length-5));
+      linesToShow=section.lines.slice(start,start+5);
+    }
+
+    lyricsBox.innerHTML=`<div class="label">${section.label}</div>` + linesToShow.map((line)=>{
+      const originalIndex=section.lines.indexOf(line);
+      return `<span class="lyric-line visible ${originalIndex===active?'active':''}">${line}</span>`;
+    }).join('');
+
+    const activeText=section.lines[active] || section.lines[0] || '';
+    const fs=document.getElementById('fsActive');
+    if(fs) fs.textContent=activeText;
+    const stageBar=document.getElementById('stageBar');
+    if(stageBar) stageBar.style.width=progress+'%';
+    const fsBar=document.getElementById('fsBar'); if(fsBar) fsBar.style.width=progress+'%';
+    const fsTime=document.getElementById('fsTime'); if(fsTime) fsTime.textContent=progress < 50 ? '02:48' : '03:12';
+    const stageTime=document.getElementById('stageTime');
+    if(stageTime) stageTime.textContent=progress < 50 ? '02:48' : '03:12';
+  }
+
+  function togglePlay(){
+    playing=!playing;
+    document.getElementById('playBtn').innerHTML=playing?'<i data-lucide="pause"></i>':'<i data-lucide="play"></i>';
+    lucide.createIcons()
+  }
+
+  renderLyricFrame();
+
+  setInterval(()=>{
+    if(!playing)return;
+    progress=(progress+2)%100;
+    document.getElementById('bar').style.width=progress+'%';
+    const fsBarInterval=document.getElementById('fsBar'); if(fsBarInterval) fsBarInterval.style.width=progress+'%';
+
+    const section=lyricSections[activeSection];
+    active++;
+    if(!section || active>=section.lines.length){
+      active=0;
+      activeSection=(activeSection+1)%lyricSections.length;
+    }
+
+    renderLyricFrame();
+  },2500);
+
+  function openPlayer(){
+    document.body.classList.remove('archive-page');
+    document.body.classList.add('player-page');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function showArchive(){
+    document.body.classList.remove('player-page');
+    document.body.classList.add('archive-page');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'})}
+  function toggleTheme(){const app=document.getElementById('app');app.dataset.theme=app.dataset.theme==='dark'?'light':'dark'}
+  function openFullscreen(){document.getElementById('fs').classList.add('show')} function closeFullscreen(){document.getElementById('fs').classList.remove('show')}
+  window.addEventListener('scroll',()=>document.documentElement.style.setProperty('--wm',window.scrollY*.05+'px'));
+  lucide.createIcons();
+</script>
+
+  <script>
+    function syncPreviewProgressUI(){
+      const mainBar = document.getElementById("bar");
+      const stageBar = document.getElementById("stageBar");
+      const fsBar = document.getElementById("fsBar");
+      const stageTime = document.getElementById("stageTime");
+      const fsTime = document.getElementById("fsTime");
+
+      let width = "45%";
+      if (typeof progress !== "undefined") width = progress + "%";
+      else if (mainBar && mainBar.style.width) width = mainBar.style.width;
+
+      if (stageBar) stageBar.style.width = width;
+      if (fsBar) fsBar.style.width = width;
+
+      const timeText = parseFloat(width) < 50 ? "02:48" : "03:12";
+      if (stageTime) stageTime.textContent = timeText;
+      if (fsTime) fsTime.textContent = timeText;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      syncPreviewProgressUI();
+    });
+  </script>
+
+</body>
+</html>

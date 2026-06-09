@@ -1,0 +1,49 @@
+Created At: 2026-06-06T14:28:52Z
+Completed At: 2026-06-06T14:28:52Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 13670 to 13710
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+13670:       }
+13671:       render();
+13672:     }
+13673: 
+13674:     function isLoggedIn() {
+13675:       return localStorage.getItem(SESSION_KEY) === 'active';
+13676:     }
+13677: 
+13678:     function applyTheme() {
+13679:       document.body.classList.toggle('light', state.theme.mode === 'light');
+13680:       document.documentElement.style.setProperty('--accent', state.theme.accent);
+13681:       document.documentElement.style.setProperty('--accent-strong', state.theme.accent);
+13682:       document.documentElement.style.setProperty('--accent-soft', hexToRgba(state.theme.accent, 0.14));
+13683:       
+13684:       const iframe = document.getElementById('workspaceIframe');
+13685:       if (iframe && iframe.contentWindow) {
+13686:         iframe.contentWindow.postMessage({
+13687:           type: 'themeChange',
+13688:           theme: state.theme.mode,
+13689:           accent: state.theme.accent
+13690:         }, '*');
+13691:       }
+13692:     }
+13693: 
+13694:     function hexToRgba(hex, alpha) {
+13695:       const value = hex.replace('#', '');
+13696:       const bigint = parseInt(value, 16);
+13697:       const r = (bigint >> 16) & 255;
+13698:       const g = (bigint >> 8) & 255;
+13699:       const b = bigint & 255;
+13700:       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+13701:     }
+13702: 
+13703:     function init() {
+13704:       const urlParams = new URLSearchParams(window.location.search);
+13705:       const themeParam = urlParams.get('theme');
+13706:       if (themeParam && (themeParam === 'light' || themeParam === 'dark')) {
+13707:         state.theme.mode = themeParam;
+13708:       }
+13709:       const accentParam = urlParams.get('accent');
+13710:       if (accentParam) {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

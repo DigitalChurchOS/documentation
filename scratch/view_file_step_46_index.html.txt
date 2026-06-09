@@ -1,0 +1,44 @@
+Created At: 2026-06-06T14:28:10Z
+Completed At: 2026-06-06T14:28:10Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 16270 to 16305
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+16270:             }
+16271:           }
+16272:         });
+16273:       });
+16274: 
+16275:       // Customize Theme button
+16276:       const customizeBtn = document.getElementById('customizeBtn');
+16277:       if (customizeBtn) {
+16278:         customizeBtn.onclick = () => {
+16279:           const activeTheme = themeEngineState.themes.find(t => t.id === themeEngineState.activeThemeId);
+16280:           if (activeTheme) {
+16281:             document.getElementById('customizerThemeName').textContent = activeTheme.name;
+16282:             let settings = {};
+16283:             try {
+16284:               settings = typeof activeTheme.settings === 'string' ? JSON.parse(activeTheme.settings) : (activeTheme.settings || {});
+16285:             } catch(e) {}
+16286:             customizerState.colorMode = settings.colorMode || 'light';
+16287:             customizerState.accentPreset = settings.accentPreset || 'orange';
+16288:             customizerState.colorPalette = settings.colorPalette || 'warm';
+16289:             customizerState.edgeStyle = settings.edgeStyle || 'soft';
+16290:             customizerState.cardStyle = settings.cardStyle || 'shadow';
+16291:             customizerState.spacingScale = settings.spacingScale || 'comfortable';
+16292:             customizerState.backgroundStyle = settings.backgroundStyle || 'softGradient';
+16293:             customizerState.iconStyle = settings.iconStyle || 'lucideLine';
+16294:             customizerState.buttonStyle = settings.buttonStyle || 'solid';
+16295:           }
+16296:           syncCustomizerUI();
+16297:           applyCustomizerTheme();
+16298:           document.getElementById('customizer').classList.add('active');
+16299:           document.body.classList.add('customizer-open');
+16300:           setStageDevice('desktop');
+16301:         };
+16302:       }
+16303: 
+16304:       // Close customizer button
+16305:       const closeCustomizer = document.getElementById('closeCustomizer');
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

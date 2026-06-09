@@ -1,0 +1,86 @@
+Created At: 2026-06-06T14:52:28Z
+Completed At: 2026-06-06T14:52:28Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx`
+Total Lines: 880
+Total Bytes: 33665
+Showing lines 339 to 535
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+339: export const App: React.FC = () => {
+340:   const pageContext = new URLSearchParams(window.location.search);
+341:   const initialTitle = pageContext.get('title') || 'Sunday Experience Landing Page';
+342:   const initialSlug = pageContext.get('slug') || '';
+343:   const initialStatus = pageContext.get('status') || 'draft';
+344:   
+345:   let queryTheme = pageContext.get('theme');
+346:   let queryAccent = pageContext.get('accent');
+347: 
+348:   if (!queryTheme || !queryAccent) {
+349:     try {
+350:       const savedState = localStorage.getItem('churchos.unifiedDashboard.v1');
+351:       if (savedState) {
+352:         const parsed = JSON.parse(savedState);
+353:         if (parsed && parsed.theme) {
+354:           if (!queryTheme) queryTheme = parsed.theme.mode;
+355:           if (!queryAccent) queryAccent = parsed.theme.accent;
+356:         }
+357:       }
+358:     } catch (e) {
+359:       console.error(e);
+360:     }
+361:   }
+362: 
+363:   const initialTheme = (queryTheme as 'dark' | 'light') || 'light';
+364:   const initialAccent = queryAccent || '#7C3AED';
+365: 
+366:   const [elements, setElements] = useState<ElementSchema[]>([]);
+367:   const [selectedElementId, setSelectedElementId] = useState<string | null>(null);
+368:   const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');
+369:   const [activeTemplate, setActiveTemplate] = useState<string>('hero');
+370: 
+371:   // Page Settings
+372:   const [pageTitle, setPageTitle] = useState(initialTitle);
+373:   const [pageDesc, setPageDesc] = useState('Minimal ChurchOS C
+<truncated 4765 bytes>
+dateElement = (id: string, updater: (el: ElementSchema) => Partial<ElementSchema>) => {
+495:     const updated = updateElementInTree(elements, id, updater);
+496:     pushState(updated);
+497:   };
+498: 
+499:   const handleDeleteElement = (id: string) => {
+500:     const updated = deleteElementFromTree(elements, id);
+501:     pushState(updated, selectedElementId === id ? null : selectedElementId);
+502:     showToastNotification('Element deleted');
+503:   };
+504: 
+505:   const handleDuplicateElement = (id: string) => {
+506:     const target = findElementById(elements, id);
+507:     if (!target) return;
+508:     const duplicated = cloneElementWithNewIds(target);
+509:     const updated = insertElementInTree(elements, id, duplicated, 'below');
+510:     pushState(updated, duplicated.id);
+511:     showToastNotification('Element duplicated');
+512:   };
+513: 
+514:   const handleAddElement = (schema: any, targetId: string, position: 'above' | 'below' | 'inside') => {
+515:     const newEl = cloneElementWithNewIds(schema);
+516:     let updated: ElementSchema[];
+517: 
+518:     if (targetId === 'root') {
+519:       updated = [...elements, newEl];
+520:     } else {
+521:       updated = insertElementInTree(elements, targetId, newEl, position);
+522:     }
+523:     pushState(updated, newEl.id);
+524:     showToastNotification(`Added ${newEl.type} element`);
+525:   };
+526: 
+527:   const handleMoveElement = (sourceId: string, targetId: string, position: 'above' | 'below' | 'inside') => {
+528:     const updated = moveElementInTree(elements, sourceId, targetId, position);
+529:     pushState(updated, sourceId);
+530:     showToastNotification('Element reordered');
+531:   };
+532: 
+533:   // Keyboard Shortcuts: Ctrl+Z, Ctrl+Y, Delete key
+534:   useEffect(() => {
+535:     const handleKeyDown = (e: KeyboardEvent) => {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

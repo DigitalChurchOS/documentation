@@ -1,0 +1,1101 @@
+
+========================================
+Step 27 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 29 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 33 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 35 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 39 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 45 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 49 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 53 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 65 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\routes\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 81 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 87 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 95 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 99 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 27 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 29 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 33 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 35 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 39 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 45 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 49 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 53 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 65 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\routes\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 81 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 87 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 95 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 99 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 129 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\routes\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 132 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 134 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 136 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 138 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 140 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: "Update previewTheme to use theme.draftSettings || theme.settings"
+Description: "Update previewTheme service to prioritize draftSettings over settings."
+StartLine: 558, EndLine: 585
+TargetContent: 
+"  /**\n   * Preview a theme config in temporary simulation staging context.\n   */\n  static async previewTheme(tenantId: string, themeId: string) {\n    // Fetch theme\n    const theme = await prisma.theme.findFirst({\n      where: {\n        id: themeId,\n        OR: [{ tenantId: null }, { tenantId }],\n      },\n    });\n\n    if (!theme) {\n      throw new Error('Theme not found');\n    }\n\n    const settings = safeParseJson<Record<string, any>>(theme.settings, {});\n\n    return {\n      themeId: theme.id,\n      name: theme.name,\n      settings,\n      version: settings.marketplace?.version || 'local',\n      isPreview: true,\n      timestamp: new Date().toISOString(),\n    };\n  }"
+ReplacementContent: 
+"  /**\n   * Preview a theme config in temporary simulation staging context.\n   */\n  static async previewTheme(tenantId: string, themeId: string) {\n    // Fetch theme\n    const theme = await prisma.theme.findFirst({\n      where: {\n        id: themeId,\n        OR: [{ tenantId: null }, { tenantId }],\n      },\n    });\n\n    if (!theme) {\n      throw new Error('Theme not found');\n    }\n\n    const settings = safeParseJson<Record<string, any>>(theme.draftSettings || theme.settings, {});\n\n    return {\n      themeId: theme.id,\n      name: theme.name,\n      settings,\n      version: settings.marketplace?.version || 'local',\n      isPreview: true,\n      timestamp: new Date().toISOString(),\n    };\n  }"
+
+========================================
+Step 142 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: "Add theme customization draft, publish, discard and reset methods to ThemeEngineService"
+Description: "Add customizeThemeDraft, publishThemeCustomization, discardThemeCustomization, and resetThemeCustomization methods to ThemeEngineService."
+StartLine: 687, EndLine: 694
+TargetContent: 
+"  static async listPageTemplates(tenantId: string) {\n    const settings = await this.getSettings(tenantId);\n    const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);\n\n    return [...this.defaultPageTemplates(), ...(config.pageTemplates || [])];\n  }\n\n  private static defaultSectionTemplates() {"
+ReplacementContent: 
+"  static async listPageTemplates(tenantId: string) {\n    const settings = await this.getSettings(tenantId);\n    const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);\n\n    return [...this.defaultPageTemplates(), ...(config.pageTemplates || [])];\n  }\n\n  static async customizeThemeDraft(tenantId: string, themeId: string, customConfig: CustomizeThemeInput) {\n    validateCustomization(customConfig);\n\n    let theme = await prisma.theme.findFirst({\n      where: {\n        id: themeId,\n        OR: [{ tenantId }, { tenantId: null }],\n      },\n    });\n\n    if (!theme) {\n      throw new Error('Customizable tenant theme not found');\n    }\n\n    if (theme.tenantId === null) {\n      theme = await prisma.theme.create({\n        data: {\n          tenantId,\n          name: `${theme.name} Custom`,\n          settings: theme.settings || '{}',\n          draftSettings: theme.settings || '{}',\n          isCustom: true,\n        },\n      });\n\n      await prisma.website.updateMany({\n        where: { tenantId, themeId: themeId },\n        data: { themeId: theme.id },\n      });\n    }\n\n    let baseSettings: Record<string, any> = {};\n    try {\n      baseSettings = JSON.parse(theme.draftSettings || theme.settings || '{}');\n    } catch {\n      baseSettings = {};\n    }\n\n    const updatedSettings = {\n      ...baseSettings,\n      ...customConfig,\n      colors: {\n        ...(baseSettings.colors || {}),\n        ...(customConfig.colors || {}),\n      },\n      fonts: {\n        ...(baseSettings.fonts || {}),\n        ...(customConfig.fonts || {}),\n      },\n      logos: {\n        ...(baseSettings.logos || {}),\n        ...(customConfig.logos || {}),\n      },\n      layout: {\n        ...(baseSettings.layout || {}),\n        ...(customConfig.layout || {}),\n      },\n    };\n\n    return await prisma.theme.update({\n      where: { id: theme.id },\n      data: {\n        draftSettings: JSON.stringify(updatedSettings),\n      },\n    });\n  }\n\n  static asy
+<truncated 1424 bytes>
+
+========================================
+Step 144 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\routes\\themeEngine.ts"
+Instruction: "Add theme customization routes (draft, publish, discard, reset) under /themes/:themeId/customization/..."
+Description: "Register new theme customization routes (draft, publish, discard, reset) in themeEngine.ts."
+StartLine: 293, EndLine: 307
+TargetContent: 
+"router.patch('/themes/:themeId/customize', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {\n  try {\n    const updatedTheme = await ThemeEngineService.customizeTheme(req.tenantId!, req.params.themeId as string, req.body);\n    \n    await ThemeEngineService.logActivity(req.tenantId!, req.user!.userId, 'customize_theme', {\n      themeId: req.params.themeId,\n      customizations: req.body,\n    });\n\n    res.json({ data: updatedTheme });\n  } catch (err: any) {\n    res.status(400).json({ error: err.message });\n  }\n});"
+ReplacementContent: 
+"router.patch('/themes/:themeId/customize', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {\n  try {\n    const updatedTheme = await ThemeEngineService.customizeTheme(req.tenantId!, req.params.themeId as string, req.body);\n    \n    await ThemeEngineService.logActivity(req.tenantId!, req.user!.userId, 'customize_theme', {\n      themeId: req.params.themeId,\n      customizations: req.body,\n    });\n\n    res.json({ data: updatedTheme });\n  } catch (err: any) {\n    res.status(400).json({ error: err.message });\n  }\n});\n\n/**\n * PATCH /api/theme-engine/themes/:themeId/customization/draft\n */\nrouter.patch('/themes/:themeId/customization/draft', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {\n  try {\n    const updatedTheme = await ThemeEngineService.customizeThemeDraft(req.tenantId!, req.params.themeId as string, req.body);\n    await ThemeEngineService.logActivity(req.tenantId!, req.user!.userId, 'customize_theme_draft', {\n      themeId: req.params.themeId,\n      customizations: req.body,\n    });\n    res.json({ data: updatedTheme });\n  } catch (err: any) {\n    res.status(400).json({ error: err.message });\n  }\n});\n\n/**\n * POST /api/theme-engine/themes/:themeId/customization/publish\n */\nrouter.post('/themes/:themeId/customization/publish', requireThemeEnginePermission('theme-engine.update'), async (req: Request, res: Response) => {\n  try {\n    const updatedTheme = await ThemeEngineService.publishThemeCustomization(req.tenantId!, req.params.themeId as string);\n    await ThemeEngineService.logActivity(req.tenantId!, req.user!.userId, 'publish_theme_customization', {\n      themeId: req.params.themeId,\n    });\n    res.json({ data: updatedTheme });\n  } catch (err: any) {\n    res.status(400).json({ error: err.message });\n  }\n});\n\n/**\n * POST /api/theme-engine/themes/:themeId/customization/discard\n */\nrouter.post('/themes/:themeId/customization/discard', requireThemeEnginePermission('theme-engine
+<truncated 1088 bytes>
+
+========================================
+Step 170 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\routes\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 172 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 174 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 186 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 188 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 210 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 212 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\services\\themeEngine.ts"
+Instruction: "Update activateThemeForWebsite to seed default pages (Home, About, Services, Sermons, Events, Giving, Contact) if pages count is zero"
+Description: "Seed website default pages with starter content on active theme changes"
+StartLine: 444, EndLine: 472
+TargetContent: 
+"  /**\n   * Swap out / switch active theme for website pages.\n   */\n  static async activateThemeForWebsite(tenantId: string, websiteId: string, themeId: string) {\n    // 1. Verify website belongs to tenant\n    const website = await prisma.website.findFirst({\n      where: { id: websiteId, tenantId },\n    });\n    if (!website) {\n      throw new Error('Website not found');\n    }\n\n    // 2. Verify theme belongs to tenant or is global (tenantId === null)\n    const theme = await prisma.theme.findFirst({\n      where: {\n        id: themeId,\n        OR: [{ tenantId: null }, { tenantId }],\n      },\n    });\n    if (!theme) {\n      throw new Error('Theme not found');\n    }\n\n    // 3. Update website active themeId\n    return await prisma.website.update({\n      where: { id: websiteId },\n      data: { themeId },\n    });\n  }"
+ReplacementContent: 
+"  /**\n   * Swap out / switch active theme for website pages.\n   */\n  static async activateThemeForWebsite(tenantId: string, websiteId: string, themeId: string) {\n    // 1. Verify website belongs to tenant\n    const website = await prisma.website.findFirst({\n      where: { id: websiteId, tenantId },\n    });\n    if (!website) {\n      throw new Error('Website not found');\n    }\n\n    // 2. Verify theme belongs to tenant or is global (tenantId === null)\n    const theme = await prisma.theme.findFirst({\n      where: {\n        id: themeId,\n        OR: [{ tenantId: null }, { tenantId }],\n      },\n    });\n    if (!theme) {\n      throw new Error('Theme not found');\n    }\n\n    // 3. Update website active themeId\n    const updatedWebsite = await prisma.website.update({\n      where: { id: websiteId },\n      data: { themeId },\n    });\n\n    // 4. Seed default pages if website has no pages\n    const pagesCount = await prisma.page.count({\n      where: { websiteId },\n    });\n\n    if (pagesCount === 0) {\n      const defaultPages = [\n        {\n          title: 'Home',\n          slug: '',\n          isHome: true,\n          content: [\n            {\n              id: 'home_hero',\n              type: 'flexbox',\n              props: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '16px' },\n              styles: { desktop: { padding: '80px 40px', backgroundColor: '#eff6ff', borderRadius: '8px', textAlign: 'center' } },\n              children: [\n                { id: 'home_hero_title', type: 'heading', props: { text: 'Welcome to Grace Church', level: 'h1' }, styles: { desktop: { fontSize: '48px', fontWeight: '800', color: '#111827' } }, children: [] },\n                { id: 'home_hero_text', type: 'paragraph', props: { text: 'Experience spiritual growth, warm fellowship, and impactful ministries with us.' }, styles: { desktop: { fontSize: '16px', color: '#4b5563', maxWidth: '600px' } }, children: [] },\n                { id: 'home_hero_cta', typ
+<truncated 7127 bytes>
+
+========================================
+Step 214 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 216 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 218 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: "Update App state, fetching, message listeners, and element selection for embed mode"
+Description: "Update Page Builder App component to support embed mode, API data loading, and message-based control flows"
+StartLine: 339, EndLine: 533
+TargetContent: 
+"export const App: React.FC = () => {\n  const pageContext = new URLSearchParams(window.location.search);\n  const initialTitle = pageContext.get('title') || 'Sunday Experience Landing Page';\n  const initialSlug = pageContext.get('slug') || '';\n  const initialStatus = pageContext.get('status') || 'draft';\n  \n  let queryTheme = pageContext.get('theme');\n  let queryAccent = pageContext.get('accent');\n\n  if (!queryTheme || !queryAccent) {\n    try {\n      const savedState = localStorage.getItem('churchos.unifiedDashboard.v1');\n      if (savedState) {\n        const parsed = JSON.parse(savedState);\n        if (parsed && parsed.theme) {\n          if (!queryTheme) queryTheme = parsed.theme.mode;\n          if (!queryAccent) queryAccent = parsed.theme.accent;\n        }\n      }\n    } catch (e) {\n      console.error(e);\n    }\n  }\n\n  const initialTheme = (queryTheme as 'dark' | 'light') || 'light';\n  const initialAccent = queryAccent || '#7C3AED';\n\n  const [elements, setElements] = useState<ElementSchema[]>([]);\n  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);\n  const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');\n  const [activeTemplate, setActiveTemplate] = useState<string>('hero');\n\n  // Page Settings\n  const [pageTitle, setPageTitle] = useState(initialTitle);\n  const [pageDesc, setPageDesc] = useState('Minimal ChurchOS CMS page with dynamic sections, reusable blocks, and responsive layouts.');\n  const [canvasBg, setCanvasBg] = useState('#ffffff');\n\n  // Dynamic theme & accent state (Charcoal Grace UI)\n  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(initialTheme);\n  const [brandAccent, setBrandAccent] = useState(initialAccent);\n\n  // Scoped canvas preview theme (only toggles content simulation)\n  const [canvasThemeMode, setCanvasThemeMode] = useState<'dark' | 'light'>('light');\n\n  useEffect(() => {\n    document.body.classList.toggle('light-mode', themeMode === 'light');\n  }, [themeMode]);\n\n  useEffect(() => {\
+<truncated 5060 bytes>
+ReplacementContent: 
+"export const App: React.FC = () => {\n  const pageContext = new URLSearchParams(window.location.search);\n  const mode = pageContext.get('mode');\n  const pageId = pageContext.get('pageId');\n  const tenantId = pageContext.get('tenantId');\n  const token = pageContext.get('token');\n\n  const initialTitle = pageContext.get('title') || 'Sunday Experience Landing Page';\n  const initialSlug = pageContext.get('slug') || '';\n  const initialStatus = pageContext.get('status') || 'draft';\n  \n  let queryTheme = pageContext.get('theme');\n  let queryAccent = pageContext.get('accent');\n\n  if (!queryTheme || !queryAccent) {\n    try {\n      const savedState = localStorage.getItem('churchos.unifiedDashboard.v1');\n      if (savedState) {\n        const parsed = JSON.parse(savedState);\n        if (parsed && parsed.theme) {\n          if (!queryTheme) queryTheme = parsed.theme.mode;\n          if (!queryAccent) queryAccent = parsed.theme.accent;\n        }\n      }\n    } catch (e) {\n      console.error(e);\n    }\n  }\n\n  const initialTheme = (queryTheme as 'dark' | 'light') || 'light';\n  const initialAccent = queryAccent || '#7C3AED';\n\n  const [elements, setElements] = useState<ElementSchema[]>([]);\n  const [selectedElementId, setSelectedElementId] = useState<string | null>(null);\n  const [activeDevice, setActiveDevice] = useState<DeviceType>('desktop');\n  const [activeTemplate, setActiveTemplate] = useState<string>('hero');\n\n  // Page Settings\n  const [pageTitle, setPageTitle] = useState(initialTitle);\n  const [pageDesc, setPageDesc] = useState('Minimal ChurchOS CMS page with dynamic sections, reusable blocks, and responsive layouts.');\n  const [canvasBg, setCanvasBg] = useState('#ffffff');\n\n  // Dynamic theme & accent state (Charcoal Grace UI)\n  const [themeMode, setThemeMode] = useState<'dark' | 'light'>(initialTheme);\n  const [brandAccent, setBrandAccent] = useState(initialAccent);\n\n  // Scoped canvas preview theme (only toggles content simulation)\n  const [canvasThemeMode, setCanvasThemeMode]
+<truncated 10009 bytes>
+
+========================================
+Step 220 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 222 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 224 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: "Insert conditional return for embed mode before the default layout return"
+Description: "Conditionally render only the Canvas inside page builder when embedded in the customizer iframe"
+StartLine: 747, EndLine: 750
+TargetContent: 
+"  const inspectorVisibilityClass = selectedElement ? 'flex' : 'hidden 2xl:flex';\n\n  return (\n    <div className=\"w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200\">"
+ReplacementContent: 
+"  if (mode === 'embed') {\n    return (\n      <div className=\"w-screen h-screen flex overflow-hidden bg-bg\">\n        <Canvas\n          elements={elements}\n          activeDevice={activeDevice}\n          selectedElementId={selectedElementId}\n          onSelectElement={handleSelectElement}\n          onUpdateElement={handleUpdateElement}\n          onDeleteElement={handleDeleteElement}\n          onDuplicateElement={handleDuplicateElement}\n          onAddElement={handleAddElement}\n          onMoveElement={handleMoveElement}\n          canvasBg={canvasBg}\n          canvasThemeMode={canvasThemeMode}\n        />\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200\">"
+
+========================================
+Step 226 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 228 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: "Add inspectorVisibilityClass back before the main return statement"
+Description: "Restore inspectorVisibilityClass variable definition for non-embed return path"
+StartLine: 766, EndLine: 768
+TargetContent: 
+"  return (\n    <div className=\"w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200\">"
+ReplacementContent: 
+"  const inspectorVisibilityClass = selectedElement ? 'flex' : 'hidden 2xl:flex';\n\n  return (\n    <div className=\"w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200\">"
+
+========================================
+Step 240 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 242 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 246 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 252 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 256 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 258 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 260 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Insert styling rules above the Theme Customizer comment"
+Description: "Add CSS rules for Theme Customizer + Page Builder sidebar tabs and page lists"
+StartLine: 3930, EndLine: 3930
+TargetContent: 
+"/* Theme customizer */"
+ReplacementContent: 
+"/* Theme Customizer + Page Builder Tabs & Page Items styling */\n.customizer-tabs {\n  display: flex;\n  border-bottom: 1px solid rgba(0,0,0,0.08);\n  background: #fdfdfd;\n}\n.customizer-tab {\n  flex: 1;\n  padding: 12px 6px;\n  font-size: 13px;\n  font-weight: 700;\n  color: var(--platform-muted);\n  border: none;\n  background: transparent;\n  border-bottom: 2px solid transparent;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 6px;\n  transition: all 0.2s;\n}\n.customizer-tab.active {\n  color: var(--platform-accent, #6366f1);\n  border-bottom-color: var(--platform-accent, #6366f1);\n  background: #f9f9fb;\n}\n.customizer-tab svg, .customizer-tab i {\n  width: 14px;\n  height: 14px;\n}\n.page-item-row:hover {\n  border-color: var(--platform-accent, #6366f1) !important;\n  background: #f9f9fb !important;\n}\n.page-item-row.active-page {\n  border-color: var(--platform-accent, #6366f1) !important;\n  background: #f5f3ff !important;\n  color: var(--platform-accent, #6366f1) !important;\n}\n\n/* Theme customizer */"
+
+========================================
+Step 262 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 264 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 266 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 270 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 272 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Insert tabs header and theme-design-tab wrapper div around the panel heading"
+Description: "Add sidebar tabs structure to theme customizer panel in index.html"
+StartLine: 12839, EndLine: 12844
+TargetContent: 
+"        <aside class=\"settings-panel\">\n          <div class=\"panel-heading\">\n            <h3>Universal Appearance</h3>\n            <p>These controls come from the platform theme settings contract and active theme capabilities.</p>\n          </div>"
+ReplacementContent: 
+"        <aside class=\"settings-panel\" style=\"display:flex; flex-direction:column; overflow-y:auto;\">\n          <div class=\"customizer-tabs\">\n            <button class=\"customizer-tab active\" id=\"tabThemeDesign\" type=\"button\"><i data-lucide=\"palette\"></i> Theme Design</button>\n            <button class=\"customizer-tab\" id=\"tabPages\" type=\"button\"><i data-lucide=\"file-text\"></i> Pages</button>\n          </div>\n          \n          <div class=\"settings-tab-content theme-design-tab\" id=\"customizerThemeDesignTab\" style=\"flex:1; overflow-y:auto;\">\n            <div class=\"panel-heading\">\n              <h3>Universal Appearance</h3>\n              <p>These controls come from the platform theme settings contract and active theme capabilities.</p>\n            </div>"
+
+========================================
+Step 274 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 276 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Close the theme-design-tab wrapper div and append customizerPagesTab and customizerInspectorPanel before the closing aside tag"
+Description: "Add Pages and Page Inspector tabs content markup in index.html customizer sidebar"
+StartLine: 12963, EndLine: 12966
+TargetContent: 
+"            </div>\n          </div>\n        </aside>"
+ReplacementContent: 
+"          </div>\n          </div> <!-- Close #customizerThemeDesignTab -->\n\n          <div class=\"settings-tab-content pages-tab\" id=\"customizerPagesTab\" style=\"display:none; flex:1; overflow-y:auto; padding: 16px;\">\n            <div class=\"panel-heading\" style=\"padding: 0 0 16px 0;\">\n              <h3 style=\"margin:0; font-size:14px; font-weight:850; color:#202033;\">Pages & Navigation</h3>\n              <p style=\"margin:4px 0 0; font-size:11px; font-weight:700; color:var(--platform-muted);\">Select a page to edit its content visually. Changes are saved as drafts until published.</p>\n            </div>\n            <div class=\"pages-list\" id=\"customizerPagesList\" style=\"display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;\">\n              <!-- Dynamic Page List -->\n            </div>\n            <button class=\"primary-btn w-full justify-center\" id=\"customizerAddPageBtn\" type=\"button\" style=\"width:100%; border-radius:10px; height:38px;\"><i data-lucide=\"plus\"></i> Add New Page</button>\n            \n            <hr style=\"margin: 20px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.08);\" />\n            \n            <div class=\"panel-heading\" style=\"padding: 0 0 16px 0;\">\n              <h3 style=\"margin:0; font-size:14px; font-weight:850; color:#202033;\">Section Catalog</h3>\n              <p style=\"margin:4px 0 0; font-size:11px; font-weight:700; color:var(--platform-muted);\">Click sections below to add them to your page.</p>\n            </div>\n            <div class=\"sections-catalog\" style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 8px;\">\n              <div class=\"catalog-item\" data-section-type=\"hero-banner\" style=\"padding: 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; background: #ffffff; cursor: pointer; text-align: center; font-size: 11px; font-weight: 700; color: #202033; transition: all 0.2s;\">\n                <i data-lucide=\"layout\" style=\"width: 20px; height: 20px; margin: 0 auto 6px; display:
+<truncated 3000 bytes>
+
+========================================
+Step 278 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 280 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 282 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Insert iframe block after device-status-bar closing tag and before churchSite container"
+Description: "Insert customizer iframe markup in preview frame in index.html"
+StartLine: 13034, EndLine: 13035
+TargetContent: 
+"              </div>\n              <div class=\"church-site\" id=\"churchSite\">"
+ReplacementContent: 
+"              </div>\n              <iframe id=\"customizerIframe\" src=\"\" style=\"width:100%; height:calc(100% - 24px); border:none; display:none; background:transparent;\"></iframe>\n              <div class=\"church-site\" id=\"churchSite\">"
+
+========================================
+Step 284 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 288 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 290 - Tool: replace_file_content - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Implement tab selectors, postMessage messaging bridge, page listing, page creator, dynamic property rendering, and studio save/publish handlers"
+Description: "Implement unified customizer-builder integration Javascript routing, tab controllers, dynamic page list loader, postMessage bindings, and draft/publish orchestrator"
+StartLine: 16373, EndLine: 16436
+TargetContent: 
+"      // Customize Theme button\n      const customizeBtn = document.getElementById('customizeBtn');\n      if (customizeBtn) {\n        customizeBtn.onclick = () => {\n          const activeTheme = themeEngineState.themes.find(t => t.id === themeEngineState.activeThemeId);\n          if (activeTheme) {\n            document.getElementById('customizerThemeName').textContent = activeTheme.name;\n            let settings = {};\n            try {\n              settings = typeof activeTheme.settings === 'string' ? JSON.parse(activeTheme.settings) : (activeTheme.settings || {});\n            } catch(e) {}\n            customizerState.colorMode = settings.colorMode || 'light';\n            customizerState.accentPreset = settings.accentPreset || 'orange';\n            customizerState.colorPalette = settings.colorPalette || 'warm';\n            customizerState.edgeStyle = settings.edgeStyle || 'soft';\n            customizerState.cardStyle = settings.cardStyle || 'shadow';\n            customizerState.spacingScale = settings.spacingScale || 'comfortable';\n            customizerState.backgroundStyle = settings.backgroundStyle || 'softGradient';\n            customizerState.iconStyle = settings.iconStyle || 'lucideLine';\n            customizerState.buttonStyle = settings.buttonStyle || 'solid';\n          }\n          syncCustomizerUI();\n          applyCustomizerTheme();\n          document.getElementById('customizer').classList.add('active');\n          document.body.classList.add('customizer-open');\n          setStageDevice('desktop');\n        };\n      }\n\n      // Close customizer button\n      const closeCustomizer = document.getElementById('closeCustomizer');\n      if (closeCustomizer) {\n        closeCustomizer.onclick = () => {\n          document.getElementById('customizer').classList.remove('active');\n          document.body.classList.remove('customizer-open');\n        };\n      }\n\n      // Hide / Reveal Topbar\n      const hideTopbar = document.getElementById('hideTopbar');\n      if (hideTopbar) {\
+<truncated 839 bytes>
+ReplacementContent: 
+"      // Customize Theme button\n      const customizeBtn = document.getElementById('customizeBtn');\n      if (customizeBtn) {\n        customizeBtn.onclick = () => {\n          const activeTheme = themeEngineState.themes.find(t => t.id === themeEngineState.activeThemeId);\n          if (activeTheme) {\n            document.getElementById('customizerThemeName').textContent = activeTheme.name;\n            let settings = {};\n            try {\n              settings = typeof activeTheme.settings === 'string' ? JSON.parse(activeTheme.settings) : (activeTheme.settings || {});\n            } catch(e) {}\n            customizerState.colorMode = settings.colorMode || 'light';\n            customizerState.accentPreset = settings.accentPreset || 'orange';\n            customizerState.colorPalette = settings.colorPalette || 'warm';\n            customizerState.edgeStyle = settings.edgeStyle || 'soft';\n            customizerState.cardStyle = settings.cardStyle || 'shadow';\n            customizerState.spacingScale = settings.spacingScale || 'comfortable';\n            customizerState.backgroundStyle = settings.backgroundStyle || 'softGradient';\n            customizerState.iconStyle = settings.iconStyle || 'lucideLine';\n            customizerState.buttonStyle = settings.buttonStyle || 'solid';\n          }\n          syncCustomizerUI();\n          applyCustomizerTheme();\n          document.getElementById('customizer').classList.add('active');\n          document.body.classList.add('customizer-open');\n          setStageDevice('desktop');\n          \n          // Show default Theme Design tab and seed/retrieve website default pages\n          showTab('ThemeDesign');\n          loadCustomizerPages();\n        };\n      }\n\n      // Close customizer button\n      const closeCustomizer = document.getElementById('closeCustomizer');\n      if (closeCustomizer) {\n        closeCustomizer.onclick = () => {\n          document.getElementById('customizer').classList.remove('active');\n          document.body.classList.remove
+<truncated 22792 bytes>
+
+========================================
+Step 300 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\src\\tests\\cms_extended.test.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 320 - Tool: view_file - File: "c:/Users/Administrator/Documents/ChurchOS/src/tests/cms_extended.test.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 326 - Tool: view_file - File: "c:/Users/Administrator/Documents/ChurchOS/src/routes/themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 328 - Tool: view_file - File: "c:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 330 - Tool: view_file - File: "c:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 342 - Tool: view_file - File: "c:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 344 - Tool: view_file - File: "c:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 352 - Tool: view_file - File: "c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 373 - Tool: replace_file_content - File: "c:/Users/Administrator/Documents/ChurchOS/src/tests/cms_extended.test.ts"
+Instruction: "Append Page Builder draft, publish, and preview tests to the end of the file"
+Description: "Add page builder integration tests for draft, publish, and secure preview token flow"
+StartLine: 440, EndLine: 447
+TargetContent: 
+"      // Verify merged footer configuration\n      expect(res.body.data.footer).toBeDefined();\n      expect(res.body.data.footer.copyrightText).toBe('&copy; 2026 Grace Community Church');\n      expect(res.body.data.footer.socialLinks).toEqual([{ name: 'facebook', url: 'https://fb.com/grace' }]);\n    });\n  });\n});"
+ReplacementContent: 
+"      // Verify merged footer configuration\n      expect(res.body.data.footer).toBeDefined();\n      expect(res.body.data.footer.copyrightText).toBe('&copy; 2026 Grace Community Church');\n      expect(res.body.data.footer.socialLinks).toEqual([{ name: 'facebook', url: 'https://fb.com/grace' }]);\n    });\n  });\n\n  // ─────────────────────────────────────────────────────────────\n  // 7. PAGE BUILDER INTEGRATION & DRAFT/PUBLISH/PREVIEW FLOWS\n  // ─────────────────────────────────────────────────────────────\n  describe('Page Builder Draft, Publish & Preview Token Flow', () => {\n    let draftPageId: string;\n    let previewToken: string;\n    let previewUrl: string;\n\n    beforeAll(async () => {\n      // Create a fresh draft page to test builder operations\n      const pageRes = await request(app)\n        .post('/api/cms/pages')\n        .set('x-tenant-id', tenantId)\n        .set('Authorization', `Bearer ${adminToken}`)\n        .send({\n          websiteId,\n          title: 'Customizer Studio Page',\n          slug: 'studio-test',\n          content: JSON.stringify([{ type: 'text', content: 'Initial Content' }]),\n          status: 'draft',\n        });\n      expect(pageRes.status).toBe(201);\n      draftPageId = pageRes.body.data.id;\n    });\n\n    it('should save page layout changes to draftContent (does not affect public render)', async () => {\n      // 1. Save changes to draft\n      const draftContent = [\n        { type: 'hero', props: { title: 'Updated Draft Hero' } },\n        { type: 'paragraph', props: { text: 'New draft description text.' } }\n      ];\n\n      const saveRes = await request(app)\n        .patch(`/api/cms/pages/${draftPageId}/draft`)\n        .set('x-tenant-id', tenantId)\n        .set('Authorization', `Bearer ${adminToken}`)\n      
+<truncated 4176 bytes>
+
+========================================
+Step 432 - Tool: view_file - File: "c:/Users/Administrator/Documents/ChurchOS/page-builder/index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 434 - Tool: replace_file_content - File: "c:/Users/Administrator/Documents/ChurchOS/page-builder/index.html"
+Instruction: "Update the App import path to be absolute /page-builder/app.js"
+Description: "Use absolute path for loading App module to prevent slash resolution issues"
+StartLine: 680, EndLine: 693
+TargetContent: 
+"  <!-- React Mount Connection Script -->\n  <script type=\"module\">\n    import React from 'react';\n    import ReactDOM from 'react-dom/client';\n    import { App } from './app.js';\n\n    const root = ReactDOM.createRoot(document.getElementById('root'));\n    root.render(React.createElement(App));\n  </script>"
+ReplacementContent: 
+"  <!-- React Mount Connection Script -->\n  <script type=\"module\">\n    import React from 'react';\n    import ReactDOM from 'react-dom/client';\n    import { App } from '/page-builder/app.js';\n\n    const root = ReactDOM.createRoot(document.getElementById('root'));\n    root.render(React.createElement(App));\n  </script>"
+
+========================================
+Step 461 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 474 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 480 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 482 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 488 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 490 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 493 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 496 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 500 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 504 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 508 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 510 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 512 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 461 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 474 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 480 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 482 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 488 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 490 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 493 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 496 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 500 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 504 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 508 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 510 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 512 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 526 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 531 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 535 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 539 - Tool: multi_replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "1. Update showTab to auto-trigger page builder loading when Pages tab is selected. 2. Update loadCustomizerPages to show a better empty state with auto-create Home page. 3. Fix selectCustomizerPage to pass theme/accent context to iframe. 4. Fix applyCustomizerTheme to forward theme changes to iframe. 5. Fix setStageDevice to forward device changes to iframe."
+Description: "Core integration fixes: auto-load page builder on Pages tab, better empty state, sync theme/device changes to iframe, pass theme context to embedded page builder"
+StartLine: undefined, EndLine: undefined
+TargetContent: 
+undefined
+ReplacementContent: 
+undefined
+Chunks: "[{\"AllowMultiple\":false,\"EndLine\":16457,\"ReplacementContent\":\"      function showTab(tabName) {\\n        document.querySelectorAll('.customizer-tab').forEach(t => t.classList.remove('active'));\\n        document.querySelectorAll('.settings-tab-content').forEach(c => c.style.display = 'none');\\n        \\n        if (tabName === 'ThemeDesign') {\\n          document.getElementById('tabThemeDesign').classList.add('active');\\n          document.getElementById('customizerThemeDesignTab').style.display = 'block';\\n          // When switching to Theme Design, show the static mockup and hide iframe\\n          const iframe = document.getElementById('customizerIframe');\\n          const staticMockup = document.getElementById('churchSite');\\n          if (iframe) iframe.style.display = 'none';\\n          if (staticMockup) staticMockup.style.display = 'block';\\n        } else if (tabName === 'Pages') {\\n          document.getElementById('tabPages').classList.add('active');\\n          document.getElementById('customizerPagesTab').style.display = 'block';\\n          // Auto-select first page and show page builder canvas\\n          loadCustomizerPages().then(() => {\\n            if (!activeCustomizerPageId) {\\n              const websiteId = cmsState.activeWebsiteId || (cmsState.websites && cmsState.websites[0]?.id);\\n              const websitePages = (cmsState.pages || []).filter(p => p.websiteId === websiteId);\\n              if (websitePages.length > 0) {\\n                selectCustomizerPage(websitePages[0].id);\\n              }\\n            } else {\\n              // Re-activate the existing selection to ensure iframe is visible\\n              selectCustomizerPage(activeCustomizerPageId);\\n            }\\n          });\\n        }\\n      }\\n      \\n      const tabThemeDesign = document.getElementById('tabThemeDesign');\\n      if (tabThemeDesign) {\\n        tabThemeDesign.onclick = () => showTab('ThemeDesign');\\n      }\\n      \\n      const tabPages = document.getElementById('tabPages');\\n      if (tabPages) {\\n        tabPag\n<truncated 12019 bytes>"
+
+========================================
+Step 547 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 555 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 559 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 561 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Add a special case: if module=customizer, auto-open the customizer overlay and optionally switch to the Pages tab"
+Description: "Add deep-link handling for module=customizer&tab=pages so the /page-builder redirect lands correctly in the unified customizer"
+StartLine: 13864, EndLine: 13869
+TargetContent: 
+"      // Check query parameter deep linking\n      const targetModule = urlParams.get('module');\n      if (targetModule) {\n        selectedModule = normalizeModuleKey(targetModule);\n        switchView('modules');\n      }"
+ReplacementContent: 
+"      // Check query parameter deep linking\n      const targetModule = urlParams.get('module');\n      if (targetModule === 'customizer') {\n        // Deep link to the Theme Customizer — auto-open it\n        setTimeout(() => {\n          const customizeBtn = document.getElementById('customizeBtn');\n          if (customizeBtn) {\n            customizeBtn.click();\n            // If tab=pages specified, auto-switch to Pages tab\n            const targetTab = urlParams.get('tab');\n            if (targetTab === 'pages') {\n              setTimeout(() => {\n                if (typeof showTab === 'function') showTab('Pages');\n              }, 400);\n            }\n          }\n        }, 800);\n      } else if (targetModule) {\n        selectedModule = normalizeModuleKey(targetModule);\n        switchView('modules');\n      }"
+
+========================================
+Step 563 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 567 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 569 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Change openVisualEditor to open the customizer with Pages tab and select the page, instead of navigating away to /page-builder"
+Description: "Instead of navigating to standalone /page-builder, open the Theme Customizer's Pages tab and auto-select the page — keeping the user inside the unified experience"
+StartLine: 19286, EndLine: 19299
+TargetContent: 
+"    function openVisualEditor(pageId) {\n      const page = cmsState.pages.find(p => p.id === pageId);\n      if (!page) return;\n      const params = new URLSearchParams({\n        pageId: page.id,\n        title: page.title || '',\n        slug: page.slug || '',\n        status: page.status || 'draft',\n        theme: state.theme.mode,\n        accent: state.theme.accent,\n        v: Date.now().toString()\n      });\n      window.location.href = `/page-builder/?${params.toString()}`;\n    }"
+ReplacementContent: 
+"    function openVisualEditor(pageId) {\n      const page = cmsState.pages.find(p => p.id === pageId);\n      if (!page) return;\n      // Open the unified Theme Customizer and navigate to the page\n      const customizeBtn = document.getElementById('customizeBtn');\n      if (customizeBtn) {\n        customizeBtn.click();\n        setTimeout(() => {\n          if (typeof showTab === 'function') showTab('Pages');\n          setTimeout(() => {\n            if (typeof selectCustomizerPage === 'function') selectCustomizerPage(pageId);\n          }, 300);\n        }, 300);\n      }\n    }"
+
+========================================
+Step 610 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 624 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 626 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 640 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 644 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 650 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 654 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 664 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 682 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: "Add GET handler for /api/cms/pages/:id, plus handlers for /draft, /publish, and /preview sub-resources"
+Description: "Add missing GET, draft, publish, and preview API endpoints for pages in local preview server"
+StartLine: 2926, EndLine: 2934
+TargetContent: 
+"  const pageMatch = pathname.match(/^\\/api\\/cms\\/pages\\/([^/]+)$/);\n  if (pageMatch && method === 'PATCH') {\n    const page = state.pages.find((item) => item.id === pageMatch[1]);\n    if (!page) return sendJson(res, 404, { error: 'Page not found' });\n    Object.assign(page, body, { updatedAt: now() });\n    addActivity(`Updated page: ${page.title}`);\n    return sendJson(res, 200, { data: page });\n  }"
+ReplacementContent: 
+"  const draftMatch = pathname.match(/^\\/api\\/cms\\/pages\\/([^/]+)\\/draft$/);\n  if (draftMatch && method === 'PATCH') {\n    const page = state.pages.find((item) => item.id === draftMatch[1]);\n    if (!page) return sendJson(res, 404, { error: 'Page not found' });\n    page.draftContent = typeof body.draftContent === 'string' ? body.draftContent : JSON.stringify(body.draftContent || []);\n    page.updatedAt = now();\n    addActivity(`Updated page draft: ${page.title}`);\n    return sendJson(res, 200, { data: page });\n  }\n\n  const publishMatch = pathname.match(/^\\/api\\/cms\\/pages\\/([^/]+)\\/publish$/);\n  if (publishMatch && method === 'POST') {\n    const page = state.pages.find((item) => item.id === publishMatch[1]);\n    if (!page) return sendJson(res, 404, { error: 'Page not found' });\n    const nextContent = page.draftContent || page.content;\n    page.content = typeof nextContent === 'string' ? nextContent : JSON.stringify(nextContent || []);\n    page.draftContent = null;\n    page.status = 'published';\n    page.updatedAt = now();\n    addActivity(`Published page: ${page.title}`);\n    return sendJson(res, 200, { data: page });\n  }\n\n  const previewMatch = pathname.match(/^\\/api\\/cms\\/pages\\/([^/]+)\\/preview$/);\n  if (previewMatch && method === 'POST') {\n    const page = state.pages.find((item) => item.id === previewMatch[1]);\n    if (!page) return sendJson(res, 404, { error: 'Page not found' });\n    return sendJson(res, 200, {\n      data: {\n        previewToken: 'local-preview-token',\n        previewUrl: `/api/cms/render?slug=${page.slug}&previewToken=local-preview-token`,\n      },\n    });\n  }\n\n  const pageMatch = pathname.match(/^\\/api\\/cms\\/pages\\/([^/]+)$/);\n  if (pageMatch) {\n    if (method === 'GET') {\n      const page = state.pages.find((item) => item.id === pageMatch[1]);\n      if (!page) return sendJson(res, 404, { error: 'Page not found' });\n      return sendJson(res, 200, { data: page });\n    }\n    if (method === 'PATCH') {\n      const page = state.pag
+<truncated 288 bytes>
+
+========================================
+Step 684 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 686 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: "Check if mode=embed parameter is missing and redirect standalone index/root page builder requests to Customizer"
+Description: "Redirect standalone /page-builder requests to Customizer in local preview server"
+StartLine: 3150, EndLine: 3158
+TargetContent: 
+"    } else if (urlPath === '/page-builder' || urlPath.startsWith('/page-builder/')) {\n      const relative = urlPath.slice(13) || 'index.html';\n      filePath = path.join(root, 'page-builder', relative);\n      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {\n        filePath = path.join(filePath, 'index.html');\n      } else if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {\n        filePath = path.join(root, 'page-builder', 'index.html');\n      }"
+ReplacementContent: 
+"    } else if (urlPath === '/page-builder' || urlPath.startsWith('/page-builder/')) {\n      const relative = urlPath.slice(13) || 'index.html';\n      if (relative === 'index.html' || relative === '' || relative === '/') {\n        if (parsedUrl.searchParams.get('mode') !== 'embed') {\n          res.writeHead(302, { Location: '/admin?module=customizer&tab=pages' });\n          res.end();\n          return;\n        }\n      }\n      filePath = path.join(root, 'page-builder', relative);\n      if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {\n        filePath = path.join(filePath, 'index.html');\n      } else if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {\n        filePath = path.join(root, 'page-builder', 'index.html');\n      }"
+
+========================================
+Step 690 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 692 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Store pageId in dataset, update classes/styles directly in selectCustomizerPage, and prevent redundant iframe reloads by checking existing src"
+Description: "Fix page selection performance and recursion by updating styles directly and preventing redundant iframe reloads"
+StartLine: 16568, EndLine: 16637
+TargetContent: 
+"        websitePages.forEach((p) => {\n          const div = document.createElement('div');\n          div.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid rgba(0,0,0,0.06); border-radius:8px; background:#ffffff; cursor:pointer; font-size:13px; font-weight:700; transition:all 0.2s;';\n          div.className = 'page-item-row' + (activeCustomizerPageId === p.id ? ' active-page' : '');\n          if (activeCustomizerPageId === p.id) {\n            div.style.borderColor = 'var(--platform-accent)';\n            div.style.background = '#f5f3ff';\n            div.style.color = 'var(--platform-accent)';\n          }\n\n          div.innerHTML = `\n            <div style=\"display:flex; align-items:center; gap:8px;\">\n              <i data-lucide=\"${p.isHome ? 'home' : 'file-text'}\" style=\"width:14px; height:14px;\"></i>\n              <span>${escapeHtml(p.title)}</span>\n              <span style=\"font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; background:rgba(0,0,0,0.04); color:var(--platform-muted); margin-left:6px;\">/${p.slug}</span>\n            </div>\n            <button class=\"ghost-btn\" style=\"padding:4px; font-size:11px;\" onclick=\"event.stopPropagation(); generatePagePreviewUrl('${p.id}')\" title=\"Preview page\"><i data-lucide=\"external-link\"></i></button>\n          `;\n\n          div.onclick = () => {\n            selectCustomizerPage(p.id);\n          };\n\n          pagesList.appendChild(div);\n        });\n\n        if (window.lucide) window.lucide.createIcons();\n\n        if (!activeCustomizerPageId && websitePages.length > 0) {\n          selectCustomizerPage(websitePages[0].id);\n        }\n      };\n\n      window.generatePagePreviewUrl = async function(pageId) {\n        showToast('Generating secure preview token...');\n        const res = await cmsApiRequest('POST', `/api/cms/pages/${pageId}/preview`);\n        if (res && res.ok && res.data) {\n          window.open(res.data.previewUrl, '_blank'
+<truncated 1449 bytes>
+ReplacementContent: 
+"        websitePages.forEach((p) => {\n          const div = document.createElement('div');\n          div.dataset.pageId = p.id;\n          div.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid rgba(0,0,0,0.06); border-radius:8px; background:#ffffff; cursor:pointer; font-size:13px; font-weight:700; transition:all 0.2s;';\n          div.className = 'page-item-row' + (activeCustomizerPageId === p.id ? ' active-page' : '');\n          if (activeCustomizerPageId === p.id) {\n            div.style.borderColor = 'var(--platform-accent)';\n            div.style.background = '#f5f3ff';\n            div.style.color = 'var(--platform-accent)';\n          }\n\n          div.innerHTML = `\n            <div style=\"display:flex; align-items:center; gap:8px;\">\n              <i data-lucide=\"${p.isHome ? 'home' : 'file-text'}\" style=\"width:14px; height:14px;\"></i>\n              <span>${escapeHtml(p.title)}</span>\n              <span style=\"font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px; background:rgba(0,0,0,0.04); color:var(--platform-muted); margin-left:6px;\">/${p.slug}</span>\n            </div>\n            <button class=\"ghost-btn\" style=\"padding:4px; font-size:11px;\" onclick=\"event.stopPropagation(); generatePagePreviewUrl('${p.id}')\" title=\"Preview page\"><i data-lucide=\"external-link\"></i></button>\n          `;\n\n          div.onclick = () => {\n            selectCustomizerPage(p.id);\n          };\n\n          pagesList.appendChild(div);\n        });\n\n        if (window.lucide) window.lucide.createIcons();\n\n        if (!activeCustomizerPageId && websitePages.length > 0) {\n          selectCustomizerPage(websitePages[0].id);\n        }\n      };\n\n      window.generatePagePreviewUrl = async function(pageId) {\n        showToast('Generating secure preview token...');\n        const res = await cmsApiRequest('POST', `/api/cms/pages/${pageId}/preview`);\n        if (res && res.ok && res.data) {\n          win
+<truncated 1957 bytes>
+
+========================================
+Step 694 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 696 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Adjust loadCustomizerPages .then callback to only re-select activeCustomizerPageId if there was a previous selection (hadSelection)"
+Description: "Optimize tab switching to avoid duplicate selection reloads in theme customizer"
+StartLine: 16481, EndLine: 16497
+TargetContent: 
+"        } else if (tabName === 'Pages') {\n          document.getElementById('tabPages').classList.add('active');\n          document.getElementById('customizerPagesTab').style.display = 'block';\n          // Auto-select first page and show page builder canvas\n          loadCustomizerPages().then(() => {\n            if (!activeCustomizerPageId) {\n              const websiteId = cmsState.activeWebsiteId || (cmsState.websites && cmsState.websites[0]?.id);\n              const websitePages = (cmsState.pages || []).filter(p => p.websiteId === websiteId);\n              if (websitePages.length > 0) {\n                selectCustomizerPage(websitePages[0].id);\n              }\n            } else {\n              // Re-activate the existing selection to ensure iframe is visible\n              selectCustomizerPage(activeCustomizerPageId);\n            }\n          });\n        }"
+ReplacementContent: 
+"        } else if (tabName === 'Pages') {\n          document.getElementById('tabPages').classList.add('active');\n          document.getElementById('customizerPagesTab').style.display = 'block';\n          // Auto-select first page and show page builder canvas\n          const hadSelection = !!activeCustomizerPageId;\n          loadCustomizerPages().then(() => {\n            if (hadSelection && activeCustomizerPageId) {\n              // Re-activate the existing selection to ensure iframe is visible\n              selectCustomizerPage(activeCustomizerPageId);\n            }\n          });\n        }"
+
+========================================
+Step 700 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 704 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 716 - Tool: view_file - File: "C:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 750 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 834 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 836 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 869 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 869 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 872 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 872 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 878 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 886 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 888 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 890 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 892 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 869 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 869 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 872 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 872 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 878 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 886 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 888 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 890 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 892 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 904 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 906 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 908 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 910 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 912 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 914 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 916 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 918 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 920 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 939 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 941 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 943 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 945 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 947 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 971 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 977 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 979 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 983 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\page-builder\\app.tsx"
+Instruction: "Replace JSON.parse call to support both string and array format for page content in TypeScript app"
+Description: "Make content parsing robust for both array and string inputs in TypeScript file"
+StartLine: 414, EndLine: 421
+TargetContent: 
+"            const contentJson = pageData.draftContent || pageData.content || '[]';\n            const parsedElements = JSON.parse(contentJson);"
+ReplacementContent: 
+"            const contentJson = pageData.draftContent || pageData.content || '[]';\n            const parsedElements = typeof contentJson === 'string' ? JSON.parse(contentJson) : contentJson;"
+
+========================================
+Step 989 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 993 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 999 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1001 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1003 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1005 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1007 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1009 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1011 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Add the spinner HTML and the onload handler to the iframe element"
+Description: "Add loading spinner div and onload handler to customizer iframe"
+StartLine: 13034, EndLine: 13036
+TargetContent: 
+"              <iframe id=\"customizerIframe\" src=\"\" style=\"width:100%; height:calc(100% - 24px); border:none; display:none; background:transparent;\"></iframe>"
+ReplacementContent: 
+"              <iframe id=\"customizerIframe\" src=\"\" style=\"width:100%; height:calc(100% - 24px); border:none; display:none; background:transparent;\" onload=\"const spinner = document.getElementById('customizerLoading'); if (spinner) spinner.style.display = 'none';\"></iframe>\n              <div id=\"customizerLoading\" style=\"position:absolute; inset:24px 0 0 0; display:none; flex-direction:column; align-items:center; justify-content:center; background:#ffffff; z-index:100; font-family:system-ui,-apple-system,sans-serif;\">\n                <div style=\"width:36px; height:36px; border:4px solid #f3f3f3; border-top:4px solid var(--platform-accent, #7C3AED); border-radius:50%; animation:customizer-spin 1s linear infinite; margin-bottom:12px;\"></div>\n                <style>\n                  @keyframes customizer-spin {\n                    0% { transform: rotate(0deg); }\n                    100% { transform: rotate(360deg); }\n                  }\n                </style>\n                <div style=\"font-size:13px; font-weight:700; color:#1f2937;\">Loading Page Builder...</div>\n              </div>"
+
+========================================
+Step 1013 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1015 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\apps\\tenant-dashboard\\public\\index.html"
+Instruction: "Add spinner show check when iframe.src changes"
+Description: "Show loading spinner when loading a new customizer page in iframe"
+StartLine: 16644, EndLine: 16650
+TargetContent: 
+"        // Only reload iframe if URL is different\n        const resolvedExpectedUrl = new URL(targetSrc, window.location.href).href;\n        if (iframe.src !== resolvedExpectedUrl) {\n          iframe.src = targetSrc;\n        }"
+ReplacementContent: 
+"        // Only reload iframe if URL is different\n        const resolvedExpectedUrl = new URL(targetSrc, window.location.href).href;\n        if (iframe.src !== resolvedExpectedUrl) {\n          const spinner = document.getElementById('customizerLoading');\n          if (spinner) spinner.style.display = 'flex';\n          iframe.src = targetSrc;\n        }"
+
+========================================
+Step 1019 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1023 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1025 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: "Inject the makePageContent helper function above the state object declaration"
+Description: "Add makePageContent helper function to local-preview.js for building canvas structures"
+StartLine: 16, EndLine: 20
+TargetContent: 
+"const demoTenantId = 'demo-church-local';\nconst demoWebsiteId = 'christ-embassy-next-main';\nconst now = () => new Date().toISOString();\nconst state = {"
+ReplacementContent: 
+"const demoTenantId = 'demo-church-local';\nconst demoWebsiteId = 'christ-embassy-next-main';\nconst now = () => new Date().toISOString();\n\nconst makePageContent = (title, subtitle, badgeText = 'Christ Embassy', moduleName = null, blockName = null, actionName = null, fieldsList = []) => {\n  const elements = [\n    {\n      id: 'flex_hero_' + Math.random().toString(36).substring(2, 7),\n      type: 'flexbox',\n      props: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '16px' },\n      styles: {\n        desktop: {\n          display: 'flex',\n          flexDirection: 'column',\n          justifyContent: 'center',\n          alignItems: 'center',\n          gap: '20px',\n          paddingTop: '80px',\n          paddingBottom: '80px',\n          paddingLeft: '40px',\n          paddingRight: '40px',\n          minHeight: '350px',\n          borderRadius: '8px',\n          backgroundColor: '#f8fafc',\n          borderStyle: 'solid',\n          borderWidth: '1px',\n          borderColor: '#e5e7eb'\n        },\n        mobile: {\n          paddingTop: '40px',\n          paddingBottom: '40px',\n          paddingLeft: '20px',\n          paddingRight: '20px'\n        }\n      },\n      children: [\n        {\n          id: 'hero_badge_' + Math.random().toString(36).substring(2, 7),\n          type: 'button',\n          props: { text: badgeText, url: '#' },\n          styles: {\n            desktop: {\n              backgroundColor: '#eff6ff',\n              color: '#1d4ed8',\n              paddingLeft: '14px',\n              paddingRight: '14px',\n              paddingTop: '6px',\n              paddingBottom: '6px',\n              borderRadius: '999px',\n              fontSize: '11px',\n              fontWeight: '700',\n              textAlign: 'center',\n              borderStyle: 'solid',\n              borderWidth: '1px',\n              borderColor: '#bfdbfe',\n              textTransform: 'uppercase'\n            }\n          },\n          children: []\n        },\n
+<truncated 2928 bytes>
+
+========================================
+Step 1027 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1029 - Tool: view_file - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: undefined
+Description: undefined
+
+========================================
+Step 1031 - Tool: replace_file_content - File: "c:\\Users\\Administrator\\Documents\\ChurchOS\\scripts\\local-preview.js"
+Instruction: "Replace the legacy format pages array with the makePageContent-driven compliant pages array"
+Description: "Replace pages seed data with page-builder element trees"
+StartLine: 240, EndLine: 522
+TargetContent: 
+"  pages: [\n    {\n      id: 'page-home',\n      websiteId: demoWebsiteId,\n      title: 'Home',\n      slug: 'home',\n      status: 'published',\n      isHome: true,\n      seoTitle: 'Christ Embassy Next Church | Home',\n      seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and ministry features.',\n      content: [\n        { type: 'hero', title: 'Christ Embassy Next Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },\n        { type: 'service_times', title: 'Weekly Service Rhythm', sundayTimes: 'Sunday Celebration Service - 9:00 AM and 11:30 AM', midWeekTimes: 'Wednesday Word & Prayer - 7:00 PM, Friday Youth Ignite - 6:30 PM', address: 'Next Church Campus, 221 Victory Avenue, Lagos' },\n        { type: 'ministries_list', title: 'Featured Ministry Pathways', items: [{ name: 'NextGen Youth', desc: 'Youth services, mentorship, creative teams, and campus outreach.' }, { name: 'Prayer & Testimony Hub', desc: 'Prayer requests, testimony moderation, prayer rooms, and corporate prayer schedules.' }, { name: 'Digital Media Team', desc: 'Livestream, sermon clips, podcast publishing, and social media campaigns.' }] },\n      ],\n      createdAt: now(),\n      updatedAt: now(),\n    },\n    {\n      id: 'page-about',\n      websiteId: demoWebsiteId,\n      title: 'About Next Church',\n      slug: 'about',\n      status: 'published',\n      isHome: false,\n      seoTitle: 'About Christ Embassy Next Church',\n      seoDescription: 'Learn the mission, leadership, values, and digital ministry culture of Christ Embassy Next Church.',\n      content: [\n        { type: 'about_template', headline: 'A Church Built for the Next Generation', storyText: 'Christ Embassy Next Church is a demo ministry environment for testing how a m
+<truncated 12568 bytes>
+ReplacementContent: 
+"  pages: [\n    {\n      id: 'page-home',\n      websiteId: demoWebsiteId,\n      title: 'Home',\n      slug: 'home',\n      status: 'published',\n      isHome: true,\n      seoTitle: 'Christ Embassy Next Church | Home',\n      seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and ministry features.',\n      content: makePageContent('Christ Embassy Next Church', 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', 'Home', 'Ministries', 'Featured Ministry Pathways', 'Explore pathways to serve, grow, and connect', ['NextGen Youth', 'Prayer Hub', 'Media Team']),\n      createdAt: now(),\n      updatedAt: now(),\n    },\n    {\n      id: 'page-about',\n      websiteId: demoWebsiteId,\n      title: 'About Next Church',\n      slug: 'about',\n      status: 'published',\n      isHome: false,\n      seoTitle: 'About Christ Embassy Next Church',\n      seoDescription: 'Learn the mission, leadership, values, and digital ministry culture of Christ Embassy Next Church.',\n      content: makePageContent('About Next Church', 'Learn the mission, leadership, values, and digital ministry culture of Christ Embassy Next Church.', 'About', 'Volunteers', 'Leadership & Teams', 'Explore leadership opportunities', ['Pastors', 'Directors', 'Ministry Leads']),\n      createdAt: now(),\n      updatedAt: now(),\n    },\n    {\n      id: 'page-services',\n      websiteId: demoWebsiteId,\n      title: 'Services',\n      slug: 'services',\n      status: 'published',\n      isHome: false,\n      seoTitle: 'Services | Christ Embassy Next Church',\n      seoDescription: 'Service times, locations, countdowns, livestream links, and order of service.',\n      content: makePageContent('Service Times & Locations', 'Weekly service rhythms and plan-your-visit instructions.', 'Services', 'Events', 'Weekly Rhythm', 'Find service times', ['Sunday Celebration - 9 AM', 'Wednesday Word - 7 PM']),\n      createdAt: now(),\n      updatedAt: 
+<truncated 9760 bytes>

@@ -1,0 +1,98 @@
+Created At: 2026-06-06T16:20:18Z
+Completed At: 2026-06-06T16:20:19Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3154
+Total Bytes: 140281
+Showing lines 2355 to 3154
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2355:       data: {
+2356:         subdomain: 'demo',
+2357:         customDomain: state.websites[0]?.domain || null,
+2358:         dnsStatus: {
+2359:           verified: !!state.websites[0]?.domain,
+2360:           sslStatus: state.websites[0]?.domain ? 'active' : 'none',
+2361:           aRecordMatch: !!state.websites[0]?.domain,
+2362:           cnameRecordMatch: !!state.websites[0]?.domain,
+2363:         },
+2364:         instructions: {
+2365:           ip: '76.76.21.21',
+2366:           cname: 'cname.churchos.com',
+2367:         },
+2368:       },
+2369:     });
+2370:   }
+2371: 
+2372:   if (pathname === '/api/tenant/domain' && method === 'PATCH') {
+2373:     if (state.websites[0]) {
+2374:       state.websites[0].domain = body.customDomain || null;
+2375:     }
+2376:     return sendJson(res, 200, {
+2377:       data: {
+2378:         subdomain: 'demo',
+2379:         customDomain: body.customDomain || null,
+2380:       },
+2381:     });
+2382:   }
+2383: 
+2384:   if (pathname === '/api/tenant/domain/verify' && method === 'POST') {
+2385:     return sendJson(res, 200, {
+2386:       data: {
+2387:         verified: true,
+2388:         sslStatus: 'active',
+2389:         aRecordMatch: true,
+2390:         cnameRecordMatch: true,
+2391:         lastChecked: now(),
+2392:       },
+2393:     });
+2394:   }
+2395: 
+2396:   if (pathname === '/api/tenant/modules' && method === 'GET') {
+2397:     const list = [
+2398:       { key: 'website-cms', name: 'Churchfront', category: 'Core', dependencies: [], status: 'active', billingRule: 'included' },
+<truncated 32935 bytes>
+'page-builder', relative);
+3111:       if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+3112:         filePath = path.join(filePath, 'index.html');
+3113:       } else if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+3114:         filePath = path.join(root, 'page-builder', 'index.html');
+3115:       }
+3116:     } else {
+3117:       let resolvedPath = path.join(root, 'apps', 'web', 'public', decodeURIComponent(urlPath));
+3118:       if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isFile()) {
+3119:         filePath = resolvedPath;
+3120:       } else {
+3121:         filePath = path.join(root, decodeURIComponent(urlPath));
+3122:       }
+3123:       if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+3124:         filePath = path.join(filePath, 'index.html');
+3125:       }
+3126:     }
+3127: 
+3128:     if (!filePath.startsWith(root)) {
+3129:       console.log(`[PREVIEW] 403 Forbidden: ${req.url} -> Resolved: ${filePath} (Root: ${root})`);
+3130:       res.writeHead(403);
+3131:       res.end('Forbidden');
+3132:       return;
+3133:     }
+3134: 
+3135:     console.log(`[PREVIEW] Request: ${req.method} ${req.url} -> Serving file: ${filePath}`);
+3136: 
+3137:     fs.readFile(filePath, (err, data) => {
+3138:       if (err) {
+3139:         console.error(`[PREVIEW] 404 Read Error: ${filePath}`, err);
+3140:         res.writeHead(404);
+3141:         res.end('Not found');
+3142:         return;
+3143:       }
+3144: 
+3145:       res.writeHead(200, {
+3146:         'Content-Type': contentTypes[path.extname(filePath)] || 'application/octet-stream',
+3147:       });
+3148:       res.end(data);
+3149:     });
+3150:   })
+3151:   .listen(port, () => {
+3152:     console.log(`ChurchOS preview running at http://localhost:${port}`);
+3153:   });
+3154: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

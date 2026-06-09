@@ -4819,7 +4819,7 @@ body.customizer-open { overflow: hidden; }
         <h1>One dashboard for every church module.</h1>
         <p>Preview every backend module, manage profile and theme settings centrally, and only publish paid modules to the public church site when the platform admin turns them live.</p>
       </div>
-      <p class="muted">Demo login: any email and password.</p>
+      <p class="muted">Enter your admin credentials.</p>
     </section>
 
     <section class="login-panel">
@@ -4828,13 +4828,37 @@ body.customizer-open { overflow: hidden; }
         <p>Access the tenant workspace, module previews, central settings, and super-admin controls.</p>
         <div class="field">
           <label for="email">Email</label>
-          <input id="email" type="email" value="admin@demo.churchos.local" required>
+          <input id="email" type="email" placeholder="admin@yourchurch.com" required>
         </div>
         <div class="field">
           <label for="password">Password</label>
-          <input id="password" type="password" value="demo" required>
+          <input id="password" type="password" required>
         </div>
         <button class="btn primary w-full" type="submit"><i data-lucide="log-in"></i>Enter dashboard</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--muted);">
+          Don't have an account? <a href="#" onclick="toggleSignup(true); return false;" style="color: var(--accent); text-decoration: none; font-weight: 600;">Create church account</a>
+        </p>
+      </form>
+
+      <form id="signupForm" class="login-card hidden">
+        <h2>Create Church Account</h2>
+        <p>Set up your ministry on ChurchOS.</p>
+        <div class="field">
+          <label for="regChurchName">Church Name</label>
+          <input id="regChurchName" type="text" placeholder="e.g. Grace Community Church" required>
+        </div>
+        <div class="field">
+          <label for="regEmail">Admin Email</label>
+          <input id="regEmail" type="email" placeholder="admin@yourchurch.com" required>
+        </div>
+        <div class="field">
+          <label for="regPassword">Password</label>
+          <input id="regPassword" type="password" required>
+        </div>
+        <button class="btn primary w-full" type="submit"><i data-lucide="user-plus"></i>Create account</button>
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--muted);">
+          Already registered? <a href="#" onclick="toggleSignup(false); return false;" style="color: var(--accent); text-decoration: none; font-weight: 600;">Sign in here</a>
+        </p>
       </form>
     </section>
   </main>
@@ -4860,7 +4884,7 @@ body.customizer-open { overflow: hidden; }
         <div class="sidebar-b-header">
           <div class="website-selector" onclick="switchView('overview')">
             <div class="website-info">
-              <span class="website-label">Church Context</span>
+              <span class="website-label">Church</span>
               <strong id="tenantName" class="website-name">Next Church</strong>
             </div>
             <i data-lucide="chevron-right" class="chevron-select" style="width: 14px; height: 14px;"></i>
@@ -6000,7 +6024,7 @@ body.customizer-open { overflow: hidden; }
                       <label style="font-weight:600; display:block; margin-bottom:8px;">Subdomain (Default)</label>
                       <div class="row" style="gap:8px;">
                         <input type="text" id="dtSubdomainInput" class="input" style="flex:1; background:var(--panel-2);" readonly>
-                        <span class="muted" style="font-size:14px; padding:0 8px;">.churchos.local</span>
+                        <span class="muted" style="font-size:14px; padding:0 8px;">.churched.online</span>
                       </div>
                       <p class="muted" style="font-size:12px; margin-top:4px;">This is your built-in development and preview address.</p>
                     </div>
@@ -10049,7 +10073,7 @@ body.customizer-open { overflow: hidden; }
                       </div>
                       <div class="field">
                         <label>Document Asset URL</label>
-                        <input type="text" id="csHandoutUrl" class="form-control" value="https://assets.churchos.local/handouts/june-sermon-guide.pdf" style="width:100%;">
+                        <input type="text" id="csHandoutUrl" class="form-control" value="https://assets.churched.online/handouts/june-sermon-guide.pdf" style="width:100%;">
                       </div>
                       <button class="btn primary" onclick="triggerAddHandout()"><i data-lucide="plus-circle"></i>Attach Handout Doc</button>
                     </div>
@@ -10402,7 +10426,7 @@ body.customizer-open { overflow: hidden; }
                       </div>
                       <div class="field">
                         <label>Document Source File URL</label>
-                        <input type="text" id="libResUrl" class="form-control" value="https://assets.churchos.local/library/foundation-manual.pdf" style="width:100%;">
+                        <input type="text" id="libResUrl" class="form-control" value="https://assets.churched.online/library/foundation-manual.pdf" style="width:100%;">
                       </div>
                     </div>
                     <div class="grid" style="grid-template-columns: 1fr 1fr; gap:12px;">
@@ -13075,7 +13099,7 @@ body.customizer-open { overflow: hidden; }
             <div class="panel profile-card">
               <div class="avatar">AD</div>
               <h2 id="profileName">Admin User</h2>
-              <p class="muted" id="profileEmail">admin@demo.churchos.local</p>
+              <p class="muted" id="profileEmail">admin@demo.churched.online</p>
               <div class="field" style="margin-top:24px; text-align:left;">
                 <label for="displayName">Display name</label>
                 <input id="displayName" value="Admin User">
@@ -14104,20 +14128,17 @@ body.customizer-open { overflow: hidden; }
       });
     }).observe(document.documentElement, { childList: true, subtree: true });
 
-    const STORAGE_KEY = 'churchos.unifiedDashboard.v1';
-    const SESSION_KEY = 'churchos.unifiedDashboard.session';
-    const LOCAL_TEST_EMAIL = 'admin@demo.churchos.local';
-    const LOCAL_TEST_PASSWORD = 'demo';
+    const STORAGE_KEY = 'churchos.unifiedDashboard.v2';
+    const SESSION_KEY = 'churchos.unifiedDashboard.session.v2';
+    const LOCAL_TEST_EMAIL = '';
+    const LOCAL_TEST_PASSWORD = '';
 
     function isLocalTestingHost() {
       return ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
     }
 
     function setLocalLoginDefaults() {
-      const emailInput = document.getElementById('email');
-      const passwordInput = document.getElementById('password');
-      if (emailInput) emailInput.value = LOCAL_TEST_EMAIL;
-      if (passwordInput) passwordInput.value = LOCAL_TEST_PASSWORD;
+      // Intentionally left blank to disable auto-login
     }
 
     const modules = [
@@ -14170,13 +14191,13 @@ body.customizer-open { overflow: hidden; }
      const defaultData = {
        tenant: {
          id: 'tenant-next',
-         name: 'Christ Embassy Next Church',
+         name: 'Demo Church',
          publishingEnabled: true,
          previewUnpaid: true
        },
        user: {
          name: 'Admin User',
-         email: 'admin@demo.churchos.local',
+         email: 'admin@demo.churched.online',
          role: 'Tenant owner'
        },
        theme: {
@@ -14239,7 +14260,7 @@ body.customizer-open { overflow: hidden; }
         'Super-admin live module switches loaded'
       ],
       tenants: [
-        { id: 'tenant-next', name: 'Christ Embassy Next Church' },
+        { id: 'tenant-next', name: 'Demo Church' },
         { id: 'tenant-grace', name: 'Grace City Church' },
         { id: 'tenant-harbor', name: 'Harbor Light Assembly' }
       ],
@@ -14338,6 +14359,32 @@ body.customizer-open { overflow: hidden; }
         bootstrapCms();
         bootstrapUserRoles();
       });
+
+      document.getElementById('signupForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const churchName = document.getElementById('regChurchName').value;
+        const email = document.getElementById('regEmail').value;
+        
+        state.tenant.name = churchName;
+        state.user.email = email;
+        state.user.name = email.split('@')[0];
+        
+        localStorage.setItem(SESSION_KEY, 'active');
+        saveState('Registered new church context');
+        mountApp();
+        bootstrapCms();
+        bootstrapUserRoles();
+      });
+
+      window.toggleSignup = function(showSignup) {
+        if (showSignup) {
+          document.getElementById('loginForm').classList.add('hidden');
+          document.getElementById('signupForm').classList.remove('hidden');
+        } else {
+          document.getElementById('signupForm').classList.add('hidden');
+          document.getElementById('loginForm').classList.remove('hidden');
+        }
+      };
 
       document.getElementById('modeBtn').addEventListener('click', () => {
         state.theme.mode = state.theme.mode === 'dark' ? 'light' : 'dark';
@@ -15458,7 +15505,7 @@ body.customizer-open { overflow: hidden; }
 
     const localCmsState = {
       websiteId: 'christ-embassy-next-main',
-      websiteTitle: 'Christ Embassy Next Church',
+      websiteTitle: 'Demo Church',
       theme: { id: 'theme-ecclesia', settings: { colors: { primary: '#f97316', secondary: '#0f172a', accent: '#f97316', background: '#fffaf4', textPrimary: '#201b18' } } }
     };
 
@@ -19779,7 +19826,7 @@ body.customizer-open { overflow: hidden; }
       const themeId = themeRes.data.id;
 
       const websiteRes = await cmsApiRequest('POST', '/api/cms/websites', {
-        title: 'Christ Embassy Next Church',
+        title: 'Demo Church',
         description: 'Digital-first demo church for testing every ChurchOS website and ministry workflow.',
         domain: 'nextchurch.local',
         themeId: themeId
@@ -19796,10 +19843,10 @@ body.customizer-open { overflow: hidden; }
           slug: '',
           isHome: true,
           status: 'published',
-          seoTitle: 'Christ Embassy Next Church | Home',
+          seoTitle: 'Demo Church | Home',
           seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and ministry features.',
           content: [
-            { type: 'hero', title: 'Christ Embassy Next Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },
+            { type: 'hero', title: 'Demo Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },
             { type: 'service_times', title: 'Weekly Service Rhythm', sundayTimes: 'Sunday Celebration Service - 9:00 AM and 11:30 AM', midweekTimes: 'Wednesday Word & Prayer - 7:00 PM, Friday Youth Ignite - 6:30 PM', address: 'Next Church Campus, 221 Victory Avenue, Lagos' },
             { type: 'ministries_list', title: 'Featured Ministry Pathways', items: [{ name: 'NextGen Youth', desc: 'Youth services, mentorship, creative teams, and campus outreach.' }, { name: 'Prayer & Testimony Hub', desc: 'Prayer requests, testimony moderation, prayer rooms, and corporate prayer schedules.' }, { name: 'Digital Media Team', desc: 'Livestream, sermon clips, podcast publishing, and social media campaigns.' }] }
           ]
@@ -19809,10 +19856,10 @@ body.customizer-open { overflow: hidden; }
           slug: 'about',
           isHome: false,
           status: 'published',
-          seoTitle: 'About Christ Embassy Next Church',
-          seoDescription: 'Learn the mission, leadership, values, and digital ministry culture of Christ Embassy Next Church.',
+          seoTitle: 'About Demo Church',
+          seoDescription: 'Learn the mission, leadership, values, and digital ministry culture of Demo Church.',
           content: [
-            { type: 'about_template', headline: 'A Church Built for the Next Generation', storyText: 'Christ Embassy Next Church is a demo ministry environment for testing how a modern church can run public pages, member experiences, media, giving, events, groups, and pastoral care from one operating system.', valuesList: ['Word', 'Worship', 'Prayer', 'Innovation', 'Community'] },
+            { type: 'about_template', headline: 'A Church Built for the Next Generation', storyText: 'Demo Church is a demo ministry environment for testing how a modern church can run public pages, member experiences, media, giving, events, groups, and pastoral care from one operating system.', valuesList: ['Word', 'Worship', 'Prayer', 'Innovation', 'Community'] },
             { type: 'leadership_team', headline: 'Pastoral & Ministry Leadership', members: [{ name: 'Pastor Daniel Okafor', role: 'Resident Pastor', bio: 'Leads teaching, pastoral care, and strategic ministry development.' }, { name: 'Minister Amara Cole', role: 'Digital Ministry Director', bio: 'Oversees livestream, page publishing, content, and volunteer media teams.' }] }
           ]
         },
@@ -19821,7 +19868,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'services',
           isHome: false,
           status: 'published',
-          seoTitle: 'Services | Christ Embassy Next Church',
+          seoTitle: 'Services | Demo Church',
           seoDescription: 'Service times, locations, countdowns, livestream links, and order of service.',
           content: [
             { type: 'service_times', title: 'Service Times & Locations', sundayTimes: 'Sunday Celebration - 9:00 AM and 11:30 AM', midweekTimes: 'Wednesday Word & Prayer - 7:00 PM', address: '221 Victory Avenue, Lagos and online' },
@@ -19833,7 +19880,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'live',
           isHome: false,
           status: 'published',
-          seoTitle: 'Watch Live | Christ Embassy Next Church',
+          seoTitle: 'Watch Live | Demo Church',
           seoDescription: 'Livestream player, live prayer, sermon notes, chat, and giving CTA test page.',
           content: [
             { type: 'hero', title: 'Watch Live', subtitle: 'Live service player placeholder with prayer, chat, notes, reactions, and giving actions.', bgImage: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join Live Service', buttonUrl: '#live-player' },
@@ -19845,7 +19892,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'sermons',
           isHome: false,
           status: 'published',
-          seoTitle: 'Sermons & Media | Christ Embassy Next Church',
+          seoTitle: 'Sermons & Media | Demo Church',
           seoDescription: 'Sermon grid, series pages, podcast feed, media filters, and replay content.',
           content: [
             { type: 'dynamic_sermon_grid', title: 'Latest Sermons', sourceModule: 'Sermons / Media', filters: ['series', 'speaker', 'topic', 'date'] },
@@ -19857,7 +19904,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'events',
           isHome: false,
           status: 'published',
-          seoTitle: 'Events | Christ Embassy Next Church',
+          seoTitle: 'Events | Demo Church',
           seoDescription: 'Event grid, registration, countdowns, venue maps, reminders, and capacity testing.',
           content: [
             { type: 'hero', title: 'Upcoming Events', subtitle: 'Conference nights, worship experiences, youth events, and leadership training.', bgImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=80', buttonText: 'Register Now', buttonUrl: '#events' },
@@ -19869,7 +19916,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'give',
           isHome: false,
           status: 'published',
-          seoTitle: 'Give | Christ Embassy Next Church',
+          seoTitle: 'Give | Demo Church',
           seoDescription: 'Giving forms, campaigns, pledges, recurring giving, confirmations, and receipts.',
           content: [
             { type: 'hero', title: 'Give Securely', subtitle: 'Support ministry, missions, outreach, media, welfare, and discipleship work.', bgImage: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80', buttonText: 'Start Giving', buttonUrl: '#giving-form' },
@@ -19881,7 +19928,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'prayer',
           isHome: false,
           status: 'published',
-          seoTitle: 'Prayer & Testimonies | Christ Embassy Next Church',
+          seoTitle: 'Prayer & Testimonies | Demo Church',
           seoDescription: 'Prayer request form, prayer wall, testimony wall, prayer sessions, and reactions.',
           content: [
             { type: 'hero', title: 'Prayer & Testimonies', subtitle: 'Submit prayer requests, join corporate prayer, and share testimonies for moderation.', bgImage: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1400&q=80', buttonText: 'Request Prayer', buttonUrl: '#prayer-request' },
@@ -19893,7 +19940,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'ministries',
           isHome: false,
           status: 'published',
-          seoTitle: 'Ministries | Christ Embassy Next Church',
+          seoTitle: 'Ministries | Demo Church',
           seoDescription: 'Ministry directory, volunteer opportunities, leaders, events, and media connections.',
           content: [
             { type: 'ministries_list', title: 'Find Your Ministry', items: [{ name: 'Worship & Creative Arts', desc: 'Choir, music direction, stage design, dance, and creative production.' }, { name: 'Hospitality & First Impressions', desc: 'Guest welcome, ushers, follow-up, and visitor care.' }, { name: 'Outreach & Missions', desc: 'Evangelism campaigns, local care, and missions support.' }] },
@@ -19905,7 +19952,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'groups',
           isHome: false,
           status: 'published',
-          seoTitle: 'Cell Groups | Christ Embassy Next Church',
+          seoTitle: 'Cell Groups | Demo Church',
           seoDescription: 'Cell group finder, leader cards, meeting schedules, and join requests.',
           content: [
             { type: 'dynamic_cell_finder', title: 'Find a Cell Group', sourceModule: 'Cell Groups', fields: ['location', 'language', 'day', 'leader', 'joinRequest'] }
@@ -19916,7 +19963,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'courses',
           isHome: false,
           status: 'published',
-          seoTitle: 'Courses | Christ Embassy Next Church',
+          seoTitle: 'Courses | Demo Church',
           seoDescription: 'Course list, lesson player, progress, quizzes, certificates, and recommendations.',
           content: [
             { type: 'dynamic_course_list', title: 'Discipleship Tracks', sourceModule: 'Discipleship / Courses', fields: ['enrollment', 'lessonProgress', 'quizzes', 'certificates'] }
@@ -19927,7 +19974,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'branches',
           isHome: false,
           status: 'published',
-          seoTitle: 'Branches | Christ Embassy Next Church',
+          seoTitle: 'Branches | Demo Church',
           seoDescription: 'Branch finder, branch service schedules, campus pastors, maps, and location-aware content.',
           content: [
             { type: 'dynamic_branch_finder', title: 'Find a Next Church Branch', sourceModule: 'Branches', fields: ['nearestBranch', 'pastor', 'serviceTimes', 'map', 'contact'] }
@@ -19938,7 +19985,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'volunteer',
           isHome: false,
           status: 'published',
-          seoTitle: 'Volunteer | Christ Embassy Next Church',
+          seoTitle: 'Volunteer | Demo Church',
           seoDescription: 'Volunteer opportunities, ministry signup, team assignment, schedules, and serving interests.',
           content: [
             { type: 'dynamic_volunteer_opportunities', title: 'Serve With Us', sourceModule: 'Volunteers', fields: ['teams', 'openRoles', 'availability', 'applicationForm'] }
@@ -19949,7 +19996,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'announcements',
           isHome: false,
           status: 'published',
-          seoTitle: 'Announcements | Christ Embassy Next Church',
+          seoTitle: 'Announcements | Demo Church',
           seoDescription: 'Featured announcements, alert banners, notification signup, and branch messages.',
           content: [
             { type: 'dynamic_announcement_list', title: 'Latest Church Updates', sourceModule: 'Announcements', fields: ['featured', 'branch', 'alertBanner', 'notificationSignup'] }
@@ -19960,7 +20007,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'mobile-app',
           isHome: false,
           status: 'draft',
-          seoTitle: 'Mobile App Screen | Christ Embassy Next Church',
+          seoTitle: 'Mobile App Screen | Demo Church',
           seoDescription: 'Mobile app screen composition for member dashboard, giving, livestream, prayer, and notifications.',
           content: [
             { type: 'dynamic_mobile_home', title: 'Next Church Mobile Home', sourceModule: 'Mobile App', fields: ['quickActions', 'liveService', 'giving', 'prayer', 'notifications'] }
@@ -19971,7 +20018,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'first-time',
           isHome: false,
           status: 'draft',
-          seoTitle: 'First-Time Visitor | Christ Embassy Next Church',
+          seoTitle: 'First-Time Visitor | Demo Church',
           seoDescription: 'Visitor capture, welcome flow, CRM routing, pastoral follow-up, and next steps.',
           content: [
             { type: 'contact_form', header: 'Plan Your First Visit', email: 'hello@nextchurch.example', phone: '+234 800 000 0000', showMap: true },
@@ -19983,10 +20030,10 @@ body.customizer-open { overflow: hidden; }
           slug: 'contact',
           isHome: false,
           status: 'published',
-          seoTitle: 'Contact | Christ Embassy Next Church',
+          seoTitle: 'Contact | Demo Church',
           seoDescription: 'Contact form, location map, branch details, pastoral care request, and communication opt-in.',
           content: [
-            { type: 'contact_form', header: 'Contact Christ Embassy Next Church', email: 'hello@nextchurch.example', phone: '+234 800 000 0000', showMap: true }
+            { type: 'contact_form', header: 'Contact Demo Church', email: 'hello@nextchurch.example', phone: '+234 800 000 0000', showMap: true }
           ]
         },
         {
@@ -19994,7 +20041,7 @@ body.customizer-open { overflow: hidden; }
           slug: 'member-dashboard',
           isHome: false,
           status: 'draft',
-          seoTitle: 'Member Dashboard | Christ Embassy Next Church',
+          seoTitle: 'Member Dashboard | Demo Church',
           seoDescription: 'Personalized member actions, events, groups, courses, giving history, and prayer sessions.',
           content: [
             { type: 'dynamic_member_dashboard', title: 'Personalized Member Dashboard', sourceModule: 'Member Management', fields: ['profile', 'events', 'givingHistory', 'groups', 'courses', 'notifications'] }
@@ -20035,7 +20082,7 @@ body.customizer-open { overflow: hidden; }
 
       await cmsApiRequest('POST', '/api/cms/footer', {
         websiteId,
-        copyrightText: `&copy; ${new Date().getFullYear()} Christ Embassy Next Church. All rights reserved.`,
+        copyrightText: `&copy; ${new Date().getFullYear()} Demo Church. All rights reserved.`,
         socialLinks: [
           { name: 'facebook', url: 'https://facebook.com/christembassynext' },
           { name: 'instagram', url: 'https://instagram.com/christembassynext' },
@@ -20054,7 +20101,7 @@ body.customizer-open { overflow: hidden; }
         key: 'sunday-service-cta',
         content: {
           type: 'hero',
-          title: 'Join Christ Embassy Next Church This Sunday',
+          title: 'Join Demo Church This Sunday',
           subtitle: 'Two services, one family, one mission.',
           buttonText: 'Plan a Visit',
           buttonUrl: '/first-time'
@@ -20679,7 +20726,7 @@ body.customizer-open { overflow: hidden; }
       } else {
         currentFooterConfig = {
           websiteId,
-          copyrightText: `© ${new Date().getFullYear()} Christ Embassy Next Church. All rights reserved.`,
+          copyrightText: `© ${new Date().getFullYear()} Demo Church. All rights reserved.`,
           socialLinks: [
             { name: 'facebook', url: 'https://facebook.com/' },
             { name: 'instagram', url: 'https://instagram.com/' },
@@ -29288,8 +29335,8 @@ body.customizer-open { overflow: hidden; }
       
       if (digitalLibraryState.resources.length === 0) {
         digitalLibraryState.resources = [
-          { id: 'lr-1', title: 'Believers Foundation Guidebook', description: 'Foundation principles workbook for cell leaders and disciples.', fileType: 'PDF', fileUrl: 'https://assets.churchos.local/library/foundation.pdf', visibilityRole: 'Public', price: 0, downloadCount: 148 },
-          { id: 'lr-2', title: 'The Power of Grace eBook', description: 'Deep theological exposition on structural grace walk.', fileType: 'eBook', fileUrl: 'https://assets.churchos.local/library/power-of-grace.epub', visibilityRole: 'Members', price: 9.99, downloadCount: 42 }
+          { id: 'lr-1', title: 'Believers Foundation Guidebook', description: 'Foundation principles workbook for cell leaders and disciples.', fileType: 'PDF', fileUrl: 'https://assets.churched.online/library/foundation.pdf', visibilityRole: 'Public', price: 0, downloadCount: 148 },
+          { id: 'lr-2', title: 'The Power of Grace eBook', description: 'Deep theological exposition on structural grace walk.', fileType: 'eBook', fileUrl: 'https://assets.churched.online/library/power-of-grace.epub', visibilityRole: 'Members', price: 9.99, downloadCount: 42 }
         ];
       }
       if (digitalLibraryState.audits.length === 0) {
@@ -29402,7 +29449,7 @@ body.customizer-open { overflow: hidden; }
       digitalLibraryState.audits.unshift({
         timestamp: new Date().toISOString(),
         resource: res.title,
-        user: 'admin@demo.churchos.local',
+        user: 'admin@demo.churched.online',
         role: 'Tenant owner',
         action: 'Granted'
       });
@@ -29447,12 +29494,12 @@ body.customizer-open { overflow: hidden; }
       
       if (podcastBroadcastingState.shows.length === 0) {
         podcastBroadcastingState.shows = [
-          { id: 'pod-1', title: 'Atmosphere for Miracles Podcasts', description: 'Daily faith commentaries, divine instructions, and sermons outlines.', coverImageUrl: 'https://images.unsplash.com/photo-1438029071396-1e831a7fa6d8', rssUrl: 'https://churchos.local/feed/podcast-1.xml', copyright: 'Christ Embassy copyright 2026' }
+          { id: 'pod-1', title: 'Atmosphere for Miracles Podcasts', description: 'Daily faith commentaries, divine instructions, and sermons outlines.', coverImageUrl: 'https://images.unsplash.com/photo-1438029071396-1e831a7fa6d8', rssUrl: 'https://churched.online/feed/podcast-1.xml', copyright: 'Christ Embassy copyright 2026' }
         ];
       }
       if (podcastBroadcastingState.episodes.length === 0) {
         podcastBroadcastingState.episodes = [
-          { id: 'pe-1', showId: 'pod-1', showTitle: 'Atmosphere for Miracles Podcasts', title: 'The Power of Divine Faith', audioUrl: 'https://assets.churchos.local/podcasts/divine-faith.mp3', duration: '28:12', fileSizeBytes: 24891240 }
+          { id: 'pe-1', showId: 'pod-1', showTitle: 'Atmosphere for Miracles Podcasts', title: 'The Power of Divine Faith', audioUrl: 'https://assets.churched.online/podcasts/divine-faith.mp3', duration: '28:12', fileSizeBytes: 24891240 }
         ];
       }
       
@@ -29513,7 +29560,7 @@ body.customizer-open { overflow: hidden; }
       const show = podcastBroadcastingState.shows.find(s => s.id === showId);
       if (!show) return;
       
-      const feedUrl = show.rssUrl || `https://churchos.local/feed/podcast-${show.id}.xml`;
+      const feedUrl = show.rssUrl || `https://churched.online/feed/podcast-${show.id}.xml`;
       document.getElementById('podcastRssUrlField').value = feedUrl;
       
       const episodesXML = podcastBroadcastingState.episodes.filter(e => e.showId === showId).map(e => `
@@ -29606,7 +29653,7 @@ body.customizer-open { overflow: hidden; }
           </div>
           <div class="field">
             <label>Episode Audio File URL</label>
-            <input type="text" id="newEpAudioUrl" class="form-control" value="https://assets.churchos.local/podcasts/prosperity.mp3" style="width:100%;" />
+            <input type="text" id="newEpAudioUrl" class="form-control" value="https://assets.churched.online/podcasts/prosperity.mp3" style="width:100%;" />
           </div>
         </div>
       `;
@@ -29829,7 +29876,7 @@ body.customizer-open { overflow: hidden; }
       const replies = {
         email: `Subject: Inspirational Faith Conference Invitation!
 
-Dear Members of Christ Embassy Next Church,
+Dear Members of Demo Church,
 
 We are thrilled to invite you to our upcoming Weekend Faith Conference.
 Prepare your hearts for a powerful dimension of scripture teachings, corporate testimonies, and targeted prayer sessions that will catapult you into your next level of dominion.

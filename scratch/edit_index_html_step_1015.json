@@ -1,0 +1,15 @@
+{
+  "name": "replace_file_content",
+  "args": {
+    "AllowMultiple": "false",
+    "Description": "\"Show loading spinner when loading a new customizer page in iframe\"",
+    "EndLine": "16650",
+    "Instruction": "\"Add spinner show check when iframe.src changes\"",
+    "ReplacementContent": "\"        // Only reload iframe if URL is different\\n        const resolvedExpectedUrl = new URL(targetSrc, window.location.href).href;\\n        if (iframe.src !== resolvedExpectedUrl) {\\n          const spinner = document.getElementById('customizerLoading');\\n          if (spinner) spinner.style.display = 'flex';\\n          iframe.src = targetSrc;\\n        }\"",
+    "StartLine": "16644",
+    "TargetContent": "\"        // Only reload iframe if URL is different\\n        const resolvedExpectedUrl = new URL(targetSrc, window.location.href).href;\\n        if (iframe.src !== resolvedExpectedUrl) {\\n          iframe.src = targetSrc;\\n        }\"",
+    "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\apps\\\\tenant-dashboard\\\\public\\\\index.html\"",
+    "toolAction": "\"Updating selectCustomizerPage JS\"",
+    "toolSummary": "\"Show spinner on src change\""
+  }
+}
