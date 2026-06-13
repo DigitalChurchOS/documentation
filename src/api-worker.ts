@@ -9,6 +9,9 @@ type ApiResponse = {
   status?: string;
   token?: string;
   tenantId?: string;
+  tenant?: JsonValue;
+  user?: JsonValue;
+  website?: JsonValue;
   available?: boolean;
   plan?: JsonValue;
   meta?: JsonValue;
@@ -43,6 +46,7 @@ const demoTenant = {
   id: 'demo-church-local',
   name: 'Demo Church',
   subdomain: 'demo',
+  subdomainHost: 'demo.churched.online',
   plan: 'growth',
   country: 'United States',
   city: 'Online',
@@ -130,6 +134,42 @@ async function readBody(request: Request) {
 
 function makeId(prefix: string) {
   return `${prefix}-${Date.now().toString(36)}`;
+}
+
+function cleanSubdomain(value: unknown) {
+  const cleaned = String(value || demoTenant.subdomain)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-');
+  return cleaned || demoTenant.subdomain;
+}
+
+function makeSubdomainHost(subdomain: string) {
+  return `${subdomain}.churched.online`;
+}
+
+function makeTenantFromBody(body: Record<string, unknown>) {
+  const subdomain = cleanSubdomain(body.subdomain);
+  const plan = String(body.plan || demoTenant.plan);
+  return {
+    ...demoTenant,
+    id: `tenant-${subdomain}`,
+    name: String(body.name || demoTenant.name),
+    subdomain,
+    subdomainHost: makeSubdomainHost(subdomain),
+    plan,
+    country: String(body.country || demoTenant.country),
+    city: String(body.city || demoTenant.city),
+    status: 'active',
+    onboardingStatus: 'in_progress',
+  };
+}
+
+function makeSessionToken(tenantId: string, userId: string) {
+  const encoded = btoa(`${tenantId}:${userId}:${Date.now()}`);
+  return `churchos-demo-${encoded.replace(/=+$/g, '')}`;
 }
 
 function collectionResponse(pathname: string): JsonValue {
@@ -298,10 +338,12 @@ function routeGet(pathname: string, url: URL) {
   }
 
   if (pathname === '/api/public/resolve-subdomain') {
-    const subdomain = url.searchParams.get('subdomain') || demoTenant.subdomain;
+    const subdomain = cleanSubdomain(url.searchParams.get('subdomain'));
+    const tenant = { ...demoTenant, id: `tenant-${subdomain}`, subdomain, subdomainHost: makeSubdomainHost(subdomain) };
     return withJson({
-      tenantId: `tenant-${subdomain}`,
-      data: { tenantId: `tenant-${subdomain}`, tenant: { ...demoTenant, subdomain } },
+      tenantId: tenant.id,
+      tenant,
+      data: tenant,
     });
   }
 
@@ -319,25 +361,51 @@ async function routeMutation(request: Request, pathname: string) {
   }
 
   if (pathname === '/api/public/resolve-subdomain') {
-    const subdomain = String(body.subdomain || demoTenant.subdomain);
+    const subdomain = cleanSubdomain(body.subdomain);
+    const tenant = { ...demoTenant, id: `tenant-${subdomain}`, subdomain, subdomainHost: makeSubdomainHost(subdomain) };
     return withJson({
-      tenantId: `tenant-${subdomain}`,
-      data: { tenantId: `tenant-${subdomain}`, tenant: { ...demoTenant, subdomain } },
+      tenantId: tenant.id,
+      tenant,
+      data: tenant,
     });
   }
 
   if (pathname === '/api/auth/register-tenant') {
-    const subdomain = String(body.subdomain || demoTenant.subdomain);
-    const tenant = {
-      ...demoTenant,
-      id: `tenant-${subdomain}`,
-      name: String(body.name || demoTenant.name),
-      subdomain,
-      plan: String(body.plan || 'growth'),
-      country: String(body.country || demoTenant.country),
-      city: String(body.city || demoTenant.city),
+    const tenant = makeTenantFromBody(body);
+    const ownerName = String(body.ownerName || demoUser.name);
+    const ownerEmail = String(body.ownerEmail || demoUser.email);
+    const user = {
+      ...demoUser,
+      id: `user-${tenant.subdomain}`,
+      name: ownerName,
+      email: ownerEmail,
+      member: {
+        id: `member-${tenant.subdomain}`,
+        firstName: ownerName.split(/\s+/)[0] || 'Church',
+        lastName: ownerName.split(/\s+/).slice(1).join(' ') || 'Owner',
+      },
     };
-    return withJson({ data: tenant });
+    const website = {
+      id: `website-${tenant.subdomain}`,
+      tenantId: tenant.id,
+      domain: tenant.subdomainHost,
+      status: 'published',
+      isPrimary: true,
+    };
+    const plan = {
+      slug: tenant.plan,
+      name: tenant.plan.charAt(0).toUpperCase() + tenant.plan.slice(1),
+    };
+    const token = makeSessionToken(tenant.id, user.id);
+    const session = {
+      token,
+      tenantId: tenant.id,
+      tenant,
+      user,
+      website,
+      plan,
+    };
+    return withJson({ ...session, data: session }, { status: 201 });
   }
 
   if (pathname === '/api/auth/login' || pathname === '/api/super-admin/login') {

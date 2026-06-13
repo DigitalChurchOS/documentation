@@ -1820,13 +1820,31 @@
       return data;
     }
 
+    function resolveTenant(payload) {
+      const data = payload?.data || {};
+      if (payload?.tenant) return payload.tenant;
+      if (data?.tenant) return data.tenant;
+      if (data?.id || data?.subdomain) return data;
+      return {};
+    }
+
+    function resolveTenantId(payload, tenant = resolveTenant(payload)) {
+      const data = payload?.data || {};
+      return payload?.tenantId || data?.tenantId || tenant?.tenantId || tenant?.id || "";
+    }
+
+    function resolveToken(payload) {
+      return payload?.token || payload?.data?.token || "";
+    }
+
     function persistSession(payload) {
-      const tenant = payload.tenant || payload.data || {};
-      const tenantId = payload.tenantId || tenant.id;
-      if (!payload.token || !tenantId) {
+      const tenant = resolveTenant(payload);
+      const tenantId = resolveTenantId(payload, tenant);
+      const token = resolveToken(payload);
+      if (!token || !tenantId) {
         throw new Error("Registration completed without a usable session");
       }
-      localStorage.setItem("churchos.token", payload.token);
+      localStorage.setItem("churchos.token", token);
       localStorage.setItem("churchos.tenantId", tenantId);
       localStorage.setItem("churchos.subdomain", tenant.subdomain || "");
       localStorage.setItem("churchos.tenantName", tenant.name || "");
@@ -1893,13 +1911,17 @@
         const resolved = await postJson("/api/public/resolve-subdomain", {
           subdomain: loginSubdomain.value.trim()
         });
-        const tenant = resolved.data;
+        const tenant = resolveTenant(resolved);
+        const tenantId = resolveTenantId(resolved, tenant);
+        if (!tenantId) {
+          throw new Error("Church workspace not found");
+        }
         const data = await postJson("/api/auth/login", {
           email: document.getElementById("loginEmail").value.trim(),
           password: document.getElementById("loginPassword").value
-        }, { "x-tenant-id": tenant.id });
+        }, { "x-tenant-id": tenantId });
 
-        persistSession({ ...data, tenant, tenantId: tenant.id });
+        persistSession({ ...data, tenant, tenantId });
         showToast("Success! Redirecting to dashboard...", false);
         setTimeout(() => {
           window.location.href = "/admin";

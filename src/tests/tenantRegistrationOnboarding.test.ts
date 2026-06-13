@@ -2,6 +2,8 @@ import request from 'supertest';
 import app from '../app';
 import prisma from '../lib/prisma';
 
+jest.setTimeout(60000);
+
 describe('Tenant registration and onboarding synchronization', () => {
   const suffix = Date.now().toString(36);
   const subdomain = `sync-${suffix}`;
@@ -13,6 +15,16 @@ describe('Tenant registration and onboarding synchronization', () => {
       await prisma.tenant.delete({ where: { id: tenantId } }).catch(() => undefined);
     }
     await prisma.$disconnect();
+  });
+
+  it('serves the public registration page at the front door instead of redirecting to admin', async () => {
+    const res = await request(app).get('/');
+
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('Digital Church OS');
+    expect(res.text).toContain('Provision your church workspace in 30 seconds.');
+    expect(res.text).toContain('Create Workspace');
+    expect(res.text).not.toContain('url=/admin');
   });
 
   it('registers a church tenant, owner, subscription, website, and churched.online subdomain', async () => {
