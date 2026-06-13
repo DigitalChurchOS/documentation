@@ -13,6 +13,15 @@ export interface ThemeState {
   previewMode: 'light' | 'dark';
 
   headerStyle: string;
+  headerContentBoxed: boolean;
+  headerLook: string;
+  headerGlass: boolean;
+  headerShadow: boolean;
+  headerShadowIntensity: string;
+  headerShadowThemed: boolean;
+  headerBorder: boolean;
+  headerBorderSize: string;
+  headerBorderColor: string;
   headerLayout: string;
   headerEffect: string;
   mobileMenuPosition: string;
@@ -87,17 +96,23 @@ export function getTokenStyle(state: ThemeState): string {
   }
 
   // Radius values
-  let radXl = "34px";
-  let radLg = "24px";
-  let radMd = "16px";
+  let radXl = "30px";
+  let radLg = "20px";
+  let radMd = "10px";
+  let radBtn = "13px";
+  let radPill = "13px";
   if (state.shape === "Sharp") {
-    radXl = "6px";
-    radLg = "4px";
-    radMd = "2px";
+    radXl = "3px";
+    radLg = "3px";
+    radMd = "3px";
+    radBtn = "3px";
+    radPill = "3px";
   } else if (state.shape === "Round") {
-    radXl = "48px";
-    radLg = "36px";
-    radMd = "24px";
+    radXl = "40px";
+    radLg = "30px";
+    radMd = "20px";
+    radBtn = "50px";
+    radPill = "50px";
   }
 
   // Visual card presentation - shadows follow accents using CSS color-mix()
@@ -204,12 +219,17 @@ export function getTokenStyle(state: ThemeState): string {
   --bg: ${siteBg};
   --surface: ${cardBg};
   --surface-soft: ${siteSoft};
+  --soft: ${siteSoft};
   --text: ${textMain};
   --muted: ${textMuted};
   --border: ${siteBorder};
   --radius-xl: ${radXl};
   --radius-lg: ${radLg};
   --radius-md: ${radMd};
+  --radius-btn: ${radBtn};
+  --radius-pill: ${radPill};
+  --xl: ${radXl};
+  --lg: ${radLg};
   --shadow: ${shadow};
   --soft-shadow: ${softShadow};
   --section: ${sectionPadding};
@@ -219,6 +239,8 @@ export function getTokenStyle(state: ThemeState): string {
   --header-border: color-mix(in srgb, var(--primary) 12%, ${dark ? "rgba(255,255,255,0.08)" : "rgba(29,24,18,0.12)"});
   --header-bg-glass: color-mix(in srgb, var(--primary) 8%, ${dark ? "rgba(11, 17, 32, 0.75)" : "rgba(251, 249, 246, 0.78)"});
   --header-text: var(--text);
+  --active-header-border-width: ${state.headerBorderSize === 'small' ? '1' : state.headerBorderSize === 'medium' ? '3' : state.headerBorderSize === 'large' ? '7' : (state.headerBorderSize || '1')}px;
+  --active-header-border-color: ${state.headerBorderColor === 'white' ? '#ffffff' : 'var(--primary)'};
 
   /* Footer following accents */
   --footer-bg: color-mix(in srgb, var(--primary) 10%, #0d0f12);
@@ -239,7 +261,7 @@ export function getTokenStyle(state: ThemeState): string {
 html {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   scrollbar-gutter: stable;
 }
 
@@ -277,7 +299,7 @@ html {
 body {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: ${bgGradient === "none" ? "var(--bg)" : bgGradient} !important;
   background-attachment: fixed !important;
   color: var(--text) !important;
@@ -334,6 +356,23 @@ h3, h4, h5, h6, .brand, .brand span {
 }
 
 /* Responsive Button and Icon Overrides to follow Accents dynamically */
+/* Legacy shape overrides for archive and single page elements */
+.btn, .badge, .pill, .eyebrow, .emailbox input, .toast, .mini-play, .date-chip, .iconbtn, .search, .select, .input, .fileicon, .down-icon, .sticky-icon, .check span, .radio span, .filtertop .select, .chat-box input, .chat-box button, .meeting-chat-input input, .meeting-chat-input button, .comment-form input, .menu, .language-list span, .tags span, .tag {
+  border-radius: var(--radius-pill) !important;
+}
+
+.feature-media, .hero-feature, .event-feature, .single-media, .course-feature, .feature-shelf, .preview-cover, .article-card, .author-card, .register-card, .ticket-card, .panel, .rich, .dashboard-card, .impact, .hero-copy, .meeting-chat-box, .cover-art {
+  border-radius: var(--radius-xl) !important;
+}
+
+.type-tab, .cat, .channel-tab, .channel, .channel-mini, .resource, .event-card, .post, .media-card, .course-card, .comment-card, .chat-item, .comment, textarea, .comment-form textarea, .detail-grid div, .stats div, .progress-list div, .platform-list button {
+  border-radius: var(--radius-lg) !important;
+}
+
+.mark, .brand-mark, .avatar, .quick-list div, .author-mini, .chapter, .schedule-row, .ticket-type, .day, .panel-tab, .worship-tab-btn, .mobile-tab-item {
+  border-radius: var(--radius-md) !important;
+}
+
 .btn-primary, .primary, .primary-btn, button.primary, button.btn-primary {
   background: var(--accent) !important;
   color: white !important;
@@ -412,46 +451,17 @@ header nav, .header nav {
   flex-wrap: wrap;
 }
 
-header[data-header-style="full"], .header[data-header-style="full"] {
-  width: 100%;
-  position: relative;
-}
 
-header[data-header-style="transparent"], .header[data-header-style="transparent"] {
-  background: transparent !important;
-  border-color: transparent !important;
-  position: absolute;
+
+header[data-header-effect="sticky"], .header[data-header-effect="sticky"] {
+  position: sticky !important;
   top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
+  z-index: 999;
 }
 
-header[data-header-style="floating"], .header[data-header-style="floating"] {
-  width: calc(100% - 48px);
-  max-width: var(--max) !important;
-  margin: 18px auto 0;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
-  position: relative;
-  border: 1px solid var(--header-border) !important;
-}
-
-header[data-header-style="detached"], .header[data-header-style="detached"] {
-  width: calc(100% - 96px);
-  max-width: var(--max) !important;
-  margin: 22px auto;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-soft);
-  position: relative;
-  border: 1px solid var(--header-border) !important;
-}
-
-header[data-header-effect="sticky"], .header[data-header-effect="sticky"],
 header[data-header-effect="reveal"], .header[data-header-effect="reveal"],
-header[data-header-effect="hide"], .header[data-header-effect="hide"],
-header[data-header-effect="glass"], .header[data-header-effect="glass"] {
-  position: fixed !important;
+header[data-header-effect="hide"], .header[data-header-effect="hide"] {
+  position: sticky !important;
   top: 0;
   left: 0;
   right: 0;
@@ -460,7 +470,7 @@ header[data-header-effect="glass"], .header[data-header-effect="glass"] {
 }
 
 header[data-header-effect="floating-sticky"], .header[data-header-effect="floating-sticky"] {
-  position: fixed !important;
+  position: sticky !important;
   top: 18px;
   left: 0;
   right: 0;
@@ -476,8 +486,7 @@ header[data-header-effect="floating-sticky"], .header[data-header-effect="floati
 /* Prevent content jump for fixed headers */
 body:has(header[data-header-effect="sticky"]) .main-shell-body,
 body:has(header[data-header-effect="reveal"]) .main-shell-body,
-body:has(header[data-header-effect="hide"]) .main-shell-body,
-body:has(header[data-header-effect="glass"]) .main-shell-body {
+body:has(header[data-header-effect="hide"]) .main-shell-body {
   padding-top: 82px;
 }
 
@@ -489,23 +498,13 @@ header.ec-header-hidden, .header.ec-header-hidden {
   transform: translateY(-140%) !important;
 }
 
-header.ec-header-glass, .header.ec-header-glass {
-  background: var(--header-bg-glass) !important;
-  backdrop-filter: blur(22px) !important;
-  -webkit-backdrop-filter: blur(22px) !important;
-  box-shadow: var(--shadow-soft) !important;
-  border-color: var(--header-border) !important;
-}
 
 header[data-header-layout="logo-left"] .nav-wrap, .header[data-header-layout="logo-left"] .nav-wrap {
   flex-direction: row;
   justify-content: space-between;
 }
 
-header[data-header-layout="logo-center"] .nav-wrap, .header[data-header-layout="logo-center"] .nav-wrap {
-  justify-content: center;
-  gap: 32px;
-}
+
 
 header[data-header-layout="logo-right"] .nav-wrap, .header[data-header-layout="logo-right"] .nav-wrap {
   flex-direction: row-reverse;
@@ -514,20 +513,60 @@ header[data-header-layout="logo-right"] .nav-wrap, .header[data-header-layout="l
 
 header[data-header-layout="stacked"] .nav-wrap, .header[data-header-layout="stacked"] .nav-wrap {
   height: auto;
-  flex-direction: column;
+  display: grid !important;
+  grid-template-columns: auto auto;
   justify-content: center;
-  gap: 14px;
+  align-items: center;
+  gap: 14px 34px;
   padding-top: 20px;
   padding-bottom: 20px;
 }
 
+/* Stacked (Logo Above) Grid Placement */
+header[data-header-layout="stacked"] .brand, .header[data-header-layout="stacked"] .brand {
+  grid-column: 1 / 3;
+  grid-row: 1;
+  justify-self: center;
+  margin: 0;
+}
+header[data-header-layout="stacked"] .nav, .header[data-header-layout="stacked"] .nav {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: end;
+}
+header[data-header-layout="stacked"] .header-actions, .header[data-header-layout="stacked"] .header-actions {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: start;
+}
+
 header[data-header-layout="menu-top"] .nav-wrap, .header[data-header-layout="menu-top"] .nav-wrap {
   height: auto;
-  flex-direction: column-reverse;
+  display: grid !important;
+  grid-template-columns: auto auto;
   justify-content: center;
-  gap: 14px;
+  align-items: center;
+  gap: 14px 34px;
   padding-top: 20px;
   padding-bottom: 20px;
+}
+
+/* Menu-Top (Menu Above) Grid Placement */
+header[data-header-layout="menu-top"] .brand, .header[data-header-layout="menu-top"] .brand {
+  grid-column: 1 / 3;
+  grid-row: 2;
+  justify-self: center;
+  margin: 0;
+}
+header[data-header-layout="menu-top"] .nav, .header[data-header-layout="menu-top"] .nav {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: end;
+}
+header[data-header-layout="menu-top"] .header-actions, .header[data-header-layout="menu-top"] .header-actions {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: start;
 }
 
 .ec-mobile-menu-toggle {
@@ -666,20 +705,18 @@ body.ec-mobile-drawer-open .ec-mobile-overlay {
   display: block;
 }
 
-body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"] .ec-mobile-overlay {
-  background: transparent;
+body[data-mobile-drawer-mode="push"] .ec-page-wrap, .shell-wrapper {
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-body[data-mobile-drawer-mode="push"] > *:not(.ec-mobile-drawer):not(.ec-mobile-overlay):not(base):not(script):not(style) {
-  transition: transform var(--duration) var(--ease);
+body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="right"] .ec-page-wrap,
+body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="right"] .shell-wrapper {
+  transform: translateX(calc(-1 * min(75vw, 350px)));
 }
 
-body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="right"] > *:not(.ec-mobile-drawer):not(.ec-mobile-overlay) {
-  transform: translateX(-75vw);
-}
-
-body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"] > *:not(.ec-mobile-drawer):not(.ec-mobile-overlay) {
-  transform: translateX(75vw);
+body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"] .ec-page-wrap,
+body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"] .shell-wrapper {
+  transform: translateX(min(75vw, 350px));
 }
 
 @media(max-width:980px) {
@@ -807,7 +844,6 @@ body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-posi
     margin: 0;
   }
 
-  header[data-header-layout="logo-center"], .header[data-header-layout="logo-center"],
   header[data-header-layout="stacked"], .header[data-header-layout="stacked"],
   header[data-header-layout="menu-top"], .header[data-header-layout="menu-top"] {
     justify-content: center !important;
@@ -816,16 +852,9 @@ body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-posi
     padding-bottom: 0 !important;
   }
 
-  header[data-header-layout="logo-center"] .brand, .header[data-header-layout="logo-center"] .brand,
-  header[data-header-layout="stacked"] .brand, .header[data-header-layout="stacked"] .brand,
-  header[data-header-layout="menu-top"] .brand, .header[data-header-layout="menu-top"] .brand {
-    order: 10;
-    margin: 0 auto;
-    text-align: center;
-  }
 
-  header[data-header-layout="logo-center"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="logo-center"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
+
+
   header[data-header-layout="stacked"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
   .header[data-header-layout="stacked"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
   header[data-header-layout="menu-top"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
@@ -836,8 +865,7 @@ body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-posi
     margin: 0;
   }
 
-  header[data-header-layout="logo-center"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="logo-center"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
+
   header[data-header-layout="stacked"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
   .header[data-header-layout="stacked"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
   header[data-header-layout="menu-top"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
@@ -848,10 +876,7 @@ body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-posi
     margin: 0;
   }
 
-  header[data-header-style="detached"], .header[data-header-style="detached"] {
-    width: calc(100% - 34px);
-    margin: 14px auto;
-  }
+
 
   h1 {
     font-size: clamp(36px, 10vw, 58px) !important;
@@ -1083,7 +1108,8 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
   doc.querySelectorAll("link[rel='stylesheet']").forEach(link => {
     const href = link.getAttribute("href");
     if (href && !href.startsWith("http")) {
-      link.setAttribute("href", `${href}?t=${timestamp}`);
+      const sep = href.includes("?") ? "&" : "?";
+      link.setAttribute("href", `${href}${sep}t=${timestamp}`);
     }
   });
 
@@ -1091,6 +1117,9 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
   if (body) {
     body.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
     body.setAttribute("data-mobile-drawer-mode", state.mobileDrawerMode);
+    
+    // Removed .ec-page-wrap injection because the theme's app.js completely replaces document.body
+    // and provides its own .shell-wrapper which we can animate instead.
   }
 
   const header = doc.querySelector("header, [data-editor-type='header']");
@@ -1098,6 +1127,14 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
     header.setAttribute("data-editor-type", "header");
     header.setAttribute("data-editor-label", "Header");
     header.setAttribute("data-header-style", state.headerStyle);
+    header.setAttribute("data-header-content", state.headerContentBoxed ? "boxed" : "full");
+    header.setAttribute("data-header-look", state.headerLook);
+    header.setAttribute("data-header-shadow", String(state.headerShadow));
+    header.setAttribute("data-header-shadow-intensity", state.headerShadowIntensity || "medium");
+    header.setAttribute("data-header-shadow-themed", String(!!state.headerShadowThemed));
+    header.setAttribute("data-header-border", String(state.headerBorder));
+    header.setAttribute("data-header-border-size", state.headerBorderSize);
+    header.setAttribute("data-header-border-color", state.headerBorderColor);
     header.setAttribute("data-header-layout", state.headerLayout);
     header.setAttribute("data-header-effect", state.headerEffect);
     header.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
@@ -1133,7 +1170,6 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
     }
   }
 }
-
 function ensureMobileMenu(doc: Document, header: HTMLElement): void {
   const oldMenuBtn = header.querySelector(".mobilebtn, .mobile-menu-btn");
   if (oldMenuBtn) oldMenuBtn.remove();
@@ -1146,7 +1182,13 @@ function ensureMobileMenu(doc: Document, header: HTMLElement): void {
     toggle.setAttribute("data-editor-label", "Mobile Menu Button");
     toggle.setAttribute("aria-label", "Open mobile menu");
     toggle.innerHTML = "<span></span>";
-    header.appendChild(toggle);
+    
+    const navWrap = header.querySelector(".nav-wrap, .container");
+    if (navWrap) {
+      navWrap.appendChild(toggle);
+    } else {
+      header.appendChild(toggle);
+    }
   }
 
   let drawer = doc.querySelector(".ec-mobile-drawer");
@@ -1192,6 +1234,43 @@ function ensureMobileMenu(doc: Document, header: HTMLElement): void {
         clone.style.marginTop = "8px";
         drawerNav.appendChild(clone);
       });
+    }
+
+    // Inject native JS to handle the drawer so it works outside the customizer
+    let nativeScript = doc.getElementById("ec-mobile-drawer-script");
+    if (!nativeScript) {
+      nativeScript = doc.createElement("script");
+      nativeScript.id = "ec-mobile-drawer-script";
+      nativeScript.textContent = `
+        (function() {
+          const toggle = document.querySelector(".ec-mobile-menu-toggle");
+          const closeBtn = document.querySelector(".ec-mobile-drawer-close");
+          const overlay = document.querySelector(".ec-mobile-overlay");
+          
+          if (toggle) {
+            toggle.onclick = function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              document.body.classList.toggle("ec-mobile-drawer-open");
+            };
+          }
+          
+          if (closeBtn) {
+            closeBtn.onclick = function(e) {
+              e.preventDefault();
+              document.body.classList.remove("ec-mobile-drawer-open");
+            };
+          }
+          
+          if (overlay) {
+            overlay.onclick = function(e) {
+              e.preventDefault();
+              document.body.classList.remove("ec-mobile-drawer-open");
+            };
+          }
+        })();
+      `;
+      doc.body.appendChild(nativeScript);
     }
   }
 }

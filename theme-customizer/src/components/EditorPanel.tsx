@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { ThemeState } from "../utils/domParser";
-import { Edit3, LayoutTemplate, PanelTop, PanelBottom, ChevronLeft, Trash2, Copy } from "lucide-react";
+import { Edit3, LayoutTemplate, PanelTop, PanelBottom, ChevronLeft, Trash2, Copy, RotateCcw } from "lucide-react";
 
 interface SelectedElementData {
   path: string;
@@ -265,16 +265,38 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
   if (subView === "header") {
     return (
       <div className="sidebar-view">
-        <div className="editor-local-tabs four-tabs">
-          {["style", "layout", "effect", "mobile"].map((tab) => (
-            <button
-              key={tab}
-              className={`local-tab ${localTab === tab ? "active" : ""}`}
-              onClick={() => setLocalTab(tab)}
-            >
-              {tab.toUpperCase()}
-            </button>
-          ))}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '24px' }}>
+          <div className="editor-local-tabs four-tabs" style={{ flex: 1, marginBottom: 0 }}>
+            {["style", "layout", "effect", "mobile"].map((tab) => (
+              <button
+                key={tab}
+                className={`local-tab ${localTab === tab ? "active" : ""}`}
+                onClick={() => setLocalTab(tab)}
+              >
+                {tab.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <button 
+            className="local-tab" 
+            style={{ width: 'auto', padding: '0 14px', height: '100%' }} 
+            title="Reset Header to Defaults"
+            onClick={() => onChange({
+              headerStyle: "full",
+              headerLook: "shadow",
+              headerGlass: false,
+              headerBorder: false,
+              headerBorderSize: "small",
+              headerBorderColor: "accent",
+              headerLayout: "logo-left",
+              headerEffect: "static",
+              mobileMenuPosition: "right",
+              mobileDrawerMode: "slide",
+              mobileHamburgerShape: "round"
+            })}
+          >
+            <RotateCcw size={14} />
+          </button>
         </div>
 
         <div className="panel">
@@ -286,27 +308,162 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           </div>
 
           {localTab === "style" && (
+            <>
             <div className="edit-box">
               <h4>Header Base Style</h4>
               <p>Choose the placement and outer layout parameters of the header block.</p>
               <div className="choice-grid">
                 {[
                   { key: "full", name: "Full Header", desc: "Attached edge-to-edge header" },
-                  { key: "transparent", name: "Transparent", desc: "Sits transparently over the hero area" },
+                  { key: "transparent", name: "Transparent", desc: "Blends seamlessly into the page background" },
                   { key: "floating", name: "Floating", desc: "Raised header with custom padding edges" },
                   { key: "detached", name: "Detached", desc: "Boxed and centered to align with page grid" },
                 ].map((item) => (
-                  <button
+                  <div
                     key={item.key}
                     className={`visual-card ${state.headerStyle === item.key ? "active" : ""}`}
                     onClick={() => onChange({ headerStyle: item.key })}
+                    style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
                   >
-                    <strong>{item.name}</strong>
-                    <span>{item.desc}</span>
-                  </button>
+                    <div>
+                      <strong>{item.name}</strong>
+                      <span>{item.desc}</span>
+                    </div>
+                    {(item.key === 'full' || item.key === 'transparent') && state.headerStyle === item.key && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onChange({ headerContentBoxed: !state.headerContentBoxed });
+                        }}
+                        style={{ padding: '4px', pointerEvents: 'auto' }}
+                      >
+                        <button 
+                          className={`tiny-switch ${state.headerContentBoxed ? 'on' : 'off'}`}
+                          style={{ flexShrink: 0, margin: 0 }}
+                          title={state.headerContentBoxed ? "Currently Boxed: Click to make full width" : "Currently Full Width: Click to box content"}
+                        >
+                          <div className="tiny-knob"></div>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </div>
             </div>
+
+            <div className="edit-box" style={{ marginTop: '24px' }}>
+              <h4>Header Look & Aesthetics</h4>
+              <p>Configure the physical visual appearance of the header.</p>
+              
+              <div className="field-group" style={{ marginBottom: '24px' }}>
+                <div className="choice-grid">
+                  {[
+                    { key: "flat", name: "Flat", desc: "Clean and flush without shadows" },
+                    { key: "glass", name: "Glassmorphism", desc: "Frosted glass effect with background blur" },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      className={`visual-card ${state.headerLook === item.key ? "active" : ""}`}
+                      onClick={() => onChange({ headerLook: item.key as any })}
+                    >
+                      <strong>{item.name}</strong>
+                      <span>{item.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', marginBottom: '24px' }}>
+                <div className="field-group" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', paddingBottom: '12px' }}>Border</label>
+                  <button 
+                    className={`tiny-switch ${state.headerBorder ? 'on' : 'off'}`}
+                    onClick={() => onChange({ headerBorder: !state.headerBorder })}
+                    style={{ flexShrink: 0 }}
+                  >
+                    <div className="tiny-knob"></div>
+                  </button>
+                </div>
+
+                {state.headerBorder && (
+                  <>
+                    <div className="field-group" style={{ flex: 1, marginBottom: 0 }}>
+                      <label style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 600, paddingBottom: '17px' }}>
+                        <span>Border Size</span>
+                        <span style={{ color: 'var(--text-muted)' }}>{state.headerBorderSize || '1'}</span>
+                      </label>
+                      <input 
+                        type="range" 
+                        min="1" 
+                        max="7" 
+                        step="1"
+                        value={state.headerBorderSize === 'small' ? '1' : state.headerBorderSize === 'medium' ? '3' : state.headerBorderSize === 'large' ? '7' : (state.headerBorderSize || '1')}
+                        onChange={(e) => onChange({ headerBorderSize: e.target.value })}
+                        style={{ width: '100%', accentColor: 'var(--primary)', margin: 0, display: 'block' }}
+                      />
+                    </div>
+
+                    <div className="field-group" style={{ marginBottom: 0 }}>
+                      <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', paddingBottom: '12px' }}>Themed</label>
+                      <button 
+                        className={`tiny-switch ${state.headerBorderColor === 'accent' ? 'on' : 'off'}`}
+                        onClick={() => onChange({ headerBorderColor: state.headerBorderColor === 'accent' ? 'white' : 'accent' })}
+                        style={{ flexShrink: 0 }}
+                      >
+                        <div className="tiny-knob"></div>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                <div className="field-group" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', paddingBottom: '12px' }}>Shadow</label>
+                  <button 
+                    className={`tiny-switch ${state.headerShadow ? 'on' : 'off'}`}
+                    onClick={() => onChange({ headerShadow: !state.headerShadow })}
+                    style={{ flexShrink: 0 }}
+                  >
+                    <div className="tiny-knob"></div>
+                  </button>
+                </div>
+                {state.headerShadow && (
+                  <>
+                    <div className="field-group" style={{ flexGrow: 1, marginBottom: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '12px', fontWeight: 600 }}>
+                        <span>Intensity</span>
+                        <span style={{ color: 'var(--muted)' }}>{state.headerShadowIntensity === 'light' ? '1' : state.headerShadowIntensity === 'medium' ? '2' : state.headerShadowIntensity === 'heavy' ? '3' : '2'}</span>
+                      </div>
+                      <input 
+                        type="range" 
+                        min="1" 
+                        max="3" 
+                        step="1"
+                        value={state.headerShadowIntensity === 'light' ? '1' : state.headerShadowIntensity === 'medium' ? '2' : state.headerShadowIntensity === 'heavy' ? '3' : '2'}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          onChange({ headerShadowIntensity: val === '1' ? 'light' : val === '2' ? 'medium' : 'heavy' });
+                        }}
+                        style={{ width: '100%', accentColor: 'var(--primary)', margin: 0, display: 'block' }}
+                      />
+                    </div>
+
+                    <div className="field-group" style={{ marginBottom: 0 }}>
+                      <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', paddingBottom: '12px' }}>Themed</label>
+                      <button 
+                        className={`tiny-switch ${state.headerShadowThemed ? 'on' : 'off'}`}
+                        onClick={() => onChange({ headerShadowThemed: !state.headerShadowThemed })}
+                        style={{ flexShrink: 0 }}
+                      >
+                        <div className="tiny-knob"></div>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+            </>
           )}
 
           {localTab === "layout" && (
@@ -316,7 +473,6 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
               <div className="choice-grid">
                 {[
                   { key: "logo-left", name: "Logo Left", desc: "Logo left, menu right" },
-                  { key: "logo-center", name: "Logo Center", desc: "Logo and menu centered" },
                   { key: "logo-right", name: "Logo Right", desc: "Menu left, logo right" },
                   { key: "stacked", name: "Logo Above", desc: "Logo above menu" },
                   { key: "menu-top", name: "Menu Above", desc: "Menu above logo" },
@@ -344,7 +500,6 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                   { key: "sticky", name: "Sticky", desc: "Header remains pinned to top" },
                   { key: "reveal", name: "Reveal On Scroll Up", desc: "Hides on downscroll, slides back on upscroll" },
                   { key: "hide", name: "Auto Hide", desc: "Slides away after scrolling down" },
-                  { key: "glass", name: "Glass Morphism", desc: "Adds blur backdrop transparency on scroll" },
                   { key: "floating-sticky", name: "Floating Sticky", desc: "Floating header style pins to top" },
                 ].map((item) => (
                   <button

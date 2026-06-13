@@ -21,6 +21,9 @@ export async function tenantMiddleware(
   // Page context is dynamically resolved via dnsMiddleware, URL params, or resource lookups
   if (
     req.originalUrl.startsWith('/api/super-admin') ||
+    req.originalUrl.startsWith('/api/public/check-subdomain') ||
+    req.originalUrl.startsWith('/api/public/resolve-subdomain') ||
+    req.originalUrl.startsWith('/api/auth/register-tenant') ||
     req.originalUrl.startsWith('/api/cms/render') ||
     req.originalUrl.includes('/podcast/feeds/') ||
     req.originalUrl.includes('/api/bible/graphics/render/') ||

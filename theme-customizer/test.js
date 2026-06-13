@@ -1,0 +1,1 @@
+fetch('https://churched-themer.pages.dev/').then(r=>r.text()).then(t=>{const m=t.match(/src=\"\/assets\/(index-[^\"]+\.js)\"/);if(m)fetch('https://churched-themer.pages.dev/assets/'+m[1]).then(r2=>r2.text()).then(t2=>console.log('Has BaseTag:', t2.includes('doc.createElement'), 'Has FetchPath:', t2.includes('/themes/ecclesia-full-theme/')))})

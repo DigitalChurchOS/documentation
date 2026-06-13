@@ -66,6 +66,23 @@ router.post('/subscribe', updateBilling, async (req: Request, res: Response) => 
   }
 });
 
+router.get('/current', readBilling, async (req: Request, res: Response) => {
+  try {
+    const current = await BillingService.getCurrentUsage(req.tenantId!);
+    if (!current) {
+      res.status(404).json({ error: 'No active subscription found' });
+      return;
+    }
+    res.json({
+      data: current,
+      subscription: current.subscription,
+      plan: current.subscription?.plan || null,
+    });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
 router.get('/usage', readBilling, async (req: Request, res: Response) => {
   try {
     const current = await BillingService.getCurrentUsage(req.tenantId!);

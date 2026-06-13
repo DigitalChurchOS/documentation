@@ -36,9 +36,9 @@ const defaultPageTemplate = `<!DOCTYPE html>
 <head>
 <title>GraceHouse Church</title>
 <style>
-html{width:100%;max-width:100%;overflow-x:hidden;scrollbar-gutter:stable}
+html{width:100%;max-width:100%;overflow-x:clip;scrollbar-gutter:stable}
 *{box-sizing:border-box}
-body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--site-bg);color:var(--site-text);font-family:var(--font-body);transition:transform var(--duration) var(--ease)}
+body{margin:0;width:100%;max-width:100%;overflow-x:clip;background:var(--site-bg);color:var(--site-text);font-family:var(--font-body);transition:transform var(--duration) var(--ease)}
 img,video,canvas,svg{max-width:100%;height:auto}
 header{width:100%;max-width:100%;min-width:0;height:74px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(24px,4vw,34px);background:var(--site-surface);border-bottom:1px solid var(--site-border)}
 .logo{font-weight:900;min-width:0}
@@ -158,11 +158,20 @@ export function App() {
       motion: "Gentle",
       atmosphere: "Light",
       previewMode: "light",
-      headerStyle: "full",
+      headerStyle: "floating",
+      headerContentBoxed: false,
+      headerLook: "flat",
+      headerGlass: false,
+      headerShadow: true,
+      headerShadowIntensity: 'medium',
+      headerShadowThemed: false,
+      headerBorder: false,
+      headerBorderSize: "small",
+      headerBorderColor: "accent",
       headerLayout: "logo-left",
       headerEffect: "static",
       mobileMenuPosition: "right",
-      mobileDrawerMode: "overlay",
+      mobileDrawerMode: "push",
       mobileHamburgerShape: "circle",
       footerStyle: "classic",
       footerWidgets: "show",
@@ -275,6 +284,15 @@ export function App() {
     const doc = parseHtml(rawHtml);
     injectThemeTokens(doc, themeState);
     applyThemeStructure(doc, themeState);
+
+    // Inject base tag so relative assets resolve correctly inside the srcDoc iframe
+    let baseTag = doc.querySelector("base");
+    if (!baseTag) {
+      baseTag = doc.createElement("base");
+      doc.head.insertBefore(baseTag, doc.head.firstChild);
+    }
+    baseTag.setAttribute("href", "/themes/ecclesia-full-theme/");
+
     return serializeHtml(doc);
   }, [rawHtml, themeState]);
 
@@ -283,7 +301,7 @@ export function App() {
       // Strip any leading slashes or full paths to keep relative resolving clean
       const baseName = filename.split("/").pop() || "index.html";
       const timestamp = new Date().getTime();
-      const response = await fetch(`/themes/ecclesia/${baseName}?t=${timestamp}`);
+      const response = await fetch(`/themes/ecclesia-full-theme/${baseName}?t=${timestamp}`);
       if (response.ok) {
         const text = await response.text();
         setRawHtml(text);

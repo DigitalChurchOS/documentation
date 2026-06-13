@@ -152,25 +152,6 @@ export const Preview: React.FC<PreviewProps> = ({
           return;
         }
 
-        // Handle mobile menu toggle
-        const toggle = e.target.closest(".ec-mobile-menu-toggle");
-        if (toggle) {
-          e.preventDefault();
-          e.stopPropagation();
-          document.body.classList.toggle("ec-mobile-drawer-open");
-          return;
-        }
-
-        // Handle mobile menu close via overlay or close button
-        const closeBtn = e.target.closest(".ec-mobile-drawer-close");
-        const overlay = e.target.closest(".ec-mobile-overlay");
-        if (closeBtn || overlay) {
-          e.preventDefault();
-          e.stopPropagation();
-          document.body.classList.remove("ec-mobile-drawer-open");
-          return;
-        }
-
         const anchor = e.target.closest("a");
         if (anchor) {
           const href = anchor.getAttribute("href");

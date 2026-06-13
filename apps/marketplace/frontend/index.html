@@ -1603,7 +1603,7 @@
   </div>
 
   <div class="toast" id="toast">
-    <i data-lucide="check-circle-2"></i>
+    <i data-lucide="check-circle-2" id="toastIcon"></i>
     <span id="toastText">Action completed</span>
   </div>
 
@@ -1622,6 +1622,7 @@
     let currentView = 'tenant';
     let currentDevice = 'desktop';
     let selectedAsset = null;
+    let developerOverview = null;
 
     const stats = {
       tenant: [
@@ -1667,8 +1668,13 @@
 
     function showToast(text, type = 'success') {
       const toast = document.getElementById('toast');
-      const icon = toast.querySelector('i');
       document.getElementById('toastText').textContent = text;
+      let icon = document.getElementById('toastIcon');
+      if (!icon) {
+        icon = document.createElement('i');
+        icon.id = 'toastIcon';
+        toast.prepend(icon);
+      }
       
       if (type === 'success') {
         icon.setAttribute('data-lucide', 'check-circle-2');
@@ -1907,6 +1913,7 @@
       
       const pendingConsentCount = installedAssets.filter(i => i.status === 'pending_permissions').length;
       stats.tenant[3][1] = pendingConsentCount.toString();
+      if (currentView === "tenant") renderStats();
 
       const list = document.getElementById("installedList");
       if (installedAssets.length === 0) {
@@ -1950,23 +1957,19 @@
 
 
     async function loadDeveloperData() {
-      // Load Payouts & Submissions
-      const devProfile = await apiRequest('GET', '/api/marketplace/submissions') || [];
-      stats.developer[0][1] = devProfile.length.toString();
+      developerOverview = await apiRequest('GET', '/api/marketplace/developer/overview');
+      const submissions = developerOverview?.submissions || [];
+      const payouts = developerOverview?.payouts || { totalSales: 0, totalDeveloperShare: 0, totalPlatformShare: 0 };
+      const sandboxes = developerOverview?.sandboxes || [];
 
-      try {
-        const payouts = await apiRequest('GET', '/api/marketplace/developer/payouts');
-        if (payouts) {
-          stats.developer[1][1] = `$${payouts.totalSales.toFixed(2)}`;
-          stats.developer[2][1] = `$${payouts.totalDeveloperShare.toFixed(2)}`;
-          
-          document.getElementById("devSalesValue").textContent = `$${payouts.totalSales.toFixed(2)}`;
-          document.getElementById("devShareValue").textContent = `$${payouts.totalDeveloperShare.toFixed(2)}`;
-          document.getElementById("devPlatformValue").textContent = `$${payouts.totalPlatformShare.toFixed(2)}`;
-        }
-      } catch (err) {
-        console.error(err);
-      }
+      stats.developer[0][1] = submissions.length.toString();
+      stats.developer[1][1] = `$${(payouts.totalSales || 0).toFixed(2)}`;
+      stats.developer[2][1] = `$${(payouts.totalDeveloperShare || 0).toFixed(2)}`;
+      stats.developer[3][1] = sandboxes.length ? `${sandboxes.length} active` : 'Not started';
+
+      document.getElementById("devSalesValue").textContent = `$${(payouts.totalSales || 0).toFixed(2)}`;
+      document.getElementById("devShareValue").textContent = `$${(payouts.totalDeveloperShare || 0).toFixed(2)}`;
+      document.getElementById("devPlatformValue").textContent = `$${(payouts.totalPlatformShare || 0).toFixed(2)}`;
 
       renderStats();
     }
@@ -2243,6 +2246,11 @@
       const asset = allAssets.find(x => x.id === id) || selectedAsset;
       if (!asset) return;
 
+      if (installedAssets.some(i => i.assetId === asset.id)) {
+        showToast(`${asset.name} is already installed in this church workspace.`);
+        return;
+      }
+
       // 1. Entitlement check simulation
       if (asset.pricingType === 'paid') {
         const purchase = await apiRequest('POST', `/api/marketplace/assets/${asset.id}/purchase`);
@@ -2252,12 +2260,8 @@
 
       // 2. Perform installation
       const versions = asset.versions || [];
-      if (versions.length === 0) {
-        showToast('No approved release versions found.', 'danger');
-        return;
-      }
 
-      const latestVer = versions[0];
+      const latestVer = versions[0] || { id: asset.id, version: asset.version || '1.0.0' };
       const inst = await apiRequest('POST', `/api/marketplace/assets/${asset.id}/install`, { versionId: latestVer.id });
       if (inst) {
         showToast(`${asset.name} installed successfully!`, 'success');
@@ -2331,10 +2335,12 @@
 
     async function provisionSandbox() {
       showToast('Provisioning sandbox workspace...');
+      const profile = await ensureDeveloperProfile();
+      if (!profile?.id) return;
       try {
         const res = await apiRequest('POST', '/api/marketplace/developer/sandbox');
         if (res) {
-          showToast(`Sandbox tenant created: ${res.tenant?.subdomain}.churchos.online`, 'success');
+          showToast(`Sandbox tenant created: ${res.tenant?.subdomainHost || `${res.tenant?.subdomain}.churched.online`}`, 'success');
         }
       } catch (err) {
         showToast('Sandbox setup failed.', 'danger');
@@ -2396,6 +2402,26 @@
       lucide.createIcons();
     }
 
+    async function ensureDeveloperProfile() {
+      const current = await apiRequest('GET', '/api/marketplace/developer/profile');
+      if (current?.id) return current;
+
+      const tenantName = localStorage.getItem('churchos.tenantName') || 'ChurchOS Developer';
+      const ownerEmail = localStorage.getItem('churchos.userEmail') || 'developer@churched.online';
+      const created = await apiRequest('POST', '/api/marketplace/developer/register', {
+        companyName: `${tenantName} Studio`,
+        website: localStorage.getItem('churchos.subdomain')
+          ? `https://${localStorage.getItem('churchos.subdomain')}.churched.online`
+          : '',
+        payoutEmail: ownerEmail
+      });
+
+      if (created) {
+        developerOverview = await apiRequest('GET', '/api/marketplace/developer/overview');
+      }
+      return created;
+    }
+
     async function submitDraftAsset() {
       const name = document.getElementById("submitName").value;
       const type = document.getElementById("submitType").value;
@@ -2413,24 +2439,13 @@
         category
       };
 
-      // Ensure a developer profile exists
-      let developerId;
-      try {
-        const profileRes = await apiRequest('POST', '/api/marketplace/developer/register', { companyName: 'Grace Devs', website: 'https://grace.org', payoutEmail: 'payouts@grace.org' });
-        developerId = profileRes.id;
-      } catch (err) {
-        // Developer profile might already exist, fetch all and select first
-        const devList = await apiRequest('GET', '/api/super-admin/marketplace/developers') || [];
-        developerId = devList[0]?.id;
-      }
-
-      if (!developerId) {
+      const profile = await ensureDeveloperProfile();
+      if (!profile?.id) {
         showToast('Developer registration or fetch failed.', 'danger');
         return;
       }
 
       const asset = await apiRequest('POST', '/api/marketplace/assets', {
-        developerId,
         name,
         description,
         type,

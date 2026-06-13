@@ -1,0 +1,1 @@
+Open giving-partnership.html. This is the fixed Ecclesia merged Giving + Partnership page UI.

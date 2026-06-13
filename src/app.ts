@@ -62,6 +62,8 @@ import domainTenantManagementRoutes from './routes/domainTenantManagement';
 import digitalLibraryResourceCenterRoutes from './routes/digitalLibraryResourceCenter';
 import dynamicBlogPublishingEngineRoutes from './routes/dynamicBlogPublishingEngine';
 import superAdminRoutes from './routes/superAdmin';
+import publicRoutes from './routes/public';
+import onboardingRoutes from './routes/onboarding';
 
 // Load .env before anything else
 dotenv.config();
@@ -117,6 +119,14 @@ app.get(/^\/web(?:\/.*)?$/, (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'apps', 'web', 'public', 'index.html'));
 });
 
+app.get('/start', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'apps', 'web', 'public', 'index.html'));
+});
+
+app.get('/onboarding', (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'apps', 'web', 'public', 'onboarding.html'));
+});
+
 app.get('/page-builder', (_req, res) => {
   res.redirect('/admin?module=customizer&tab=pages');
 });
@@ -131,6 +141,7 @@ app.get('/health', (_req, res) => {
 });
 
 // ── Tenant gate — everything below requires x-tenant-id ───
+app.use('/api/public', apiLimiter, publicRoutes);
 app.use('/api', apiLimiter, tenantMiddleware, localeMiddleware);
 
 // ── Route mounts ──────────────────────────────────────────
@@ -143,6 +154,7 @@ app.use('/api/crm', crmRoutes);
 app.use('/api/communication', commsRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/billing-subscription-management', billingRoutes);
+app.use('/api/onboarding', onboardingRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/plugins', pluginRoutes);
 app.use('/api/plugin-engine', pluginEngineRoutes);

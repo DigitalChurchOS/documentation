@@ -818,6 +818,10 @@ button, input, select, textarea {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.editor-local-tabs.five-tabs {
+  grid-template-columns: repeat(5, 1fr);
+}
+
 .local-tab {
   border: 0;
   border-radius: var(--radius-sm);

@@ -1,0 +1,1 @@
+Open prayer-home.html first. Includes prayer home, live prayer room, prayer wall, testimony wall, testimony single and testimony submission templates.

@@ -1,6 +1,172 @@
 import prisma from '../lib/prisma';
 import { randomUUID } from 'crypto';
 import { ThemeEngineService } from './themeEngine';
+import { subdomainHost } from './tenantProvisioning';
+
+const MARKETPLACE_ACTIVITY_KEY = 'marketplace';
+
+function jsonString(value: any, fallback: any = {}): string {
+  if (typeof value === 'string') {
+    try {
+      JSON.parse(value);
+      return value;
+    } catch {
+      return JSON.stringify({ value });
+    }
+  }
+  return JSON.stringify(value ?? fallback);
+}
+
+function safeParseJson<T>(value: string | null | undefined, fallback: T): T {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function normalizeInstalledStatus(status?: string | null) {
+  if (!status) return 'active';
+  if (status === 'pending') return 'pending_permissions';
+  if (status === 'inactive') return 'disabled';
+  return status;
+}
+
+function latestSubmission(asset: any) {
+  const submissions = [...(asset?.submissions || [])].sort((a: any, b: any) =>
+    new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+  );
+  return submissions[0] || null;
+}
+
+function summarizeAsset(asset: any) {
+  if (!asset) return asset;
+  const feedbacks = asset.feedbacks || [];
+  const purchases = asset.purchases || [];
+  const submissions = asset.submissions || [];
+  const averageRating = feedbacks.length
+    ? Math.round((feedbacks.reduce((sum: number, item: any) => sum + Number(item.rating || 0), 0) / feedbacks.length) * 10) / 10
+    : 5;
+  const approvedVersions = submissions
+    .filter((submission: any) => submission.status === 'approved' || submission.version === asset.version)
+    .map((submission: any) => ({
+      id: submission.id,
+      version: submission.version,
+      changelog: submission.changelog,
+      status: submission.status,
+      submittedAt: submission.submittedAt,
+    }));
+  const latest = latestSubmission(asset);
+
+  return {
+    ...asset,
+    rating: averageRating,
+    averageRating,
+    totalFeedback: feedbacks.length,
+    installs: purchases.filter((purchase: any) => purchase.status === 'completed').length,
+    versions: approvedVersions.length
+      ? approvedVersions
+      : [{
+          id: latest?.id || asset.id,
+          version: asset.version || latest?.version || '1.0.0',
+          changelog: latest?.changelog || null,
+          status: asset.status,
+          submittedAt: latest?.submittedAt || asset.updatedAt,
+        }],
+  };
+}
+
+async function ensurePluginDefinitionForAsset(tx: any, asset: any) {
+  const config = safeParseJson<Record<string, any>>(asset.assetConfig, {});
+  await tx.pluginDefinition.upsert({
+    where: { id: asset.id },
+    update: {
+      name: asset.name,
+      description: asset.description,
+      version: asset.version,
+      requiredPermissions: JSON.stringify(config.requiredPermissions || []),
+      requiredOsVersion: config.requiredOsVersion || '1.0.0',
+      price: asset.price,
+      isActive: asset.status === 'approved',
+    },
+    create: {
+      id: asset.id,
+      name: asset.name,
+      description: asset.description,
+      version: asset.version,
+      requiredPermissions: JSON.stringify(config.requiredPermissions || []),
+      requiredOsVersion: config.requiredOsVersion || '1.0.0',
+      price: asset.price,
+      isActive: asset.status === 'approved',
+    },
+  });
+}
+
+async function provisionAssetInstallation(tx: any, tenantId: string, asset: any) {
+  if (asset.type === 'plugin') {
+    await ensurePluginDefinitionForAsset(tx, asset);
+    const config = safeParseJson<Record<string, any>>(asset.assetConfig, {});
+    const requiredPermissions = Array.isArray(config.requiredPermissions) ? config.requiredPermissions : [];
+    return tx.tenantPlugin.upsert({
+      where: {
+        tenantId_pluginId: { tenantId, pluginId: asset.id },
+      },
+      update: {},
+      create: {
+        tenantId,
+        pluginId: asset.id,
+        status: requiredPermissions.length ? 'pending' : 'active',
+        settings: JSON.stringify(config.defaultSettings || {}),
+        grantedPermissions: requiredPermissions.length ? '[]' : JSON.stringify(requiredPermissions),
+      },
+    });
+  }
+
+  const existingTheme = await tx.theme.findFirst({
+    where: {
+      tenantId,
+      name: asset.name,
+    },
+  });
+  if (existingTheme) return existingTheme;
+
+  const config = safeParseJson<Record<string, any>>(asset.assetConfig, {});
+  return tx.theme.create({
+    data: {
+      tenantId,
+      name: asset.name,
+      settings: JSON.stringify({
+        ...config,
+        marketplace: {
+          assetId: asset.id,
+          version: asset.version,
+          installedAt: new Date().toISOString(),
+        },
+      }),
+      isCustom: true,
+    },
+  });
+}
+
+export async function logMarketplaceActivity(
+  tenantId: string,
+  userId: string | null | undefined,
+  action: string,
+  metadata: Record<string, any> = {}
+) {
+  return prisma.developerMarketplaceModuleActivity.create({
+    data: {
+      tenantId,
+      userId: userId || 'System',
+      actionType: action,
+      metadataJson: jsonString({
+        moduleKey: MARKETPLACE_ACTIVITY_KEY,
+        ...metadata,
+      }),
+    },
+  });
+}
 
 /**
  * Register a new developer profile.
@@ -27,6 +193,33 @@ export async function registerDeveloper(
       website,
       status: 'active',
       payoutEmail,
+    },
+  });
+}
+
+export async function getDeveloperProfile(userId: string): Promise<any | null> {
+  return prisma.developerProfile.findUnique({
+    where: { userId },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          tenant: { select: { id: true, name: true, subdomain: true } },
+        },
+      },
+      assets: {
+        include: {
+          submissions: { orderBy: { submittedAt: 'desc' } },
+          purchases: true,
+          feedbacks: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+      sandboxTenants: {
+        include: { tenant: true },
+        orderBy: { createdAt: 'desc' },
+      },
     },
   });
 }
@@ -247,12 +440,17 @@ export async function listMarketplaceAssets(filters: {
     include: {
       developer: {
         select: {
+          id: true,
           companyName: true,
           website: true,
         },
       },
+      submissions: { orderBy: { submittedAt: 'desc' } },
+      feedbacks: true,
+      purchases: true,
     },
-  });
+    orderBy: { updatedAt: 'desc' },
+  }).then((assets) => assets.map(summarizeAsset));
 }
 
 /**
@@ -264,10 +462,13 @@ export async function getAssetDetails(assetId: string): Promise<any> {
     include: {
       developer: {
         select: {
+          id: true,
           companyName: true,
           website: true,
         },
       },
+      submissions: { orderBy: { submittedAt: 'desc' } },
+      purchases: true,
       feedbacks: {
         select: {
           id: true,
@@ -291,7 +492,7 @@ export async function getAssetDetails(assetId: string): Promise<any> {
     : 5;
 
   return {
-    ...asset,
+    ...summarizeAsset(asset),
     averageRating,
     totalFeedback,
   };
@@ -339,32 +540,287 @@ export async function purchaseMarketplaceAsset(
       },
     });
 
-    // Auto-install logic
-    if (asset.type === 'plugin') {
-      const config = JSON.parse(asset.assetConfig);
-      await tx.tenantPlugin.create({
-        data: {
-          tenantId,
-          pluginId: asset.id, // linked to pluginDefinition ID
-          status: 'pending', // installs in pending until permissions are granted
-          settings: '{}',
-          grantedPermissions: '[]',
-        },
-      });
-    } else if (asset.type === 'theme') {
-      // Create theme copy in the tenant workspace
-      await tx.theme.create({
-        data: {
-          tenantId,
-          name: asset.name,
-          settings: asset.assetConfig, // Custom styles template config
-          isCustom: true,
-        },
-      });
-    }
+    await provisionAssetInstallation(tx, tenantId, asset);
 
     return purchase;
   });
+}
+
+export async function installMarketplaceAsset(tenantId: string, assetId: string): Promise<any> {
+  const asset = await prisma.marketplaceAsset.findUnique({
+    where: { id: assetId },
+    include: {
+      developer: { select: { id: true, companyName: true, website: true } },
+      submissions: { orderBy: { submittedAt: 'desc' } },
+      feedbacks: true,
+      purchases: true,
+    },
+  });
+
+  if (!asset || asset.status !== 'approved') {
+    throw new Error('Asset is not available for installation');
+  }
+
+  const existingPurchase = await prisma.assetPurchase.findFirst({
+    where: { tenantId, assetId, status: 'completed' },
+    include: { asset: true },
+  });
+
+  if (!existingPurchase) {
+    await prisma.$transaction(async (tx) => {
+      await tx.assetPurchase.create({
+        data: {
+          tenantId,
+          assetId,
+          amountPaid: asset.price,
+          developerShare: Math.round(asset.price * asset.revenueSharePct * 100) / 100,
+          platformShare: Math.round(asset.price * (1 - asset.revenueSharePct) * 100) / 100,
+          status: 'completed',
+        },
+      });
+      await provisionAssetInstallation(tx, tenantId, asset);
+    });
+  } else {
+    await prisma.$transaction(async (tx) => {
+      await provisionAssetInstallation(tx, tenantId, asset);
+    });
+  }
+
+  const installed = await listInstalledMarketplaceAssets(tenantId);
+  return installed.find((item) => item.assetId === assetId) || null;
+}
+
+export async function listInstalledMarketplaceAssets(tenantId: string): Promise<any[]> {
+  const purchases = await prisma.assetPurchase.findMany({
+    where: { tenantId, status: 'completed' },
+    include: {
+      asset: {
+        include: {
+          developer: { select: { id: true, companyName: true, website: true } },
+          submissions: { orderBy: { submittedAt: 'desc' } },
+          feedbacks: true,
+          purchases: true,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+
+  const pluginIds = purchases.filter((purchase) => purchase.asset.type === 'plugin').map((purchase) => purchase.assetId);
+  const [plugins, tenantThemes] = await Promise.all([
+    pluginIds.length
+      ? prisma.tenantPlugin.findMany({ where: { tenantId, pluginId: { in: pluginIds } }, include: { plugin: true } })
+      : Promise.resolve([]),
+    prisma.theme.findMany({ where: { tenantId }, orderBy: { createdAt: 'desc' } }),
+  ]);
+  const pluginMap = new Map(plugins.map((plugin) => [plugin.pluginId, plugin]));
+
+  return purchases.map((purchase) => {
+    const asset = summarizeAsset(purchase.asset);
+    const version = { id: asset.versions?.[0]?.id || asset.id, version: asset.version };
+    if (asset.type === 'plugin') {
+      const plugin = pluginMap.get(asset.id);
+      return {
+        id: plugin?.id || purchase.id,
+        purchaseId: purchase.id,
+        tenantId,
+        assetId: asset.id,
+        status: normalizeInstalledStatus(plugin?.status || 'pending'),
+        version,
+        asset,
+        plugin,
+        installedAt: purchase.createdAt,
+      };
+    }
+
+    const theme = tenantThemes.find((item) => {
+      const settings = safeParseJson<Record<string, any>>(item.settings, {});
+      return settings.marketplace?.assetId === asset.id || item.name === asset.name;
+    });
+
+    return {
+      id: theme?.id || purchase.id,
+      purchaseId: purchase.id,
+      tenantId,
+      assetId: asset.id,
+      status: 'active',
+      version,
+      asset,
+      theme,
+      installedAt: purchase.createdAt,
+    };
+  });
+}
+
+export async function updateInstalledMarketplaceAssetStatus(
+  tenantId: string,
+  assetId: string,
+  nextStatus: 'active' | 'disabled'
+): Promise<any> {
+  const asset = await prisma.marketplaceAsset.findUnique({ where: { id: assetId } });
+  if (!asset) throw new Error('Marketplace asset not found');
+
+  if (asset.type === 'plugin') {
+    const plugin = await prisma.tenantPlugin.findUnique({
+      where: { tenantId_pluginId: { tenantId, pluginId: assetId } },
+    });
+    if (!plugin) throw new Error('Asset is not installed');
+    await prisma.tenantPlugin.update({
+      where: { id: plugin.id },
+      data: { status: nextStatus === 'active' ? 'active' : 'inactive' },
+    });
+  }
+
+  const installed = await listInstalledMarketplaceAssets(tenantId);
+  return installed.find((item) => item.assetId === assetId) || null;
+}
+
+export async function uninstallMarketplaceAsset(tenantId: string, assetId: string): Promise<void> {
+  const asset = await prisma.marketplaceAsset.findUnique({ where: { id: assetId } });
+  if (!asset) throw new Error('Marketplace asset not found');
+
+  if (asset.type === 'plugin') {
+    const plugin = await prisma.tenantPlugin.findUnique({
+      where: { tenantId_pluginId: { tenantId, pluginId: assetId } },
+    });
+    if (plugin) {
+      await prisma.pluginWebhook.deleteMany({ where: { tenantId, tenantPluginId: plugin.id } });
+      await prisma.tenantPlugin.delete({ where: { id: plugin.id } });
+    }
+  } else {
+    const themes = await prisma.theme.findMany({ where: { tenantId, name: asset.name } });
+    for (const theme of themes) {
+      const settings = safeParseJson<Record<string, any>>(theme.settings, {});
+      if (settings.marketplace?.assetId === assetId || theme.name === asset.name) {
+        await prisma.theme.delete({ where: { id: theme.id } });
+        break;
+      }
+    }
+  }
+
+  await prisma.assetPurchase.deleteMany({ where: { tenantId, assetId } });
+}
+
+export async function grantMarketplacePluginPermissions(
+  tenantId: string,
+  assetId: string,
+  permissions: string[]
+): Promise<any> {
+  const installed = await prisma.tenantPlugin.findUnique({
+    where: { tenantId_pluginId: { tenantId, pluginId: assetId } },
+    include: { plugin: true },
+  });
+
+  if (!installed) throw new Error('Plugin is not installed');
+  const required = safeParseJson<string[]>(installed.plugin.requiredPermissions, []);
+  const invalid = permissions.filter((permission) => !required.includes(permission));
+  if (invalid.length > 0) {
+    throw new Error(`Cannot grant unrequested permissions: ${invalid.join(', ')}`);
+  }
+
+  await prisma.tenantPlugin.update({
+    where: { id: installed.id },
+    data: {
+      grantedPermissions: JSON.stringify(permissions),
+      status: 'active',
+    },
+  });
+
+  const list = await listInstalledMarketplaceAssets(tenantId);
+  return list.find((item) => item.assetId === assetId) || null;
+}
+
+export async function listDeveloperSubmissions(developerId: string): Promise<any[]> {
+  return prisma.assetSubmission.findMany({
+    where: { asset: { developerId } },
+    include: {
+      asset: {
+        include: {
+          developer: { include: { user: { select: { id: true, email: true, tenant: { select: { id: true, name: true, subdomain: true } } } } } },
+          feedbacks: true,
+          purchases: true,
+          submissions: { orderBy: { submittedAt: 'desc' } },
+        },
+      },
+      reviews: true,
+    },
+    orderBy: { submittedAt: 'desc' },
+  }).then((submissions) => submissions.map((submission) => ({
+    ...submission,
+    asset: summarizeAsset(submission.asset),
+  })));
+}
+
+export async function listDeveloperSandboxes(developerId: string): Promise<any[]> {
+  const sandboxes = await prisma.sandboxTenant.findMany({
+    where: { developerId },
+    include: { tenant: true },
+    orderBy: { createdAt: 'desc' },
+  });
+  return sandboxes.map((sandbox) => ({
+    ...sandbox,
+    tenant: sandbox.tenant
+      ? {
+          ...sandbox.tenant,
+          subdomainHost: subdomainHost(sandbox.tenant.subdomain),
+        }
+      : sandbox.tenant,
+  }));
+}
+
+export async function listDeveloperLogs(tenantId: string): Promise<any[]> {
+  const logs = await prisma.developerMarketplaceModuleActivity.findMany({
+    where: { tenantId },
+    include: { tenant: { select: { id: true, name: true, subdomain: true } } },
+    orderBy: { createdAt: 'desc' },
+    take: 100,
+  });
+
+  return logs.map((log) => {
+    const metadata = safeParseJson<Record<string, any>>(log.metadataJson, {});
+    return {
+      ...log,
+      assetId: metadata.assetId || metadata.moduleId || 'marketplace',
+      version: metadata.version || metadata.submissionVersion || '1.0.0',
+      action: log.actionType,
+      details: metadata.details || metadata.notes || metadata.title || metadata.assetName || '',
+      metadata,
+    };
+  });
+}
+
+export async function getDeveloperOverview(tenantId: string, userId: string): Promise<any> {
+  const profile = await getDeveloperProfile(userId);
+  if (!profile) {
+    return {
+      profile: null,
+      submissions: [],
+      sandboxes: [],
+      logs: await listDeveloperLogs(tenantId),
+      payouts: { totalSales: 0, totalDeveloperShare: 0, totalPlatformShare: 0, purchases: [] },
+      counts: { submissions: 0, sandboxes: 0, assets: 0 },
+    };
+  }
+
+  const [submissions, sandboxes, logs, payouts] = await Promise.all([
+    listDeveloperSubmissions(profile.id),
+    listDeveloperSandboxes(profile.id),
+    listDeveloperLogs(tenantId),
+    getDeveloperPayouts(profile.id),
+  ]);
+
+  return {
+    profile,
+    submissions,
+    sandboxes,
+    logs,
+    payouts,
+    counts: {
+      submissions: submissions.length,
+      sandboxes: sandboxes.length,
+      assets: profile.assets.length,
+    },
+  };
 }
 
 /**
@@ -455,7 +911,13 @@ export async function createSandboxTenant(developerId: string): Promise<any> {
     websiteTitle: `${result.tenant.name} Website`,
   });
 
-  return result;
+  return {
+    ...result,
+    tenant: {
+      ...result.tenant,
+      subdomainHost: subdomainHost(result.tenant.subdomain),
+    },
+  };
 }
 
 /**

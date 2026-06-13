@@ -3402,6 +3402,14 @@ http
       res.writeHead(302, { Location: '/admin?module=customizer&tab=pages' });
       res.end();
       return;
+    } else if (urlPath === '/customizer' || urlPath.startsWith('/customizer/')) {
+      if (urlPath === '/customizer') {
+        res.writeHead(301, { Location: '/customizer/' });
+        res.end();
+        return;
+      }
+      const customizerRelativePath = urlPath.replace(/^\/customizer\/?/, '') || 'index.html';
+      urlPath = `/apps/theme-customizer/dist/${customizerRelativePath}`;
     }
 
     let filePath;

@@ -6,6 +6,7 @@
   <title>Digital Church OS — The Complete Church Operating System</title>
   <meta name="description" content="Build, manage, and grow your church online. Digital Church OS gives ministries a complete platform to launch websites, manage members, accept giving, publish sermons, and run livestreams." />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
   <style>
     :root {
       --bg: #f8f4ed;
@@ -598,7 +599,8 @@
     label {
       color: var(--ink);
       font-size: 13px;
-      font-weight: 900;
+      font-weight: 500;
+      padding-left: 10px;
     }
 
     input, select, textarea {
@@ -1005,6 +1007,126 @@
       border: 1px solid var(--line);
     }
 
+    @media (max-width: 900px) {
+      .signup-container { grid-template-columns: 1fr !important; gap: 40px !important; }
+      .signup-left h2 { font-size: 2.5rem !important; }
+      #step1, #step2 { grid-template-columns: 1fr !important; }
+      .field.full { grid-column: span 1 !important; }
+    }
+
+    /* Custom Dropdown */
+    .custom-select-wrapper {
+      position: relative;
+      user-select: none;
+      width: 100%;
+    }
+    .custom-select-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font: inherit;
+      color: var(--charcoal);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .custom-select-trigger:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      outline: none;
+    }
+    .custom-select-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      padding: 6px;
+    }
+    .custom-select-wrapper.open .custom-select-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .custom-select-search {
+      padding: 6px;
+      position: relative;
+    }
+    .custom-select-search i,
+    .custom-select-search svg {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      width: 16px;
+      height: 16px;
+    }
+    .custom-select-search input {
+      width: 100%;
+      padding: 10px 10px 10px 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bg-2);
+      font: inherit;
+      outline: none;
+      font-size: 14px;
+    }
+    .custom-select-search input:focus {
+      border-color: var(--accent);
+    }
+    .custom-select-options {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .custom-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--charcoal);
+      transition: background 0.2s;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .custom-option:hover {
+      background: var(--soft);
+    }
+    .custom-option.selected {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .custom-option.selected::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-left: auto;
+    }
+    }
+    .country-flag {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
   </style>
 </head>
 <body data-theme="light">
@@ -1053,7 +1175,7 @@
           <div class="browser">
             <div class="browser-top">
               <div class="dots"><span></span><span></span><span></span></div>
-              <div class="browser-url" id="previewUrl">churchname.churchos.com</div>
+              <div class="browser-url" id="previewUrl">churchname.churched.online</div>
             </div>
             <div class="mini-site">
               <div class="mini-hero">
@@ -1219,153 +1341,164 @@
     <!-- Interactive Signup & Login Panel Section -->
     
     <!-- Interactive Signup & Login Panel Section -->
+    <!-- Interactive Signup & Login Panel Section -->
     <section class="section shell" id="signup" style="position: relative; padding: 100px 20px;">
       <div class="signup-section-bg"></div>
       
-      <div style="text-align: center; position: relative; z-index: 2; margin-bottom: 40px;">
-        <h2 id="copyTitle">Provision your church workspace in 30 seconds.</h2>
-        <p class="section-copy" id="copyDesc" style="margin: 0 auto;">
-          Enter your details, choose a unique church subdomain, and proceed directly to the interactive onboarding wizard.
-        </p>
-      </div>
-
-      <div class="signup-wrapper">
-        <div class="form-tabs" style="margin-bottom: 30px;">
-          <button class="form-tab active" id="tabRegister" type="button">Register Church</button>
-          <button class="form-tab" id="tabLogin" type="button">Sign In</button>
+      <div class="signup-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; align-items: center;">
+        
+        <!-- Left Column -->
+        <div class="signup-left">
+          <h2 id="copyTitle" style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px;">Provision your church workspace in 30 seconds.</h2>
+          <p class="section-copy" id="copyDesc" style="font-size: 1.25rem;">
+            Enter your details, choose a unique church subdomain, and proceed directly to the interactive onboarding wizard.
+          </p>
         </div>
 
-        <!-- Registration Form -->
-        <form id="signupForm" class="form-grid">
-          
-          <!-- Step 1 -->
-          <div id="step1" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
-            <div class="step-header">
-              <h3 style="margin: 0;">Step 1: Church Details</h3>
-              <div class="step-count">1 of 2</div>
-            </div>
-            
-            <div class="field full">
-              <label for="churchName">Church Name</label>
-              <input id="churchName" placeholder="e.g. Christ Embassy Calgary" required />
+        <!-- Right Column -->
+        <div class="signup-right">
+          <div class="signup-wrapper" style="max-width: 100%; margin: 0;">
+            <div class="form-tabs" style="margin-bottom: 30px;">
+              <button class="form-tab active" id="tabRegister" type="button">Register Church</button>
+              <button class="form-tab" id="tabLogin" type="button">Sign In</button>
             </div>
 
-            <div class="field full">
-              <label for="ownerName">Pastor/Owner Full Name</label>
-              <input id="ownerName" placeholder="e.g. Pastor David Cole" required />
-            </div>
+            <!-- Registration Form -->
+            <form id="signupForm">
+              
+              <!-- Step 1 -->
+              <div id="step1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="step-header" style="grid-column: span 2;">
+                  <h3 style="margin: 0;">Step 1: Church Details</h3>
+                  <div class="step-count">1 of 2</div>
+                </div>
+                
+                <div class="field full" style="grid-column: span 2;">
+                  <label for="churchName">Church Name</label>
+                  <input id="churchName" placeholder="e.g. Christ Embassy Calgary" required />
+                </div>
 
-            <div class="field full">
-              <label for="ownerEmail">Owner Email Address</label>
-              <input id="ownerEmail" type="email" placeholder="e.g. pastor@church.org" required />
-            </div>
+                <div class="field">
+                  <label for="ownerName">Pastor/Owner Full Name</label>
+                  <input id="ownerName" placeholder="e.g. Pastor David Cole" required />
+                </div>
 
-            <div class="field full">
-              <label for="plan">Plan Option</label>
-              <select id="plan" required>
-                <option value="starter">Starter</option>
-                <option value="growth" selected>Growth</option>
-                <option value="pro">Pro</option>
-                <option value="enterprise">Enterprise</option>
-              </select>
-            </div>
+                <div class="field">
+                  <label for="ownerEmail">Owner Email Address</label>
+                  <input id="ownerEmail" type="email" placeholder="e.g. pastor@church.org" required />
+                </div>
 
-            <div class="field full">
-              <label for="country">Country</label>
-              <select id="country" required>
-                <option value="" disabled selected>Select a country</option>
-              </select>
-            </div>
+                <div class="field">
+                  <label for="country">Country</label>
+                  <div class="custom-select-wrapper" id="countryWrapper">
+                    <input type="hidden" id="country" required />
+                    <button type="button" class="custom-select-trigger" id="countryTrigger">
+                      <span class="country-trigger-text">Select a country</span>
+                      <i data-lucide="chevron-down"></i>
+                    </button>
+                    <div class="custom-select-dropdown">
+                      <div class="custom-select-search">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="countrySearch" placeholder="Search countries..." />
+                      </div>
+                      <div class="custom-select-options" id="countryOptions"></div>
+                    </div>
+                  </div>
+                </div>
 
-            <div class="field full" style="margin-top: 10px;">
-              <button class="btn btn-primary" type="button" id="btnProceed" style="width:100%; min-height:56px;">
-                Proceed <i data-lucide="arrow-right"></i>
-              </button>
-            </div>
-          </div>
+                <div class="field">
+                  <label for="city">City</label>
+                  <input id="city" placeholder="e.g. Calgary" required />
+                </div>
 
-          <!-- Step 2 -->
-          <div id="step2" style="display: none; grid-template-columns: 1fr; gap: 20px;">
-            <div class="step-header">
-              <h3 style="margin: 0;">Step 2: Workspace Setup</h3>
-              <div class="step-count">2 of 2</div>
-            </div>
-            
-            <div class="field full">
-              <label for="subdomain">Preferred Subdomain</label>
-              <div class="input-group">
-                <input id="subdomain" placeholder="e.g. cecalgary" required />
-                <span class="input-suffix">.churched.online</span>
+                <div class="field full" style="margin-top: 10px; grid-column: span 2;">
+                  <button class="btn btn-primary" type="button" id="btnProceed" style="width:100%; min-height:56px;">
+                    Proceed <i data-lucide="arrow-right"></i>
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div class="field full">
-              <label for="password">Password</label>
-              <div class="password-wrapper">
-                <input id="password" type="password" placeholder="••••••••" required minlength="8" />
-                <button type="button" class="password-toggle" data-target="password">
-                  <i data-lucide="eye"></i>
+              <!-- Step 2 -->
+              <div id="step2" style="display: none; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="step-header" style="grid-column: span 2;">
+                  <h3 style="margin: 0;">Step 2: Workspace Setup</h3>
+                  <div class="step-count">2 of 2</div>
+                </div>
+                
+                <div class="field full" style="grid-column: span 2;">
+                  <label for="subdomain">Preferred Subdomain</label>
+                  <div class="input-group">
+                    <input id="subdomain" placeholder="e.g. cecalgary" required />
+                    <span class="input-suffix">.churched.online</span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="password">Password</label>
+                  <div class="password-wrapper">
+                    <input id="password" type="password" placeholder="••••••••" required minlength="8" />
+                    <button type="button" class="password-toggle" data-target="password">
+                      <i data-lucide="eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="repeatPassword">Repeat Password</label>
+                  <div class="password-wrapper">
+                    <input id="repeatPassword" type="password" placeholder="••••••••" required minlength="8" />
+                    <button type="button" class="password-toggle" data-target="repeatPassword">
+                      <i data-lucide="eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="field full" style="grid-column: span 2; display: grid; grid-template-columns: auto 1fr; gap: 15px; margin-top: 10px;">
+                  <button class="btn" type="button" id="btnBack" style="min-height:56px; padding: 0 20px;">
+                    <i data-lucide="arrow-left"></i> Back
+                  </button>
+                  <button class="btn btn-primary" type="submit" style="min-height:56px;">
+                    <i data-lucide="rocket"></i> Create Workspace
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Login Form -->
+            <form id="loginForm" style="display: none;">
+              <div id="loginStep" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+              <div class="field full">
+                <label for="loginSubdomain">Church Subdomain</label>
+                <div class="input-group" style="margin-bottom: 20px;">
+                  <input id="loginSubdomain" placeholder="e.g. cecalgary" required />
+                  <span class="input-suffix">.churched.online</span>
+                </div>
+              </div>
+
+              <div class="field full">
+                <label for="loginEmail">Email Address</label>
+                <input id="loginEmail" type="email" placeholder="e.g. pastor@church.org" required />
+              </div>
+
+              <div class="field full">
+                <label for="loginPassword">Password</label>
+                <div class="password-wrapper">
+                  <input id="loginPassword" type="password" placeholder="••••••••" required />
+                  <button type="button" class="password-toggle" data-target="loginPassword">
+                    <i data-lucide="eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="field full" style="margin-top: 20px;">
+                <button class="btn btn-primary" type="submit" style="width:100%; min-height:56px;">
+                  <i data-lucide="log-in"></i> Sign In to Dashboard
                 </button>
               </div>
-            </div>
-
-            <div class="field full">
-              <label for="repeatPassword">Repeat Password</label>
-              <div class="password-wrapper">
-                <input id="repeatPassword" type="password" placeholder="••••••••" required minlength="8" />
-                <button type="button" class="password-toggle" data-target="repeatPassword">
-                  <i data-lucide="eye"></i>
-                </button>
               </div>
-            </div>
-
-            <div class="field full">
-              <label for="city">City</label>
-              <input id="city" placeholder="e.g. Calgary" required />
-            </div>
-
-            <div class="field full" style="display: grid; grid-template-columns: auto 1fr; gap: 15px; margin-top: 10px;">
-              <button class="btn" type="button" id="btnBack" style="min-height:56px; padding: 0 20px;">
-                <i data-lucide="arrow-left"></i> Back
-              </button>
-              <button class="btn btn-primary" type="submit" style="min-height:56px;">
-                <i data-lucide="rocket"></i> Create Workspace & Start
-              </button>
-            </div>
+            </form>
           </div>
-        </form>
-
-        <!-- Login Form (Initially Hidden) -->
-        <form id="loginForm" class="form-grid" style="display: none; grid-template-columns: 1fr;">
-          <div class="field full">
-            <label for="loginSubdomain">Church Subdomain</label>
-            <div class="input-group" style="margin-bottom: 20px;">
-              <input id="loginSubdomain" placeholder="e.g. cecalgary" required />
-              <span class="input-suffix">.churched.online</span>
-            </div>
-          </div>
-
-          <div class="field full">
-            <label for="loginEmail">Email Address</label>
-            <input id="loginEmail" type="email" placeholder="e.g. pastor@church.org" required />
-          </div>
-
-          <div class="field full">
-            <label for="loginPassword">Password</label>
-            <div class="password-wrapper">
-              <input id="loginPassword" type="password" placeholder="••••••••" required />
-              <button type="button" class="password-toggle" data-target="loginPassword">
-                <i data-lucide="eye"></i>
-              </button>
-            </div>
-          </div>
-
-          <div class="field full" style="margin-top: 20px;">
-            <button class="btn btn-primary" type="submit" style="width:100%; min-height:56px;">
-              <i data-lucide="log-in"></i> Sign In to Dashboard
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </section>
   </main>
@@ -1389,6 +1522,7 @@
     
     
     const planSelect = document.getElementById("plan");
+    let selectedPlan = planSelect?.value || "growth";
     const previewUrl = document.getElementById("previewUrl");
 
     const tabRegister = document.getElementById("tabRegister");
@@ -1431,21 +1565,131 @@
       subdomainInput.value = cleanSubdomain(subdomainInput.value);
     });
 
-    // Populate countries
+    
+    // Populate Custom Country Dropdown
     const countries = [
-      "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Côte d'Ivoire", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Holy See", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine State", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United States of America", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Yemen", "Zambia", "Zimbabwe"
+      { name: "Afghanistan", code: "AF", emoji: "🇦🇫" }, { name: "Albania", code: "AL", emoji: "🇦🇱" }, { name: "Algeria", code: "DZ", emoji: "🇩🇿" },
+      { name: "Andorra", code: "AD", emoji: "🇦🇩" }, { name: "Angola", code: "AO", emoji: "🇦🇴" }, { name: "Argentina", code: "AR", emoji: "🇦🇷" },
+      { name: "Armenia", code: "AM", emoji: "🇦🇲" }, { name: "Australia", code: "AU", emoji: "🇦🇺" }, { name: "Austria", code: "AT", emoji: "🇦🇹" },
+      { name: "Azerbaijan", code: "AZ", emoji: "🇦🇿" }, { name: "Bahamas", code: "BS", emoji: "🇧🇸" }, { name: "Bahrain", code: "BH", emoji: "🇧🇭" },
+      { name: "Bangladesh", code: "BD", emoji: "🇧🇩" }, { name: "Barbados", code: "BB", emoji: "🇧🇧" }, { name: "Belarus", code: "BY", emoji: "🇧🇾" },
+      { name: "Belgium", code: "BE", emoji: "🇧🇪" }, { name: "Belize", code: "BZ", emoji: "🇧🇿" }, { name: "Benin", code: "BJ", emoji: "🇧🇯" },
+      { name: "Bhutan", code: "BT", emoji: "🇧🇹" }, { name: "Bolivia", code: "BO", emoji: "🇧🇴" }, { name: "Bosnia", code: "BA", emoji: "🇧🇦" },
+      { name: "Botswana", code: "BW", emoji: "🇧🇼" }, { name: "Brazil", code: "BR", emoji: "🇧🇷" }, { name: "Brunei", code: "BN", emoji: "🇧🇳" },
+      { name: "Bulgaria", code: "BG", emoji: "🇧🇬" }, { name: "Burkina Faso", code: "BF", emoji: "🇧🇫" }, { name: "Burundi", code: "BI", emoji: "🇧🇮" },
+      { name: "Cambodia", code: "KH", emoji: "🇰🇭" }, { name: "Cameroon", code: "CM", emoji: "🇨🇲" }, { name: "Canada", code: "CA", emoji: "🇨🇦" },
+      { name: "Central African Republic", code: "CF", emoji: "🇨🇫" }, { name: "Chad", code: "TD", emoji: "🇹🇩" }, { name: "Chile", code: "CL", emoji: "🇨🇱" },
+      { name: "China", code: "CN", emoji: "🇨🇳" }, { name: "Colombia", code: "CO", emoji: "🇨🇴" }, { name: "Comoros", code: "KM", emoji: "🇰🇲" },
+      { name: "Congo", code: "CG", emoji: "🇨🇬" }, { name: "Costa Rica", code: "CR", emoji: "🇨🇷" }, { name: "Croatia", code: "HR", emoji: "🇭🇷" },
+      { name: "Cuba", code: "CU", emoji: "🇨🇺" }, { name: "Cyprus", code: "CY", emoji: "🇨🇾" }, { name: "Czech Republic", code: "CZ", emoji: "🇨🇿" },
+      { name: "Denmark", code: "DK", emoji: "🇩🇰" }, { name: "Djibouti", code: "DJ", emoji: "🇩🇯" }, { name: "Dominica", code: "DM", emoji: "🇩🇲" },
+      { name: "Dominican Republic", code: "DO", emoji: "🇩🇴" }, { name: "Ecuador", code: "EC", emoji: "🇪🇨" }, { name: "Egypt", code: "EG", emoji: "🇪🇬" },
+      { name: "El Salvador", code: "SV", emoji: "🇸🇻" }, { name: "Equatorial Guinea", code: "GQ", emoji: "🇬🇶" }, { name: "Eritrea", code: "ER", emoji: "🇪🇷" },
+      { name: "Estonia", code: "EE", emoji: "🇪🇪" }, { name: "Eswatini", code: "SZ", emoji: "🇸🇿" }, { name: "Ethiopia", code: "ET", emoji: "🇪🇹" },
+      { name: "Fiji", code: "FJ", emoji: "🇫🇯" }, { name: "Finland", code: "FI", emoji: "🇫🇮" }, { name: "France", code: "FR", emoji: "🇫🇷" },
+      { name: "Gabon", code: "GA", emoji: "🇬🇦" }, { name: "Gambia", code: "GM", emoji: "🇬🇲" }, { name: "Georgia", code: "GE", emoji: "🇬🇪" },
+      { name: "Germany", code: "DE", emoji: "🇩🇪" }, { name: "Ghana", code: "GH", emoji: "🇬🇭" }, { name: "Greece", code: "GR", emoji: "🇬🇷" },
+      { name: "Grenada", code: "GD", emoji: "🇬🇩" }, { name: "Guatemala", code: "GT", emoji: "🇬🇹" }, { name: "Guinea", code: "GN", emoji: "🇬🇳" },
+      { name: "Guinea-Bissau", code: "GW", emoji: "🇬🇼" }, { name: "Guyana", code: "GY", emoji: "🇬🇾" }, { name: "Haiti", code: "HT", emoji: "🇭🇹" },
+      { name: "Honduras", code: "HN", emoji: "🇭🇳" }, { name: "Hungary", code: "HU", emoji: "🇭🇺" }, { name: "Iceland", code: "IS", emoji: "🇮🇸" },
+      { name: "India", code: "IN", emoji: "🇮🇳" }, { name: "Indonesia", code: "ID", emoji: "🇮🇩" }, { name: "Iran", code: "IR", emoji: "🇮🇷" },
+      { name: "Iraq", code: "IQ", emoji: "🇮🇶" }, { name: "Ireland", code: "IE", emoji: "🇮🇪" }, { name: "Israel", code: "IL", emoji: "🇮🇱" },
+      { name: "Italy", code: "IT", emoji: "🇮🇹" }, { name: "Jamaica", code: "JM", emoji: "🇯🇲" }, { name: "Japan", code: "JP", emoji: "🇯🇵" },
+      { name: "Jordan", code: "JO", emoji: "🇯🇴" }, { name: "Kazakhstan", code: "KZ", emoji: "🇰🇿" }, { name: "Kenya", code: "KE", emoji: "🇰🇪" },
+      { name: "Kiribati", code: "KI", emoji: "🇰🇮" }, { name: "Kuwait", code: "KW", emoji: "🇰🇼" }, { name: "Kyrgyzstan", code: "KG", emoji: "🇰🇬" },
+      { name: "Laos", code: "LA", emoji: "🇱🇦" }, { name: "Latvia", code: "LV", emoji: "🇱🇻" }, { name: "Lebanon", code: "LB", emoji: "🇱🇧" },
+      { name: "Lesotho", code: "LS", emoji: "🇱🇸" }, { name: "Liberia", code: "LR", emoji: "🇱🇷" }, { name: "Libya", code: "LY", emoji: "🇱🇾" },
+      { name: "Liechtenstein", code: "LI", emoji: "🇱🇮" }, { name: "Lithuania", code: "LT", emoji: "🇱🇹" }, { name: "Luxembourg", code: "LU", emoji: "🇱🇺" },
+      { name: "Madagascar", code: "MG", emoji: "🇲🇬" }, { name: "Malawi", code: "MW", emoji: "🇲🇼" }, { name: "Malaysia", code: "MY", emoji: "🇲🇾" },
+      { name: "Maldives", code: "MV", emoji: "🇲🇻" }, { name: "Mali", code: "ML", emoji: "🇲🇱" }, { name: "Malta", code: "MT", emoji: "🇲🇹" },
+      { name: "Marshall Islands", code: "MH", emoji: "🇲🇭" }, { name: "Mauritania", code: "MR", emoji: "🇲🇷" }, { name: "Mauritius", code: "MU", emoji: "🇲🇺" },
+      { name: "Mexico", code: "MX", emoji: "🇲🇽" }, { name: "Micronesia", code: "FM", emoji: "🇫🇲" }, { name: "Moldova", code: "MD", emoji: "🇲🇩" },
+      { name: "Monaco", code: "MC", emoji: "🇲🇨" }, { name: "Mongolia", code: "MN", emoji: "🇲🇳" }, { name: "Montenegro", code: "ME", emoji: "🇲🇪" },
+      { name: "Morocco", code: "MA", emoji: "🇲🇦" }, { name: "Mozambique", code: "MZ", emoji: "🇲🇿" }, { name: "Myanmar", code: "MM", emoji: "🇲🇲" },
+      { name: "Namibia", code: "NA", emoji: "🇳🇦" }, { name: "Nauru", code: "NR", emoji: "🇳🇷" }, { name: "Nepal", code: "NP", emoji: "🇳🇵" },
+      { name: "Netherlands", code: "NL", emoji: "🇳🇱" }, { name: "New Zealand", code: "NZ", emoji: "🇳🇿" }, { name: "Nicaragua", code: "NI", emoji: "🇳🇮" },
+      { name: "Niger", code: "NE", emoji: "🇳🇪" }, { name: "Nigeria", code: "NG", emoji: "🇳🇬" }, { name: "North Korea", code: "KP", emoji: "🇰🇵" },
+      { name: "North Macedonia", code: "MK", emoji: "🇲🇰" }, { name: "Norway", code: "NO", emoji: "🇳🇴" }, { name: "Oman", code: "OM", emoji: "🇴🇲" },
+      { name: "Pakistan", code: "PK", emoji: "🇵🇰" }, { name: "Palau", code: "PW", emoji: "🇵🇼" }, { name: "Palestine", code: "PS", emoji: "🇵🇸" },
+      { name: "Panama", code: "PA", emoji: "🇵🇦" }, { name: "Papua New Guinea", code: "PG", emoji: "🇵🇬" }, { name: "Paraguay", code: "PY", emoji: "🇵🇾" },
+      { name: "Peru", code: "PE", emoji: "🇵🇪" }, { name: "Philippines", code: "PH", emoji: "🇵🇭" }, { name: "Poland", code: "PL", emoji: "🇵🇱" },
+      { name: "Portugal", code: "PT", emoji: "🇵🇹" }, { name: "Qatar", code: "QA", emoji: "🇶🇦" }, { name: "Romania", code: "RO", emoji: "🇷🇴" },
+      { name: "Russia", code: "RU", emoji: "🇷🇺" }, { name: "Rwanda", code: "RW", emoji: "🇷🇼" }, { name: "Samoa", code: "WS", emoji: "🇼🇸" },
+      { name: "San Marino", code: "SM", emoji: "🇸🇲" }, { name: "Saudi Arabia", code: "SA", emoji: "🇸🇦" }, { name: "Senegal", code: "SN", emoji: "🇸🇳" },
+      { name: "Serbia", code: "RS", emoji: "🇷🇸" }, { name: "Seychelles", code: "SC", emoji: "🇸🇨" }, { name: "Sierra Leone", code: "SL", emoji: "🇸🇱" },
+      { name: "Singapore", code: "SG", emoji: "🇸🇬" }, { name: "Slovakia", code: "SK", emoji: "🇸🇰" }, { name: "Slovenia", code: "SI", emoji: "🇸🇮" },
+      { name: "Solomon Islands", code: "SB", emoji: "🇸🇧" }, { name: "Somalia", code: "SO", emoji: "🇸🇴" }, { name: "South Africa", code: "ZA", emoji: "🇿🇦" },
+      { name: "South Korea", code: "KR", emoji: "🇰🇷" }, { name: "South Sudan", code: "SS", emoji: "🇸🇸" }, { name: "Spain", code: "ES", emoji: "🇪🇸" },
+      { name: "Sri Lanka", code: "LK", emoji: "🇱🇰" }, { name: "Sudan", code: "SD", emoji: "🇸🇩" }, { name: "Suriname", code: "SR", emoji: "🇸🇷" },
+      { name: "Sweden", code: "SE", emoji: "🇸🇪" }, { name: "Switzerland", code: "CH", emoji: "🇨🇭" }, { name: "Syria", code: "SY", emoji: "🇸🇾" },
+      { name: "Tajikistan", code: "TJ", emoji: "🇹🇯" }, { name: "Tanzania", code: "TZ", emoji: "🇹🇿" }, { name: "Thailand", code: "TH", emoji: "🇹🇭" },
+      { name: "Timor-Leste", code: "TL", emoji: "🇹🇱" }, { name: "Togo", code: "TG", emoji: "🇹🇬" }, { name: "Tonga", code: "TO", emoji: "🇹🇴" },
+      { name: "Trinidad", code: "TT", emoji: "🇹🇹" }, { name: "Tunisia", code: "TN", emoji: "🇹🇳" }, { name: "Turkey", code: "TR", emoji: "🇹🇷" },
+      { name: "Turkmenistan", code: "TM", emoji: "🇹🇲" }, { name: "Tuvalu", code: "TV", emoji: "🇹🇻" }, { name: "Uganda", code: "UG", emoji: "🇺🇬" },
+      { name: "Ukraine", code: "UA", emoji: "🇺🇦" }, { name: "United Arab Emirates", code: "AE", emoji: "🇦🇪" }, { name: "United Kingdom", code: "GB", emoji: "🇬🇧" },
+      { name: "United States", code: "US", emoji: "🇺🇸" }, { name: "Uruguay", code: "UY", emoji: "🇺🇾" }, { name: "Uzbekistan", code: "UZ", emoji: "🇺🇿" },
+      { name: "Vanuatu", code: "VU", emoji: "🇻🇺" }, { name: "Venezuela", code: "VE", emoji: "🇻🇪" }, { name: "Vietnam", code: "VN", emoji: "🇻🇳" },
+      { name: "Yemen", code: "YE", emoji: "🇾🇪" }, { name: "Zambia", code: "ZM", emoji: "🇿🇲" }, { name: "Zimbabwe", code: "ZW", emoji: "🇿🇼" }
     ];
-    const countrySelect = document.getElementById("country");
-    if (countrySelect) {
-      countries.forEach(c => {
-        const option = document.createElement("option");
-        option.value = c;
-        option.textContent = c;
-        countrySelect.appendChild(option);
+
+    const countryWrapper = document.getElementById('countryWrapper');
+    const countryTrigger = document.getElementById('countryTrigger');
+    const countryTriggerText = countryTrigger.querySelector('.country-trigger-text');
+    const countrySearch = document.getElementById('countrySearch');
+    const countryOptions = document.getElementById('countryOptions');
+    const countryHidden = document.getElementById('country');
+
+    function renderCountries(list) {
+      countryOptions.innerHTML = '';
+      if (list.length === 0) {
+        countryOptions.innerHTML = '<div class="custom-option" style="color:var(--muted)">No results found</div>';
+        return;
+      }
+      list.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'custom-option';
+        div.innerHTML = `<span class="fi fi-${c.code.toLowerCase()}"></span> <span class="country-name">${c.name}</span>`;
+        div.addEventListener('click', () => {
+          countryHidden.value = c.name;
+          countryTriggerText.innerHTML = `<span style="display:flex;align-items:center;gap:8px;"><span class="fi fi-${c.code.toLowerCase()}"></span> ${c.name}</span>`;
+          countryWrapper.classList.remove('open');
+          
+          // Re-trigger validation visually
+          countryHidden.dispatchEvent(new Event('change'));
+        });
+        countryOptions.appendChild(div);
       });
     }
 
+    // Toggle dropdown
+    countryTrigger.addEventListener('click', () => {
+      countryWrapper.classList.toggle('open');
+      if (countryWrapper.classList.contains('open')) {
+        countrySearch.value = '';
+        renderCountries(countries);
+        setTimeout(() => countrySearch.focus(), 50);
+      }
+    });
+
+    // Search filter
+    countrySearch.addEventListener('input', (e) => {
+      const val = e.target.value.toLowerCase();
+      const filtered = countries.filter(c => c.name.toLowerCase().includes(val));
+      renderCountries(filtered);
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!countryWrapper.contains(e.target)) {
+        countryWrapper.classList.remove('open');
+      }
+    });
+
+    // Initial render
+    renderCountries(countries);
+
     // Two-step logic
+// Two-step logic
     const step1 = document.getElementById("step1");
     const step2 = document.getElementById("step2");
     const btnProceed = document.getElementById("btnProceed");
@@ -1519,7 +1763,8 @@
     document.querySelectorAll(".btn-select-plan").forEach(button => {
       button.addEventListener("click", () => {
         const plan = button.dataset.plan;
-        planSelect.value = plan;
+        selectedPlan = plan;
+        if (planSelect) planSelect.value = plan;
         document.getElementById("signup").scrollIntoView({ behavior: "smooth" });
         showToast(`Selected ${plan.toUpperCase()} plan. Complete the form to start.`);
       });
@@ -1562,12 +1807,39 @@
       }, 3000);
     }
 
+    async function postJson(url, body, extraHeaders = {}) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...extraHeaders },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "Request failed");
+      }
+      return data;
+    }
+
+    function persistSession(payload) {
+      const tenant = payload.tenant || payload.data || {};
+      const tenantId = payload.tenantId || tenant.id;
+      if (!payload.token || !tenantId) {
+        throw new Error("Registration completed without a usable session");
+      }
+      localStorage.setItem("churchos.token", payload.token);
+      localStorage.setItem("churchos.tenantId", tenantId);
+      localStorage.setItem("churchos.subdomain", tenant.subdomain || "");
+      localStorage.setItem("churchos.tenantName", tenant.name || "");
+      localStorage.setItem("churchos.unifiedDashboard.session.v2", "active");
+    }
+
     // Parse URL params for plan selection on start
     window.addEventListener("DOMContentLoaded", () => {
       const params = new URLSearchParams(window.location.search);
       const plan = params.get("plan");
       if (plan && ["starter", "growth", "pro", "enterprise"].includes(plan.toLowerCase())) {
-        planSelect.value = plan.toLowerCase();
+        selectedPlan = plan.toLowerCase();
+        if (planSelect) planSelect.value = selectedPlan;
         document.getElementById("signup").scrollIntoView({ behavior: "smooth" });
       }
     });
@@ -1575,114 +1847,68 @@
     // Handle Registration Submission
     signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = churchNameInput.value.trim();
-      const ownerName = document.getElementById("ownerName").value.trim();
-      const ownerEmail = document.getElementById("ownerEmail").value.trim();
-      const ownerPassword = document.getElementById("password").value;
-      const subdomain = subdomainInput.value.trim();
-      const plan = planSelect.value;
-      const country = document.getElementById("country").value.trim();
-      const city = document.getElementById("city").value.trim();
-
+      const submitButton = signupForm.querySelector('button[type="submit"]');
       try {
         showToast("Provisioning church workspace...", false);
-        
-        // 1. Create tenant and owner
-        const regRes = await fetch('/api/auth/register-tenant', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, subdomain, ownerName, ownerEmail, ownerPassword, plan, country, city })
-        });
-        const regData = await regRes.json();
+        if (submitButton) submitButton.disabled = true;
 
-        if (!regRes.ok) {
-          throw new Error(regData.error || "Workspace creation failed");
+        const password = document.getElementById("password").value;
+        const repeatPassword = document.getElementById("repeatPassword").value;
+        if (password !== repeatPassword) {
+          throw new Error("Passwords do not match");
         }
 
-        const tenant = regData.data;
-
-        // 2. Perform direct login to obtain token
-        showToast("Workspace created. Logging in...", false);
-        const loginRes = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-tenant-id': tenant.id
-          },
-          body: JSON.stringify({ email: ownerEmail, password: ownerPassword })
+        const data = await postJson("/api/auth/register-tenant", {
+          name: churchNameInput.value.trim(),
+          ownerName: document.getElementById("ownerName").value.trim(),
+          ownerEmail: document.getElementById("ownerEmail").value.trim(),
+          ownerPassword: password,
+          subdomain: subdomainInput.value.trim(),
+          country: document.getElementById("country").value,
+          city: document.getElementById("city").value.trim(),
+          plan: planSelect?.value || selectedPlan
         });
-        const loginData = await loginRes.json();
 
-        if (!loginRes.ok) {
-          throw new Error(loginData.error || "Onboarding authorization failed");
-        }
-
-        // 3. Save token & tenant credentials
-        localStorage.setItem("churchos.token", loginData.token);
-        localStorage.setItem("churchos.tenantId", tenant.id);
-        localStorage.setItem("churchos.subdomain", tenant.subdomain);
-
+        persistSession(data);
         showToast("Success! Redirecting to onboarding...", false);
         setTimeout(() => {
           window.location.href = "/onboarding";
-        }, 1000);
+        }, 700);
 
       } catch (err) {
         showToast(err.message || "An unexpected error occurred", true);
+      } finally {
+        if (submitButton) submitButton.disabled = false;
       }
     });
 
     // Handle Login Submission
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const subdomain = loginSubdomain.value.trim();
-      const email = document.getElementById("loginEmail").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
+      const submitButton = loginForm.querySelector('button[type="submit"]');
       try {
         showToast("Resolving church workspace...", false);
-        
-        // 1. Resolve subdomain to tenant ID
-        const resolveRes = await fetch('/api/public/resolve-subdomain', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ subdomain })
+        if (submitButton) submitButton.disabled = true;
+
+        const resolved = await postJson("/api/public/resolve-subdomain", {
+          subdomain: loginSubdomain.value.trim()
         });
-        const resolveData = await resolveRes.json();
+        const tenant = resolved.data;
+        const data = await postJson("/api/auth/login", {
+          email: document.getElementById("loginEmail").value.trim(),
+          password: document.getElementById("loginPassword").value
+        }, { "x-tenant-id": tenant.id });
 
-        if (!resolveRes.ok) {
-          throw new Error(resolveData.error || "This church workspace does not exist.");
-        }
-
-        const tenantId = resolveData.tenantId;
-
-        // 2. Perform login
-        showToast("Signing in...", false);
-        const loginRes = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-tenant-id': tenantId
-          },
-          body: JSON.stringify({ email, password })
-        });
-        const loginData = await loginRes.json();
-
-        if (!loginRes.ok) {
-          throw new Error(loginData.error || "Invalid credentials.");
-        }
-
-        // 3. Save token & tenant credentials
-        localStorage.setItem("churchos.token", loginData.token);
-        localStorage.setItem("churchos.tenantId", tenantId);
-        localStorage.setItem("churchos.subdomain", subdomain);
-
-        showToast("Login successful! Redirecting to dashboard...", false);
+        persistSession({ ...data, tenant, tenantId: tenant.id });
+        showToast("Success! Redirecting to dashboard...", false);
         setTimeout(() => {
           window.location.href = "/admin";
-        }, 1000);
+        }, 700);
+
       } catch (err) {
-        showToast(err.message || "Login failed: " + err.message, true);
+        showToast(err.message || "An unexpected error occurred", true);
+      } finally {
+        if (submitButton) submitButton.disabled = false;
       }
     });
   </script>

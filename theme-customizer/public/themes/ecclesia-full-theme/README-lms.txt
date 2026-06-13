@@ -1,0 +1,1 @@
+Open courses-archive.html, course-main.html, and lesson-single.html. This package has the three LMS templates requested.

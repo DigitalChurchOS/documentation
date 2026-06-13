@@ -6064,7 +6064,7 @@ body.customizer-open { overflow: hidden; }
                           <tr>
                             <td><strong style="color:var(--accent);">CNAME</strong></td>
                             <td><code>www</code></td>
-                            <td><code>cname.churchos.com</code></td>
+                            <td><code>churched.online</code></td>
                             <td>Automatic / 1 Hour</td>
                           </tr>
                         </tbody>
@@ -14284,6 +14284,12 @@ body.customizer-open { overflow: hidden; }
         settings: { ...defaultData.settings, ...(parsed.settings || {}) },
         tenantEntitlements: { ...(parsed.tenantEntitlements || {}) }
       };
+      const sessionTenantId = localStorage.getItem('churchos.tenantId');
+      const sessionTenantName = localStorage.getItem('churchos.tenantName');
+      const sessionSubdomain = localStorage.getItem('churchos.subdomain');
+      if (sessionTenantId) merged.tenant.id = sessionTenantId;
+      if (sessionTenantName) merged.tenant.name = sessionTenantName;
+      if (sessionSubdomain) merged.tenant.subdomain = sessionSubdomain;
       for (const tenant of merged.tenants) {
         if (!merged.tenantEntitlements[tenant.id]) {
           merged.tenantEntitlements[tenant.id] = JSON.parse(JSON.stringify(merged.entitlements));
@@ -14360,20 +14366,44 @@ body.customizer-open { overflow: hidden; }
         bootstrapUserRoles();
       });
 
-      document.getElementById('signupForm').addEventListener('submit', (event) => {
+      document.getElementById('signupForm').addEventListener('submit', async (event) => {
         event.preventDefault();
         const churchName = document.getElementById('regChurchName').value;
         const email = document.getElementById('regEmail').value;
-        
-        state.tenant.name = churchName;
-        state.user.email = email;
-        state.user.name = email.split('@')[0];
-        
-        localStorage.setItem(SESSION_KEY, 'active');
-        saveState('Registered new church context');
-        mountApp();
-        bootstrapCms();
-        bootstrapUserRoles();
+        const password = document.getElementById('regPassword').value;
+
+        try {
+          const res = await fetch('/api/auth/register-tenant', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: churchName,
+              ownerName: email.split('@')[0],
+              ownerEmail: email,
+              ownerPassword: password,
+              plan: 'growth'
+            })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+          state.tenant.id = data.tenantId || data.tenant?.id || state.tenant.id;
+          state.tenant.name = data.tenant?.name || churchName;
+          state.tenant.subdomain = data.tenant?.subdomain || '';
+          state.user.email = email;
+          state.user.name = email.split('@')[0];
+
+          localStorage.setItem('churchos.tenantId', state.tenant.id);
+          localStorage.setItem('churchos.token', data.token);
+          localStorage.setItem('churchos.subdomain', state.tenant.subdomain || '');
+          localStorage.setItem(SESSION_KEY, 'active');
+          saveState('Registered new church context');
+          mountApp();
+          bootstrapCms();
+          bootstrapUserRoles();
+        } catch (err) {
+          alert(err.message || 'Unable to create church account');
+        }
       });
 
       window.toggleSignup = function(showSignup) {
@@ -33650,6 +33680,14 @@ function renderOutreachTab(tab) {
 
 
 init();
+  </script>
+  <script>
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      const devBadge = document.createElement('div');
+      devBadge.style.cssText = 'position:fixed;bottom:12px;right:12px;z-index:999999;border-radius:99px;background:#000;color:#fff;padding:4px 12px;font-size:11px;font-weight:bold;font-family:sans-serif;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.2);';
+      devBadge.innerHTML = 'DEV &middot; local-dev &middot; local';
+      document.body.appendChild(devBadge);
+    }
   </script>
 </body>
 </html>

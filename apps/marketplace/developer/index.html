@@ -921,6 +921,7 @@
     };
 
     const body = document.body;
+    let developerOverview = null;
 
     function showToast(msg, status = "success") {
       const toast = document.getElementById("toast");
@@ -1058,6 +1059,13 @@
     }
 
     async function registerDeveloperProfile() {
+      const existing = await apiRequest('GET', '/api/marketplace/developer/profile');
+      if (existing?.id) {
+        showToast('Developer profile is already registered for this user.', 'warning');
+        loadDeveloperOverview();
+        return;
+      }
+
       const companyName = prompt('Enter Company/Developer Name:');
       if (!companyName) return;
       const website = prompt('Enter Website URL (optional):');
@@ -1072,16 +1080,19 @@
     }
 
     async function loadDeveloperOverview() {
-      const submissions = await apiRequest('GET', '/api/marketplace/submissions') || [];
-      const payouts = await apiRequest('GET', '/api/marketplace/developer/payouts') || { totalSales: 0, totalDeveloperShare: 0, purchases: [] };
+      developerOverview = await apiRequest('GET', '/api/marketplace/developer/overview');
+      const submissions = developerOverview?.submissions || [];
+      const payouts = developerOverview?.payouts || { totalSales: 0, totalDeveloperShare: 0, totalPlatformShare: 0, purchases: [] };
+      const sandboxes = developerOverview?.sandboxes || [];
       
       document.getElementById('statsPackagesCount').textContent = submissions.length;
-      document.getElementById('statsSalesCount').textContent = `$${payouts.totalSales?.toFixed(2) || '0.00'}`;
-      document.getElementById('statsPayoutDueText').textContent = `$${payouts.totalDeveloperShare?.toFixed(2) || '0.00'}`;
+      document.getElementById('statsSalesCount').textContent = `$${(payouts.totalSales || 0).toFixed(2)}`;
+      document.getElementById('statsPayoutDueText').textContent = `$${(payouts.totalDeveloperShare || 0).toFixed(2)}`;
+      document.getElementById('statsSandboxCount').textContent = sandboxes.length;
 
       const infoDiv = document.getElementById('devProfileInfo');
-      if (submissions.length > 0 && submissions[0].asset?.developer) {
-        const dev = submissions[0].asset.developer;
+      if (developerOverview?.profile) {
+        const dev = developerOverview.profile;
         infoDiv.innerHTML = `
           <div style="margin-bottom:8px;"><strong>Company Name:</strong> ${dev.companyName}</div>
           <div style="margin-bottom:8px;"><strong>Website:</strong> <a href="${dev.website || '#'}" target="_blank" style="color:var(--accent); text-decoration:none;">${dev.website || '—'}</a></div>
@@ -1094,7 +1105,8 @@
     }
 
     async function loadDeveloperSubmissions() {
-      const submissions = await apiRequest('GET', '/api/marketplace/submissions') || [];
+      developerOverview = developerOverview || await apiRequest('GET', '/api/marketplace/developer/overview');
+      const submissions = developerOverview?.submissions || [];
       const listRoot = document.getElementById('packagesList');
       
       if (submissions.length === 0) {
@@ -1119,6 +1131,8 @@
 
     async function provisionSandbox() {
       showToast('Provisioning sandbox workspace...');
+      const profile = await ensureDeveloperProfile();
+      if (!profile?.id) return;
       const res = await apiRequest('POST', '/api/marketplace/developer/sandbox');
       if (res) {
         showToast('Sandbox workspace provisioned!', 'success');
@@ -1127,21 +1141,32 @@
     }
 
     async function loadSandboxes() {
+      developerOverview = developerOverview || await apiRequest('GET', '/api/marketplace/developer/overview');
+      const sandboxes = developerOverview?.profile
+        ? await apiRequest('GET', '/api/marketplace/developer/sandboxes') || developerOverview?.sandboxes || []
+        : developerOverview?.sandboxes || [];
       const listRoot = document.getElementById('sandboxList');
-      
-      listRoot.innerHTML = `
-        <tr>
-          <td><strong>Sandbox Dev Workspace</strong></td>
-          <td><code>sandbox-dev-acme1</code></td>
-          <td>30 days limit</td>
-          <td><span class="badge success">Active</span></td>
-        </tr>
-      `;
-      document.getElementById('statsSandboxCount').textContent = 1;
+
+      if (sandboxes.length === 0) {
+        listRoot.innerHTML = `<tr><td colspan="4"><div class="empty-state">No sandboxes active.</div></td></tr>`;
+      } else {
+        listRoot.innerHTML = sandboxes.map(s => `
+          <tr>
+            <td><strong>${s.tenant?.name || 'Sandbox Dev Workspace'}</strong><br><small style="color:var(--muted)">${s.tenantId}</small></td>
+            <td><code>${s.tenant?.subdomainHost || `${s.tenant?.subdomain}.churched.online`}</code></td>
+            <td>${new Date(s.expiresAt).toLocaleDateString()}</td>
+            <td><span class="badge success">${s.tenant?.status || 'active'}</span></td>
+          </tr>
+        `).join('');
+      }
+      document.getElementById('statsSandboxCount').textContent = sandboxes.length;
     }
 
     async function loadPayoutReports() {
-      const payouts = await apiRequest('GET', '/api/marketplace/developer/payouts') || { totalSales: 0, totalDeveloperShare: 0, purchases: [] };
+      developerOverview = developerOverview || await apiRequest('GET', '/api/marketplace/developer/overview');
+      const payouts = developerOverview?.profile
+        ? await apiRequest('GET', '/api/marketplace/developer/payouts') || { totalSales: 0, totalDeveloperShare: 0, purchases: [] }
+        : developerOverview?.payouts || { totalSales: 0, totalDeveloperShare: 0, purchases: [] };
       document.getElementById('totalRevenueText').textContent = `Total Share: $${payouts.totalDeveloperShare?.toFixed(2) || '0.00'}`;
 
       const listRoot = document.getElementById('payoutsList');
@@ -1162,7 +1187,10 @@
     }
 
     async function loadDeveloperLogs() {
-      const logs = await apiRequest('GET', '/api/marketplace/developer/logs') || [];
+      developerOverview = developerOverview || await apiRequest('GET', '/api/marketplace/developer/overview');
+      const logs = developerOverview?.profile
+        ? await apiRequest('GET', '/api/marketplace/developer/logs') || developerOverview?.logs || []
+        : developerOverview?.logs || [];
       const listRoot = document.getElementById('logsList');
       if (logs.length === 0) {
         listRoot.innerHTML = `<tr><td colspan="6"><div class="empty-state">No activity logs found.</div></td></tr>`;
@@ -1173,12 +1201,29 @@
         <tr>
           <td><code>${l.assetId}</code></td>
           <td><code>v${l.version}</code></td>
-          <td><span class="badge success" style="text-transform: uppercase;">${l.action}</span></td>
-          <td>Developer Staff</td>
+          <td><span class="badge success" style="text-transform: uppercase;">${l.action || l.actionType}</span></td>
+          <td>${l.userId || 'Developer Staff'}</td>
           <td>${l.details || '—'}</td>
           <td>${new Date(l.createdAt).toLocaleString()}</td>
         </tr>
       `).join('');
+    }
+
+    async function ensureDeveloperProfile() {
+      const current = await apiRequest('GET', '/api/marketplace/developer/profile');
+      if (current?.id) return current;
+
+      const tenantName = localStorage.getItem('churchos.tenantName') || 'ChurchOS Developer';
+      const ownerEmail = localStorage.getItem('churchos.userEmail') || 'developer@churched.online';
+      const profile = await apiRequest('POST', '/api/marketplace/developer/register', {
+        companyName: `${tenantName} Studio`,
+        website: localStorage.getItem('churchos.subdomain')
+          ? `https://${localStorage.getItem('churchos.subdomain')}.churched.online`
+          : '',
+        payoutEmail: ownerEmail
+      });
+      if (profile) developerOverview = await apiRequest('GET', '/api/marketplace/developer/overview');
+      return profile;
     }
 
     async function handlePublishSubmit(event) {
@@ -1200,6 +1245,8 @@
       }
 
       const body = { type, name, description, pricingType, price, assetConfig };
+      const profile = await ensureDeveloperProfile();
+      if (!profile?.id) return;
 
       const asset = await apiRequest('POST', '/api/marketplace/assets', body);
       if (!asset) return;
@@ -1212,6 +1259,7 @@
         showToast('Package and version submitted for review!', 'success');
         document.getElementById('publishForm').reset();
         updateConfigDefault();
+        developerOverview = null;
         switchView('packages');
       }
     }

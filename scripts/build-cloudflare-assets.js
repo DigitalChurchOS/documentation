@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const root = path.resolve(__dirname, '..');
 const outputDir = path.join(root, 'dist', 'public');
@@ -11,6 +12,11 @@ const marketplaceFrontend = path.join(appsRoot, 'marketplace', 'frontend');
 const marketplaceDeveloper = path.join(appsRoot, 'marketplace', 'developer');
 const webPublic = path.join(appsRoot, 'web', 'public');
 const ecclesiaFullTheme = path.join(root, 'ecclesia-full-theme');
+const themeCustomizerRoot = path.join(root, 'theme-customizer');
+const themeCustomizerDist = path.join(themeCustomizerRoot, 'dist');
+
+console.log('Building Theme Customizer React App...');
+execSync('npm run build', { cwd: themeCustomizerRoot, stdio: 'inherit' });
 
 function copyFile(source, target) {
   if (!fs.existsSync(source)) return;
@@ -60,9 +66,11 @@ copyFile(path.join(marketplaceDeveloper, 'index.html'), path.join(outputDir, 'de
 copyDirectory(ecclesiaFullTheme, path.join(outputDir, 'themes', 'ecclesia'));
 copyFile(path.join(ecclesiaFullTheme, 'index.html'), path.join(outputDir, 'themes', 'ecclesia', 'index.html'));
 
+// 6.5 Theme Customizer under '/customizer'
+copyDirectory(themeCustomizerDist, path.join(outputDir, 'customizer'));
+
 // 7. Legacy / compatibility mappings
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'admin.html'));
-
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'tenant-dashboard', 'index.html'));
 copyFile(path.join(superAdminPublic, 'index.html'), path.join(outputDir, 'super-admin', 'index.html'));
 copyFile(path.join(churchFrontendPublic, 'index.html'), path.join(outputDir, 'churchos.html'));
@@ -73,5 +81,5 @@ copyDirectory(marketplaceDeveloper, path.join(outputDir, 'marketplace', 'develop
 copyFile(path.join(root, 'index.html'), path.join(outputDir, 'legacy-index.html'));
 copyFile(path.join(root, 'dark.png'), path.join(outputDir, 'dark.png'));
 copyFile(path.join(root, 'light.png'), path.join(outputDir, 'light.png'));
-console.log(`Cloudflare assets prepared in ${path.relative(root, outputDir)}`);
 
+console.log(`Cloudflare assets prepared in ${path.relative(root, outputDir)}`);

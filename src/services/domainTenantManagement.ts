@@ -6,12 +6,13 @@ const VALID_STATUSES = new Set(['active', 'inactive']);
 const VALID_VISIBILITIES = new Set(['public', 'private']);
 const VALID_BILLING_PLANS = new Set(['free', 'premium', 'platform']);
 const VALID_PROVIDER_MODES = new Set(['bring_your_own', 'platform_managed', 'marketplace']);
+const PUBLIC_DOMAIN_SUFFIX = 'churched.online';
 
 const DEFAULT_CONFIG = {
   allowCustomDomains: true,
   requireDnsVerification: true,
   enableAutoSsl: true,
-  defaultSubdomainSuffix: 'churchos.com',
+  defaultSubdomainSuffix: PUBLIC_DOMAIN_SUFFIX,
 };
 
 export interface DomainTenantModuleInput {
@@ -54,6 +55,10 @@ function requireNonEmptyString(value: unknown, label: string): string {
     throw new Error(`${label} is required`);
   }
   return value.trim();
+}
+
+function subdomainHost(subdomain: string) {
+  return `${subdomain}.${PUBLIC_DOMAIN_SUFFIX}`;
 }
 
 function assertAllowed(value: string | undefined, allowed: Set<string>, label: string): void {
@@ -287,13 +292,22 @@ export class DomainTenantManagementService {
 
     const defaultBranding = {
       logo: '',
+      darkLogo: '',
       favicon: '',
       timezone: 'UTC',
       accent: '#4f46e5',
       language: 'en',
       description: '',
       phone: '',
-      address: ''
+      address: '',
+      venueAddress: '',
+      isVenueDifferent: false,
+      publicEmail: '',
+      email: '',
+      country: '',
+      city: '',
+      serviceTimes: [],
+      subdomainHost: subdomainHost(tenant.subdomain)
     };
 
     let branding = defaultBranding;
@@ -392,11 +406,14 @@ export class DomainTenantManagementService {
 
     return {
       subdomain: tenant.subdomain,
-      customDomain: tenant.customDomain || primaryWebsite?.domain || null,
+      subdomainHost: subdomainHost(tenant.subdomain),
+      primaryDomain: tenant.customDomain || subdomainHost(tenant.subdomain),
+      customDomain: tenant.customDomain || null,
+      websiteDomain: primaryWebsite?.domain || subdomainHost(tenant.subdomain),
       dnsStatus,
       instructions: {
         ip: '76.76.21.21',
-        cname: 'cname.churchos.com'
+        cname: PUBLIC_DOMAIN_SUFFIX
       }
     };
   }
@@ -431,7 +448,7 @@ export class DomainTenantManagementService {
     if (primaryWebsite) {
       await prisma.website.update({
         where: { id: primaryWebsite.id },
-        data: { domain: domainName }
+        data: { domain: domainName || subdomainHost(updatedTenant.subdomain) }
       });
     }
 
@@ -439,6 +456,7 @@ export class DomainTenantManagementService {
 
     return {
       subdomain: updatedTenant.subdomain,
+      subdomainHost: subdomainHost(updatedTenant.subdomain),
       customDomain: updatedTenant.customDomain
     };
   }

@@ -3,12 +3,33 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import prisma from '../lib/prisma';
+import { TenantProvisioningService } from '../services/tenantProvisioning';
 
 if (!process.env.JWT_SECRET) {
   throw new Error('FATAL: JWT_SECRET environment variable is not defined.');
 }
 const JWT_SECRET = process.env.JWT_SECRET;
 const router = Router();
+
+router.post('/register-tenant', async (req: Request, res: Response) => {
+  try {
+    const result = await TenantProvisioningService.registerTenant(req.body || {});
+    res.status(201).json({
+      token: result.token,
+      tenantId: result.tenant?.id,
+      tenant: result.tenant,
+      user: result.user,
+      website: result.website,
+      plan: result.plan,
+    });
+  } catch (err: any) {
+    console.error('Register tenant error:', err);
+    res.status(err?.status || 400).json({
+      error: err?.message || 'Unable to register church workspace',
+      details: err?.details || null,
+    });
+  }
+});
 
 // ─────────────────────────────────────────────────────────────
 // POST /api/auth/register
