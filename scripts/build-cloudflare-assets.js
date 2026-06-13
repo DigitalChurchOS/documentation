@@ -14,9 +14,36 @@ const webPublic = path.join(appsRoot, 'web', 'public');
 const ecclesiaFullTheme = path.join(root, 'ecclesia-full-theme');
 const themeCustomizerRoot = path.join(root, 'theme-customizer');
 const themeCustomizerDist = path.join(themeCustomizerRoot, 'dist');
+const buildThemeCustomizer = /^(1|true|yes)$/i.test(process.env.BUILD_THEME_CUSTOMIZER || '');
 
-console.log('Building Theme Customizer React App...');
-execSync('npm run build', { cwd: themeCustomizerRoot, stdio: 'inherit' });
+function ensureThemeCustomizerDependencies() {
+  const viteBin = path.join(
+    themeCustomizerRoot,
+    'node_modules',
+    '.bin',
+    process.platform === 'win32' ? 'vite.cmd' : 'vite'
+  );
+
+  if (fs.existsSync(viteBin)) return;
+
+  console.log('Installing Theme Customizer dependencies...');
+  execSync('npm ci --include=dev --progress=false', {
+    cwd: themeCustomizerRoot,
+    stdio: 'inherit',
+    env: {
+      ...process.env,
+      PUPPETEER_SKIP_DOWNLOAD: process.env.PUPPETEER_SKIP_DOWNLOAD || 'true'
+    }
+  });
+}
+
+if (buildThemeCustomizer) {
+  console.log('Building Theme Customizer React App...');
+  ensureThemeCustomizerDependencies();
+  execSync('npm run build', { cwd: themeCustomizerRoot, stdio: 'inherit' });
+} else {
+  console.log('Skipping Theme Customizer build. Set BUILD_THEME_CUSTOMIZER=true to include /customizer assets.');
+}
 
 function copyFile(source, target) {
   if (!fs.existsSync(source)) return;
@@ -67,7 +94,9 @@ copyDirectory(ecclesiaFullTheme, path.join(outputDir, 'themes', 'ecclesia'));
 copyFile(path.join(ecclesiaFullTheme, 'index.html'), path.join(outputDir, 'themes', 'ecclesia', 'index.html'));
 
 // 6.5 Theme Customizer under '/customizer'
-copyDirectory(themeCustomizerDist, path.join(outputDir, 'customizer'));
+if (buildThemeCustomizer) {
+  copyDirectory(themeCustomizerDist, path.join(outputDir, 'customizer'));
+}
 
 // 7. Legacy / compatibility mappings
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'admin.html'));
