@@ -1,11 +1,22 @@
 import React, { useRef, useState } from "react";
-import { Settings, FileUp, Sparkles, CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react";
+import { Settings, FileUp, Sparkles, CheckCircle2, AlertTriangle, ShieldCheck, Palette } from "lucide-react";
+
+export interface ThemeInfo {
+  id: string;
+  name: string;
+  description: string;
+  folderName: string;
+  thumbnail: string;
+}
 
 interface SettingsPanelProps {
   htmlContent: string;
   onImport: (content: string, filename: string) => void;
   onOptimize: () => void;
   optimizationReport: { count: number; details: string[] } | null;
+  currentTheme: string;
+  onSelectTheme: (folderName: string) => void;
+  themes: ThemeInfo[];
 }
 
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
@@ -13,6 +24,9 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   onImport,
   onOptimize,
   optimizationReport,
+  currentTheme,
+  onSelectTheme,
+  themes,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importedName, setImportedName] = useState<string>("default-theme-page.html");
@@ -65,6 +79,40 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
           <Settings size={20} />
         </div>
         <h3>Settings</h3>
+      </div>
+
+      <div className="edit-box">
+        <h4 style={{ display: "flex", alignItems: "center", gap: "6px", textTransform: "uppercase" }}>
+          <Palette size={14} style={{ color: "var(--primary)" }} /> Active Theme
+        </h4>
+        <p>Select a native church theme from the catalog to load its pages, customize design system tokens, and publish.</p>
+        
+        <div className="themes-grid" style={{ marginBottom: "10px" }}>
+          {themes.map((theme) => (
+            <div
+              key={theme.id}
+              className={`theme-card ${currentTheme === theme.folderName ? "active" : ""}`}
+              onClick={() => onSelectTheme(theme.folderName)}
+            >
+              <div className="theme-thumbnail-wrapper">
+                <img
+                  src={theme.thumbnail}
+                  alt={`${theme.name} Thumbnail`}
+                  className="theme-thumbnail"
+                />
+              </div>
+              <div className="theme-info">
+                <div className="theme-name">
+                  <span>{theme.name}</span>
+                  {currentTheme === theme.folderName && (
+                    <span className="theme-active-tag">Active</span>
+                  )}
+                </div>
+                <div className="theme-desc">{theme.description}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="edit-box">

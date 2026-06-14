@@ -33,13 +33,16 @@ const advancedRailItems = [
 ];
 
 const presets = {
-  horizon: { preset: "Horizon", personality: "Modern", typography: "Modern Sans", typeSize: "Balanced", family: "Ocean", style: "Rich", shape: "Soft", visual: "Elevated", density: "Comfortable", motion: "Gentle", atmosphere: "Light" },
+  horizon: { preset: "Horizon", personality: "Modern", typography: "Modern Sans", typeSize: "Balanced", family: "Blue", style: "Rich", shape: "Soft", visual: "Elevated", density: "Comfortable", motion: "Gentle", atmosphere: "Light" },
   aura: { preset: "Aura", personality: "Premium", typography: "Grace Serif", typeSize: "Heroic", family: "Orchid", style: "Elegant", shape: "Soft", visual: "Glass", density: "Spacious", motion: "Gentle", atmosphere: "Elegant" },
   summit: { preset: "Summit", personality: "Bold", typography: "Bold", typeSize: "Heroic", family: "Red", style: "Vibrant", shape: "Sharp", visual: "Elevated", density: "Comfortable", motion: "Dynamic", atmosphere: "Celebration" },
   canvas: { preset: "Canvas", personality: "Minimal", typography: "Editorial", typeSize: "Reader", family: "Neutral", style: "Soft", shape: "Soft", visual: "Flat", density: "Spacious", motion: "None", atmosphere: "Light" },
   ember: { preset: "Ember", personality: "Modern", typography: "Grace Serif", typeSize: "Balanced", family: "Orange", style: "Rich", shape: "Round", visual: "Soft", density: "Comfortable", motion: "Gentle", atmosphere: "Warm" },
   pulse: { preset: "Pulse", personality: "Youth", typography: "Bold", typeSize: "Heroic", family: "Rose", style: "Vibrant", shape: "Round", visual: "Glass", density: "Comfortable", motion: "Dynamic", atmosphere: "Celebration" },
-  eclipse: { preset: "Eclipse", personality: "Premium", typography: "Editorial", typeSize: "Heroic", family: "Purple", style: "Rich", shape: "Soft", visual: "Immersive", density: "Spacious", motion: "Cinematic", atmosphere: "Worship" },
+  eclipse: { preset: "Eclipse", personality: "Premium", typography: "Editorial", typeSize: "Heroic", family: "Purple", style: "Rich", shape: "Soft", visual: "Immersive", density: "Spacious", motion: "Cinematic", atmosphere: "Light" },
+  forest: { preset: "Forest", personality: "Modern", typography: "Modern Sans", typeSize: "Balanced", family: "Green", style: "Rich", shape: "Soft", visual: "Elevated", density: "Comfortable", motion: "Gentle", atmosphere: "Light" },
+  sunset: { preset: "Sunset", personality: "Bold", typography: "Bold", typeSize: "Heroic", family: "Gold", style: "Vibrant", shape: "Sharp", visual: "Elevated", density: "Comfortable", motion: "Dynamic", atmosphere: "Celebration" },
+  ocean: { preset: "Ocean", personality: "Premium", typography: "Editorial", typeSize: "Heroic", family: "Ocean", style: "Rich", shape: "Soft", visual: "Glass", density: "Spacious", motion: "Cinematic", atmosphere: "Light" },
 };
 
 export const CustomizerPanel: React.FC<CustomizerPanelProps> = ({ state, onChange }) => {
@@ -62,7 +65,7 @@ export const CustomizerPanel: React.FC<CustomizerPanelProps> = ({ state, onChang
           className={`mode-tab ${customizerMode === "simple" ? "active" : ""}`}
           onClick={() => setCustomizerMode("simple")}
         >
-          Simple
+          Presets
         </button>
         <button
           className={`mode-tab ${customizerMode === "advanced" ? "active" : ""}`}
@@ -99,17 +102,25 @@ export const CustomizerPanel: React.FC<CustomizerPanelProps> = ({ state, onChang
 
         <div className="panel">
           {customizerMode === "simple" ? (
-            <div className="choice-grid">
+            <div className="choice-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px' }}>
               {Object.entries(presets).map(([key, data]) => (
                 <button
                   key={key}
                   className={`preset-card ${state.preset.toLowerCase() === data.preset.toLowerCase() ? "active" : ""}`}
                   onClick={() => applyPreset(key as keyof typeof presets)}
+                  style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left', padding: '10px' }}
                 >
-                  <strong>{data.preset}</strong>
-                  <span>
-                    {data.personality} · {data.family} · {data.visual} · {data.atmosphere}
-                  </span>
+                  <img 
+                    src={`${import.meta.env.BASE_URL}images/presets/${key}.png`} 
+                    alt={data.preset} 
+                    style={{ width: '60px', height: '60px', borderRadius: '6px', objectFit: 'cover', flexShrink: 0 }}
+                  />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '14px' }}>{data.preset}</strong>
+                    <span style={{ fontSize: '11px', color: 'var(--muted)', display: 'block', marginTop: '2px' }}>
+                      {data.personality} · {data.family} · {data.visual} · {data.atmosphere}
+                    </span>
+                  </div>
                 </button>
               ))}
             </div>

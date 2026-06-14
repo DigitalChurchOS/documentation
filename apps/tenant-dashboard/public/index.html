@@ -4396,6 +4396,16 @@ code,
 /* Theme customizer */
 body.customizer-open { overflow: hidden; }
 .customizer { position: fixed; inset: 0; z-index: 80; background: #f5f3fb; color: var(--platform-ink); }
+.customizer.new-customizer-active .customizer-topbar { display: none !important; }
+.customizer.new-customizer-active .website-builder-sidebar { display: none !important; }
+.customizer.new-customizer-active .customizer-body { grid-template-columns: 1fr !important; height: 100% !important; }
+.customizer.new-customizer-active .preview-stage { padding: 0 !important; height: 100% !important; }
+.customizer.new-customizer-active .preview-canvas { max-width: 100% !important; height: 100% !important; padding: 0 !important; }
+.customizer.new-customizer-active .preview-frame { max-width: 100% !important; height: 100% !important; border: none !important; border-radius: 0 !important; }
+.customizer.new-customizer-active .device-status-bar { display: none !important; }
+.customizer.new-customizer-active #customizerIframe { display: block !important; height: 100% !important; width: 100% !important; }
+.customizer.new-customizer-active #churchSite { display: none !important; }
+.customizer.new-customizer-active .customizer-shell { grid-template-rows: 1fr !important; height: 100% !important; }
 .customizer-shell { height: 100%; display: grid; grid-template-rows: 62px 1fr; }
 .customizer.topbar-hidden .customizer-shell { grid-template-rows: 0 1fr; }
 .customizer-topbar {
@@ -13306,7 +13316,7 @@ body.customizer-open { overflow: hidden; }
           <button class="back-btn" id="closeCustomizer" type="button" title="Back to Themes"><i data-lucide="arrow-left"></i></button>
           <div class="draft-dot"></div>
           <div class="customizer-title">
-            <h2>Website Builder<span id="customizerThemeName" style="display:none;">Christo Theme</span></h2>
+            <h2>Theme Customizer<span id="customizerThemeName" style="display:none;">Christo Theme</span></h2>
             <p>Design, pages, widgets, navigation, SEO, and publishing in one visual workspace.</p>
           </div>
         </div>
@@ -18030,67 +18040,17 @@ body.customizer-open { overflow: hidden; }
       // Customize Theme button
       const customizeBtn = document.getElementById('customizeBtn');
       if (customizeBtn) {
-        customizeBtn.onclick = async () => {
-          if (!cmsState.pages.length) {
-            await loadAllCmsData();
+        customizeBtn.onclick = () => {
+          const themeId = themeEngineState.activeThemeId || '';
+          const websiteId = cmsState.activeWebsiteId || '';
+          let pageId = websiteBuilderState.activePageId || '';
+          
+          if (!pageId && cmsState.pages && cmsState.pages.length > 0) {
+            const homePage = cmsState.pages.find(p => p.slug === '' || p.isHome);
+            pageId = homePage ? homePage.id : cmsState.pages[0].id;
           }
-          if (!themeEngineState.pageTemplates.length && typeof bootstrapThemeEngine === 'function') {
-            await bootstrapThemeEngine();
-          }
-          const globalRes = await cmsApiRequest('GET', '/api/cms/global-content');
-          if (globalRes && globalRes.data) {
-            websiteBuilderState.globalContent = normalizeWebsiteBuilderGlobalContent(globalRes.data.content || globalRes.data);
-          }
-          const activeTheme = themeEngineState.themes.find(t => t.id === themeEngineState.activeThemeId);
-          if (activeTheme) {
-            document.getElementById('customizerThemeName').textContent = activeTheme.name;
-            let settings = {};
-            try {
-              settings = typeof activeTheme.settings === 'string' ? JSON.parse(activeTheme.settings) : (activeTheme.settings || {});
-            } catch(e) {}
-            const designSettings = settings.design || {};
-            const componentSettings = settings.components || {};
-            const layoutSettings = settings.layout || {};
-            const headerSettings = settings.header || {};
-            const footerSettings = settings.footer || {};
-            const customizerDefaults = settings.customizer?.defaults || {};
-            const typographyPreset = settings.typographyPreset || (typeof settings.typography === 'string' ? settings.typography : '');
-            customizerState.colorMode = designSettings.colorMode || customizerDefaults.mode || settings.colorMode || 'light';
-            customizerState.accentPreset = designSettings.accentPreset || customizerDefaults.accent || settings.accentPreset || 'orange';
-            customizerState.colorPalette = designSettings.colorPalette || settings.colorPalette || 'warm';
-            customizerState.typography = designSettings.typographyPreset || customizerDefaults.font || typographyPreset || 'sans';
-            customizerState.fontPairing = designSettings.fontPairing || settings.fontPairing || 'outfitInter';
-            customizerState.edgeStyle = componentSettings.edgeStyle || customizerDefaults.radius || settings.edgeStyle || 'smooth';
-            customizerState.cardStyle = componentSettings.cardStyle || settings.cardStyle || 'shadow';
-            customizerState.spacingScale = designSettings.spacingScale || settings.spacingScale || 'comfortable';
-            customizerState.sectionSpacing = designSettings.sectionSpacing || settings.sectionSpacing || 'balanced';
-            customizerState.backgroundStyle = designSettings.backgroundStyle || settings.backgroundStyle || 'softGradient';
-            customizerState.iconStyle = designSettings.iconStyle || settings.iconStyle || 'lucideLine';
-            customizerState.buttonStyle = componentSettings.buttonStyle || settings.buttonStyle || 'solid';
-            customizerState.headerStyle = headerSettings.style || layoutSettings.headerStyle || settings.headerStyle || 'sticky';
-            customizerState.footerStyle = footerSettings.style || layoutSettings.footerStyle || settings.footerStyle || 'expanded';
-            customizerState.pageBodyWidth = layoutSettings.pageBodyWidth || settings.pageBodyWidth || settings.bodyWidth || (customizerDefaults.layout ? 'wide' : 'full');
-            customizerState.animationPreference = designSettings.animationPreference || settings.animationPreference || 'subtle';
-            customizerState.shadowDepth = componentSettings.shadowDepth || settings.shadowDepth || 'soft';
-            customizerState.logoDisplay = headerSettings.logoDisplay || settings.logoDisplay || 'markAndName';
-            customizerState.glassHeader = String(headerSettings.glass ?? customizerDefaults.glass ?? settings.glassHeader ?? true);
-            customizerState.themeGlow = String(designSettings.glow ?? customizerDefaults.glow ?? settings.themeGlow ?? false);
-            customizerState.layoutStretch = String(customizerState.pageBodyWidth === 'wide' || Boolean(designSettings.layout ?? customizerDefaults.layout ?? settings.layoutStretch));
-          }
-          syncCustomizerUI();
-          document.getElementById('customizer').classList.add('active');
-          document.body.classList.add('customizer-open');
-          setStageDevice('desktop');
-          showWebsiteBuilderWorkspace(websiteBuilderState.activeWorkspace || 'design');
-        };
-      }
-
-      // Close customizer button
-      const closeCustomizer = document.getElementById('closeCustomizer');
-      if (closeCustomizer) {
-        closeCustomizer.onclick = () => {
-          document.getElementById('customizer').classList.remove('active');
-          document.body.classList.remove('customizer-open');
+          
+          window.open(`/customizer/?themeId=${themeId}&websiteId=${websiteId}&pageId=${pageId}`, '_blank');
         };
       }
 

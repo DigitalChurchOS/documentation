@@ -93,6 +93,11 @@ app.get(['/', '/index.html'], (_req, res) => {
 });
 
 app.use('/themes/ecclesia', express.static(path.join(__dirname, '..', 'ecclesia-full-theme')));
+app.use('/themes/ecclesia-full-theme', express.static(path.join(__dirname, '..', 'ecclesia-full-theme')));
+app.use('/customizer', express.static(path.join(__dirname, '..', 'theme-customizer', 'dist')));
+app.get(/^\/customizer(?:\/.*)?$/, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'theme-customizer', 'dist', 'index.html'));
+});
 app.use(express.static(path.join(__dirname, '..', 'apps', 'web', 'public')));
 app.use(express.static(path.join(__dirname, '..')));
 

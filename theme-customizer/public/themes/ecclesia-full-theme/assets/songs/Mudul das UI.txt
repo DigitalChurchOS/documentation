@@ -1,0 +1,5 @@
+I want us to rebuild the module UI and UX in the tenant dashboard. I will share with you the baseline UI snapshot. I want you to analyze the .md documentation, and then conceptualize the sleek layout for the administrator sided funtional module's features, then build a set of modern dashboard interfaces that will serve the church owner an effective, easy to use and useful module management hub.
+
+We shall proceed with the Media Module. 
+
+Ensure you follow the attached image layout, but be free to customize the acutual unique pages.

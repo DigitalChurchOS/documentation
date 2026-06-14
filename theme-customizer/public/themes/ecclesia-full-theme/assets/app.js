@@ -117,6 +117,7 @@ function initShell() {
 
   // 3. Clear body and build shell using preserved nodes
   const originalTopNotice = document.querySelector('.top-notice');
+  const originalDrawer = document.getElementById('mobileDrawer');
   
   // Left vertical rail HTML
   let railHtml = `
@@ -171,8 +172,7 @@ function initShell() {
   shellWrapper.appendChild(tempTab.firstElementChild);
 
   document.body.appendChild(shellWrapper);
-
-
+  if (originalDrawer) document.body.appendChild(originalDrawer);
 
   // 4. Bind events
   bindEvents();
@@ -188,29 +188,111 @@ function initShell() {
   document.body.classList.add('shell-loaded');
 }
 
+function getMobileDrawerShift(drawer) {
+  if (!drawer) return '75vw';
+
+  const drawerWidth = drawer.getBoundingClientRect().width;
+  return drawerWidth ? `${Math.round(drawerWidth)}px` : '75vw';
+}
+
+function setMobileDrawerState(isOpen) {
+  const drawer = document.getElementById('mobileDrawer');
+  const menuBtn = document.getElementById('menuBtn');
+  const shellWrapper = document.querySelector('.shell-wrapper');
+
+  document.body.classList.toggle('drawer-open', isOpen);
+  if (drawer) drawer.setAttribute('aria-hidden', String(!isOpen));
+  if (menuBtn) menuBtn.setAttribute('aria-expanded', String(isOpen));
+
+  if (shellWrapper) {
+    const drawerMode = document.body.getAttribute('data-mobile-drawer-mode') || 'reveal';
+    const menuPos = document.body.getAttribute('data-mobile-menu-position') || 'right';
+
+    if (drawerMode === 'overlay') {
+      shellWrapper.style.transform = '';
+      shellWrapper.style.boxShadow = '';
+    } else {
+      const shift = getMobileDrawerShift(drawer);
+      const sign = menuPos === 'left' ? '' : '-';
+      shellWrapper.style.transform = isOpen ? `translateX(${sign}${shift})` : '';
+      shellWrapper.style.boxShadow = isOpen ? '30px 0 80px rgba(15,23,42,.16)' : '';
+    }
+  }
+}
+
+function openMobileDrawer() {
+  setMobileDrawerState(true);
+}
+
+function closeMobileDrawer() {
+  setMobileDrawerState(false);
+}
+
 // Bind mobile drawer menu
 function bindMobileMenu() {
   const menuBtn = document.getElementById('menuBtn');
   const drawer = document.getElementById('mobileDrawer');
-  if (menuBtn && drawer) {
-    // Remove old listeners by cloning and replacing
+  if (!drawer) return;
+
+  drawer.setAttribute('role', 'dialog');
+  drawer.setAttribute('aria-label', 'Mobile navigation');
+  drawer.setAttribute('aria-hidden', String(!document.body.classList.contains('drawer-open')));
+
+  if (menuBtn) {
     const newMenuBtn = menuBtn.cloneNode(true);
     menuBtn.parentNode.replaceChild(newMenuBtn, menuBtn);
+    newMenuBtn.setAttribute('aria-label', 'Open menu');
+    newMenuBtn.setAttribute('aria-controls', 'mobileDrawer');
+    newMenuBtn.setAttribute('aria-expanded', String(document.body.classList.contains('drawer-open')));
 
     newMenuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      drawer.classList.toggle('open');
-      newMenuBtn.innerHTML = drawer.classList.contains('open') ? '<i data-lucide="x"></i>' : '<i data-lucide="menu"></i>';
-      lucide.createIcons();
+      openMobileDrawer();
     });
+  }
 
-    drawer.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        drawer.classList.remove('open');
-        newMenuBtn.innerHTML = '<i data-lucide="menu"></i>';
-        lucide.createIcons();
-      });
+  if (!drawer.dataset.drawerBound) {
+    drawer.addEventListener('click', (event) => {
+      const target = event.target.closest('#closeDrawer, a');
+      if (target) {
+        closeMobileDrawer();
+      }
     });
+    drawer.dataset.drawerBound = 'true';
+  }
+
+  if (!window.__drawerEscBound) {
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMobileDrawer();
+    });
+    window.__drawerEscBound = true;
+  }
+
+  if (!window.__drawerClickOutsideBound) {
+    document.addEventListener('click', (event) => {
+      if (document.body.classList.contains('drawer-open')) {
+        const drawer = document.getElementById('mobileDrawer');
+        const menuBtn = document.getElementById('menuBtn');
+        if (drawer && !drawer.contains(event.target) && (!menuBtn || !menuBtn.contains(event.target))) {
+          closeMobileDrawer();
+        }
+      }
+    });
+    window.__drawerClickOutsideBound = true;
+  }
+
+  if (!window.__drawerResizeBound) {
+    const desktopQuery = window.matchMedia('(min-width: 1051px)');
+    const closeOnDesktop = (event) => {
+      if (event.matches) closeMobileDrawer();
+    };
+
+    if (desktopQuery.addEventListener) {
+      desktopQuery.addEventListener('change', closeOnDesktop);
+    } else if (desktopQuery.addListener) {
+      desktopQuery.addListener(closeOnDesktop);
+    }
+    window.__drawerResizeBound = true;
   }
 }
 
@@ -230,7 +312,7 @@ function renderHeaderCTAs(pageFile) {
   }
   
   // Keep the mobile menu button
-  ctasHtml += `<button class="mobile-menu-btn" id="menuBtn"><i data-lucide="menu"></i></button>`;
+  ctasHtml += `<button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false"><i data-lucide="menu"></i></button>`;
   actionsContainer.innerHTML = ctasHtml;
   
   bindMobileMenu();
@@ -281,6 +363,7 @@ function navigateToPage(url, isBack = false) {
   if (!contentOutlet) return;
 
   // Fade out effect
+  closeMobileDrawer();
   document.body.classList.add('page-loading');
   contentOutlet.style.opacity = '0.3';
 

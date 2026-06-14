@@ -291,8 +291,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
               headerLayout: "logo-left",
               headerEffect: "static",
               mobileMenuPosition: "right",
-              mobileDrawerMode: "slide",
-              mobileHamburgerShape: "round"
+              mobileDrawerMode: "reveal",
+              mobileHamburgerShape: "circle",
+              mobileDrawerButtonsFullWidth: false
             })}
           >
             <RotateCcw size={14} />
@@ -462,6 +463,19 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                   </>
                 )}
               </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginTop: '24px' }}>
+                <div className="field-group" style={{ marginBottom: 0 }}>
+                  <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', paddingBottom: '12px' }}>Solid Themed Background</label>
+                  <button 
+                    className={`tiny-switch ${state.headerSolidThemed ? 'on' : 'off'}`}
+                    onClick={() => onChange({ headerSolidThemed: !state.headerSolidThemed })}
+                    style={{ flexShrink: 0 }}
+                  >
+                    <div className="tiny-knob"></div>
+                  </button>
+                </div>
+              </div>
             </div>
             </>
           )}
@@ -537,11 +551,13 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
               </div>
 
               <div className="edit-box">
-                <h4>Mobile Hamburger Button Shape</h4>
+                <h4>Shape</h4>
                 <div className="choice-grid">
                   {[
-                    { key: "circle", name: "Circle Button", desc: "Hamburger inside a rounded button container" },
                     { key: "plain", name: "Plain Icon", desc: "Hamburger icon without surrounding frame" },
+                    { key: "circle", name: "Circle", desc: "Hamburger inside a circular container" },
+                    { key: "square", name: "Square", desc: "Hamburger inside a square container" },
+                    { key: "rounded", name: "Rounded", desc: "Hamburger inside a rounded container" },
                   ].map((item) => (
                     <button
                       key={item.key}
@@ -559,8 +575,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                 <h4>Drawer Transition Behavior</h4>
                 <div className="choice-grid">
                   {[
-                    { key: "overlay", name: "Overlay Drawer", desc: "Mobile drawer sits on top of page content" },
-                    { key: "push", name: "Push Drawer", desc: "Drawer pushes page content sideways" },
+                    { key: "overlay", name: "Overlay", desc: "Mobile drawer sits on top of page content" },
+                    { key: "push", name: "Push", desc: "Drawer pushes page content sideways" },
+                    { key: "reveal", name: "Reveal", desc: "Page slides away to reveal the drawer underneath" },
                   ].map((item) => (
                     <button
                       key={item.key}
@@ -571,6 +588,22 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                       <span>{item.desc}</span>
                     </button>
                   ))}
+                </div>
+              </div>
+
+              <div className="edit-box" style={{ marginTop: '24px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                  <div>
+                    <h4 style={{ margin: 0 }}>Full Width Actions</h4>
+                    <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginTop: '2px' }}>Make drawer buttons span full width</span>
+                  </div>
+                  <button 
+                    className={`tiny-switch ${state.mobileDrawerButtonsFullWidth ? 'on' : 'off'}`}
+                    onClick={() => onChange({ mobileDrawerButtonsFullWidth: !state.mobileDrawerButtonsFullWidth })}
+                    style={{ flexShrink: 0, cursor: 'pointer' }}
+                  >
+                    <div className="tiny-knob"></div>
+                  </button>
                 </div>
               </div>
             </div>

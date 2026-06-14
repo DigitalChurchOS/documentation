@@ -19,6 +19,7 @@ export interface ThemeState {
   headerShadow: boolean;
   headerShadowIntensity: string;
   headerShadowThemed: boolean;
+  headerSolidThemed: boolean;
   headerBorder: boolean;
   headerBorderSize: string;
   headerBorderColor: string;
@@ -27,6 +28,7 @@ export interface ThemeState {
   mobileMenuPosition: string;
   mobileDrawerMode: string;
   mobileHamburgerShape: string;
+  mobileDrawerButtonsFullWidth: boolean;
 
   footerStyle: string;
   footerWidgets: 'show' | 'hidden';
@@ -73,10 +75,47 @@ export const typeSizeMap: Record<string, { title: string; subtitle: string; body
 };
 
 export function getTokenStyle(state: ThemeState): string {
-  const primary = colorMap[state.family] || "#0284c7";
+  const baseAccent = colorMap[state.family] || "#0284c7";
   const typo = typographyMap[state.typography] || typographyMap["Modern Sans"];
   const size = typeSizeMap[state.typeSize] || typeSizeMap["Balanced"];
   const dark = state.previewMode === "dark";
+
+  // Map secondary/gold glow based on active primary family so they match
+  let secondaryColor = "#fbbf24"; // default gold
+  const fam = (state.family || "").toLowerCase();
+  if (fam.includes("green") || fam.includes("teal")) {
+    secondaryColor = "#4ade80"; // mint/green glow
+  } else if (fam.includes("blue") || fam.includes("ocean") || fam.includes("purple") || fam.includes("orchid")) {
+    secondaryColor = "#38bdf8"; // sky blue glow
+  } else if (fam.includes("neutral") || fam.includes("brown")) {
+    secondaryColor = "#cbd5e1"; // slate/silver glow
+  }
+
+  // Calculate primary accent color and secondary variables based on style
+  let primary = baseAccent;
+  let primarySoft = `${baseAccent}20`;
+  let accent2 = `${baseAccent}f0`;
+  let gold = secondaryColor;
+
+  if (state.style === "Soft") {
+    primary = `color-mix(in srgb, ${baseAccent} 65%, ${dark ? "#4b5563" : "#94a3b8"})`;
+    primarySoft = `color-mix(in srgb, var(--accent) 8%, transparent)`;
+    accent2 = `color-mix(in srgb, var(--accent) 70%, transparent)`;
+    gold = `color-mix(in srgb, ${secondaryColor} 50%, ${dark ? "#1f2937" : "#f1f5f9"})`;
+  } else if (state.style === "Vibrant") {
+    primary = baseAccent;
+    primarySoft = `color-mix(in srgb, var(--accent) 18%, transparent)`;
+    accent2 = `color-mix(in srgb, var(--accent) 90%, transparent)`;
+  } else if (state.style === "Rich") {
+    primary = dark ? baseAccent : `color-mix(in srgb, ${baseAccent} 85%, #000000)`;
+    primarySoft = `color-mix(in srgb, var(--accent) 22%, transparent)`;
+    accent2 = `color-mix(in srgb, var(--accent) 95%, transparent)`;
+  } else if (state.style === "Elegant") {
+    primary = `color-mix(in srgb, ${baseAccent} 60%, #475467)`;
+    primarySoft = `color-mix(in srgb, var(--accent) 10%, transparent)`;
+    accent2 = `color-mix(in srgb, var(--accent) 75%, transparent)`;
+    gold = `color-mix(in srgb, ${secondaryColor} 40%, #64748b)`;
+  }
 
   // Density paddings
   let sectionPadding = "30px";
@@ -139,34 +178,102 @@ export function getTokenStyle(state: ThemeState): string {
     softShadow = `0 16px 45px color-mix(in srgb, var(--primary) 14%, ${dark ? "rgba(0,0,0,0.45)" : "rgba(15,23,42,0.08)"})`;
   }
 
-  // Aura backgrounds - page background and soft backgrounds follow accents
+  // Page background and soft backgrounds follow style & accents
   let bgGradient = "none";
-  let siteBg = dark
-    ? "color-mix(in srgb, var(--primary) 6%, #0b1120)"
-    : "color-mix(in srgb, var(--primary) 4%, #fffaf3)";
-  let siteSoft = dark
-    ? "color-mix(in srgb, var(--primary) 12%, #172033)"
-    : "color-mix(in srgb, var(--primary) 8%, #f6efe6)";
-  let textMain = dark ? "#f8fafc" : "#1d1812";
-  let textMuted = dark ? "#cbd5e1" : "#74685e";
+  let siteBg = "";
+  let siteSoft = "";
+  let textMain = "";
+  let textMuted = "";
   let siteBorder = dark ? "rgba(255,255,255,.1)" : "rgba(29,24,18,.12)";
 
-  if (state.atmosphere === "Soft Glow") {
-    bgGradient = `radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 65%)`;
-  } else if (state.atmosphere === "Gradient") {
-    bgGradient = `linear-gradient(135deg, color-mix(in srgb, var(--primary) 14%, transparent), var(--bg) 50%, color-mix(in srgb, var(--primary) 4%, transparent))`;
-  } else if (state.atmosphere === "Cinematic") {
-    siteBg = dark ? "color-mix(in srgb, var(--primary) 4%, #05080f)" : "color-mix(in srgb, var(--primary) 5%, #1f140e)";
-    siteSoft = dark ? "color-mix(in srgb, var(--primary) 8%, #0c111c)" : "color-mix(in srgb, var(--primary) 10%, #2d1f18)";
+  if (state.style === "Soft") {
+    siteBg = dark 
+      ? "color-mix(in srgb, var(--primary) 4%, #1f2937)" 
+      : "color-mix(in srgb, var(--primary) 2%, #faf9f6)";
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 8%, #111827)" 
+      : "color-mix(in srgb, var(--primary) 4%, #faf9f6)";
+    textMain = dark ? "#e4e4e7" : "#27272a";
+    textMuted = dark ? "#a1a1aa" : "#71717a";
+  } else if (state.style === "Vibrant") {
+    siteBg = dark 
+      ? "color-mix(in srgb, var(--primary) 5%, #0f172a)" 
+      : "color-mix(in srgb, var(--primary) 3%, #f8fafc)";
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 10%, #1e293b)" 
+      : "#ffffff"; // pure white highlights
+    textMain = dark ? "#ffffff" : "#000000"; // rich dark / bright white
+    textMuted = dark ? "#cbd5e1" : "#4b5563";
+  } else if (state.style === "Rich") {
+    siteBg = dark 
+      ? "color-mix(in srgb, var(--primary) 10%, #080c14)" 
+      : "color-mix(in srgb, var(--primary) 8%, #fcf8f2)";
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 16%, #111827)" 
+      : "color-mix(in srgb, var(--primary) 14%, #f6efe6)";
+    textMain = dark ? "#f8fafc" : "#1d1812";
+    textMuted = dark ? "#cbd5e1" : "#74685e";
+  } else { // Elegant
+    siteBg = dark 
+      ? "color-mix(in srgb, var(--primary) 3%, #0b0f19)" 
+      : "#ffffff"; // elegant background can be white
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 6%, #1e293b)" 
+      : "#f8fafc"; // cool grey-white
+    textMain = dark ? "#f1f5f9" : "#1e293b";
+    textMuted = dark ? "#94a3b8" : "#475467";
+  }
+
+  // Aura atmospheres
+  if (state.atmosphere === "Warm") {
+    siteBg = dark 
+      ? "color-mix(in srgb, var(--primary) 8%, #1f140e)" 
+      : "color-mix(in srgb, var(--primary) 4%, #fffaf3)";
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 12%, #2d1f18)" 
+      : "color-mix(in srgb, var(--primary) 8%, #f6efe6)";
+    bgGradient = `linear-gradient(135deg, color-mix(in srgb, var(--primary) 10%, #fff7ed), var(--bg) 60%)`;
+  } else if (state.atmosphere === "Worship") {
+    siteBg = dark 
+      ? "color-mix(in srgb, var(--primary) 5%, #05080f)" 
+      : "color-mix(in srgb, var(--primary) 6%, #1c1826)";
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 9%, #0c111c)" 
+      : "color-mix(in srgb, var(--primary) 10%, #292436)";
     textMain = "#f8fafc";
-    textMuted = "#94a3b8";
-    bgGradient = `linear-gradient(180deg, var(--bg), ${dark ? "color-mix(in srgb, var(--primary) 2%, #010204)" : "color-mix(in srgb, var(--primary) 2%, #0f0a07)"})`;
-  } else if (state.atmosphere === "Editorial") {
-    siteBg = "color-mix(in srgb, var(--primary) 3%, #fffbf7)";
-    siteSoft = "color-mix(in srgb, var(--primary) 7%, #fff3e5)";
-    bgGradient = "linear-gradient(90deg, color-mix(in srgb, var(--primary) 4%, #fff7ed) 0%, color-mix(in srgb, var(--primary) 1%, #fffbf7) 50%, color-mix(in srgb, var(--primary) 4%, #fff7ed) 100%)";
-  } else if (state.atmosphere === "Atmospheric") {
-    bgGradient = `radial-gradient(circle at 10% 20%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 45%), radial-gradient(circle at 90% 80%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 55%)`;
+    textMuted = "#cbd5e1";
+    bgGradient = `radial-gradient(circle at 50% 20%, color-mix(in srgb, var(--primary) 20%, transparent), transparent 70%), linear-gradient(180deg, var(--bg), #020408)`;
+  } else if (state.atmosphere === "Prayer") {
+    siteBg = dark 
+      ? "color-mix(in srgb, var(--primary) 4%, #121824)" 
+      : "color-mix(in srgb, var(--primary) 2%, #fcfbf9)";
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 8%, #0b0f19)" 
+      : "color-mix(in srgb, var(--primary) 4%, #f4f2ee)";
+    bgGradient = `linear-gradient(90deg, color-mix(in srgb, var(--primary) 2%, #fcfbf9) 0%, var(--bg) 50%, color-mix(in srgb, var(--primary) 2%, #fcfbf9) 100%)`;
+  } else if (state.atmosphere === "Celebration") {
+    bgGradient = `radial-gradient(circle at 10% 20%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 45%), radial-gradient(circle at 90% 80%, color-mix(in srgb, var(--gold) 12%, transparent), transparent 55%)`;
+  } else if (state.atmosphere === "Elegant") {
+    siteBg = dark 
+      ? "color-mix(in srgb, var(--primary) 3%, #0d1117)" 
+      : "#ffffff";
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 6%, #161b22)" 
+      : "#f8fafc";
+  } else if (state.atmosphere === "Light") {
+    bgGradient = "none";
+  }
+
+  // Base body background with glows depending on Style
+  let bodyBg = "var(--bg)";
+  if (state.style === "Soft") {
+    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 30%), radial-gradient(circle at 84% 2%, color-mix(in srgb, var(--gold) 6%, transparent), transparent 26%), var(--bg)`;
+  } else if (state.style === "Vibrant") {
+    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--accent) 15%, transparent), transparent 30%), radial-gradient(circle at 84% 2%, color-mix(in srgb, var(--gold) 10%, transparent), transparent 26%), var(--bg)`;
+  } else if (state.style === "Rich") {
+    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 32%), radial-gradient(circle at 84% 2%, color-mix(in srgb, var(--gold) 16%, transparent), transparent 28%), var(--bg)`;
+  } else { // Elegant
+    bodyBg = "var(--bg)";
   }
 
   // Motion transitions
@@ -190,7 +297,7 @@ export function getTokenStyle(state: ThemeState): string {
 :root {
   /* Customizer Variables */
   --primary: ${primary};
-  --primary-soft: ${primary}20;
+  --primary-soft: ${primarySoft};
   --radius: ${radLg};
   --font-title: ${typo.title};
   --font-body: ${typo.body};
@@ -215,7 +322,8 @@ export function getTokenStyle(state: ThemeState): string {
 
   /* Ecclesia theme overrides */
   --accent: ${primary};
-  --accent-2: ${primary}f0;
+  --accent-2: ${accent2};
+  --gold: ${gold};
   --bg: ${siteBg};
   --surface: ${cardBg};
   --surface-soft: ${siteSoft};
@@ -235,7 +343,7 @@ export function getTokenStyle(state: ThemeState): string {
   --section: ${sectionPadding};
 
   /* Header following accents */
-  --header-bg: color-mix(in srgb, var(--primary) 4%, ${siteBg});
+  --header-bg: color-mix(in srgb, var(--primary) 4%, var(--bg));
   --header-border: color-mix(in srgb, var(--primary) 12%, ${dark ? "rgba(255,255,255,0.08)" : "rgba(29,24,18,0.12)"});
   --header-bg-glass: color-mix(in srgb, var(--primary) 8%, ${dark ? "rgba(11, 17, 32, 0.75)" : "rgba(251, 249, 246, 0.78)"});
   --header-text: var(--text);
@@ -300,7 +408,7 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: clip;
-  background: ${bgGradient === "none" ? "var(--bg)" : bgGradient} !important;
+  background: ${bgGradient === "none" ? bodyBg : bgGradient} !important;
   background-attachment: fixed !important;
   color: var(--text) !important;
   font-size: var(--body-size) !important;
@@ -350,7 +458,7 @@ h3, h4, h5, h6, .brand, .brand span {
   -webkit-backdrop-filter: ${backdropFilter} !important;
 }
 
-.btn, .button, .mobile-menu-btn {
+.btn, .button {
   border-radius: var(--radius-md) !important;
   padding: ${btnPadding} !important;
 }
@@ -434,289 +542,8 @@ ${useAnimation ? `
 }
 `}
 
-header, footer, .header, .footer {
+footer, .footer {
   transition: all var(--duration) var(--ease);
-}
-
-header, .header {
-  width: 100%;
-  min-width: 0;
-  background: var(--header-bg) !important;
-  border-bottom: 1px solid var(--header-border) !important;
-  color: var(--header-text) !important;
-}
-
-header nav, .header nav {
-  min-width: 0;
-  flex-wrap: wrap;
-}
-
-
-
-header[data-header-effect="sticky"], .header[data-header-effect="sticky"] {
-  position: sticky !important;
-  top: 0;
-  z-index: 999;
-}
-
-header[data-header-effect="reveal"], .header[data-header-effect="reveal"],
-header[data-header-effect="hide"], .header[data-header-effect="hide"] {
-  position: sticky !important;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  z-index: 999;
-}
-
-header[data-header-effect="floating-sticky"], .header[data-header-effect="floating-sticky"] {
-  position: sticky !important;
-  top: 18px;
-  left: 0;
-  right: 0;
-  width: calc(100% - 36px) !important;
-  z-index: 999;
-  max-width: var(--max) !important;
-  margin: 0 auto !important;
-  border-radius: var(--radius-lg) !important;
-  background: var(--site-surface) !important;
-  box-shadow: var(--shadow-soft) !important;
-}
-
-/* Prevent content jump for fixed headers */
-body:has(header[data-header-effect="sticky"]) .main-shell-body,
-body:has(header[data-header-effect="reveal"]) .main-shell-body,
-body:has(header[data-header-effect="hide"]) .main-shell-body {
-  padding-top: 82px;
-}
-
-body:has(header[data-header-effect="floating-sticky"]) .main-shell-body {
-  padding-top: 110px;
-}
-
-header.ec-header-hidden, .header.ec-header-hidden {
-  transform: translateY(-140%) !important;
-}
-
-
-header[data-header-layout="logo-left"] .nav-wrap, .header[data-header-layout="logo-left"] .nav-wrap {
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-
-
-header[data-header-layout="logo-right"] .nav-wrap, .header[data-header-layout="logo-right"] .nav-wrap {
-  flex-direction: row-reverse;
-  justify-content: space-between;
-}
-
-header[data-header-layout="stacked"] .nav-wrap, .header[data-header-layout="stacked"] .nav-wrap {
-  height: auto;
-  display: grid !important;
-  grid-template-columns: auto auto;
-  justify-content: center;
-  align-items: center;
-  gap: 14px 34px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-/* Stacked (Logo Above) Grid Placement */
-header[data-header-layout="stacked"] .brand, .header[data-header-layout="stacked"] .brand {
-  grid-column: 1 / 3;
-  grid-row: 1;
-  justify-self: center;
-  margin: 0;
-}
-header[data-header-layout="stacked"] .nav, .header[data-header-layout="stacked"] .nav {
-  grid-column: 1;
-  grid-row: 2;
-  justify-self: end;
-}
-header[data-header-layout="stacked"] .header-actions, .header[data-header-layout="stacked"] .header-actions {
-  grid-column: 2;
-  grid-row: 2;
-  justify-self: start;
-}
-
-header[data-header-layout="menu-top"] .nav-wrap, .header[data-header-layout="menu-top"] .nav-wrap {
-  height: auto;
-  display: grid !important;
-  grid-template-columns: auto auto;
-  justify-content: center;
-  align-items: center;
-  gap: 14px 34px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-
-/* Menu-Top (Menu Above) Grid Placement */
-header[data-header-layout="menu-top"] .brand, .header[data-header-layout="menu-top"] .brand {
-  grid-column: 1 / 3;
-  grid-row: 2;
-  justify-self: center;
-  margin: 0;
-}
-header[data-header-layout="menu-top"] .nav, .header[data-header-layout="menu-top"] .nav {
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: end;
-}
-header[data-header-layout="menu-top"] .header-actions, .header[data-header-layout="menu-top"] .header-actions {
-  grid-column: 2;
-  grid-row: 1;
-  justify-self: start;
-}
-
-.ec-mobile-menu-toggle {
-  display: none;
-  width: 42px;
-  height: 42px;
-  border: 1px solid var(--site-border);
-  background: var(--site-surface);
-  color: var(--site-text);
-  border-radius: 999px;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-header[data-mobile-hamburger-shape="plain"] .ec-mobile-menu-toggle,
-.header[data-mobile-hamburger-shape="plain"] .ec-mobile-menu-toggle {
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-
-header[data-mobile-hamburger-shape="circle"] .ec-mobile-menu-toggle,
-.header[data-mobile-hamburger-shape="circle"] .ec-mobile-menu-toggle {
-  border-radius: 999px !important;
-  border: 1px solid var(--site-border) !important;
-  background: var(--site-surface) !important;
-  box-shadow: var(--shadow-soft);
-}
-
-.ec-mobile-menu-toggle span,
-.ec-mobile-menu-toggle span:before,
-.ec-mobile-menu-toggle span:after {
-  display: block;
-  width: 18px;
-  height: 2px;
-  border-radius: 999px;
-  background: currentColor;
-  content: "";
-  position: relative;
-}
-
-.ec-mobile-menu-toggle span:before {
-  position: absolute;
-  top: -6px;
-}
-
-.ec-mobile-menu-toggle span:after {
-  position: absolute;
-  top: 6px;
-}
-
-.ec-mobile-drawer {
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  width: 75vw;
-  max-width: 75vw;
-  background: var(--site-surface);
-  color: var(--site-text);
-  z-index: 500;
-  padding: 28px;
-  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.25);
-  transition: transform var(--duration) var(--ease);
-  display: block;
-  overflow-y: auto;
-}
-
-.ec-mobile-drawer-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 18px;
-}
-
-.ec-mobile-drawer-head h3 {
-  font-family: var(--font-title);
-  font-size: 24px;
-  color: var(--site-text);
-  margin: 0;
-}
-
-.ec-mobile-drawer-close {
-  width: 38px;
-  height: 38px;
-  border-radius: 999px;
-  border: 1px solid var(--site-border);
-  background: var(--site-soft);
-  color: var(--site-text);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  font-size: 22px;
-  line-height: 1;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.ec-mobile-drawer a {
-  display: block;
-  padding: 13px 0;
-  color: var(--site-text);
-  text-decoration: none;
-  border-bottom: 1px solid var(--site-border);
-}
-
-.ec-mobile-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.42);
-  z-index: 450;
-  cursor: pointer;
-}
-
-body[data-mobile-menu-position="right"] .ec-mobile-drawer {
-  right: 0;
-  transform: translateX(100%);
-}
-
-body[data-mobile-menu-position="left"] .ec-mobile-drawer {
-  left: 0;
-  transform: translateX(-100%);
-}
-
-body.ec-mobile-drawer-open[data-mobile-menu-position="right"] .ec-mobile-drawer,
-body.ec-mobile-drawer-open[data-mobile-menu-position="left"] .ec-mobile-drawer {
-  transform: translateX(0);
-}
-
-body.ec-mobile-drawer-open .ec-mobile-overlay {
-  display: block;
-}
-
-body[data-mobile-drawer-mode="push"] .ec-page-wrap, .shell-wrapper {
-  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="right"] .ec-page-wrap,
-body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="right"] .shell-wrapper {
-  transform: translateX(calc(-1 * min(75vw, 350px)));
-}
-
-body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"] .ec-page-wrap,
-body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"] .shell-wrapper {
-  transform: translateX(min(75vw, 350px));
 }
 
 @media(max-width:980px) {
@@ -732,152 +559,9 @@ body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-posi
   p {
     font-size: clamp(17px, 2.5vw, var(--subtitle-size)) !important;
   }
-
-  header, .header {
-    padding-left: clamp(22px, 4vw, 34px) !important;
-    padding-right: clamp(22px, 4vw, 34px) !important;
-  }
 }
 
 @media(max-width:760px) {
-  header, .header {
-    position: relative;
-    gap: 12px;
-    min-height: 74px;
-    display: flex !important;
-    align-items: center !important;
-  }
-
-  header .nav-wrap, .header .nav-wrap,
-  header .navwrap, .header .navwrap {
-    display: contents !important;
-  }
-
-  header nav, .header nav,
-  header .header-actions, .header .header-actions,
-  header .actions, .header .actions {
-    display: none !important;
-  }
-
-  .ec-mobile-menu-toggle {
-    display: flex;
-  }
-
-  header .brand, .header .brand {
-    min-width: 0;
-    white-space: nowrap;
-  }
-
-  header[data-header-layout="logo-left"][data-mobile-menu-position="left"],
-  .header[data-header-layout="logo-left"][data-mobile-menu-position="left"] {
-    justify-content: flex-start !important;
-    flex-direction: row !important;
-  }
-
-  header[data-header-layout="logo-left"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="logo-left"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle {
-    order: 0;
-    margin: 0;
-  }
-
-  header[data-header-layout="logo-left"][data-mobile-menu-position="left"] .brand,
-  .header[data-header-layout="logo-left"][data-mobile-menu-position="left"] .brand {
-    order: 1;
-    margin: 0;
-    text-align: left;
-  }
-
-  header[data-header-layout="logo-left"][data-mobile-menu-position="right"],
-  .header[data-header-layout="logo-left"][data-mobile-menu-position="right"] {
-    justify-content: space-between !important;
-    flex-direction: row !important;
-  }
-
-  header[data-header-layout="logo-left"][data-mobile-menu-position="right"] .brand,
-  .header[data-header-layout="logo-left"][data-mobile-menu-position="right"] .brand {
-    order: 0;
-    margin: 0;
-    text-align: left;
-  }
-
-  header[data-header-layout="logo-left"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="logo-left"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle {
-    order: 20;
-    margin-left: auto;
-  }
-
-  header[data-header-layout="logo-right"][data-mobile-menu-position="left"],
-  .header[data-header-layout="logo-right"][data-mobile-menu-position="left"] {
-    justify-content: space-between !important;
-    flex-direction: row !important;
-  }
-
-  header[data-header-layout="logo-right"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="logo-right"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle {
-    order: 0;
-    margin-right: auto;
-  }
-
-  header[data-header-layout="logo-right"][data-mobile-menu-position="left"] .brand,
-  .header[data-header-layout="logo-right"][data-mobile-menu-position="left"] .brand {
-    order: 20;
-    margin-left: auto;
-    text-align: right;
-  }
-
-  header[data-header-layout="logo-right"][data-mobile-menu-position="right"],
-  .header[data-header-layout="logo-right"][data-mobile-menu-position="right"] {
-    justify-content: flex-end !important;
-    flex-direction: row !important;
-  }
-
-  header[data-header-layout="logo-right"][data-mobile-menu-position="right"] .brand,
-  .header[data-header-layout="logo-right"][data-mobile-menu-position="right"] .brand {
-    order: 10;
-    margin: 0;
-    text-align: right;
-  }
-
-  header[data-header-layout="logo-right"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="logo-right"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle {
-    order: 20;
-    margin: 0;
-  }
-
-  header[data-header-layout="stacked"], .header[data-header-layout="stacked"],
-  header[data-header-layout="menu-top"], .header[data-header-layout="menu-top"] {
-    justify-content: center !important;
-    flex-direction: row !important;
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-  }
-
-
-
-
-  header[data-header-layout="stacked"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="stacked"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
-  header[data-header-layout="menu-top"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="menu-top"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle {
-    position: absolute;
-    left: clamp(18px, 5vw, 34px);
-    order: 0;
-    margin: 0;
-  }
-
-
-  header[data-header-layout="stacked"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="stacked"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
-  header[data-header-layout="menu-top"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
-  .header[data-header-layout="menu-top"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle {
-    position: absolute;
-    right: clamp(18px, 5vw, 34px);
-    order: 20;
-    margin: 0;
-  }
-
-
-
   h1 {
     font-size: clamp(36px, 10vw, 58px) !important;
   }
@@ -1072,6 +756,160 @@ body.cinema-mode .mobile-tab-rail {
   color: var(--accent) !important;
   border-color: color-mix(in srgb, var(--primary) 22%, transparent) !important;
 }
+
+/* Solid Themed Header Overrides */
+header[data-header-solid-themed="true"], .header[data-header-solid-themed="true"] {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  --header-bg: var(--primary) !important;
+  --header-text: #ffffff !important;
+  --header-border: rgba(255, 255, 255, 0.15) !important;
+  --active-header-border-color: #ffffff !important;
+}
+
+/* Base text/icons/links contrast inside header */
+header[data-header-solid-themed="true"] a, .header[data-header-solid-themed="true"] a,
+header[data-header-solid-themed="true"] .nav a, .header[data-header-solid-themed="true"] .nav a,
+header[data-header-solid-themed="true"] svg, .header[data-header-solid-themed="true"] svg,
+header[data-header-solid-themed="true"] i, .header[data-header-solid-themed="true"] i {
+  color: #ffffff !important;
+}
+
+header[data-header-solid-themed="true"] .nav a, .header[data-header-solid-themed="true"] .nav a {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+header[data-header-solid-themed="true"] .nav a:hover, header[data-header-solid-themed="true"] .nav a.active,
+.header[data-header-solid-themed="true"] .nav a:hover, .header[data-header-solid-themed="true"] .nav a.active {
+  color: #ffffff !important;
+}
+
+/* Brand styling */
+header[data-header-solid-themed="true"] .brand, .header[data-header-solid-themed="true"] .brand,
+header[data-header-solid-themed="true"] .brand span, .header[data-header-solid-themed="true"] .brand span {
+  color: #ffffff !important;
+}
+header[data-header-solid-themed="true"] .brand-mark, .header[data-header-solid-themed="true"] .brand-mark,
+header[data-header-solid-themed="true"] .brand .mark, .header[data-header-solid-themed="true"] .brand .mark {
+  background: #ffffff !important;
+  color: var(--primary) !important;
+  box-shadow: none !important;
+}
+header[data-header-solid-themed="true"] .brand-mark i, .header[data-header-solid-themed="true"] .brand-mark i,
+header[data-header-solid-themed="true"] .brand-mark svg, .header[data-header-solid-themed="true"] .brand-mark svg,
+header[data-header-solid-themed="true"] .brand .mark i, .header[data-header-solid-themed="true"] .brand .mark i,
+header[data-header-solid-themed="true"] .brand .mark svg, .header[data-header-solid-themed="true"] .brand .mark svg {
+  color: var(--primary) !important;
+  stroke: var(--primary) !important;
+  fill: none !important;
+}
+
+/* Icons (without background shapes) */
+header[data-header-solid-themed="true"] a svg, .header[data-header-solid-themed="true"] a svg,
+header[data-header-solid-themed="true"] a i, .header[data-header-solid-themed="true"] a i {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Primary buttons styling */
+header[data-header-solid-themed="true"] .btn-primary, .header[data-header-solid-themed="true"] .btn-primary,
+header[data-header-solid-themed="true"] .btn.primary, .header[data-header-solid-themed="true"] .btn.primary,
+header[data-header-solid-themed="true"] .actions .primary, .header[data-header-solid-themed="true"] .actions .primary,
+header[data-header-solid-themed="true"] .header-actions .primary, .header[data-header-solid-themed="true"] .header-actions .primary {
+  background: #ffffff !important;
+  color: var(--primary) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+header[data-header-solid-themed="true"] .btn-primary:hover, .header[data-header-solid-themed="true"] .btn-primary:hover,
+header[data-header-solid-themed="true"] .btn.primary:hover, .header[data-header-solid-themed="true"] .btn.primary:hover,
+header[data-header-solid-themed="true"] .actions .primary:hover, .header[data-header-solid-themed="true"] .actions .primary:hover,
+header[data-header-solid-themed="true"] .header-actions .primary:hover, .header[data-header-solid-themed="true"] .header-actions .primary:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: var(--primary) !important;
+}
+header[data-header-solid-themed="true"] .btn-primary svg, .header[data-header-solid-themed="true"] .btn-primary svg,
+header[data-header-solid-themed="true"] .btn.primary svg, .header[data-header-solid-themed="true"] .btn.primary svg,
+header[data-header-solid-themed="true"] .actions .primary svg, .header[data-header-solid-themed="true"] .actions .primary svg {
+  color: var(--primary) !important;
+  stroke: var(--primary) !important;
+}
+
+/* Soft buttons styling */
+header[data-header-solid-themed="true"] .btn-soft, .header[data-header-solid-themed="true"] .btn-soft,
+header[data-header-solid-themed="true"] .btn.soft, .header[data-header-solid-themed="true"] .btn.soft,
+header[data-header-solid-themed="true"] .btn.softbtn, .header[data-header-solid-themed="true"] .btn.softbtn,
+header[data-header-solid-themed="true"] .soft, .header[data-header-solid-themed="true"] .soft,
+header[data-header-solid-themed="true"] .softbtn, .header[data-header-solid-themed="true"] .softbtn {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+header[data-header-solid-themed="true"] .btn-soft:hover, .header[data-header-solid-themed="true"] .btn-soft:hover,
+header[data-header-solid-themed="true"] .btn.soft:hover, .header[data-header-solid-themed="true"] .btn.soft:hover,
+header[data-header-solid-themed="true"] .btn.softbtn:hover, .header[data-header-solid-themed="true"] .btn.softbtn:hover,
+header[data-header-solid-themed="true"] .soft:hover, .header[data-header-solid-themed="true"] .soft:hover,
+header[data-header-solid-themed="true"] .softbtn:hover, .header[data-header-solid-themed="true"] .softbtn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+header[data-header-solid-themed="true"] .btn-soft svg, .header[data-header-solid-themed="true"] .btn-soft svg,
+header[data-header-solid-themed="true"] .btn.soft svg, .header[data-header-solid-themed="true"] .btn.soft svg,
+header[data-header-solid-themed="true"] .btn.softbtn svg, .header[data-header-solid-themed="true"] .btn.softbtn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Light buttons styling */
+header[data-header-solid-themed="true"] .btn-light, .header[data-header-solid-themed="true"] .btn-light,
+header[data-header-solid-themed="true"] .btn.light, .header[data-header-solid-themed="true"] .btn.light,
+header[data-header-solid-themed="true"] .light, .header[data-header-solid-themed="true"] .light {
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+header[data-header-solid-themed="true"] .btn-light:hover, .header[data-header-solid-themed="true"] .btn-light:hover,
+header[data-header-solid-themed="true"] .btn.light:hover, .header[data-header-solid-themed="true"] .btn.light:hover,
+header[data-header-solid-themed="true"] .light:hover, .header[data-header-solid-themed="true"] .light:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+header[data-header-solid-themed="true"] .btn-light svg, .header[data-header-solid-themed="true"] .btn-light svg,
+header[data-header-solid-themed="true"] .btn.light svg, .header[data-header-solid-themed="true"] .btn.light svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Mobile menu hamburger button styling */
+header[data-header-solid-themed="true"] .mobile-menu-btn, .header[data-header-solid-themed="true"] .mobile-menu-btn,
+header[data-header-solid-themed="true"] .menu, .header[data-header-solid-themed="true"] .menu,
+header[data-header-solid-themed="true"] .mobilebtn, .header[data-header-solid-themed="true"] .mobilebtn {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+header[data-header-solid-themed="true"] .mobile-menu-btn:hover, .header[data-header-solid-themed="true"] .mobile-menu-btn:hover,
+header[data-header-solid-themed="true"] .menu:hover, .header[data-header-solid-themed="true"] .menu:hover,
+header[data-header-solid-themed="true"] .mobilebtn:hover, .header[data-header-solid-themed="true"] .mobilebtn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+header[data-header-solid-themed="true"] .mobile-menu-btn svg, .header[data-header-solid-themed="true"] .mobile-menu-btn svg,
+header[data-header-solid-themed="true"] .menu svg, .header[data-header-solid-themed="true"] .menu svg,
+header[data-header-solid-themed="true"] .mobilebtn svg, .header[data-header-solid-themed="true"] .mobilebtn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* plain hamburger shape overrides */
+header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mobile-menu-btn,
+.header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mobile-menu-btn,
+header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .menu,
+.header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .menu,
+header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mobilebtn,
+.header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mobilebtn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
 `;
 }
 
@@ -1117,9 +955,7 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
   if (body) {
     body.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
     body.setAttribute("data-mobile-drawer-mode", state.mobileDrawerMode);
-    
-    // Removed .ec-page-wrap injection because the theme's app.js completely replaces document.body
-    // and provides its own .shell-wrapper which we can animate instead.
+    body.setAttribute("data-mobile-drawer-buttons-full-width", String(state.mobileDrawerButtonsFullWidth));
   }
 
   const header = doc.querySelector("header, [data-editor-type='header']");
@@ -1132,6 +968,7 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
     header.setAttribute("data-header-shadow", String(state.headerShadow));
     header.setAttribute("data-header-shadow-intensity", state.headerShadowIntensity || "medium");
     header.setAttribute("data-header-shadow-themed", String(!!state.headerShadowThemed));
+    header.setAttribute("data-header-solid-themed", String(!!state.headerSolidThemed));
     header.setAttribute("data-header-border", String(state.headerBorder));
     header.setAttribute("data-header-border-size", state.headerBorderSize);
     header.setAttribute("data-header-border-color", state.headerBorderColor);
@@ -1140,8 +977,7 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
     header.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
     header.setAttribute("data-mobile-hamburger-shape", state.mobileHamburgerShape);
 
-    // Make sure elements match mobile menu toggles
-    ensureMobileMenu(doc, header as HTMLElement);
+    // ensureMobileMenu(doc, header as HTMLElement);
   }
 
   const footer = doc.querySelector("footer, [data-editor-type='footer']");
@@ -1170,110 +1006,7 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
     }
   }
 }
-function ensureMobileMenu(doc: Document, header: HTMLElement): void {
-  const oldMenuBtn = header.querySelector(".mobilebtn, .mobile-menu-btn");
-  if (oldMenuBtn) oldMenuBtn.remove();
 
-  let toggle = header.querySelector(".ec-mobile-menu-toggle");
-  if (!toggle) {
-    toggle = doc.createElement("button");
-    toggle.className = "ec-mobile-menu-toggle";
-    toggle.setAttribute("data-editor-type", "button");
-    toggle.setAttribute("data-editor-label", "Mobile Menu Button");
-    toggle.setAttribute("aria-label", "Open mobile menu");
-    toggle.innerHTML = "<span></span>";
-    
-    const navWrap = header.querySelector(".nav-wrap, .container");
-    if (navWrap) {
-      navWrap.appendChild(toggle);
-    } else {
-      header.appendChild(toggle);
-    }
-  }
-
-  let drawer = doc.querySelector(".ec-mobile-drawer");
-  if (!drawer) {
-    drawer = doc.createElement("aside");
-    drawer.className = "ec-mobile-drawer";
-    drawer.setAttribute("data-editor-type", "section");
-    drawer.setAttribute("data-editor-label", "Mobile Drawer");
-    doc.body.appendChild(drawer);
-  }
-
-  let overlay = doc.querySelector(".ec-mobile-overlay");
-  if (!overlay) {
-    overlay = doc.createElement("div");
-    overlay.className = "ec-mobile-overlay";
-    doc.body.appendChild(overlay);
-  }
-
-  const nav = header.querySelector("nav");
-  drawer.innerHTML = `
-    <div class="ec-mobile-drawer-head">
-      <h3>Menu</h3>
-      <button class="ec-mobile-drawer-close" aria-label="Close mobile menu">×</button>
-    </div>
-    <div class="ec-mobile-drawer-nav"></div>
-  `;
-
-  const drawerNav = drawer.querySelector(".ec-mobile-drawer-nav");
-  if (drawerNav) {
-    if (nav) {
-      Array.from(nav.querySelectorAll("a")).forEach((link) => {
-        const clone = link.cloneNode(true) as HTMLElement;
-        clone.setAttribute("data-editor-type", "button");
-        drawerNav.appendChild(clone);
-      });
-    }
-    
-    const actions = header.querySelector(".header-actions, .actions");
-    if (actions) {
-      Array.from(actions.querySelectorAll("a, button:not(.ec-mobile-menu-toggle):not(.mobile-menu-btn):not(.mobilebtn)")).forEach((action) => {
-        const clone = action.cloneNode(true) as HTMLElement;
-        clone.setAttribute("data-editor-type", "button");
-        clone.style.marginTop = "8px";
-        drawerNav.appendChild(clone);
-      });
-    }
-
-    // Inject native JS to handle the drawer so it works outside the customizer
-    let nativeScript = doc.getElementById("ec-mobile-drawer-script");
-    if (!nativeScript) {
-      nativeScript = doc.createElement("script");
-      nativeScript.id = "ec-mobile-drawer-script";
-      nativeScript.textContent = `
-        (function() {
-          const toggle = document.querySelector(".ec-mobile-menu-toggle");
-          const closeBtn = document.querySelector(".ec-mobile-drawer-close");
-          const overlay = document.querySelector(".ec-mobile-overlay");
-          
-          if (toggle) {
-            toggle.onclick = function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              document.body.classList.toggle("ec-mobile-drawer-open");
-            };
-          }
-          
-          if (closeBtn) {
-            closeBtn.onclick = function(e) {
-              e.preventDefault();
-              document.body.classList.remove("ec-mobile-drawer-open");
-            };
-          }
-          
-          if (overlay) {
-            overlay.onclick = function(e) {
-              e.preventDefault();
-              document.body.classList.remove("ec-mobile-drawer-open");
-            };
-          }
-        })();
-      `;
-      doc.body.appendChild(nativeScript);
-    }
-  }
-}
 
 export function changeElementTag(doc: Document, path: string, newTagName: string): string {
   const el = doc.querySelector(path);

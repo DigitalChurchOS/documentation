@@ -44,20 +44,19 @@ export const Preview: React.FC<PreviewProps> = ({
       document.addEventListener("pointerdown", function(e) {
         if (!document.body.classList.contains("ec-editing")) return;
 
+        // Handle mobile menu toggle bypass in editing mode
+        const toggle = e.target.closest(".mobile-menu-btn");
+        if (toggle) {
+          const drawer = document.querySelector(".mobile-drawer");
+          if (drawer) drawer.classList.toggle("open");
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+
         // Prevent click actions
         e.preventDefault();
         e.stopPropagation();
-
-        // Handle mobile menu toggle in editing mode
-        const toggle = e.target.closest(".ec-mobile-menu-toggle");
-        if (toggle) {
-          document.body.classList.toggle("ec-mobile-drawer-open");
-        }
-        const closeBtn = e.target.closest(".ec-mobile-drawer-close");
-        const overlay = e.target.closest(".ec-mobile-overlay");
-        if (closeBtn || overlay) {
-          document.body.classList.remove("ec-mobile-drawer-open");
-        }
 
         let target = e.target;
         
@@ -147,6 +146,16 @@ export const Preview: React.FC<PreviewProps> = ({
 
       document.addEventListener("click", function(e) {
         if (document.body.classList.contains("ec-editing")) {
+          // Allow native menu toggles to work
+          const toggle = e.target.closest(".mobile-menu-btn");
+          if (toggle) {
+            const drawer = document.querySelector(".mobile-drawer");
+            if (drawer) drawer.classList.toggle("open");
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          
           e.preventDefault();
           e.stopPropagation();
           return;

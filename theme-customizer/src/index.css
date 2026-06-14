@@ -1111,6 +1111,7 @@ button, input, select, textarea {
 
 /* Device Emulator Frames */
 .device-frame {
+  box-sizing: border-box !important;
   width: 100%;
   height: 100%;
   max-height: 100%;
@@ -1121,6 +1122,7 @@ button, input, select, textarea {
 }
 
 .preview-shell {
+  box-sizing: border-box !important;
   background: #fff;
   overflow: hidden;
   position: relative;
@@ -1151,9 +1153,9 @@ button, input, select, textarea {
 }
 
 .device-frame.desktop .preview-frame {
-  width: 142.857%;
-  height: 142.857%;
-  transform: scale(0.7);
+  width: 167.142%;
+  height: 167.142%;
+  transform: scale(0.598);
   transform-origin: top left;
 }
 
@@ -1168,9 +1170,9 @@ button, input, select, textarea {
 }
 
 .device-frame.laptop .preview-frame {
-  width: 125%;
-  height: 125%;
-  transform: scale(0.8);
+  width: 162.5%;
+  height: 162.5%;
+  transform: scale(0.615);
   transform-origin: top left;
 }
 
@@ -1179,9 +1181,9 @@ button, input, select, textarea {
 }
 
 .app.fullscreen .device-frame.desktop .preview-frame {
-  width: 125%;
-  height: 125%;
-  transform: scale(0.8);
+  width: 146.25%;
+  height: 146.25%;
+  transform: scale(0.684);
   transform-origin: top left;
 }
 
@@ -1200,9 +1202,9 @@ button, input, select, textarea {
 }
 
 .app.fullscreen .device-frame.laptop .preview-frame {
-  width: 111.111% !important;
-  height: 111.111% !important;
-  transform: scale(0.9) !important;
+  width: 144.444% !important;
+  height: 144.444% !important;
+  transform: scale(0.692) !important;
   transform-origin: top left !important;
   aspect-ratio: 16/9 !important;
 }
@@ -1214,6 +1216,13 @@ button, input, select, textarea {
   border: 16px solid #1f2937;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
+}
+
+.device-frame.tablet .preview-frame {
+  width: 130% !important;
+  height: 130% !important;
+  transform: scale(0.769) !important;
+  transform-origin: top left !important;
 }
 
 .device-frame.mobile {
@@ -1229,6 +1238,13 @@ button, input, select, textarea {
   border: 14px solid #1f2937;
   border-radius: 36px;
   box-shadow: var(--shadow-lg);
+}
+
+.device-frame.mobile .preview-frame {
+  width: 130% !important;
+  height: 130% !important;
+  transform: scale(0.769) !important;
+  transform-origin: top left !important;
 }
 
 .app.fullscreen .device-frame.mobile {
@@ -1305,5 +1321,85 @@ button, input, select, textarea {
 
 .report-row span {
   color: var(--primary);
+  font-weight: 700;
+}
+
+/* Theme Selection Styling */
+.themes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.theme-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 220ms ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.theme-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.theme-card.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-soft);
+}
+
+.theme-thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.theme-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.theme-card:hover .theme-thumbnail {
+  transform: scale(1.05);
+}
+
+.theme-info {
+  padding: 12px;
+}
+
+.theme-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.theme-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.theme-active-tag {
+  font-size: 9px;
+  text-transform: uppercase;
+  background: var(--primary);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
   font-weight: 700;
 }

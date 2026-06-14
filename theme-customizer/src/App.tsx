@@ -29,6 +29,8 @@ import {
   Download,
   Settings,
   ChevronDown,
+  ArrowLeft,
+  Save,
 } from "lucide-react";
 
 const defaultPageTemplate = `<!DOCTYPE html>
@@ -138,7 +140,62 @@ footer{width:100%;max-width:100%;padding:42px;background:var(--site-soft);color:
 </body>
 </html>`;
 
+const AVAILABLE_THEMES = [
+  {
+    id: "ecclesia",
+    name: "Ecclesia Theme",
+    description: "A beautiful, content-rich design system for modern digital-first churches.",
+    folderName: "ecclesia-full-theme",
+    thumbnail: "/themes/ecclesia-full-theme/thumbnail.png"
+  }
+];
+
+const apiFetch = async (method: string, path: string, body?: any) => {
+  const tenantId = localStorage.getItem("churchos.tenantId") || "demo-church-local";
+  const token = localStorage.getItem("churchos.token") || "local-preview-token";
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "x-tenant-id": tenantId,
+    "Authorization": `Bearer ${token}`
+  };
+  const options: RequestInit = {
+    method,
+    headers
+  };
+  if (body) {
+    options.body = JSON.stringify(body);
+  }
+  const res = await fetch(path, options);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`API error ${res.status}: ${text}`);
+  }
+  return res.json();
+};
+
+function getFullHtml(blocks?: any[]): string | null {
+  if (!blocks || blocks.length === 0) return null;
+  const block = blocks.find((b: any) => typeof b.html === 'string' || typeof b.content === 'string');
+  if (!block) return null;
+  return block.html || block.content || null;
+}
+
 export function App() {
+  const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
+  const [pageId, setPageId] = useState<string>(() => urlParams.get("pageId") || "");
+  const themeId = useMemo(() => urlParams.get("themeId") || "", [urlParams]);
+  const websiteId = useMemo(() => urlParams.get("websiteId") || "", [urlParams]);
+  const [pagesList, setPagesList] = useState<any[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const [currentTheme, setCurrentTheme] = useState<string>(() => {
+    return localStorage.getItem("ec_autosave_theme_folder") || "ecclesia-full-theme";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("ec_autosave_theme_folder", currentTheme);
+  }, [currentTheme]);
+
   // Customizer state
   const [themeState, setThemeState] = useState<ThemeState>(() => {
     const saved = localStorage.getItem("ec_autosave_theme");
@@ -165,14 +222,16 @@ export function App() {
       headerShadow: true,
       headerShadowIntensity: 'medium',
       headerShadowThemed: false,
+      headerSolidThemed: false,
       headerBorder: false,
       headerBorderSize: "small",
       headerBorderColor: "accent",
       headerLayout: "logo-left",
       headerEffect: "static",
       mobileMenuPosition: "right",
-      mobileDrawerMode: "push",
+      mobileDrawerMode: "reveal",
       mobileHamburgerShape: "circle",
+      mobileDrawerButtonsFullWidth: false,
       footerStyle: "classic",
       footerWidgets: "show",
       footerWidgetLayout: "feature",
@@ -229,6 +288,46 @@ export function App() {
   useEffect(() => {
     localStorage.setItem("ec_autosave_filename", importedFilename);
   }, [importedFilename]);
+
+  // Load pages list from CMS
+  useEffect(() => {
+    const loadPages = async () => {
+      try {
+        const res = await apiFetch("GET", "/api/cms/pages");
+        if (res && res.data) {
+          setPagesList(res.data);
+        }
+      } catch (err) {
+        console.warn("Failed to load pages list:", err);
+      }
+    };
+    loadPages();
+  }, []);
+
+  // Load theme settings from CMS
+  useEffect(() => {
+    const loadThemeSettings = async () => {
+      if (!themeId) return;
+      try {
+        const res = await apiFetch("GET", "/api/theme-engine/themes");
+        if (res && res.data) {
+          const themeRecord = res.data.find((t: any) => t.id === themeId);
+          if (themeRecord) {
+            const rawSettings = themeRecord.draftSettings || themeRecord.settings || "{}";
+            const settings = typeof rawSettings === "string" ? JSON.parse(rawSettings) : rawSettings;
+            
+            setThemeState((prev) => ({
+              ...prev,
+              ...settings,
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn("Failed to load theme settings:", err);
+      }
+    };
+    loadThemeSettings();
+  }, [themeId]);
 
   // Parse sections inside HTML
   const sections = useMemo(() => {
@@ -291,17 +390,43 @@ export function App() {
       baseTag = doc.createElement("base");
       doc.head.insertBefore(baseTag, doc.head.firstChild);
     }
-    baseTag.setAttribute("href", "/themes/ecclesia-full-theme/");
+    baseTag.setAttribute("href", `/themes/${currentTheme}/`);
 
     return serializeHtml(doc);
-  }, [rawHtml, themeState]);
+  }, [rawHtml, themeState, currentTheme]);
 
-  const fetchPage = async (filename: string) => {
+  const fetchPage = async (filename: string, themeFolder = currentTheme, targetPageId = pageId) => {
     try {
-      // Strip any leading slashes or full paths to keep relative resolving clean
       const baseName = filename.split("/").pop() || "index.html";
       const timestamp = new Date().getTime();
-      const response = await fetch(`/themes/ecclesia-full-theme/${baseName}?t=${timestamp}`);
+
+      if (targetPageId) {
+        try {
+          const res = await apiFetch("GET", `/api/cms/pages/${targetPageId}`);
+          if (res && res.data) {
+            const pageData = res.data;
+            const blocks = typeof pageData.draftContent === 'string'
+              ? JSON.parse(pageData.draftContent || "[]")
+              : (pageData.draftContent || (typeof pageData.content === 'string'
+                ? JSON.parse(pageData.content || "[]")
+                : (pageData.content || [])));
+            
+            const savedHtml = getFullHtml(blocks);
+            if (savedHtml) {
+              setRawHtml(savedHtml);
+              setImportedFilename(baseName);
+              setSelectedElement(null);
+              setActiveSectionPath(null);
+              setOptimizationReport(null);
+              return;
+            }
+          }
+        } catch (dbErr) {
+          console.warn("Could not load page from database, falling back to theme template:", dbErr);
+        }
+      }
+
+      const response = await fetch(`/themes/${themeFolder}/${baseName}?t=${timestamp}`);
       if (response.ok) {
         const text = await response.text();
         setRawHtml(text);
@@ -315,10 +440,15 @@ export function App() {
     }
   };
 
+  const handleSelectTheme = (themeFolder: string) => {
+    setCurrentTheme(themeFolder);
+    fetchPage("index.html", themeFolder);
+  };
+
   // Load default index.html on mount
   useEffect(() => {
     fetchPage("index.html");
-  }, []);
+  }, [pageId]);
 
   // Sync scroll lock on escape key and listen for frame navigation
   useEffect(() => {
@@ -439,26 +569,93 @@ export function App() {
     setOptimizationReport(report);
   };
 
-  const handleExport = () => {
-    const doc = parseHtml(renderedHtml);
-    const cleaned = cleanPageForExport(doc);
 
-    const blob = new Blob([cleaned], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `optimized-${importedFilename}`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleClose = () => {
+    window.close();
+    setTimeout(() => {
+      window.location.href = "/admin/";
+    }, 100);
+  };
+
+  const handleSaveDraft = async () => {
+    if (!themeId) {
+      alert("No active theme identified to save customizations.");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await apiFetch("PATCH", `/api/theme-engine/themes/${themeId}/customization/draft`, themeState);
+      if (pageId) {
+        const doc = parseHtml(renderedHtml);
+        const cleanedHtml = cleanPageForExport(doc);
+        const blocksPayload = [{ html: cleanedHtml }];
+        await apiFetch("PATCH", `/api/cms/pages/${pageId}/draft`, { draftContent: blocksPayload });
+      }
+      alert("Theme settings and page content saved as draft!");
+    } catch (err: any) {
+      console.error("Save draft error:", err);
+      alert(`Failed to save draft: ${err.message || err}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!themeId) {
+      alert("No active theme identified to publish.");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await apiFetch("PATCH", `/api/theme-engine/themes/${themeId}/customization/draft`, themeState);
+      if (pageId) {
+        const doc = parseHtml(renderedHtml);
+        const cleanedHtml = cleanPageForExport(doc);
+        const blocksPayload = [{ html: cleanedHtml }];
+        await apiFetch("PATCH", `/api/cms/pages/${pageId}/draft`, { draftContent: blocksPayload });
+      }
+
+      await apiFetch("POST", `/api/theme-engine/themes/${themeId}/customization/publish`);
+
+      if (websiteId) {
+        await apiFetch("POST", `/api/theme-engine/themes/${themeId}/activate`, { websiteId });
+      }
+
+      if (pageId) {
+        await apiFetch("POST", `/api/cms/pages/${pageId}/publish`);
+      }
+
+      alert("Theme settings and page content published successfully!");
+    } catch (err: any) {
+      console.error("Publish error:", err);
+      alert(`Failed to publish changes: ${err.message || err}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className={`app ${isFullscreen ? "fullscreen" : ""}`} id="app">
       <header className="topbar">
-        <div className="brand">
-          <strong>Churched Theme Customizer</strong>
+        <div className="brand" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button
+            className="icon-btn"
+            onClick={handleClose}
+            title="Back to Dashboard"
+            style={{
+              padding: "6px 10px",
+              background: "transparent",
+              border: "1px solid var(--border)",
+              borderRadius: "8px",
+              cursor: "pointer",
+              color: "inherit",
+              display: "flex",
+              alignItems: "center"
+            }}
+          >
+            <ArrowLeft size={16} />
+          </button>
+          <strong>Theme Customizer</strong>
         </div>
 
         <div className="page-switcher">
@@ -517,8 +714,38 @@ export function App() {
                   <div
                     key={opt.value}
                     className={`dropdown-item ${importedFilename === opt.value ? "active" : ""}`}
-                    onClick={() => {
-                      fetchPage(opt.value);
+                    onClick={async () => {
+                      const mappedSlug = opt.value === "index.html" ? "" : opt.value.replace(".html", "");
+                      let pageRecord = pagesList.find((p) => p.slug === mappedSlug);
+                      
+                      let resolvedPageId = pageRecord?.id || "";
+                      if (!pageRecord && websiteId) {
+                        try {
+                          const newPage = await apiFetch("POST", "/api/cms/pages", {
+                            websiteId,
+                            slug: mappedSlug,
+                            title: opt.label.split(" (")[0],
+                            status: "draft",
+                            content: []
+                          });
+                          if (newPage && newPage.data) {
+                            pageRecord = newPage.data;
+                            resolvedPageId = pageRecord.id;
+                            setPagesList((prev) => [...prev, pageRecord]);
+                          }
+                        } catch (createErr) {
+                          console.error("Failed to dynamically create page in database:", createErr);
+                        }
+                      }
+                      
+                      if (resolvedPageId) {
+                        setPageId(resolvedPageId);
+                        const newUrl = new URL(window.location.href);
+                        newUrl.searchParams.set("pageId", resolvedPageId);
+                        window.history.pushState({}, "", newUrl.toString());
+                      }
+                      
+                      fetchPage(opt.value, currentTheme, resolvedPageId);
                       setIsPageMenuOpen(false);
                     }}
                   >
@@ -575,8 +802,39 @@ export function App() {
           <button className="icon-btn" onClick={() => setIsFullscreen(!isFullscreen)}>
             {isFullscreen ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
           </button>
-          <button className="publish-btn" onClick={handleExport} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-            <Download size={14} /> Publish
+          <button
+            className="screen-btn"
+            onClick={handleSaveDraft}
+            disabled={isSaving}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              border: "1px solid var(--border)",
+              background: "transparent",
+              cursor: "pointer",
+              height: "36px",
+              padding: "0 12px",
+              borderRadius: "6px"
+            }}
+          >
+            <Save size={14} /> {isSaving ? "Saving..." : "Save Draft"}
+          </button>
+          <button
+            className="publish-btn"
+            onClick={handlePublish}
+            disabled={isSaving}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              cursor: "pointer",
+              height: "36px",
+              padding: "0 12px",
+              borderRadius: "6px"
+            }}
+          >
+            <Download size={14} /> {isSaving ? "Publishing..." : "Publish"}
           </button>
         </div>
       </header>
@@ -631,6 +889,9 @@ export function App() {
                 onImport={handleImport}
                 onOptimize={handleOptimizeTokens}
                 optimizationReport={optimizationReport}
+                currentTheme={currentTheme}
+                onSelectTheme={handleSelectTheme}
+                themes={AVAILABLE_THEMES}
               />
             )}
             
