@@ -1,5 +1,5 @@
-/* ── Ecclesia Layout Wrapper ─────────────────────────── */
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useEcclesia } from './EcclesiaContext';
 import { injectEcclesiaCSS, removeEcclesiaCSS, applyEcclesiaCSSVars } from './cssVarBridge';
 import EcclesiaHeader from './EcclesiaHeader';
@@ -17,6 +17,20 @@ interface Props {
 const EcclesiaLayout: React.FC<Props> = ({ children, useStaticLayout = false }) => {
   const { themeSettings } = useEcclesia();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const location = useLocation();
+  const isLivestream = location.pathname.startsWith('/livestream');
+
+  // Toggle cinema-mode class on body for livestream page
+  useEffect(() => {
+    if (isLivestream) {
+      document.body.classList.add('cinema-mode');
+    } else {
+      document.body.classList.remove('cinema-mode');
+    }
+    return () => {
+      document.body.classList.remove('cinema-mode');
+    };
+  }, [isLivestream]);
 
   // Inject CSS styles when this theme layout mounts, cleanup on unmount
   useEffect(() => {

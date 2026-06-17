@@ -465,10 +465,26 @@ function navigateToPage(url, isBack = false) {
   const contentOutlet = document.getElementById('content-outlet');
   if (!contentOutlet) return;
 
-  // Fade out effect
+  const skeletonHtml = `
+    <div class="skeleton-page">
+      <div class="skeleton-shimmer skeleton-hero"></div>
+      <div class="skeleton-shimmer skeleton-title" style="margin-top: 24px;"></div>
+      <div class="skeleton-shimmer skeleton-text"></div>
+      <div class="skeleton-shimmer skeleton-text"></div>
+      <div class="skeleton-shimmer skeleton-text short"></div>
+      <div class="skeleton-grid" style="margin-top: 32px;">
+        <div class="skeleton-shimmer skeleton-card"></div>
+        <div class="skeleton-shimmer skeleton-card"></div>
+        <div class="skeleton-shimmer skeleton-card"></div>
+      </div>
+    </div>
+  `;
+
+  // Render skeleton instantly to eliminate loading delay feel
   closeMobileDrawer();
   document.body.classList.add('page-loading');
-  contentOutlet.style.opacity = '0.3';
+  contentOutlet.innerHTML = skeletonHtml;
+  contentOutlet.style.opacity = '1';
 
   fetch(url)
     .then(res => {

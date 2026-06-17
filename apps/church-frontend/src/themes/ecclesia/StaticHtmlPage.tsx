@@ -22,6 +22,7 @@ type StaticPayload = {
   headStyles: Array<{ id?: string; css: string }>;
   scripts: StaticScript[];
   needsLucide: boolean;
+  headerActionsHtml: string;
 };
 
 interface Props {
@@ -29,6 +30,7 @@ interface Props {
   themeSettings?: ThemeSettings;
   enableModuleRails?: boolean;
   moduleEntitlements?: ModuleEntitlement[];
+  isShellStatic?: boolean;
 }
 
 declare global {
@@ -294,6 +296,7 @@ function buildStaticPayload(
     pathname: string;
     moduleEntitlements?: ModuleEntitlement[];
     ecContext?: EcclesiaContextValue | null;
+    isShellStatic?: boolean;
   }
 ): StaticPayload {
   const parser = new DOMParser();
@@ -301,6 +304,15 @@ function buildStaticPayload(
 
   // Strip any existing mobile drawers from the parsed document to avoid duplicates
   doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach((el) => el.remove());
+
+  // Extract header actions before we strip/process elements
+  const headerActionsEl = doc.querySelector('.header-actions');
+  let headerActionsHtml = '';
+  if (headerActionsEl) {
+    const cloned = headerActionsEl.cloneNode(true) as HTMLElement;
+    cloned.querySelectorAll('#menuBtn, .mobile-menu-btn').forEach(btn => btn.remove());
+    headerActionsHtml = cloned.innerHTML;
+  }
 
   const scripts: StaticScript[] = [];
   const headLinks: StaticPayload['headLinks'] = [];
@@ -356,146 +368,177 @@ function buildStaticPayload(
   const stage = doc.createElement('div');
   stage.className = 'static-html-stage';
 
-  const bodyChildren = Array.from(doc.body.childNodes);
-  const hasShellWrapper = bodyChildren.some(
-    (node) => node.nodeType === Node.ELEMENT_NODE && (node as Element).classList.contains('shell-wrapper')
-  );
+  if (options.isShellStatic) {
+    let mainContentEl = doc.getElementById('content-outlet') || doc.querySelector('main');
+    const contentDiv = doc.createElement('div');
+    contentDiv.className = 'template-main-content';
 
-  if (hasShellWrapper) {
-    bodyChildren.forEach((node) => stage.appendChild(node));
-
-    const shellWrapper = stage.querySelector('.shell-wrapper');
-    if (shellWrapper && options.ecContext) {
-      shellWrapper.querySelectorAll('footer, .footer').forEach((f) => f.remove());
-      const footerHtml = renderFooterHtml(options.ecContext);
-      const footer = doc.createElement('footer');
-      footer.className = 'footer';
-      footer.innerHTML = footerHtml;
-
-      const themeSettings = options.ecContext.themeSettings || {};
-      footer.setAttribute('data-footer-style', themeSettings.footerStyle || themeSettings.footer?.style || 'classic');
-      footer.setAttribute('data-footer-widgets', themeSettings.footerWidgets === 'hidden' ? 'hidden' : 'shown');
-      footer.setAttribute('data-footer-widget-layout', themeSettings.footerWidgetLayout || 'feature');
-      footer.setAttribute('data-footer-bottom', themeSettings.footerBottom || 'split');
-      footer.setAttribute('data-footer-legal', themeSettings.footerLegal === 'hidden' ? 'hidden' : 'shown');
-
-      shellWrapper.appendChild(footer);
-    }
-
-    if (options.enableModuleRails) {
-      const shellBody = stage.querySelector('.main-shell-body');
-      if (shellBody) {
-        let rail = shellBody.querySelector<HTMLElement>(':scope > .left-rail');
-        if (!rail) {
-          rail = doc.createElement('aside');
-          rail.className = 'left-rail';
-          shellBody.insertBefore(rail, shellBody.firstChild);
+    if (mainContentEl) {
+      const mainClone = mainContentEl.cloneNode(true) as HTMLElement;
+      Array.from(mainClone.attributes).forEach(attr => {
+        if (attr.name !== 'id') {
+          contentDiv.setAttribute(attr.name, attr.value);
         }
-        rail.innerHTML = railHtml;
+      });
+      while (mainClone.firstChild) {
+        contentDiv.appendChild(mainClone.firstChild);
       }
-
-      if (shellWrapper) {
-        let mobileTabRail = stage.querySelector<HTMLElement>(':scope > .mobile-tab-rail') || stage.querySelector<HTMLElement>('.mobile-tab-rail');
-        if (!mobileTabRail) {
-          mobileTabRail = doc.createElement('div');
-          mobileTabRail.className = 'mobile-tab-rail';
-          stage.appendChild(mobileTabRail);
-        } else if (mobileTabRail.parentNode !== stage) {
-          stage.appendChild(mobileTabRail);
-        }
-        mobileTabRail.innerHTML = mobileTabHtml;
-      }
-    }
-  } else {
-    const shell = doc.createElement('div');
-    shell.className = 'shell-wrapper static-shell-wrapper';
-    const mainShellBody = doc.createElement('div');
-    mainShellBody.className = 'main-shell-body';
-    const rail = doc.createElement('aside');
-    rail.className = 'left-rail';
-    rail.innerHTML = railHtml;
-    const contentOutlet = doc.createElement('div');
-    contentOutlet.className = 'content-wrap';
-    contentOutlet.id = 'content-outlet';
-    const mobileTabRail = doc.createElement('div');
-    mobileTabRail.className = 'mobile-tab-rail';
-    mobileTabRail.innerHTML = mobileTabHtml;
-    const drawers: Node[] = [];
-    const footers: Node[] = [];
-
-    bodyChildren.forEach((node) => {
-      if (
-        node.nodeType === Node.ELEMENT_NODE &&
-        (node as Element).matches('.mobile-drawer, #mobileDrawer')
-      ) {
-        drawers.push(node);
-        return;
-      }
-
-      if (
-        node.nodeType === Node.ELEMENT_NODE &&
-        (node as Element).matches('footer, .footer')
-      ) {
-        footers.push(node);
-        return;
-      }
-
-      if (
-        node.nodeType === Node.ELEMENT_NODE &&
-        (node as Element).matches('header, .header, .top-notice, .top')
-      ) {
-        shell.appendChild(node);
-        return;
-      }
-
-      contentOutlet.appendChild(node);
-    });
-
-    mainShellBody.appendChild(rail);
-    mainShellBody.appendChild(contentOutlet);
-    stage.appendChild(shell);
-    shell.appendChild(mainShellBody);
-
-    if (options.ecContext) {
-      const footerHtml = renderFooterHtml(options.ecContext);
-      const footer = doc.createElement('footer');
-      footer.className = 'footer';
-      footer.innerHTML = footerHtml;
-
-      const themeSettings = options.ecContext.themeSettings || {};
-      footer.setAttribute('data-footer-style', themeSettings.footerStyle || themeSettings.footer?.style || 'classic');
-      footer.setAttribute('data-footer-widgets', themeSettings.footerWidgets === 'hidden' ? 'hidden' : 'shown');
-      footer.setAttribute('data-footer-widget-layout', themeSettings.footerWidgetLayout || 'feature');
-      footer.setAttribute('data-footer-bottom', themeSettings.footerBottom || 'split');
-      footer.setAttribute('data-footer-legal', themeSettings.footerLegal === 'hidden' ? 'hidden' : 'shown');
-
-      shell.appendChild(footer);
     } else {
-      footers.forEach((footer) => shell.appendChild(footer));
+      Array.from(doc.body.childNodes).forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const el = node as HTMLElement;
+          if (
+            el.matches('header, .header, footer, .footer, .top-notice, .mobile-drawer, #mobileDrawer, .mobile-tab-rail, aside.left-rail')
+          ) {
+            return;
+          }
+        }
+        contentDiv.appendChild(node.cloneNode(true));
+      });
+    }
+    stage.appendChild(contentDiv);
+  } else {
+    const bodyChildren = Array.from(doc.body.childNodes);
+    const hasShellWrapper = bodyChildren.some(
+      (node) => node.nodeType === Node.ELEMENT_NODE && (node as Element).classList.contains('shell-wrapper')
+    );
+
+    if (hasShellWrapper) {
+      bodyChildren.forEach((node) => stage.appendChild(node));
+
+      const shellWrapper = stage.querySelector('.shell-wrapper');
+      if (shellWrapper && options.ecContext) {
+        shellWrapper.querySelectorAll('footer, .footer').forEach((f) => f.remove());
+        const footerHtml = renderFooterHtml(options.ecContext);
+        const footer = doc.createElement('footer');
+        footer.className = 'footer';
+        footer.innerHTML = footerHtml;
+
+        const themeSettings = options.ecContext.themeSettings || {};
+        footer.setAttribute('data-footer-style', themeSettings.footerStyle || themeSettings.footer?.style || 'classic');
+        footer.setAttribute('data-footer-widgets', themeSettings.footerWidgets === 'hidden' ? 'hidden' : 'shown');
+        footer.setAttribute('data-footer-widget-layout', themeSettings.footerWidgetLayout || 'feature');
+        footer.setAttribute('data-footer-bottom', themeSettings.footerBottom || 'split');
+        footer.setAttribute('data-footer-legal', themeSettings.footerLegal === 'hidden' ? 'hidden' : 'shown');
+
+        shellWrapper.appendChild(footer);
+      }
+
+      if (options.enableModuleRails) {
+        const shellBody = stage.querySelector('.main-shell-body');
+        if (shellBody) {
+          let rail = shellBody.querySelector<HTMLElement>(':scope > .left-rail');
+          if (!rail) {
+            rail = doc.createElement('aside');
+            rail.className = 'left-rail';
+            shellBody.insertBefore(rail, shellBody.firstChild);
+          }
+          rail.innerHTML = railHtml;
+        }
+
+        if (shellWrapper) {
+          let mobileTabRail = stage.querySelector<HTMLElement>(':scope > .mobile-tab-rail') || stage.querySelector<HTMLElement>('.mobile-tab-rail');
+          if (!mobileTabRail) {
+            mobileTabRail = doc.createElement('div');
+            mobileTabRail.className = 'mobile-tab-rail';
+            stage.appendChild(mobileTabRail);
+          } else if (mobileTabRail.parentNode !== stage) {
+            stage.appendChild(mobileTabRail);
+          }
+          mobileTabRail.innerHTML = mobileTabHtml;
+        }
+      }
+    } else {
+      const shell = doc.createElement('div');
+      shell.className = 'shell-wrapper static-shell-wrapper';
+      const mainShellBody = doc.createElement('div');
+      mainShellBody.className = 'main-shell-body';
+      const rail = doc.createElement('aside');
+      rail.className = 'left-rail';
+      rail.innerHTML = railHtml;
+      const contentOutlet = doc.createElement('div');
+      contentOutlet.className = 'content-wrap';
+      contentOutlet.id = 'content-outlet';
+      const mobileTabRail = doc.createElement('div');
+      mobileTabRail.className = 'mobile-tab-rail';
+      mobileTabRail.innerHTML = mobileTabHtml;
+      const drawers: Node[] = [];
+      const footers: Node[] = [];
+
+      bodyChildren.forEach((node) => {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node as Element).matches('.mobile-drawer, #mobileDrawer')
+        ) {
+          drawers.push(node);
+          return;
+        }
+
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node as Element).matches('footer, .footer')
+        ) {
+          footers.push(node);
+          return;
+        }
+
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node as Element).matches('header, .header, .top-notice, .top')
+        ) {
+          shell.appendChild(node);
+          return;
+        }
+
+        contentOutlet.appendChild(node);
+      });
+
+      mainShellBody.appendChild(rail);
+      mainShellBody.appendChild(contentOutlet);
+      stage.appendChild(shell);
+      shell.appendChild(mainShellBody);
+
+      if (options.ecContext) {
+        const footerHtml = renderFooterHtml(options.ecContext);
+        const footer = doc.createElement('footer');
+        footer.className = 'footer';
+        footer.innerHTML = footerHtml;
+
+        const themeSettings = options.ecContext.themeSettings || {};
+        footer.setAttribute('data-footer-style', themeSettings.footerStyle || themeSettings.footer?.style || 'classic');
+        footer.setAttribute('data-footer-widgets', themeSettings.footerWidgets === 'hidden' ? 'hidden' : 'shown');
+        footer.setAttribute('data-footer-widget-layout', themeSettings.footerWidgetLayout || 'feature');
+        footer.setAttribute('data-footer-bottom', themeSettings.footerBottom || 'split');
+        footer.setAttribute('data-footer-legal', themeSettings.footerLegal === 'hidden' ? 'hidden' : 'shown');
+
+        shell.appendChild(footer);
+      } else {
+        footers.forEach((footer) => shell.appendChild(footer));
+      }
+
+      stage.appendChild(mobileTabRail);
+
+      drawers.forEach((drawer) => {
+        if (drawer.nodeType === Node.ELEMENT_NODE) {
+          const element = drawer as Element;
+          element.setAttribute('aria-hidden', 'true');
+        }
+        stage.appendChild(drawer);
+      });
     }
 
-    stage.appendChild(mobileTabRail);
-
-    drawers.forEach((drawer) => {
-      if (drawer.nodeType === Node.ELEMENT_NODE) {
-        const element = drawer as Element;
-        element.setAttribute('aria-hidden', 'true');
-      }
-      stage.appendChild(drawer);
-    });
+    // Inject dynamic canonical mobile drawer
+    const drawerElement = doc.createElement('aside');
+    drawerElement.className = 'mobile-drawer';
+    drawerElement.id = 'mobileDrawer';
+    drawerElement.setAttribute('aria-hidden', 'true');
+    if (options.ecContext) {
+      drawerElement.innerHTML = renderMobileDrawerHtml(options.ecContext);
+    } else {
+      drawerElement.innerHTML = renderDefaultMobileDrawerHtml();
+    }
+    stage.appendChild(drawerElement);
   }
-
-  // Inject dynamic canonical mobile drawer
-  const drawerElement = doc.createElement('aside');
-  drawerElement.className = 'mobile-drawer';
-  drawerElement.id = 'mobileDrawer';
-  drawerElement.setAttribute('aria-hidden', 'true');
-  if (options.ecContext) {
-    drawerElement.innerHTML = renderMobileDrawerHtml(options.ecContext);
-  } else {
-    drawerElement.innerHTML = renderDefaultMobileDrawerHtml();
-  }
-  stage.appendChild(drawerElement);
 
   return {
     html: stage.innerHTML,
@@ -509,6 +552,7 @@ function buildStaticPayload(
     headStyles,
     scripts,
     needsLucide: Boolean(stage.querySelector('[data-lucide]')),
+    headerActionsHtml,
   };
 }
 
@@ -699,6 +743,7 @@ const StaticHtmlPage: React.FC<Props> = ({
   themeSettings,
   enableModuleRails = true,
   moduleEntitlements,
+  isShellStatic = false,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -717,9 +762,19 @@ const StaticHtmlPage: React.FC<Props> = ({
       pathname: location.pathname,
       moduleEntitlements,
       ecContext,
+      isShellStatic,
     }),
-    [enableModuleRails, html, location.pathname, moduleEntitlements, ecContext]
+    [enableModuleRails, html, location.pathname, moduleEntitlements, ecContext, isShellStatic]
   );
+
+  useEffect(() => {
+    if (isShellStatic && ecContext?.setHeaderCTAs) {
+      ecContext.setHeaderCTAs(payload.headerActionsHtml || null);
+      return () => {
+        ecContext.setHeaderCTAs?.(null);
+      };
+    }
+  }, [isShellStatic, payload.headerActionsHtml, ecContext]);
 
   useEffect(() => {
     if (payload.title) document.title = payload.title;

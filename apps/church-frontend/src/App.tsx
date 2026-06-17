@@ -182,6 +182,21 @@ function getTemplateFileForSlug(slug: string): string | null {
   return null;
 }
 
+const SkeletonPage: React.FC = () => (
+  <div className="skeleton-page">
+    <div className="skeleton-shimmer skeleton-hero"></div>
+    <div className="skeleton-shimmer skeleton-title" style={{ marginTop: '24px' }}></div>
+    <div className="skeleton-shimmer skeleton-text"></div>
+    <div className="skeleton-shimmer skeleton-text"></div>
+    <div className="skeleton-shimmer skeleton-text short"></div>
+    <div className="skeleton-grid" style={{ marginTop: '32px' }}>
+      <div className="skeleton-shimmer skeleton-card"></div>
+      <div className="skeleton-shimmer skeleton-card"></div>
+      <div className="skeleton-shimmer skeleton-card"></div>
+    </div>
+  </div>
+);
+
 // Sub-component that handles fetching and rendering pages based on current URL path
 const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSettings }> = ({
   siteContext,
@@ -192,6 +207,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pageData, setPageData] = useState<PageRenderResponse['data'] | null>(null);
+  const [headerCTAs, setHeaderCTAs] = useState<string | null>(null);
 
   // Load page data from CMS
   useEffect(() => {
@@ -290,12 +306,6 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     if (fullHtml) queueOfflinePrefetch(fullHtml, slugFromPathname(location.pathname));
   }, [location.pathname, pageData]);
 
-  if (loading) {
-    return (
-      <div aria-hidden="true" style={{ minHeight: '100vh', background: 'var(--bg, #ffffff)' }} />
-    );
-  }
-
   const contextValue = {
     tenant: siteContext.tenant,
     themeSettings,
@@ -304,17 +314,33 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     globalContent: pageData?.globalContent || null,
     isPreviewMode: !!getQueryParams().previewToken,
     moduleEntitlements: siteContext.moduleEntitlements,
+    headerCTAs,
+    setHeaderCTAs,
   };
+
+  if (loading) {
+    return (
+      <EcclesiaProvider value={contextValue}>
+        <EcclesiaLayout useStaticLayout={false}>
+          <SkeletonPage />
+        </EcclesiaLayout>
+      </EcclesiaProvider>
+    );
+  }
 
   if (error || !pageData) {
     return (
-      <div className="error-fallback" style={{ padding: '80px 24px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
-        <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Page Not Found</h2>
-        <p style={{ color: '#64748b', marginBottom: '24px' }}>
-          {error || "The page you are looking for doesn't exist or hasn't been published."}
-        </p>
-        <a className="btn btn-primary" href="/">Go Back Home</a>
-      </div>
+      <EcclesiaProvider value={contextValue}>
+        <EcclesiaLayout useStaticLayout={false}>
+          <div className="error-fallback" style={{ padding: '80px 24px', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+            <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Page Not Found</h2>
+            <p style={{ color: '#64748b', marginBottom: '24px' }}>
+              {error || "The page you are looking for doesn't exist or hasn't been published."}
+            </p>
+            <a className="btn btn-primary" href="/">Go Back Home</a>
+          </div>
+        </EcclesiaLayout>
+      </EcclesiaProvider>
     );
   }
 
@@ -334,13 +360,14 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
 
   return (
     <EcclesiaProvider value={contextValue}>
-      <EcclesiaLayout useStaticLayout={!!fullHtml}>
+      <EcclesiaLayout useStaticLayout={false}>
         {fullHtml ? (
           <StaticHtmlPage
             html={fullHtml}
             themeSettings={themeSettings}
             enableModuleRails
             moduleEntitlements={siteContext.moduleEntitlements}
+            isShellStatic
           />
         ) : (
           <GenericPage

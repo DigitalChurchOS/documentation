@@ -45,7 +45,7 @@ const EcclesiaMobileDrawer: React.FC<Props> = ({ isOpen, onClose }) => {
       {/* Backdrop */}
       {isOpen && <div className="drawer-backdrop" onClick={onClose} />}
 
-      <aside className={`mobile-drawer ${isOpen ? 'open' : ''}`} ref={drawerRef}>
+      <aside className={`mobile-drawer ${isOpen ? 'open' : ''}`} aria-hidden={!isOpen} ref={drawerRef}>
         <div className="drawer-close-row">
           <button className="drawer-close" onClick={onClose} aria-label="Close menu">
             <X size={20} />

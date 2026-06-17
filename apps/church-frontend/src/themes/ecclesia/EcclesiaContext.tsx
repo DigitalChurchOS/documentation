@@ -10,6 +10,8 @@ export interface EcclesiaContextValue {
   globalContent: GlobalContent | null;
   isPreviewMode: boolean;
   moduleEntitlements?: ModuleEntitlement[];
+  headerCTAs?: string | null;
+  setHeaderCTAs?: (ctas: string | null) => void;
 }
 
 const EcclesiaCtx = createContext<EcclesiaContextValue | null>(null);
