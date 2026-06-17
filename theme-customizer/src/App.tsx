@@ -154,6 +154,43 @@ const AVAILABLE_THEMES = [
   }
 ];
 
+const CUSTOMIZER_PAGES_LIST = [
+  { value: "index.html", label: "Home Page (index.html)" },
+  { value: "about.html", label: "About Page (about.html)" },
+  { value: "contact.html", label: "Contact Page (contact.html)" },
+  { value: "ministries.html", label: "Ministries Page (ministries.html)" },
+  { value: "sermons.html", label: "Sermons Archive (sermons.html)" },
+  { value: "media-single.html", label: "Single Sermon (media-single.html)" },
+  { value: "media-archive.html", label: "Media Archive (media-archive.html)" },
+  { value: "livestream-page.html", label: "Livestream Page (livestream-page.html)" },
+  { value: "giving.html", label: "Giving Page (giving.html)" },
+  { value: "giving-partnership.html", label: "Partnership Campaign (giving-partnership.html)" },
+  { value: "events.html", label: "Events Landing (events.html)" },
+  { value: "event-single.html", label: "Single Event (event-single.html)" },
+  { value: "event-register.html", label: "Event Registration (event-register.html)" },
+  { value: "events-archive.html", label: "Events Archive (events-archive.html)" },
+  { value: "blog-archive.html", label: "Blog Archive (blog-archive.html)" },
+  { value: "blog-single.html", label: "Single Blog Post (blog-single.html)" },
+  { value: "podcast-archive.html", label: "Podcast Archive (podcast-archive.html)" },
+  { value: "podcast-episode.html", label: "Podcast Episode (podcast-episode.html)" },
+  { value: "services-archive.html", label: "Services Archive (services-archive.html)" },
+  { value: "service-single.html", label: "Single Service (service-single.html)" },
+  { value: "library-archive.html", label: "Library Archive (library-archive.html)" },
+  { value: "resource-single.html", label: "Single Resource (resource-single.html)" },
+  { value: "courses-archive.html", label: "Courses Archive (courses-archive.html)" },
+  { value: "course-main.html", label: "Course Landing (course-main.html)" },
+  { value: "lesson-single.html", label: "Single Lesson (lesson-single.html)" },
+  { value: "prayer-home.html", label: "Prayer Home (prayer-home.html)" },
+  { value: "prayer-room.html", label: "Prayer Room (prayer-room.html)" },
+  { value: "prayer-wall.html", label: "Prayer Wall (prayer-wall.html)" },
+  { value: "prayer.html", label: "Prayer & Testimony (prayer.html)" },
+  { value: "testimony-wall.html", label: "Testimony Wall (testimony-wall.html)" },
+  { value: "testimony-single.html", label: "Single Testimony (testimony-single.html)" },
+  { value: "testimony-submit.html", label: "Submit Testimony (testimony-submit.html)" },
+  { value: "worship.html", label: "Worship / Style Guide (worship.html)" }
+];
+
+
 const CUSTOMIZER_FILE_SLUGS: Record<string, string> = {
   'index.html': '',
   'home.html': '',
@@ -1037,48 +1074,15 @@ export function App() {
                }}
           >
             <div className="dropdown-selected" onClick={() => setIsPageMenuOpen(!isPageMenuOpen)}>
-              <span className="dropdown-label">{
-                [
-                  { value: "index.html", label: "Home Page (index.html)" },
-                  { value: "about.html", label: "About Page (about.html)" },
-                  { value: "ministries.html", label: "Ministries Page (ministries.html)" },
-                  { value: "sermons.html", label: "Sermons Archive (sermons.html)" },
-                  { value: "media-single.html", label: "Single Sermon (media-single.html)" },
-                  { value: "livestream-page.html", label: "Livestream Page (livestream-page.html)" },
-                  { value: "events.html", label: "Events (events.html)" },
-                  { value: "event-single.html", label: "Single Event (event-single.html)" },
-                  { value: "blog-archive.html", label: "Blog Archive (blog-archive.html)" },
-                  { value: "blog-single.html", label: "Single Blog Post (blog-single.html)" },
-                  { value: "giving.html", label: "Giving Page (giving.html)" },
-                  { value: "prayer.html", label: "Prayer & Testimony (prayer.html)" },
-                  { value: "contact.html", label: "Contact Page (contact.html)" },
-                  { value: "event-register.html", label: "Forms & Registration (event-register.html)" },
-                  { value: "worship.html", label: "Style Guide (worship.html)" },
-                  { value: "prayer-room.html", label: "System States (prayer-room.html)" }
-                ].find(p => p.value === importedFilename)?.label || `${importedFilename} (Custom)`
-              }</span>
-              <ChevronDown size={14} className={`dropdown-icon ${isPageMenuOpen ? "open" : ""}`} />
-            </div>
-            {isPageMenuOpen && (
-              <div className="dropdown-options">
-                {[
-                  { value: "index.html", label: "Home Page (index.html)" },
-                  { value: "about.html", label: "About Page (about.html)" },
-                  { value: "ministries.html", label: "Ministries Page (ministries.html)" },
-                  { value: "sermons.html", label: "Sermons Archive (sermons.html)" },
-                  { value: "media-single.html", label: "Single Sermon (media-single.html)" },
-                  { value: "livestream-page.html", label: "Livestream Page (livestream-page.html)" },
-                  { value: "events.html", label: "Events (events.html)" },
-                  { value: "event-single.html", label: "Single Event (event-single.html)" },
-                  { value: "blog-archive.html", label: "Blog Archive (blog-archive.html)" },
-                  { value: "blog-single.html", label: "Single Blog Post (blog-single.html)" },
-                  { value: "giving.html", label: "Giving Page (giving.html)" },
-                  { value: "prayer.html", label: "Prayer & Testimony (prayer.html)" },
-                  { value: "contact.html", label: "Contact Page (contact.html)" },
-                  { value: "event-register.html", label: "Forms & Registration (event-register.html)" },
-                  { value: "worship.html", label: "Style Guide (worship.html)" },
-                  { value: "prayer-room.html", label: "System States (prayer-room.html)" }
-                ].map((opt) => (
+               <span className="dropdown-label">{
+                 CUSTOMIZER_PAGES_LIST.find(p => p.value === importedFilename)?.label || `${importedFilename} (Custom)`
+               }</span>
+               <ChevronDown size={14} className={`dropdown-icon ${isPageMenuOpen ? "open" : ""}`} />
+             </div>
+             {isPageMenuOpen && (
+               <div className="dropdown-options">
+                 {CUSTOMIZER_PAGES_LIST.map((opt) => (
+
                   <div
                     key={opt.value}
                     className={`dropdown-item ${importedFilename === opt.value ? "active" : ""}`}

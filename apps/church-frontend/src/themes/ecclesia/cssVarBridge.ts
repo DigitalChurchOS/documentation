@@ -320,7 +320,9 @@ body { padding-bottom: 0 !important; background: var(--bg); }
 }
 @media (min-width: 1051px) {
   .static-html-stage .mobile-drawer,
-  .static-html-stage #mobileDrawer {
+  .static-html-stage #mobileDrawer,
+  .static-html-stage .drawer,
+  .static-html-stage #drawer {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;

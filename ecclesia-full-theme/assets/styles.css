@@ -77,7 +77,7 @@ img { max-width: 100%; display: block; }
 .btn-primary { background:var(--accent); color:white; box-shadow:0 16px 34px color-mix(in srgb, var(--accent) 28%, transparent); }
 .btn-soft { background:color-mix(in srgb, var(--accent) 10%, transparent); color:var(--accent); }
 .btn-light { background:white; color:var(--text); border:1px solid var(--border); }
-.mobile-menu-btn, .menu, .menu-btn, .mobilebtn { display:none; width:42px; height:42px; border:1px solid var(--border); border-radius:14px; background:var(--surface); color:var(--text); display:inline-flex; align-items:center; justify-content:center; padding:0 !important; }
+.mobile-menu-btn, .menu, .menu-btn, .mobilebtn { display:none; width:42px; height:42px; border:1px solid var(--border); border-radius:14px; background:var(--surface); color:var(--text); align-items:center; justify-content:center; padding:0 !important; }
 .mobile-drawer {
   position:fixed;
   top:0;
@@ -94,13 +94,33 @@ img { max-width: 100%; display: block; }
   padding:22px;
   overflow-y:auto;
   box-shadow:var(--shadow);
+  /* Hidden by default until JS sets aria-hidden and drawer mode */
+  transform:translateX(100%);
+  visibility:hidden;
+  pointer-events:none;
 }
 @media (min-width: 1051px) {
-  .mobile-drawer, #mobileDrawer {
+  .mobile-drawer, #mobileDrawer, .drawer, #drawer {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
+    transform: none !important;
   }
+  .mobile-menu-btn, .menu, .menu-btn, .mobilebtn {
+    display: none !important;
+  }
+}
+/* When drawer is explicitly opened (aria-hidden=false), make it visible */
+.mobile-drawer[aria-hidden="false"] {
+  visibility: visible;
+  pointer-events: auto;
+}
+/* When drawer mode is set, let the mode-specific rules control transform/visibility */
+body[data-mobile-drawer-mode] .mobile-drawer {
+  visibility: visible;
+}
+body[data-mobile-drawer-mode] .mobile-drawer[aria-hidden="true"] {
+  pointer-events: none;
 }
 .mobile-drawer[aria-hidden="true"] { pointer-events:none; }
 .drawer-close-row { display:flex; justify-content:flex-end; margin-bottom:28px; }
@@ -186,6 +206,10 @@ textarea { min-height:140px; resize:vertical; grid-column:1/-1; }
   :root { --section:86px; }
   .nav { display:none; }
   .mobile-menu-btn, .menu, .menu-btn, .mobilebtn { display:inline-flex; align-items:center; justify-content:center; padding:0 !important; }
+  /* On mobile: hide header CTA buttons, keep only logo + hamburger */
+  .header-actions .btn:not(.mobile-menu-btn):not(.menu):not(.menu-btn):not(.mobilebtn) {
+    display:none !important;
+  }
   .hero, .wide-panel, .split, .location-grid { grid-template-columns:1fr; }
   .hero { padding-top:34px; }
   .hero-copy, .hero-media { min-height:auto; }
@@ -199,12 +223,6 @@ textarea { min-height:140px; resize:vertical; grid-column:1/-1; }
   .nav-wrap { min-height:72px; }
   .brand { font-size:17px; }
   .brand-mark { width:38px; height:38px; border-radius:14px; }
-  .header-actions .btn:not(.mobile-menu-btn),
-  .header-actions a.btn,
-  .actions .btn:not(.menu):not(.menu-btn):not(.mobilebtn),
-  .actions a.btn {
-    display:none !important;
-  }
   .mobile-drawer { padding:18px; }
   .hero { padding:22px 14px 62px; gap:18px; }
   .hero-copy, .page-hero-inner { padding:30px 22px; border-radius:26px; }
@@ -927,6 +945,7 @@ body[data-mobile-menu-position="left"] .mobile-drawer {
   right: auto !important;
   border-left: none !important;
   border-right: 1px solid var(--border) !important;
+  transform: translateX(-100%);
 }
 
 /* Drawer Transitions */
@@ -938,6 +957,12 @@ body[data-mobile-menu-position="left"] .mobile-drawer {
 body[data-mobile-drawer-mode="reveal"] .mobile-drawer {
   z-index: 1 !important;
   transform: none !important;
+}
+body[data-mobile-drawer-mode="reveal"] .mobile-drawer[aria-hidden="true"] {
+  visibility: hidden;
+}
+body[data-mobile-drawer-mode="reveal"] .mobile-drawer[aria-hidden="false"] {
+  visibility: visible;
 }
 body[data-mobile-drawer-mode="reveal"].drawer-open .shell-wrapper {
   transform: translateX(calc(var(--drawer-width) * -1)) !important;

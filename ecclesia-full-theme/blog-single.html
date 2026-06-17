@@ -29,15 +29,7 @@
       <button class="mobilebtn" id="menuBtn"><i data-lucide="menu"></i></button>
     </div>
   </div>
-  <div class="drawer" id="drawer">
-    <a href="index.html">Home</a>
-    <a href="about.html">About</a>
-    <a href="blog-archive.html">Articles</a>
-    <a href="sermons.html">Sermons</a>
-    <a href="events.html">Events</a>
-    <a href="prayer.html">Prayer</a>
-    <a href="contact.html">Contact</a>
-  </div>
+  
 </header>
 
 <main>
@@ -296,5 +288,36 @@
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="assets/blog.js"></script>
 <script src="assets/app.js"></script>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="drawer-nav">
+      <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+      <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
+      <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
+      <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
+      <a class="pjax-link" href="ministries.html"><i data-lucide="users-round"></i> Ministries</a>
+      <a class="pjax-link" href="prayer.html"><i data-lucide="heart-handshake"></i> Prayer</a>
+      <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
+    </nav>
+
+    <div class="drawer-actions">
+      <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+        <i data-lucide="radio"></i>
+        Watch Live
+      </a>
+
+      <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+        <i data-lucide="map-pin"></i>
+        Plan Visit
+      </a>
+    </div>
+  </aside>
+
 </body>
 </html>
