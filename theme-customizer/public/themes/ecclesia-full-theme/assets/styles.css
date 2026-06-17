@@ -124,9 +124,10 @@ body[data-mobile-drawer-mode] .mobile-drawer[aria-hidden="true"] {
 }
 .mobile-drawer[aria-hidden="true"] { pointer-events:none; }
 .drawer-close-row { display:flex; justify-content:flex-end; margin-bottom:28px; }
-.drawer-close { width:46px; height:46px; border-radius:14px; border:1px solid var(--border); background:var(--surface); color:var(--text); display:grid; place-items:center; cursor:pointer; }
+.drawer-close { width:46px; height:46px; border-radius:14px; border:1px solid var(--border) !important; background:color-mix(in srgb, var(--text) 5%, var(--surface-soft)) !important; color:var(--text) !important; display:grid; place-items:center; cursor:pointer; transition: background 0.2s, color 0.2s; }
+.drawer-close:hover { background:color-mix(in srgb, var(--text) 10%, var(--surface-soft)) !important; }
 .drawer-nav { display:grid; gap:10px; }
-.drawer-nav a { min-height:56px; display:flex; align-items:center; gap:14px; padding:0 18px; border-radius:14px; background:var(--surface-soft); color:var(--muted); font-size:16px; font-weight:800; transition:.25s cubic-bezier(.2,.8,.2,1); }
+.drawer-nav a { min-height:56px; display:flex; align-items:center; gap:14px; padding:0 18px; border-radius:14px; background:var(--surface-soft); color:var(--text); font-size:16px; font-weight:800; transition:.25s cubic-bezier(.2,.8,.2,1); }
 .drawer-nav a:hover { background:color-mix(in srgb, var(--accent) 10%, transparent); color:var(--accent); }
 .drawer-nav svg { width:21px; height:21px; }
 .drawer-actions { margin-top:auto; display:grid; gap:12px; padding-top:22px; border-top:1px solid var(--border); }
@@ -968,9 +969,11 @@ body[data-mobile-drawer-mode="reveal"] .mobile-drawer[aria-hidden="false"] {
   visibility: visible;
 }
 body[data-mobile-drawer-mode="reveal"].drawer-open .shell-wrapper {
+  transform: translateX(-75vw) !important;
   transform: translateX(calc(var(--drawer-width) * -1)) !important;
 }
 body[data-mobile-drawer-mode="reveal"][data-mobile-menu-position="left"].drawer-open .shell-wrapper {
+  transform: translateX(75vw) !important;
   transform: translateX(var(--drawer-width)) !important;
 }
 
@@ -1006,9 +1009,11 @@ body[data-mobile-drawer-mode="push"] .mobile-drawer[aria-hidden="false"] {
   transform: translateX(0) !important;
 }
 body[data-mobile-drawer-mode="push"].drawer-open .shell-wrapper {
+  transform: translateX(-75vw) !important;
   transform: translateX(calc(var(--drawer-width) * -1)) !important;
 }
 body[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"].drawer-open .shell-wrapper {
+  transform: translateX(75vw) !important;
   transform: translateX(var(--drawer-width)) !important;
 }
 
@@ -1041,7 +1046,7 @@ body[data-mobile-drawer-mode="push"].drawer-open::after {
   padding: 8px 4px !important;
   border-radius: 0 !important;
   background: transparent !important;
-  color: var(--muted) !important;
+  color: #111827 !important; /* Force high contrast charcoal color in light mode */
   font-size: 16px !important;
   font-weight: 800 !important;
   border-bottom: 1px solid color-mix(in srgb, var(--border) 40%, transparent) !important;
@@ -1056,13 +1061,24 @@ body[data-mobile-drawer-mode="push"].drawer-open::after {
   color: inherit !important;
 }
 
+/* Dark Mode Overrides for Drawer */
+body.dark-mode .mobile-drawer {
+  background: #111827 !important;
+  border-left-color: rgba(255, 255, 255, 0.1) !important;
+  border-right-color: rgba(255, 255, 255, 0.1) !important;
+}
+body.dark-mode .drawer-nav a {
+  color: #ffffff !important; /* White text in dark mode */
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
 /* Reveal Mode Drawer Background & Font Color Overrides */
 body[data-mobile-drawer-mode="reveal"] .mobile-drawer {
   background: color-mix(in srgb, var(--accent) 5%, #ede6dd) !important; /* Darker than page bg */
   border-left: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
 }
 body[data-mobile-drawer-mode="reveal"] .drawer-nav a {
-  color: #000000 !important; /* Pitch dark / black */
+  color: #111827 !important; /* Match charcoal */
   border-bottom-color: rgba(0, 0, 0, 0.08) !important;
 }
 body[data-mobile-drawer-mode="reveal"] .drawer-nav a:hover {
