@@ -102,6 +102,42 @@ function isEcclesiaTheme(siteContext: SiteContext): boolean {
   return /ecclesia/i.test(`${themeName} ${themeKey}`);
 }
 
+const slugToTemplateMap: Record<string, string> = {
+  '': 'index.html',
+  'about': 'about.html',
+  'sermons': 'sermons.html',
+  'events': 'events.html',
+  'ministries': 'ministries.html',
+  'prayer': 'prayer.html',
+  'contact': 'contact.html',
+  'giving': 'giving.html',
+  'partnership': 'giving-partnership.html',
+  'livestream': 'livestream-page.html',
+  'media': 'media-archive.html',
+  'media/sample-message': 'media-single.html',
+  'podcast': 'podcast-archive.html',
+  'podcast/sample-episode': 'podcast-episode.html',
+  'blog': 'blog-archive.html',
+  'blog/sample-post': 'blog-single.html',
+  'services': 'services-archive.html',
+  'services/sample-service': 'service-single.html',
+  'library': 'library-archive.html',
+  'library/sample-resource': 'resource-single.html',
+  'courses': 'courses-archive.html',
+  'courses/main': 'course-main.html',
+  'courses/lesson': 'lesson-single.html',
+  'events/archive': 'events-archive.html',
+  'events/sample-event': 'event-single.html',
+  'events/register': 'event-register.html',
+  'prayer-home': 'prayer-home.html',
+  'prayer/wall': 'prayer-wall.html',
+  'prayer/room': 'prayer-room.html',
+  'testimonies': 'testimony-wall.html',
+  'testimonies/sample-story': 'testimony-single.html',
+  'testimonies/submit': 'testimony-submit.html',
+  'worship': 'worship.html'
+};
+
 // Sub-component that handles fetching and rendering pages based on current URL path
 const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSettings }> = ({
   siteContext,
@@ -131,8 +167,35 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
           response = await fetchPageRender(slug);
         }
 
+        let data = response.data;
+        const fullHtml = getFullHtml(data?.contentBlocks);
+        if (!fullHtml) {
+          const templateFile = slugToTemplateMap[slug];
+          if (templateFile) {
+            try {
+              const themeFolder = data?.theme?.settings?.metadata?.sourcePackage || 'ecclesia-full-theme';
+              const tRes = await fetch(`/themes/${themeFolder}/${templateFile}?t=${Date.now()}`);
+              if (tRes.ok) {
+                const templateHtml = await tRes.text();
+                data = {
+                  ...data,
+                  contentBlocks: [{
+                    slotKey: 'raw-html',
+                    data: {
+                      title: 'Raw HTML',
+                      content: templateHtml
+                    }
+                  }]
+                };
+              }
+            } catch (fetchErr) {
+              console.warn(`Failed to fetch static template: /themes/ecclesia/${templateFile}`, fetchErr);
+            }
+          }
+        }
+
         if (active) {
-          setPageData(response.data);
+          setPageData(data);
         }
       } catch (err: any) {
         if (active) {
