@@ -261,6 +261,9 @@ textarea { min-height:140px; resize:vertical; grid-column:1/-1; }
   z-index: 2;
   background: var(--bg);
   transition: transform .34s var(--drawer-ease), box-shadow .34s var(--drawer-ease);
+}
+
+body.drawer-open .shell-wrapper {
   will-change: transform;
 }
 
