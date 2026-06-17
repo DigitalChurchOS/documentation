@@ -569,6 +569,7 @@ header[data-header-style="detached"][data-header-border="true"],
     align-items: center;
     padding: 8px 4px 14px;
     box-shadow: 0 -8px 24px rgba(61, 43, 25, 0.06);
+    transition: transform 0.34s var(--drawer-ease) !important;
   }
   
   .mobile-tab-item {
@@ -968,11 +969,13 @@ body[data-mobile-drawer-mode="reveal"] .mobile-drawer[aria-hidden="true"] {
 body[data-mobile-drawer-mode="reveal"] .mobile-drawer[aria-hidden="false"] {
   visibility: visible;
 }
-body[data-mobile-drawer-mode="reveal"].drawer-open .shell-wrapper {
+body[data-mobile-drawer-mode="reveal"].drawer-open .shell-wrapper,
+body[data-mobile-drawer-mode="reveal"].drawer-open .mobile-tab-rail {
   transform: translateX(-75vw) !important;
   transform: translateX(calc(var(--drawer-width) * -1)) !important;
 }
-body[data-mobile-drawer-mode="reveal"][data-mobile-menu-position="left"].drawer-open .shell-wrapper {
+body[data-mobile-drawer-mode="reveal"][data-mobile-menu-position="left"].drawer-open .shell-wrapper,
+body[data-mobile-drawer-mode="reveal"][data-mobile-menu-position="left"].drawer-open .mobile-tab-rail {
   transform: translateX(75vw) !important;
   transform: translateX(var(--drawer-width)) !important;
 }
@@ -994,6 +997,9 @@ body[data-mobile-drawer-mode="overlay"] .shell-wrapper {
   transform: none !important;
   box-shadow: none !important;
 }
+body[data-mobile-drawer-mode="overlay"].drawer-open .mobile-tab-rail {
+  transform: translateY(100%) !important;
+}
 
 /* 3. Push Transition */
 body[data-mobile-drawer-mode="push"] .mobile-drawer {
@@ -1008,11 +1014,13 @@ body[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"] .mobile-d
 body[data-mobile-drawer-mode="push"] .mobile-drawer[aria-hidden="false"] {
   transform: translateX(0) !important;
 }
-body[data-mobile-drawer-mode="push"].drawer-open .shell-wrapper {
+body[data-mobile-drawer-mode="push"].drawer-open .shell-wrapper,
+body[data-mobile-drawer-mode="push"].drawer-open .mobile-tab-rail {
   transform: translateX(-75vw) !important;
   transform: translateX(calc(var(--drawer-width) * -1)) !important;
 }
-body[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"].drawer-open .shell-wrapper {
+body[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"].drawer-open .shell-wrapper,
+body[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"].drawer-open .mobile-tab-rail {
   transform: translateX(75vw) !important;
   transform: translateX(var(--drawer-width)) !important;
 }

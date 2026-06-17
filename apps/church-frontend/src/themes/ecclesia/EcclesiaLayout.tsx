@@ -59,8 +59,8 @@ const EcclesiaLayout: React.FC<Props> = ({ children, useStaticLayout = false }) 
           </main>
         </div>
         <EcclesiaFooter />
-        <EcclesiaMobileTabRail />
       </div>
+      <EcclesiaMobileTabRail />
       <EcclesiaMobileDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </div>
   );

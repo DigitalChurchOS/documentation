@@ -298,12 +298,15 @@ function applyEcclesiaRuntimeStyle(): void {
   runtimeStyle.textContent = `
 html, body, #root { min-height: 100%; }
 body { padding-bottom: 0 !important; background: var(--bg); }
+html {
+  overflow: visible !important;
+}
 .ecclesia-theme-root, .static-html-stage, .static-html-stage > .shell-wrapper {
   min-height: 100vh;
   background: var(--bg);
 }
 .static-html-stage {
-  overflow-x: clip;
+  overflow-x: visible !important;
 }
 @media (max-width: 1050px) {
   .static-html-stage .mobile-drawer[aria-hidden="true"] {

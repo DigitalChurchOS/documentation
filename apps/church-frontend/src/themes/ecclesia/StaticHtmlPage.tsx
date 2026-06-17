@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { routeFromHref } from '../../routing';
 import type { ModuleEntitlement, ThemeSettings } from '../../types';
 import { isUrlEntitled } from '../../entitlements';
+import { useEcclesia, EcclesiaContextValue } from './EcclesiaContext';
 
 const ASSET_BASE = '/themes/ecclesia';
 const LUCIDE_CDN = 'https://unpkg.com/lucide@latest';
@@ -80,6 +81,100 @@ function renderMobileTabHtml(pathname: string, entitlements?: ModuleEntitlement[
   }).join('');
 }
 
+function renderMobileDrawerHtml(ecContext: EcclesiaContextValue): string {
+  const { navigation, moduleEntitlements } = ecContext;
+  const items = (navigation?.items || []).filter((item) => isUrlEntitled(item.url, moduleEntitlements));
+  const showLiveAction = isUrlEntitled('/livestream', moduleEntitlements);
+  const showGivingAction = isUrlEntitled('/giving', moduleEntitlements);
+
+  const navIcons: Record<string, string> = {
+    '/': 'home',
+    '/home': 'home',
+    '/about': 'info',
+    '/sermons': 'play-square',
+    '/events': 'calendar-days',
+    '/ministries': 'users-round',
+    '/prayer': 'heart-handshake',
+    '/contact': 'mail',
+  };
+
+  const closeRow = `
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+  `;
+
+  const links = items.map((item) => {
+    const url = item.url === '/home' ? '/' : item.url;
+    const icon = navIcons[url] || navIcons[item.url] || 'link';
+    return `<a class="pjax-link" href="${escapeHtml(url)}"><i data-lucide="${icon}"></i><span>${escapeHtml(item.label)}</span></a>`;
+  }).join('');
+
+  const navHtml = `<nav class="drawer-nav">${links}</nav>`;
+
+  let actionsHtml = '';
+  if (showLiveAction || showGivingAction) {
+    let liveButton = '';
+    if (showLiveAction) {
+      liveButton = `<a href="/livestream" class="btn btn-light btn-full pjax-link"><i data-lucide="radio"></i> Watch Live</a>`;
+    }
+    let giveButton = '';
+    if (showGivingAction) {
+      giveButton = `<a href="/giving" class="btn btn-primary btn-full pjax-link"><i data-lucide="hand-coins"></i> Give</a>`;
+    }
+    actionsHtml = `<div class="drawer-actions">${liveButton}${giveButton}</div>`;
+  }
+
+  return `${closeRow}${navHtml}${actionsHtml}`;
+}
+
+function renderDefaultMobileDrawerHtml(): string {
+  const items = [
+    { label: 'Home', url: '/' },
+    { label: 'About', url: '/about' },
+    { label: 'Sermons', url: '/sermons' },
+    { label: 'Events', url: '/events' },
+    { label: 'Ministries', url: '/ministries' },
+    { label: 'Prayer', url: '/prayer' },
+    { label: 'Contact', url: '/contact' },
+  ];
+
+  const closeRow = `
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+  `;
+
+  const links = items.map((item) => {
+    const navIcons: Record<string, string> = {
+      '/': 'home',
+      '/about': 'info',
+      '/sermons': 'play-square',
+      '/events': 'calendar-days',
+      '/ministries': 'users-round',
+      '/prayer': 'heart-handshake',
+      '/contact': 'mail',
+    };
+    const icon = navIcons[item.url] || 'link';
+    return `<a class="pjax-link" href="${escapeHtml(item.url)}"><i data-lucide="${icon}"></i><span>${escapeHtml(item.label)}</span></a>`;
+  }).join('');
+
+  const navHtml = `<nav class="drawer-nav">${links}</nav>`;
+  const actionsHtml = `
+    <div class="drawer-actions">
+      <a href="/livestream" class="btn btn-light btn-full pjax-link"><i data-lucide="radio"></i> Watch Live</a>
+      <a href="/giving" class="btn btn-primary btn-full pjax-link"><i data-lucide="hand-coins"></i> Give</a>
+    </div>
+  `;
+
+  return `${closeRow}${navHtml}${actionsHtml}`;
+}
+
+
 function splitUrlSuffix(value: string) {
   const match = value.match(/^([^?#]*)([?#].*)?$/);
   return { path: match?.[1] || value, suffix: match?.[2] || '' };
@@ -103,12 +198,110 @@ function rewriteInlineUrls(value: string): string {
   });
 }
 
+function renderFooterHtml(ecContext: EcclesiaContextValue): string {
+  const { tenant, footer, globalContent } = ecContext;
+  const churchName = globalContent?.churchIdentity?.churchName || tenant.name;
+  const description = globalContent?.churchIdentity?.description || '';
+  const serviceTimes = globalContent?.services?.serviceTimes || [];
+  const socialLinks = footer?.socialLinks || [];
+  const secondaryLinks = footer?.secondaryLinks || [];
+  const copyright = footer?.copyrightText || `© ${new Date().getFullYear()} ${churchName}. All rights reserved.`;
+
+  let socialsHtml = '';
+  if (socialLinks.length > 0) {
+    socialsHtml = `<div class="socials">` + socialLinks.map((link) => {
+      const iconName = link.name.toLowerCase();
+      return `<a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer"><i data-lucide="${escapeHtml(iconName)}"></i></a>`;
+    }).join('') + `</div>`;
+  }
+
+  const col1Html = `
+    <div>
+      <a href="/" class="brand" style="color: white">
+        <span class="brand-mark"><i data-lucide="church"></i></span>
+        <span>${escapeHtml(churchName)}</span>
+      </a>
+      ${description ? `<p style="margin-top: 18px; max-width: 340px">${escapeHtml(description)}</p>` : ''}
+      ${socialsHtml}
+    </div>
+  `;
+
+  const col2Html = `
+    <div>
+      <h4>Explore</h4>
+      <a href="/about">About</a>
+      <a href="/sermons">Sermons</a>
+      <a href="/events">Events</a>
+      <a href="/ministries">Ministries</a>
+    </div>
+  `;
+
+  let secondaryLinksHtml = '';
+  if (secondaryLinks.length > 0) {
+    secondaryLinksHtml = secondaryLinks.map((link) => {
+      return `<a href="${escapeHtml(link.url)}">${escapeHtml(link.label)}</a>`;
+    }).join('');
+  } else {
+    secondaryLinksHtml = `
+      <a href="/contact">Plan a Visit</a>
+      <a href="/prayer">Prayer Request</a>
+      <a href="/ministries">Join a Group</a>
+      <a href="/contact">Volunteer</a>
+    `;
+  }
+  const col3Html = `
+    <div>
+      <h4>Connect</h4>
+      ${secondaryLinksHtml}
+    </div>
+  `;
+
+  let serviceTimesHtml = '';
+  if (serviceTimes.length > 0) {
+    serviceTimesHtml = serviceTimes.map((s) => {
+      return `<p>${escapeHtml(s.label)}<br />${escapeHtml(s.time)}</p>`;
+    }).join('');
+  } else {
+    serviceTimesHtml = `<p>Sunday Worship<br />9:30 AM</p>`;
+  }
+  const col4Html = `
+    <div>
+      <h4>Service Times</h4>
+      ${serviceTimesHtml}
+    </div>
+  `;
+
+  return `
+    <div class="footer-inner">
+      <div class="footer-grid">
+        ${col1Html}
+        ${col2Html}
+        ${col3Html}
+        ${col4Html}
+      </div>
+      <div class="footer-bottom">
+        <span>${copyright}</span>
+        <span>Ecclesia Theme · Digital Church OS</span>
+      </div>
+    </div>
+  `;
+}
+
 function buildStaticPayload(
   html: string,
-  options: { enableModuleRails: boolean; pathname: string; moduleEntitlements?: ModuleEntitlement[] }
+  options: {
+    enableModuleRails: boolean;
+    pathname: string;
+    moduleEntitlements?: ModuleEntitlement[];
+    ecContext?: EcclesiaContextValue | null;
+  }
 ): StaticPayload {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
+
+  // Strip any existing mobile drawers from the parsed document to avoid duplicates
+  doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach((el) => el.remove());
+
   const scripts: StaticScript[] = [];
   const headLinks: StaticPayload['headLinks'] = [];
   const headStyles: Array<{ id?: string; css: string }> = [];
@@ -171,8 +364,25 @@ function buildStaticPayload(
   if (hasShellWrapper) {
     bodyChildren.forEach((node) => stage.appendChild(node));
 
+    const shellWrapper = stage.querySelector('.shell-wrapper');
+    if (shellWrapper && options.ecContext) {
+      shellWrapper.querySelectorAll('footer, .footer').forEach((f) => f.remove());
+      const footerHtml = renderFooterHtml(options.ecContext);
+      const footer = doc.createElement('footer');
+      footer.className = 'footer';
+      footer.innerHTML = footerHtml;
+
+      const themeSettings = options.ecContext.themeSettings || {};
+      footer.setAttribute('data-footer-style', themeSettings.footerStyle || themeSettings.footer?.style || 'classic');
+      footer.setAttribute('data-footer-widgets', themeSettings.footerWidgets === 'hidden' ? 'hidden' : 'shown');
+      footer.setAttribute('data-footer-widget-layout', themeSettings.footerWidgetLayout || 'feature');
+      footer.setAttribute('data-footer-bottom', themeSettings.footerBottom || 'split');
+      footer.setAttribute('data-footer-legal', themeSettings.footerLegal === 'hidden' ? 'hidden' : 'shown');
+
+      shellWrapper.appendChild(footer);
+    }
+
     if (options.enableModuleRails) {
-      const shellWrapper = stage.querySelector('.shell-wrapper');
       const shellBody = stage.querySelector('.main-shell-body');
       if (shellBody) {
         let rail = shellBody.querySelector<HTMLElement>(':scope > .left-rail');
@@ -185,11 +395,13 @@ function buildStaticPayload(
       }
 
       if (shellWrapper) {
-        let mobileTabRail = shellWrapper.querySelector<HTMLElement>(':scope > .mobile-tab-rail');
+        let mobileTabRail = stage.querySelector<HTMLElement>(':scope > .mobile-tab-rail') || stage.querySelector<HTMLElement>('.mobile-tab-rail');
         if (!mobileTabRail) {
           mobileTabRail = doc.createElement('div');
           mobileTabRail.className = 'mobile-tab-rail';
-          shellWrapper.appendChild(mobileTabRail);
+          stage.appendChild(mobileTabRail);
+        } else if (mobileTabRail.parentNode !== stage) {
+          stage.appendChild(mobileTabRail);
         }
         mobileTabRail.innerHTML = mobileTabHtml;
       }
@@ -243,8 +455,26 @@ function buildStaticPayload(
     mainShellBody.appendChild(contentOutlet);
     stage.appendChild(shell);
     shell.appendChild(mainShellBody);
-    footers.forEach((footer) => shell.appendChild(footer));
-    shell.appendChild(mobileTabRail);
+
+    if (options.ecContext) {
+      const footerHtml = renderFooterHtml(options.ecContext);
+      const footer = doc.createElement('footer');
+      footer.className = 'footer';
+      footer.innerHTML = footerHtml;
+
+      const themeSettings = options.ecContext.themeSettings || {};
+      footer.setAttribute('data-footer-style', themeSettings.footerStyle || themeSettings.footer?.style || 'classic');
+      footer.setAttribute('data-footer-widgets', themeSettings.footerWidgets === 'hidden' ? 'hidden' : 'shown');
+      footer.setAttribute('data-footer-widget-layout', themeSettings.footerWidgetLayout || 'feature');
+      footer.setAttribute('data-footer-bottom', themeSettings.footerBottom || 'split');
+      footer.setAttribute('data-footer-legal', themeSettings.footerLegal === 'hidden' ? 'hidden' : 'shown');
+
+      shell.appendChild(footer);
+    } else {
+      footers.forEach((footer) => shell.appendChild(footer));
+    }
+
+    stage.appendChild(mobileTabRail);
 
     drawers.forEach((drawer) => {
       if (drawer.nodeType === Node.ELEMENT_NODE) {
@@ -255,9 +485,17 @@ function buildStaticPayload(
     });
   }
 
-  stage.querySelectorAll<HTMLElement>('#mobileDrawer, .mobile-drawer').forEach((drawer) => {
-    drawer.setAttribute('aria-hidden', 'true');
-  });
+  // Inject dynamic canonical mobile drawer
+  const drawerElement = doc.createElement('aside');
+  drawerElement.className = 'mobile-drawer';
+  drawerElement.id = 'mobileDrawer';
+  drawerElement.setAttribute('aria-hidden', 'true');
+  if (options.ecContext) {
+    drawerElement.innerHTML = renderMobileDrawerHtml(options.ecContext);
+  } else {
+    drawerElement.innerHTML = renderDefaultMobileDrawerHtml();
+  }
+  stage.appendChild(drawerElement);
 
   return {
     html: stage.innerHTML,
@@ -465,13 +703,22 @@ const StaticHtmlPage: React.FC<Props> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement>(null);
+
+  let ecContext: EcclesiaContextValue | null = null;
+  try {
+    ecContext = useEcclesia();
+  } catch (e) {
+    // ignore
+  }
+
   const payload = useMemo(
     () => buildStaticPayload(html, {
       enableModuleRails,
       pathname: location.pathname,
       moduleEntitlements,
+      ecContext,
     }),
-    [enableModuleRails, html, location.pathname, moduleEntitlements]
+    [enableModuleRails, html, location.pathname, moduleEntitlements, ecContext]
   );
 
   useEffect(() => {
@@ -583,7 +830,7 @@ const StaticHtmlPage: React.FC<Props> = ({
     };
   }, [navigate, payload, themeSettings]);
 
-  return <div ref={rootRef} dangerouslySetInnerHTML={{ __html: payload.html }} />;
+  return <div ref={rootRef} className="static-html-stage" dangerouslySetInnerHTML={{ __html: payload.html }} />;
 };
 
 export default StaticHtmlPage;

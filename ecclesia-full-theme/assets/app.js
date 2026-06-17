@@ -84,6 +84,24 @@ function getPageFileName(pathname) {
   return parts[parts.length - 1] || 'index.html';
 }
 
+const defaultFooterHtml = `
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="brand" style="color:white;"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+        <p style="margin-top:18px;max-width:340px;">A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.</p>
+        <div class="socials">
+          <a href="#"><i data-lucide="facebook"></i></a><a href="#"><i data-lucide="youtube"></i></a><a href="#"><i data-lucide="instagram"></i></a>
+        </div>
+      </div>
+      <div><h4>Explore</h4><a class="pjax-link" href="about.html">About</a><a class="pjax-link" href="sermons.html">Sermons</a><a class="pjax-link" href="events.html">Events</a><a class="pjax-link" href="ministries.html">Ministries</a></div>
+      <div><h4>Connect</h4><a class="pjax-link" href="contact.html">Plan a Visit</a><a class="pjax-link" href="prayer.html">Prayer Request</a><a class="pjax-link" href="ministries.html">Join a Group</a><a class="pjax-link" href="contact.html">Volunteer</a></div>
+      <div><h4>Service Times</h4><p>Sunday Worship<br />9:30 AM</p><p>Midweek Word & Prayer<br />Wednesday 7:00 PM</p></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Grace City Church. All rights reserved.</span><span>Ecclesia Theme · Digital Church OS</span></div>
+  </div>
+`;
+
 // Global initialization
 function initShell() {
   if (document.querySelector('.shell-wrapper')) {
@@ -91,14 +109,23 @@ function initShell() {
     return;
   }
 
+  // Remove any existing mobile drawers from the page to prevent duplication
+  document.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach(el => el.remove());
+
   // 1. Extract content from original page
   const originalTitle = document.title;
   const originalMain = document.querySelector('main');
   const originalHeader = document.querySelector('header');
-  const originalFooter = document.querySelector('footer');
+  
+  let originalFooter = document.querySelector('footer.footer') || document.querySelector('.footer');
+  if (!originalFooter) {
+    const f = document.querySelector('footer');
+    if (f && (f.querySelector('.footer-inner') || f.querySelector('.footer-grid'))) {
+      originalFooter = f;
+    }
+  }
   
   const headerAttrs = originalHeader ? Array.from(originalHeader.attributes).map(a => `${a.name}="${a.value}"`).join(' ') : 'class="header"';
-  const footerAttrs = originalFooter ? Array.from(originalFooter.attributes).map(a => `${a.name}="${a.value}"`).join(' ') : 'class="footer"';
   
   // Move originalMain's child nodes to a new content outlet.
   // This preserves any event listeners already registered on them.
@@ -109,7 +136,47 @@ function initShell() {
       contentOutlet.appendChild(originalMain.firstChild);
     }
   }
+
+  // Move other non-structural body children to contentOutlet to preserve them
+  Array.from(document.body.children).forEach(child => {
+    if (
+      child !== originalHeader &&
+      child !== originalFooter &&
+      child !== originalMain &&
+      !child.classList.contains('top-notice') &&
+      child.id !== 'mobileDrawer' &&
+      !child.classList.contains('mobile-drawer') &&
+      child.tagName !== 'SCRIPT'
+    ) {
+      contentOutlet.appendChild(child);
+    }
+  });
+
   const currentFileName = getPageFileName(window.location.pathname);
+  const isLivestreamPage = currentFileName.includes('livestream');
+
+  // Cache canonical footer if we find a valid non-livestream one
+  if (originalFooter && !isLivestreamPage && !window.__canonicalFooterHtml) {
+    window.__canonicalFooterHtml = originalFooter.innerHTML;
+  }
+
+  // Determine final footer HTML
+  let finalFooterHtml = '';
+  if (isLivestreamPage) {
+    finalFooterHtml = originalFooter ? originalFooter.innerHTML : defaultFooterHtml;
+  } else {
+    finalFooterHtml = window.__canonicalFooterHtml || defaultFooterHtml;
+  }
+
+  // Create site footer element
+  const siteFooter = document.createElement('footer');
+  siteFooter.className = 'footer';
+  if (originalFooter) {
+    Array.from(originalFooter.attributes).forEach(attr => {
+      if (attr.name !== 'class') siteFooter.setAttribute(attr.name, attr.value);
+    });
+  }
+  siteFooter.innerHTML = finalFooterHtml;
 
   // 2. Build shell layout
   const shellWrapper = document.createElement('div');
@@ -164,15 +231,51 @@ function initShell() {
   shellBody.appendChild(contentOutlet);
   shellWrapper.appendChild(shellBody);
   
-  if (originalFooter) shellWrapper.appendChild(originalFooter);
+  shellWrapper.appendChild(siteFooter);
   
   const tempTab = document.createElement('div');
   tempTab.innerHTML = mobileTabHtml;
-  shellWrapper.appendChild(tempTab.firstElementChild);
+  
+  // Create canonical mobile drawer
+  let drawer = document.getElementById('mobileDrawer');
+  if (!drawer) {
+    drawer = document.createElement('aside');
+    drawer.id = 'mobileDrawer';
+  }
+  drawer.className = 'mobile-drawer';
+  drawer.setAttribute('aria-hidden', 'true');
+  drawer.innerHTML = `
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="drawer-nav">
+      <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+      <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
+      <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
+      <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
+      <a class="pjax-link" href="ministries.html"><i data-lucide="users-round"></i> Ministries</a>
+      <a class="pjax-link" href="prayer.html"><i data-lucide="heart-handshake"></i> Prayer</a>
+      <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
+    </nav>
+
+    <div class="drawer-actions">
+      <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+        <i data-lucide="radio"></i>
+        Watch Live
+      </a>
+      <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+        <i data-lucide="map-pin"></i>
+        Plan Visit
+      </a>
+    </div>
+  `;
 
   document.body.appendChild(shellWrapper);
-
-
+  document.body.appendChild(drawer);
+  document.body.appendChild(tempTab.firstElementChild);
 
   // 4. Bind events
   bindEvents();
@@ -188,29 +291,111 @@ function initShell() {
   document.body.classList.add('shell-loaded');
 }
 
+function getMobileDrawerShift(drawer) {
+  if (!drawer) return '75vw';
+
+  const drawerWidth = drawer.getBoundingClientRect().width;
+  return drawerWidth ? `${Math.round(drawerWidth)}px` : '75vw';
+}
+
+function setMobileDrawerState(isOpen) {
+  const drawer = document.getElementById('mobileDrawer');
+  const menuBtn = document.getElementById('menuBtn');
+  const shellWrapper = document.querySelector('.shell-wrapper');
+
+  document.body.classList.toggle('drawer-open', isOpen);
+  if (drawer) drawer.setAttribute('aria-hidden', String(!isOpen));
+  if (menuBtn) menuBtn.setAttribute('aria-expanded', String(isOpen));
+
+  if (shellWrapper) {
+    const drawerMode = document.body.getAttribute('data-mobile-drawer-mode') || 'reveal';
+    const menuPos = document.body.getAttribute('data-mobile-menu-position') || 'right';
+
+    if (drawerMode === 'overlay') {
+      shellWrapper.style.transform = '';
+      shellWrapper.style.boxShadow = '';
+    } else {
+      const shift = getMobileDrawerShift(drawer);
+      const sign = menuPos === 'left' ? '' : '-';
+      shellWrapper.style.transform = isOpen ? `translateX(${sign}${shift})` : '';
+      shellWrapper.style.boxShadow = isOpen ? '30px 0 80px rgba(15,23,42,.16)' : '';
+    }
+  }
+}
+
+function openMobileDrawer() {
+  setMobileDrawerState(true);
+}
+
+function closeMobileDrawer() {
+  setMobileDrawerState(false);
+}
+
 // Bind mobile drawer menu
 function bindMobileMenu() {
   const menuBtn = document.getElementById('menuBtn');
   const drawer = document.getElementById('mobileDrawer');
-  if (menuBtn && drawer) {
-    // Remove old listeners by cloning and replacing
+  if (!drawer) return;
+
+  drawer.setAttribute('role', 'dialog');
+  drawer.setAttribute('aria-label', 'Mobile navigation');
+  drawer.setAttribute('aria-hidden', String(!document.body.classList.contains('drawer-open')));
+
+  if (menuBtn) {
     const newMenuBtn = menuBtn.cloneNode(true);
     menuBtn.parentNode.replaceChild(newMenuBtn, menuBtn);
+    newMenuBtn.setAttribute('aria-label', 'Open menu');
+    newMenuBtn.setAttribute('aria-controls', 'mobileDrawer');
+    newMenuBtn.setAttribute('aria-expanded', String(document.body.classList.contains('drawer-open')));
 
     newMenuBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      drawer.classList.toggle('open');
-      newMenuBtn.innerHTML = drawer.classList.contains('open') ? '<i data-lucide="x"></i>' : '<i data-lucide="menu"></i>';
-      lucide.createIcons();
+      openMobileDrawer();
     });
+  }
 
-    drawer.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        drawer.classList.remove('open');
-        newMenuBtn.innerHTML = '<i data-lucide="menu"></i>';
-        lucide.createIcons();
-      });
+  if (!drawer.dataset.drawerBound) {
+    drawer.addEventListener('click', (event) => {
+      const target = event.target.closest('#closeDrawer, a');
+      if (target) {
+        closeMobileDrawer();
+      }
     });
+    drawer.dataset.drawerBound = 'true';
+  }
+
+  if (!window.__drawerEscBound) {
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeMobileDrawer();
+    });
+    window.__drawerEscBound = true;
+  }
+
+  if (!window.__drawerClickOutsideBound) {
+    document.addEventListener('click', (event) => {
+      if (document.body.classList.contains('drawer-open')) {
+        const drawer = document.getElementById('mobileDrawer');
+        const menuBtn = document.getElementById('menuBtn');
+        if (drawer && !drawer.contains(event.target) && (!menuBtn || !menuBtn.contains(event.target))) {
+          closeMobileDrawer();
+        }
+      }
+    });
+    window.__drawerClickOutsideBound = true;
+  }
+
+  if (!window.__drawerResizeBound) {
+    const desktopQuery = window.matchMedia('(min-width: 1051px)');
+    const closeOnDesktop = (event) => {
+      if (event.matches) closeMobileDrawer();
+    };
+
+    if (desktopQuery.addEventListener) {
+      desktopQuery.addEventListener('change', closeOnDesktop);
+    } else if (desktopQuery.addListener) {
+      desktopQuery.addListener(closeOnDesktop);
+    }
+    window.__drawerResizeBound = true;
   }
 }
 
@@ -230,7 +415,7 @@ function renderHeaderCTAs(pageFile) {
   }
   
   // Keep the mobile menu button
-  ctasHtml += `<button class="mobile-menu-btn" id="menuBtn"><i data-lucide="menu"></i></button>`;
+  ctasHtml += `<button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false"><i data-lucide="menu"></i></button>`;
   actionsContainer.innerHTML = ctasHtml;
   
   bindMobileMenu();
@@ -281,6 +466,7 @@ function navigateToPage(url, isBack = false) {
   if (!contentOutlet) return;
 
   // Fade out effect
+  closeMobileDrawer();
   document.body.classList.add('page-loading');
   contentOutlet.style.opacity = '0.3';
 

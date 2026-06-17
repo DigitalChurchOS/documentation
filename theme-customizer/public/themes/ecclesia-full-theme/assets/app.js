@@ -84,6 +84,24 @@ function getPageFileName(pathname) {
   return parts[parts.length - 1] || 'index.html';
 }
 
+const defaultFooterHtml = `
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="brand" style="color:white;"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+        <p style="margin-top:18px;max-width:340px;">A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.</p>
+        <div class="socials">
+          <a href="#"><i data-lucide="facebook"></i></a><a href="#"><i data-lucide="youtube"></i></a><a href="#"><i data-lucide="instagram"></i></a>
+        </div>
+      </div>
+      <div><h4>Explore</h4><a class="pjax-link" href="about.html">About</a><a class="pjax-link" href="sermons.html">Sermons</a><a class="pjax-link" href="events.html">Events</a><a class="pjax-link" href="ministries.html">Ministries</a></div>
+      <div><h4>Connect</h4><a class="pjax-link" href="contact.html">Plan a Visit</a><a class="pjax-link" href="prayer.html">Prayer Request</a><a class="pjax-link" href="ministries.html">Join a Group</a><a class="pjax-link" href="contact.html">Volunteer</a></div>
+      <div><h4>Service Times</h4><p>Sunday Worship<br />9:30 AM</p><p>Midweek Word & Prayer<br />Wednesday 7:00 PM</p></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Grace City Church. All rights reserved.</span><span>Ecclesia Theme · Digital Church OS</span></div>
+  </div>
+`;
+
 // Global initialization
 function initShell() {
   if (document.querySelector('.shell-wrapper')) {
@@ -95,10 +113,16 @@ function initShell() {
   const originalTitle = document.title;
   const originalMain = document.querySelector('main');
   const originalHeader = document.querySelector('header');
-  const originalFooter = document.querySelector('footer');
+  
+  let originalFooter = document.querySelector('footer.footer') || document.querySelector('.footer');
+  if (!originalFooter) {
+    const f = document.querySelector('footer');
+    if (f && (f.querySelector('.footer-inner') || f.querySelector('.footer-grid'))) {
+      originalFooter = f;
+    }
+  }
   
   const headerAttrs = originalHeader ? Array.from(originalHeader.attributes).map(a => `${a.name}="${a.value}"`).join(' ') : 'class="header"';
-  const footerAttrs = originalFooter ? Array.from(originalFooter.attributes).map(a => `${a.name}="${a.value}"`).join(' ') : 'class="footer"';
   
   // Move originalMain's child nodes to a new content outlet.
   // This preserves any event listeners already registered on them.
@@ -109,7 +133,47 @@ function initShell() {
       contentOutlet.appendChild(originalMain.firstChild);
     }
   }
+
+  // Move other non-structural body children to contentOutlet to preserve them
+  Array.from(document.body.children).forEach(child => {
+    if (
+      child !== originalHeader &&
+      child !== originalFooter &&
+      child !== originalMain &&
+      !child.classList.contains('top-notice') &&
+      child.id !== 'mobileDrawer' &&
+      !child.classList.contains('mobile-drawer') &&
+      child.tagName !== 'SCRIPT'
+    ) {
+      contentOutlet.appendChild(child);
+    }
+  });
+
   const currentFileName = getPageFileName(window.location.pathname);
+  const isLivestreamPage = currentFileName.includes('livestream');
+
+  // Cache canonical footer if we find a valid non-livestream one
+  if (originalFooter && !isLivestreamPage && !window.__canonicalFooterHtml) {
+    window.__canonicalFooterHtml = originalFooter.innerHTML;
+  }
+
+  // Determine final footer HTML
+  let finalFooterHtml = '';
+  if (isLivestreamPage) {
+    finalFooterHtml = originalFooter ? originalFooter.innerHTML : defaultFooterHtml;
+  } else {
+    finalFooterHtml = window.__canonicalFooterHtml || defaultFooterHtml;
+  }
+
+  // Create site footer element
+  const siteFooter = document.createElement('footer');
+  siteFooter.className = 'footer';
+  if (originalFooter) {
+    Array.from(originalFooter.attributes).forEach(attr => {
+      if (attr.name !== 'class') siteFooter.setAttribute(attr.name, attr.value);
+    });
+  }
+  siteFooter.innerHTML = finalFooterHtml;
 
   // 2. Build shell layout
   const shellWrapper = document.createElement('div');
@@ -165,14 +229,14 @@ function initShell() {
   shellBody.appendChild(contentOutlet);
   shellWrapper.appendChild(shellBody);
   
-  if (originalFooter) shellWrapper.appendChild(originalFooter);
+  shellWrapper.appendChild(siteFooter);
   
   const tempTab = document.createElement('div');
   tempTab.innerHTML = mobileTabHtml;
-  shellWrapper.appendChild(tempTab.firstElementChild);
-
+  
   document.body.appendChild(shellWrapper);
   if (originalDrawer) document.body.appendChild(originalDrawer);
+  document.body.appendChild(tempTab.firstElementChild);
 
   // 4. Bind events
   bindEvents();
