@@ -138,6 +138,50 @@ const slugToTemplateMap: Record<string, string> = {
   'worship': 'worship.html'
 };
 
+function getTemplateFileForSlug(slug: string): string | null {
+  if (slugToTemplateMap[slug]) {
+    return slugToTemplateMap[slug];
+  }
+
+  const parts = slug.split('/');
+  if (parts.length > 1) {
+    const prefix = parts[0];
+    const subPath = parts.slice(1).join('/');
+
+    if (prefix === 'blog') {
+      return 'blog-single.html';
+    }
+    if (prefix === 'sermons' || prefix === 'media') {
+      return 'media-single.html';
+    }
+    if (prefix === 'events') {
+      if (subPath === 'archive') return 'events-archive.html';
+      if (subPath === 'register') return 'event-register.html';
+      return 'event-single.html';
+    }
+    if (prefix === 'podcast') {
+      return 'podcast-episode.html';
+    }
+    if (prefix === 'services') {
+      return 'service-single.html';
+    }
+    if (prefix === 'library') {
+      return 'resource-single.html';
+    }
+    if (prefix === 'courses') {
+      if (subPath === 'main') return 'course-main.html';
+      if (subPath === 'lesson') return 'lesson-single.html';
+      return 'course-main.html';
+    }
+    if (prefix === 'testimonies') {
+      if (subPath === 'submit') return 'testimony-submit.html';
+      return 'testimony-single.html';
+    }
+  }
+
+  return null;
+}
+
 // Sub-component that handles fetching and rendering pages based on current URL path
 const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSettings }> = ({
   siteContext,
@@ -170,7 +214,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
         let data = response.data;
         const fullHtml = getFullHtml(data?.contentBlocks);
         if (!fullHtml) {
-          const templateFile = slugToTemplateMap[slug];
+          const templateFile = getTemplateFileForSlug(slug);
           if (templateFile) {
             try {
               const themeFolder = data?.theme?.settings?.metadata?.sourcePackage || 'ecclesia-full-theme';
