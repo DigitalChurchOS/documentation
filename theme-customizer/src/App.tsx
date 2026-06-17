@@ -691,15 +691,68 @@ export function App() {
     }
   };
 
+  const navigateCustomizerPage = async (filename: string) => {
+    const urlFilename = filename.split("/").pop() || "index.html";
+    const mappedSlug = CUSTOMIZER_FILE_SLUGS[urlFilename] !== undefined 
+      ? CUSTOMIZER_FILE_SLUGS[urlFilename] 
+      : (urlFilename === "index.html" ? "" : urlFilename.replace(".html", ""));
+    
+    let pageRecord = pagesList.find((p) => p.slug === mappedSlug);
+    let resolvedPageId = pageRecord?.id || "";
+    
+    if (!pageRecord && websiteId) {
+      try {
+        const opt = CUSTOMIZER_PAGES_LIST.find(p => p.value === urlFilename);
+        const title = opt ? opt.label.split(" (")[0] : urlFilename.replace(".html", "");
+        const newPage = await apiFetch("POST", "/api/cms/pages", {
+          websiteId,
+          slug: mappedSlug,
+          title: title,
+          status: "draft",
+          content: []
+        });
+        if (newPage && newPage.data) {
+          pageRecord = newPage.data;
+          resolvedPageId = pageRecord.id;
+          setPagesList((prev) => [...prev, pageRecord]);
+        }
+      } catch (createErr) {
+        console.error("Failed to dynamically create page in database:", createErr);
+      }
+    }
+
+    if (resolvedPageId) {
+      setPageId(resolvedPageId);
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set("pageId", resolvedPageId);
+      window.history.pushState({}, "", newUrl.toString());
+    } else {
+      setPageId("");
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("pageId");
+      window.history.pushState({}, "", newUrl.toString());
+    }
+    
+    fetchPage(urlFilename, currentTheme, resolvedPageId);
+  };
+
   const handleSelectTheme = (themeFolder: string) => {
     setCurrentTheme(themeFolder);
     fetchPage("index.html", themeFolder);
   };
 
-  // Load default index.html on mount
+  // Load correct page template once tenant resolves and pages are loaded
   useEffect(() => {
-    fetchPage("index.html");
-  }, [pageId]);
+    if (resolvingTenant) return;
+
+    const pageRecord = pagesList.find((p) => p.id === pageId);
+    const slug = pageRecord ? pageRecord.slug : "";
+    const filename = Object.keys(CUSTOMIZER_FILE_SLUGS).find(
+      (key) => CUSTOMIZER_FILE_SLUGS[key] === slug
+    ) || "index.html";
+
+    fetchPage(filename, currentTheme, pageId);
+  }, [resolvingTenant]);
 
   // Sync scroll lock on escape key and listen for frame navigation
   useEffect(() => {
@@ -710,7 +763,7 @@ export function App() {
     };
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === "ec-navigate") {
-        fetchPage(event.data.href);
+        navigateCustomizerPage(event.data.href);
       } else if (event.data && event.data.type === "ec-block-dropped") {
         const { targetPath, position, html } = event.data.data;
         setIsDragging(false);
@@ -737,7 +790,7 @@ export function App() {
       window.removeEventListener("keydown", handleKey);
       window.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [pagesList, currentTheme, websiteId]);
 
   const handleImport = (content: string, filename: string) => {
     setRawHtml(content);
@@ -1087,39 +1140,7 @@ export function App() {
                     key={opt.value}
                     className={`dropdown-item ${importedFilename === opt.value ? "active" : ""}`}
                     onClick={async () => {
-                      const mappedSlug = CUSTOMIZER_FILE_SLUGS[opt.value] !== undefined 
-                        ? CUSTOMIZER_FILE_SLUGS[opt.value] 
-                        : (opt.value === "index.html" ? "" : opt.value.replace(".html", ""));
-                      let pageRecord = pagesList.find((p) => p.slug === mappedSlug);
-                      
-                      let resolvedPageId = pageRecord?.id || "";
-                      if (!pageRecord && websiteId) {
-                        try {
-                          const newPage = await apiFetch("POST", "/api/cms/pages", {
-                            websiteId,
-                            slug: mappedSlug,
-                            title: opt.label.split(" (")[0],
-                            status: "draft",
-                            content: []
-                          });
-                          if (newPage && newPage.data) {
-                            pageRecord = newPage.data;
-                            resolvedPageId = pageRecord.id;
-                            setPagesList((prev) => [...prev, pageRecord]);
-                          }
-                        } catch (createErr) {
-                          console.error("Failed to dynamically create page in database:", createErr);
-                        }
-                      }
-                      
-                      if (resolvedPageId) {
-                        setPageId(resolvedPageId);
-                        const newUrl = new URL(window.location.href);
-                        newUrl.searchParams.set("pageId", resolvedPageId);
-                        window.history.pushState({}, "", newUrl.toString());
-                      }
-                      
-                      fetchPage(opt.value, currentTheme, resolvedPageId);
+                      await navigateCustomizerPage(opt.value);
                       setIsPageMenuOpen(false);
                     }}
                   >
@@ -1283,7 +1304,7 @@ export function App() {
       <main className="workspace">
         <aside className="sidebar">
 
-          <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
+          <div style={{ minHeight: 0, overflow: "hidden", display: "flex", flexDirection: "column" }}>
             {activeTab === "settings" && (
               <SettingsPanel
                 htmlContent={rawHtml}

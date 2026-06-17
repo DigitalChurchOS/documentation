@@ -22,6 +22,42 @@ body {
   color: var(--text);
   overflow-x: hidden;
 }
+
+/* Force dark mode when viewed inside the theme customizer (tokens override :root) */
+body.dark-page {
+  --bg: #070707 !important;
+  --text: #fff7ed !important;
+  --muted: rgba(255,247,237,.68) !important;
+  --border: rgba(255,255,255,.13) !important;
+  --surface: #111111 !important;
+  --surface-soft: #1a1a1a !important;
+  --site-bg: #070707 !important;
+  --site-text: #fff7ed !important;
+  --site-muted: rgba(255,247,237,.68) !important;
+  --site-border: rgba(255,255,255,.13) !important;
+  --site-surface: #111111 !important;
+  --site-soft: #0d0d0d !important;
+  background: #070707 !important;
+  color: #fff7ed !important;
+}
+
+/* Ensure footer stays dark regardless of theme mode */
+body.dark-page .footer {
+  background: color-mix(in srgb, var(--accent) 10%, #070707) !important;
+  color: white !important;
+}
+body.dark-page .footer p,
+body.dark-page .footer a {
+  color: rgba(255,255,255,.62) !important;
+}
+body.dark-page .footer h4 {
+  color: white !important;
+}
+body.dark-page .footer-bottom {
+  color: rgba(255,255,255,.5) !important;
+  border-top-color: rgba(255,255,255,.12) !important;
+}
+
 button, input, textarea { font: inherit; }
 button { cursor: pointer; }
 a { color: inherit; text-decoration: none; }
@@ -695,6 +731,18 @@ body.cinema-mode .footer .footer-bottom {
   justify-content: space-between !important;
   color: rgba(255, 255, 255, 0.4) !important;
 }
+
+/* Fix btn-light contrast issues on livestream page drawer/footer actions */
+.mobile-drawer .btn-light,
+.btn-light {
+  color: #111827 !important;
+}
+.mobile-drawer .btn-light:hover,
+.btn-light:hover {
+  color: #000000 !important;
+  background: #f3f4f6 !important;
+}
+
 
 
 

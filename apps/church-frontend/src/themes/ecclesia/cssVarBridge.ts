@@ -242,6 +242,7 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   root.style.setProperty('--radius-md', radius.md);
   root.style.setProperty('--radius-btn', radius.btn);
   root.style.setProperty('--radius-pill', radius.pill);
+  root.style.setProperty('--radius', radius.lg);
   root.style.setProperty('--xl', radius.xl);
   root.style.setProperty('--lg', radius.lg);
   root.style.setProperty('--section', sectionPadding);
@@ -310,16 +311,115 @@ header[data-header-solid-themed="true"] .nav a.active,
 .header[data-header-solid-themed="true"] .nav a.active {
   color: #ffffff !important;
 }
-header[data-header-solid-themed="true"] .mobile-menu-btn,
-.header[data-header-solid-themed="true"] .mobile-menu-btn {
-  background: rgba(255, 255, 255, 0.12) !important;
-  color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+header[data-header-solid-themed="true"] .brand-mark, .header[data-header-solid-themed="true"] .brand-mark,
+header[data-header-solid-themed="true"] .brand .mark, .header[data-header-solid-themed="true"] .brand .mark {
+  background: #ffffff !important;
+  color: var(--primary) !important;
+  box-shadow: none !important;
 }
-header[data-header-solid-themed="true"] .btn-soft,
-.header[data-header-solid-themed="true"] .btn-soft {
-  background: rgba(255, 255, 255, 0.15) !important;
+header[data-header-solid-themed="true"] .brand-mark i, .header[data-header-solid-themed="true"] .brand-mark i,
+header[data-header-solid-themed="true"] .brand-mark svg, .header[data-header-solid-themed="true"] .brand-mark svg,
+header[data-header-solid-themed="true"] .brand .mark i, .header[data-header-solid-themed="true"] .brand .mark i,
+header[data-header-solid-themed="true"] .brand .mark svg, .header[data-header-solid-themed="true"] .brand .mark svg {
+  color: var(--primary) !important;
+  stroke: var(--primary) !important;
+  fill: none !important;
+}
+header[data-header-solid-themed="true"] a svg, .header[data-header-solid-themed="true"] a svg,
+header[data-header-solid-themed="true"] a i, .header[data-header-solid-themed="true"] a i {
   color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+header[data-header-solid-themed="true"] .btn-primary, .header[data-header-solid-themed="true"] .btn-primary,
+header[data-header-solid-themed="true"] .btn.primary, .header[data-header-solid-themed="true"] .btn.primary,
+header[data-header-solid-themed="true"] .actions .primary, .header[data-header-solid-themed="true"] .actions .primary,
+header[data-header-solid-themed="true"] .header-actions .primary, .header[data-header-solid-themed="true"] .header-actions .primary {
+  background: #ffffff !important;
+  color: var(--primary) !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+header[data-header-solid-themed="true"] .btn-primary:hover, .header[data-header-solid-themed="true"] .btn-primary:hover,
+header[data-header-solid-themed="true"] .btn.primary:hover, .header[data-header-solid-themed="true"] .btn.primary:hover,
+header[data-header-solid-themed="true"] .actions .primary:hover, .header[data-header-solid-themed="true"] .actions .primary:hover,
+header[data-header-solid-themed="true"] .header-actions .primary:hover, .header[data-header-solid-themed="true"] .header-actions .primary:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: var(--primary) !important;
+}
+header[data-header-solid-themed="true"] .btn-primary svg, .header[data-header-solid-themed="true"] .btn-primary svg,
+header[data-header-solid-themed="true"] .btn.primary svg, .header[data-header-solid-themed="true"] .btn.primary svg,
+header[data-header-solid-themed="true"] .actions .primary svg, .header[data-header-solid-themed="true"] .actions .primary svg {
+  color: var(--primary) !important;
+  stroke: var(--primary) !important;
+}
+header[data-header-solid-themed="true"] .btn-soft, .header[data-header-solid-themed="true"] .btn-soft,
+header[data-header-solid-themed="true"] .btn.soft, .header[data-header-solid-themed="true"] .btn.soft,
+header[data-header-solid-themed="true"] .btn.softbtn, .header[data-header-solid-themed="true"] .btn.softbtn,
+header[data-header-solid-themed="true"] .soft, .header[data-header-solid-themed="true"] .soft,
+header[data-header-solid-themed="true"] .softbtn, .header[data-header-solid-themed="true"] .softbtn {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+header[data-header-solid-themed="true"] .btn-soft:hover, .header[data-header-solid-themed="true"] .btn-soft:hover,
+header[data-header-solid-themed="true"] .btn.soft:hover, .header[data-header-solid-themed="true"] .btn.soft:hover,
+header[data-header-solid-themed="true"] .btn.softbtn:hover, .header[data-header-solid-themed="true"] .btn.softbtn:hover,
+header[data-header-solid-themed="true"] .soft:hover, .header[data-header-solid-themed="true"] .soft:hover,
+header[data-header-solid-themed="true"] .softbtn:hover, .header[data-header-solid-themed="true"] .softbtn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+header[data-header-solid-themed="true"] .btn-soft svg, .header[data-header-solid-themed="true"] .btn-soft svg,
+header[data-header-solid-themed="true"] .btn.soft svg, .header[data-header-solid-themed="true"] .btn.soft svg,
+header[data-header-solid-themed="true"] .btn.softbtn svg, .header[data-header-solid-themed="true"] .btn.softbtn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+header[data-header-solid-themed="true"] .btn-light, .header[data-header-solid-themed="true"] .btn-light,
+header[data-header-solid-themed="true"] .btn.light, .header[data-header-solid-themed="true"] .btn.light,
+header[data-header-solid-themed="true"] .light, .header[data-header-solid-themed="true"] .light {
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+}
+header[data-header-solid-themed="true"] .btn-light:hover, .header[data-header-solid-themed="true"] .btn-light:hover,
+header[data-header-solid-themed="true"] .btn.light:hover, .header[data-header-solid-themed="true"] .btn.light:hover,
+header[data-header-solid-themed="true"] .light:hover, .header[data-header-solid-themed="true"] .light:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+}
+header[data-header-solid-themed="true"] .btn-light svg, .header[data-header-solid-themed="true"] .btn-light svg,
+header[data-header-solid-themed="true"] .btn.light svg, .header[data-header-solid-themed="true"] .btn.light svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+header[data-header-solid-themed="true"] .mobile-menu-btn, .header[data-header-solid-themed="true"] .mobile-menu-btn,
+header[data-header-solid-themed="true"] .menu, .header[data-header-solid-themed="true"] .menu,
+header[data-header-solid-themed="true"] .mobilebtn, .header[data-header-solid-themed="true"] .mobilebtn {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+header[data-header-solid-themed="true"] .mobile-menu-btn:hover, .header[data-header-solid-themed="true"] .mobile-menu-btn:hover,
+header[data-header-solid-themed="true"] .menu:hover, .header[data-header-solid-themed="true"] .menu:hover,
+header[data-header-solid-themed="true"] .mobilebtn:hover, .header[data-header-solid-themed="true"] .mobilebtn:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
+}
+header[data-header-solid-themed="true"] .mobile-menu-btn svg, .header[data-header-solid-themed="true"] .mobile-menu-btn svg,
+header[data-header-solid-themed="true"] .menu svg, .header[data-header-solid-themed="true"] .menu svg,
+header[data-header-solid-themed="true"] .mobilebtn svg, .header[data-header-solid-themed="true"] .mobilebtn svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mobile-menu-btn,
+.header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mobile-menu-btn,
+header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .menu,
+.header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .menu,
+header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mobilebtn,
+.header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mobilebtn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
 }
 `;
 }
@@ -402,6 +502,7 @@ export function applyEcclesiaCSSVars(settings: ThemeSettings): void {
   root.style.setProperty('--radius-lg', r.lg);
   root.style.setProperty('--radius-md', r.md);
   root.style.setProperty('--radius-btn', r.btn);
+  root.style.setProperty('--radius', r.lg);
 
   if (settings.layout?.contentWidth) {
     root.style.setProperty('--max', settings.layout.contentWidth);

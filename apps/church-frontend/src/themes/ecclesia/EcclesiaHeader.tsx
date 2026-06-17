@@ -83,23 +83,35 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
   ].filter(Boolean).join(' ');
 
   function isActive(url: string): boolean {
-    if (url === '/' || url === '/home') return location.pathname === '/';
-    return location.pathname.startsWith(url);
+    const cleanPath = location.pathname.startsWith('/church')
+      ? location.pathname.substring('/church'.length)
+      : location.pathname;
+    const normalizedPath = cleanPath || '/';
+
+    if (url === '/' || url === '/home') {
+      return normalizedPath === '/';
+    }
+    return normalizedPath.startsWith(url);
   }
 
   // Resolve page-specific CTA configuration
   const pathname = location.pathname;
+  let cleanPath = pathname;
+  if (cleanPath.startsWith('/church')) {
+    cleanPath = cleanPath.substring('/church'.length);
+  }
   let pageFile = 'index.html';
-  if (pathname === '/' || pathname === '/home') {
+  if (!cleanPath || cleanPath === '/' || cleanPath === '/home') {
     pageFile = 'index.html';
   } else {
-    const segment = pathname.split('/').filter(Boolean)[0];
+    const segment = cleanPath.split('/').filter(Boolean)[0];
     if (segment) {
       if (segment === 'livestream') pageFile = 'livestream-page.html';
       else if (segment === 'sermons') pageFile = 'sermons.html';
       else if (segment === 'events') pageFile = 'events.html';
       else if (segment === 'ministries') pageFile = 'ministries.html';
       else if (segment === 'giving') pageFile = 'giving.html';
+      else if (segment === 'partnership' || segment === 'giving-partnership') pageFile = 'giving-partnership.html';
       else if (segment === 'prayer') pageFile = 'prayer.html';
       else if (segment === 'contact') pageFile = 'contact.html';
       else pageFile = `${segment}.html`;
