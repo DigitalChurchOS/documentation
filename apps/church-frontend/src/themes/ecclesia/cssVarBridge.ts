@@ -309,15 +309,13 @@ body { padding-bottom: 0 !important; background: var(--bg); }
   .static-html-stage .mobile-drawer[aria-hidden="true"] {
     visibility: hidden !important;
     pointer-events: none !important;
-    transform: translateX(100%) !important;
   }
-  body[data-mobile-menu-position="left"] .static-html-stage .mobile-drawer[aria-hidden="true"] {
-    transform: translateX(-100%) !important;
-  }
-  body.drawer-open .static-html-stage .mobile-drawer[aria-hidden="false"] {
+  .static-html-stage .mobile-drawer[aria-hidden="false"] {
     visibility: visible !important;
-    transform: translateX(0) !important;
-    z-index: 100 !important;
+    pointer-events: auto !important;
+  }
+  body[data-mobile-drawer-mode="reveal"] .static-html-stage .mobile-drawer {
+    z-index: 1 !important;
   }
 }
 @media (min-width: 1051px) {

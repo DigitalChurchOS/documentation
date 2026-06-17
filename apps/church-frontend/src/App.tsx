@@ -6,6 +6,7 @@ import { fetchSiteContext, fetchPageRender, fetchPreviewPage } from './api';
 import { EcclesiaProvider } from './themes/ecclesia/EcclesiaContext';
 import EcclesiaLayout from './themes/ecclesia/EcclesiaLayout';
 import StaticHtmlPage from './themes/ecclesia/StaticHtmlPage';
+import GenericPage from './themes/ecclesia/GenericPage';
 import { routeFromHref, slugFromPathname } from './routing';
 
 // Extract query parameters helper
@@ -226,23 +227,20 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
 
   return (
     <EcclesiaProvider value={contextValue}>
-      <EcclesiaLayout useStaticLayout>
-      {fullHtml ? (
-        <StaticHtmlPage
-          html={fullHtml}
-          themeSettings={themeSettings}
-          enableModuleRails
-          moduleEntitlements={siteContext.moduleEntitlements}
-        />
-      ) : (
-        <div className="error-fallback" style={{ padding: '80px 24px', textAlign: 'center', maxWidth: '720px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '2rem', marginBottom: '16px' }}>Customizer Page Required</h2>
-          <p style={{ color: '#64748b', marginBottom: '24px' }}>
-            This page is missing the published customizer HTML needed for the active theme's public site.
-          </p>
-          <a className="btn btn-primary" href="/">Go Back Home</a>
-        </div>
-      )}
+      <EcclesiaLayout useStaticLayout={!!fullHtml}>
+        {fullHtml ? (
+          <StaticHtmlPage
+            html={fullHtml}
+            themeSettings={themeSettings}
+            enableModuleRails
+            moduleEntitlements={siteContext.moduleEntitlements}
+          />
+        ) : (
+          <GenericPage
+            title={pageData.title}
+            contentBlocks={pageData.contentBlocks}
+          />
+        )}
       </EcclesiaLayout>
     </EcclesiaProvider>
   );
