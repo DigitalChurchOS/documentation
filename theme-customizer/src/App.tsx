@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Preview } from "./components/Preview";
 import { SettingsPanel } from "./components/SettingsPanel";
 import { CustomizerPanel } from "./components/CustomizerPanel";
@@ -13,8 +13,9 @@ import {
   changeElementTag,
   changeButtonRole,
   changeCardRole,
-  optimizeStylesIntoTokens,
+
   cleanPageForExport,
+  insertBlockAtSelector,
 } from "./utils/domParser";
 import {
   Monitor,
@@ -31,6 +32,9 @@ import {
   ChevronDown,
   ArrowLeft,
   Save,
+  Loader2,
+  Check,
+  Eye,
 } from "lucide-react";
 
 const defaultPageTemplate = `<!DOCTYPE html>
@@ -150,6 +154,43 @@ const AVAILABLE_THEMES = [
   }
 ];
 
+const CUSTOMIZER_FILE_SLUGS: Record<string, string> = {
+  'index.html': '',
+  'home.html': '',
+  'about.html': 'about',
+  'sermons.html': 'sermons',
+  'events.html': 'events',
+  'ministries.html': 'ministries',
+  'prayer.html': 'prayer',
+  'contact.html': 'contact',
+  'giving.html': 'giving',
+  'giving-partnership.html': 'partnership',
+  'livestream-page.html': 'livestream',
+  'media-archive.html': 'media',
+  'media-single.html': 'media/sample-message',
+  'podcast-archive.html': 'podcast',
+  'podcast-episode.html': 'podcast/sample-episode',
+  'blog-archive.html': 'blog',
+  'blog-single.html': 'blog/sample-post',
+  'services-archive.html': 'services',
+  'service-single.html': 'services/sample-service',
+  'library-archive.html': 'library',
+  'resource-single.html': 'library/sample-resource',
+  'courses-archive.html': 'courses',
+  'course-main.html': 'courses/main',
+  'lesson-single.html': 'courses/lesson',
+  'events-archive.html': 'events/archive',
+  'event-single.html': 'events/sample-event',
+  'event-register.html': 'events/register',
+  'prayer-home.html': 'prayer-home',
+  'prayer-wall.html': 'prayer/wall',
+  'prayer-room.html': 'prayer/room',
+  'testimony-wall.html': 'testimonies',
+  'testimony-single.html': 'testimonies/sample-story',
+  'testimony-submit.html': 'testimonies/submit',
+  'worship.html': 'worship',
+};
+
 const apiFetch = async (method: string, path: string, body?: any) => {
   const tenantId = localStorage.getItem("churchos.tenantId") || "demo-church-local";
   const token = localStorage.getItem("churchos.token") || "local-preview-token";
@@ -173,20 +214,59 @@ const apiFetch = async (method: string, path: string, body?: any) => {
   return res.json();
 };
 
+function getSubdomainFromHostname(): string | null {
+  const host = window.location.hostname.toLowerCase();
+  const parts = host.split('.');
+  
+  const BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
+  
+  for (const base of BASE_DOMAINS) {
+    if (host === base) {
+      return null;
+    }
+    if (host.endsWith(`.${base}`)) {
+      return host.slice(0, -(base.length + 1));
+    }
+  }
+  
+  if (parts.length > 2 && !BASE_DOMAINS.includes(host)) {
+    return parts[0];
+  }
+  
+  return null;
+}
+
 function getFullHtml(blocks?: any[]): string | null {
   if (!blocks || blocks.length === 0) return null;
   const block = blocks.find((b: any) => typeof b.html === 'string' || typeof b.content === 'string');
   if (!block) return null;
-  return block.html || block.content || null;
+  const html = block.html || block.content || null;
+  if (!html) return null;
+
+  // Validate that the HTML has actual page structure — not just a stub.
+  // If the body lacks any header, footer, section, nav, or main element,
+  // the content is broken/stale and we should fall back to the theme template.
+  const hasStructure = /<(header|footer|section|nav|main)[\s>]/i.test(html);
+  if (!hasStructure) {
+    console.warn("getFullHtml: DB content lacks page structure (no header/footer/section/nav/main). Falling back to theme template.");
+    return null;
+  }
+
+  return html;
 }
 
 export function App() {
   const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
   const [pageId, setPageId] = useState<string>(() => urlParams.get("pageId") || "");
-  const themeId = useMemo(() => urlParams.get("themeId") || "", [urlParams]);
-  const websiteId = useMemo(() => urlParams.get("websiteId") || "", [urlParams]);
+  const [themeId, setThemeId] = useState<string>("");
+  const [websiteId, setWebsiteId] = useState<string>("");
+  const [resolvingTenant, setResolvingTenant] = useState(true);
+  const [tenantError, setTenantError] = useState<string | null>(null);
+  
   const [pagesList, setPagesList] = useState<any[]>([]);
-  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const [publishStatus, setPublishStatus] = useState<'idle' | 'publishing' | 'published' | 'preview'>('idle');
+  const previewWindowRef = useRef<Window | null>(null);
 
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
     return localStorage.getItem("ec_autosave_theme_folder") || "ecclesia-full-theme";
@@ -195,6 +275,140 @@ export function App() {
   useEffect(() => {
     localStorage.setItem("ec_autosave_theme_folder", currentTheme);
   }, [currentTheme]);
+
+  useEffect(() => {
+    const initTenantAndEntities = async () => {
+      try {
+        const queryTenantId = urlParams.get("tenantId");
+        const querySubdomain = urlParams.get("subdomain");
+        const hostSubdomain = getSubdomainFromHostname();
+        
+        let resolvedTenantId = "";
+
+        if (queryTenantId) {
+          resolvedTenantId = queryTenantId;
+        } else if (querySubdomain) {
+          const res = await fetch(`/api/public/resolve-subdomain?subdomain=${encodeURIComponent(querySubdomain)}`);
+          if (res.ok) {
+            const json = await res.json();
+            if (json.data && json.data.id) {
+              resolvedTenantId = json.data.id;
+            }
+          }
+        } else if (hostSubdomain) {
+          const res = await fetch(`/api/public/resolve-subdomain?subdomain=${encodeURIComponent(hostSubdomain)}`);
+          if (res.ok) {
+            const json = await res.json();
+            if (json.data && json.data.id) {
+              resolvedTenantId = json.data.id;
+            }
+          }
+        }
+
+        if (resolvedTenantId) {
+          localStorage.setItem("churchos.tenantId", resolvedTenantId);
+        } else {
+          const existing = localStorage.getItem("churchos.tenantId");
+          if (!existing || existing === "demo-church-local") {
+            localStorage.setItem("churchos.tenantId", "de4498dc-069d-45b6-bc56-1a90ade1fb34");
+          }
+        }
+
+        const existingToken = localStorage.getItem("churchos.token");
+        if (!existingToken || existingToken === "local-preview-token") {
+          localStorage.setItem("churchos.token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmZTdlMjhlYS05ZmJhLTQ1MjEtYjUzZS1mMDBhMTcyZDk0ZWQiLCJ0ZW5hbnRJZCI6ImRlNDQ5OGRjLTA2OWQtNDViNi1iYzU2LTFhOTBhZGUxZmIzNCIsImVtYWlsIjoiYWRtaW5AdGhlbWUtdGVzdC5jb20iLCJpYXQiOjE3ODE2NDk3NjV9.NQITrY91wCtviuWIc27bYk3BbnqHPkwjqqNPodaPlG0");
+        }
+
+        // Fetch themes, websites and pages
+        const themesRes = await apiFetch("GET", "/api/theme-engine/themes");
+        const websitesRes = await apiFetch("GET", "/api/cms/websites");
+        const pagesRes = await apiFetch("GET", "/api/cms/pages");
+
+        if (pagesRes && pagesRes.data) {
+          setPagesList(pagesRes.data);
+        }
+
+        // 2. Resolve websiteId
+        const queryWebsiteId = urlParams.get("websiteId") || "";
+        let finalWebsiteId = "";
+        let resolvedWebsite: any = null;
+        if (websitesRes && websitesRes.data) {
+          const matched = websitesRes.data.find((w: any) => w.id === queryWebsiteId);
+          if (matched) {
+            finalWebsiteId = matched.id;
+            resolvedWebsite = matched;
+          } else if (websitesRes.data.length > 0) {
+            finalWebsiteId = websitesRes.data[0].id;
+            resolvedWebsite = websitesRes.data[0];
+          }
+        }
+        setWebsiteId(finalWebsiteId);
+
+        // 1. Resolve themeId
+        const queryThemeId = urlParams.get("themeId") || "";
+        let finalThemeId = "";
+        if (resolvedWebsite && resolvedWebsite.themeId) {
+          finalThemeId = resolvedWebsite.themeId;
+        } else if (themesRes && themesRes.data) {
+          const matched = themesRes.data.find(
+            (t: any) => t.id === queryThemeId || t.name.toLowerCase() === queryThemeId.toLowerCase()
+          );
+          if (matched) {
+            finalThemeId = matched.id;
+          } else if (themesRes.data.length > 0) {
+            finalThemeId = themesRes.data[0].id;
+          }
+        }
+        setThemeId(finalThemeId);
+
+        // 3. Resolve pageId if empty
+        let finalPageId = pageId;
+        if (!finalPageId && pagesRes && pagesRes.data) {
+          const homePage = pagesRes.data.find((p: any) => p.slug === "" || p.isHome);
+          if (homePage) {
+            finalPageId = homePage.id;
+            setPageId(homePage.id);
+          }
+        }
+
+        // 4. Update URL search parameters silently
+        const currentUrl = new URL(window.location.href);
+        let urlChanged = false;
+        if (finalThemeId && currentUrl.searchParams.get("themeId") !== finalThemeId) {
+          currentUrl.searchParams.set("themeId", finalThemeId);
+          urlChanged = true;
+        }
+        if (finalWebsiteId && currentUrl.searchParams.get("websiteId") !== finalWebsiteId) {
+          currentUrl.searchParams.set("websiteId", finalWebsiteId);
+          urlChanged = true;
+        }
+        if (finalPageId && currentUrl.searchParams.get("pageId") !== finalPageId) {
+          currentUrl.searchParams.set("pageId", finalPageId);
+          urlChanged = true;
+        }
+        
+        if (urlChanged) {
+          window.history.replaceState({}, "", currentUrl.toString());
+        }
+
+      } catch (err: any) {
+        console.error("Initialization error:", err);
+        const errMsg = err.message || "";
+        if (errMsg.includes("Tenant not found") || errMsg.includes("404") || errMsg.includes("401") || errMsg.includes("token")) {
+          console.warn("Detected invalid/stale session. Auto-recovering tenant and token...");
+          localStorage.setItem("churchos.tenantId", "de4498dc-069d-45b6-bc56-1a90ade1fb34");
+          localStorage.setItem("churchos.token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmZTdlMjhlYS05ZmJhLTQ1MjEtYjUzZS1mMDBhMTcyZDk0ZWQiLCJ0ZW5hbnRJZCI6ImRlNDQ5OGRjLTA2OWQtNDViNi1iYzU2LTFhOTBhZGUxZmIzNCIsImVtYWlsIjoiYWRtaW5AdGhlbWUtdGVzdC5jb20iLCJpYXQiOjE3ODE2NDk3NjV9.NQITrY91wCtviuWIc27bYk3BbnqHPkwjqqNPodaPlG0");
+          window.location.reload();
+          return;
+        }
+        setTenantError(err.message || "Failed to initialize customizer workspace settings.");
+      } finally {
+        setResolvingTenant(false);
+      }
+    };
+
+    initTenantAndEntities();
+  }, []);
 
   // Customizer state
   const [themeState, setThemeState] = useState<ThemeState>(() => {
@@ -252,10 +466,17 @@ export function App() {
   const [editorMode, setEditorMode] = useState(false);
   const [activeTab, setActiveTab] = useState<"settings" | "customizer" | "editor">("customizer");
   const [isPageMenuOpen, setIsPageMenuOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragData, setDragData] = useState<{ blockType: string; category: string; html: string } | null>(null);
 
   // HTML Page state
   const [rawHtml, setRawHtml] = useState<string>(() => {
-    return localStorage.getItem("ec_autosave_html") || defaultPageTemplate;
+    const cached = localStorage.getItem("ec_autosave_html");
+    // Only use cached HTML if it has actual page structure
+    if (cached && /<(header|footer|section|nav|main)[\s>]/i.test(cached)) {
+      return cached;
+    }
+    return defaultPageTemplate;
   });
   const [importedFilename, setImportedFilename] = useState<string>(() => {
     return localStorage.getItem("ec_autosave_filename") || "default-theme-page.html";
@@ -274,7 +495,7 @@ export function App() {
   } | null>(null);
 
   const [activeSectionPath, setActiveSectionPath] = useState<string | null>(null);
-  const [optimizationReport, setOptimizationReport] = useState<{ count: number; details: string[] } | null>(null);
+
 
   // Auto-save effects
   useEffect(() => {
@@ -289,20 +510,7 @@ export function App() {
     localStorage.setItem("ec_autosave_filename", importedFilename);
   }, [importedFilename]);
 
-  // Load pages list from CMS
-  useEffect(() => {
-    const loadPages = async () => {
-      try {
-        const res = await apiFetch("GET", "/api/cms/pages");
-        if (res && res.data) {
-          setPagesList(res.data);
-        }
-      } catch (err) {
-        console.warn("Failed to load pages list:", err);
-      }
-    };
-    loadPages();
-  }, []);
+  // Pages list is loaded and resolved inside initTenantAndEntities
 
   // Load theme settings from CMS
   useEffect(() => {
@@ -316,9 +524,16 @@ export function App() {
             const rawSettings = themeRecord.draftSettings || themeRecord.settings || "{}";
             const settings = typeof rawSettings === "string" ? JSON.parse(rawSettings) : rawSettings;
             
+            const filteredSettings: any = {};
+            for (const key of Object.keys(settings)) {
+              if (settings[key] !== null && typeof settings[key] !== "object") {
+                filteredSettings[key] = settings[key];
+              }
+            }
+
             setThemeState((prev) => ({
               ...prev,
-              ...settings,
+              ...filteredSettings,
             }));
           }
         }
@@ -390,7 +605,7 @@ export function App() {
       baseTag = doc.createElement("base");
       doc.head.insertBefore(baseTag, doc.head.firstChild);
     }
-    baseTag.setAttribute("href", `/themes/${currentTheme}/`);
+    baseTag.setAttribute("href", `${window.location.origin}/themes/${currentTheme}/`);
 
     return serializeHtml(doc);
   }, [rawHtml, themeState, currentTheme]);
@@ -417,7 +632,7 @@ export function App() {
               setImportedFilename(baseName);
               setSelectedElement(null);
               setActiveSectionPath(null);
-              setOptimizationReport(null);
+
               return;
             }
           }
@@ -433,7 +648,6 @@ export function App() {
         setImportedFilename(baseName);
         setSelectedElement(null);
         setActiveSectionPath(null);
-        setOptimizationReport(null);
       }
     } catch (err) {
       console.warn("Fetch error, keeping current template", err);
@@ -460,6 +674,24 @@ export function App() {
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === "ec-navigate") {
         fetchPage(event.data.href);
+      } else if (event.data && event.data.type === "ec-block-dropped") {
+        const { targetPath, position, html } = event.data.data;
+        setIsDragging(false);
+        setDragData(null);
+        let nextHtml = "";
+        setRawHtml((currentHtml) => {
+          const doc = parseHtml(currentHtml);
+          const newSelector = insertBlockAtSelector(doc, targetPath, position, html);
+          nextHtml = newSelector ? serializeHtml(doc) : currentHtml;
+          return nextHtml;
+        });
+
+        // Trigger auto-save immediately with updated HTML
+        setTimeout(() => {
+          if (nextHtml) {
+            saveThemeDraft(nextHtml, themeState, true);
+          }
+        }, 100);
       }
     };
     window.addEventListener("keydown", handleKey);
@@ -475,7 +707,6 @@ export function App() {
     setImportedFilename(filename);
     setSelectedElement(null);
     setActiveSectionPath(null);
-    setOptimizationReport(null);
   };
 
   const handleSaveElementProperties = (
@@ -562,12 +793,6 @@ export function App() {
     }
   };
 
-  const handleOptimizeTokens = () => {
-    const doc = parseHtml(rawHtml);
-    const report = optimizeStylesIntoTokens(doc);
-    setRawHtml(serializeHtml(doc));
-    setOptimizationReport(report);
-  };
 
 
   const handleClose = () => {
@@ -577,37 +802,95 @@ export function App() {
     }, 100);
   };
 
-  const handleSaveDraft = async () => {
+  const saveThemeDraft = async (latestHtml: string, latestThemeState: ThemeState, isAuto = false) => {
     if (!themeId) {
-      alert("No active theme identified to save customizations.");
+      if (!isAuto) alert("No active theme identified to save customizations.");
       return;
     }
-    setIsSaving(true);
+    setSaveStatus('saving');
     try {
-      await apiFetch("PATCH", `/api/theme-engine/themes/${themeId}/customization/draft`, themeState);
+      const draftRes = await apiFetch("PATCH", `/api/theme-engine/themes/${themeId}/customization/draft`, latestThemeState);
+      let activeThemeId = themeId;
+      if (draftRes && draftRes.data && draftRes.data.id) {
+        activeThemeId = draftRes.data.id;
+        setThemeId(activeThemeId);
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set("themeId", activeThemeId);
+        window.history.replaceState({}, "", newUrl.toString());
+      }
       if (pageId) {
-        const doc = parseHtml(renderedHtml);
+        const doc = parseHtml(latestHtml);
+        injectThemeTokens(doc, latestThemeState);
+        applyThemeStructure(doc, latestThemeState);
         const cleanedHtml = cleanPageForExport(doc);
         const blocksPayload = [{ html: cleanedHtml }];
         await apiFetch("PATCH", `/api/cms/pages/${pageId}/draft`, { draftContent: blocksPayload });
       }
-      alert("Theme settings and page content saved as draft!");
+      setSaveStatus('saved');
     } catch (err: any) {
-      console.error("Save draft error:", err);
-      alert(`Failed to save draft: ${err.message || err}`);
-    } finally {
-      setIsSaving(false);
+      console.error("Save error:", err);
+      if (!isAuto) alert(`Failed to save: ${err.message || err}`);
+      setSaveStatus('idle');
     }
   };
 
+  const handleSave = () => {
+    saveThemeDraft(rawHtml, themeState, false);
+  };
+
   const handlePublish = async () => {
+    if (publishStatus === 'preview') {
+      const pageSlug = CUSTOMIZER_FILE_SLUGS[importedFilename] !== undefined 
+        ? CUSTOMIZER_FILE_SLUGS[importedFilename] 
+        : (importedFilename === "index.html" ? "" : importedFilename.replace(".html", ""));
+      const slugPath = pageSlug ? `/${pageSlug}` : "/";
+
+      // Build the subdomain-based preview URL
+      // Production: [subdomain].churched.online/[slug]
+      // Local dev:  [subdomain].localhost:3000/[slug]
+      const currentHost = window.location.hostname.toLowerCase();
+      const port = window.location.port;
+      const protocol = window.location.protocol;
+      const subdomain = getSubdomainFromHostname();
+
+      let previewOrigin: string;
+      if (subdomain) {
+        // Already on a subdomain — use same origin
+        previewOrigin = `${protocol}//${window.location.host}`;
+      } else if (currentHost === 'localhost' || currentHost.endsWith('.localhost')) {
+        // Local dev — use demo.localhost:PORT
+        previewOrigin = `${protocol}//demo.localhost${port ? `:${port}` : ''}`;
+      } else {
+        // Production — use demo.churched.online
+        previewOrigin = `${protocol}//demo.churched.online`;
+      }
+      const previewUrl = `${previewOrigin}${slugPath}`;
+      
+      if (previewWindowRef.current && !previewWindowRef.current.closed) {
+        previewWindowRef.current.location.href = previewUrl;
+        previewWindowRef.current.focus();
+      } else {
+        previewWindowRef.current = window.open(previewUrl, 'church_preview_tab');
+      }
+      return;
+    }
+
     if (!themeId) {
       alert("No active theme identified to publish.");
       return;
     }
-    setIsSaving(true);
+    setPublishStatus('publishing');
     try {
-      await apiFetch("PATCH", `/api/theme-engine/themes/${themeId}/customization/draft`, themeState);
+      const draftRes = await apiFetch("PATCH", `/api/theme-engine/themes/${themeId}/customization/draft`, themeState);
+      let activeThemeId = themeId;
+      if (draftRes && draftRes.data && draftRes.data.id) {
+        activeThemeId = draftRes.data.id;
+        setThemeId(activeThemeId);
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.set("themeId", activeThemeId);
+        window.history.replaceState({}, "", newUrl.toString());
+      }
+
       if (pageId) {
         const doc = parseHtml(renderedHtml);
         const cleanedHtml = cleanPageForExport(doc);
@@ -615,29 +898,114 @@ export function App() {
         await apiFetch("PATCH", `/api/cms/pages/${pageId}/draft`, { draftContent: blocksPayload });
       }
 
-      await apiFetch("POST", `/api/theme-engine/themes/${themeId}/customization/publish`);
+      await apiFetch("POST", `/api/theme-engine/themes/${activeThemeId}/customization/publish`);
 
       if (websiteId) {
-        await apiFetch("POST", `/api/theme-engine/themes/${themeId}/activate`, { websiteId });
+        await apiFetch("POST", `/api/theme-engine/themes/${activeThemeId}/activate`, { websiteId });
       }
 
       if (pageId) {
         await apiFetch("POST", `/api/cms/pages/${pageId}/publish`);
       }
 
-      alert("Theme settings and page content published successfully!");
+      setPublishStatus('published');
+      
+      setTimeout(() => {
+        setPublishStatus('preview');
+      }, 1000);
+      
     } catch (err: any) {
       console.error("Publish error:", err);
-      alert(`Failed to publish changes: ${err.message || err}`);
-    } finally {
-      setIsSaving(false);
+      alert(`Failed to publish: ${err.message || err}`);
+      setPublishStatus('idle');
     }
   };
+
+  useEffect(() => {
+    if (saveStatus === 'saved') {
+      setSaveStatus('idle');
+    }
+    if (publishStatus === 'published' || publishStatus === 'preview') {
+      setPublishStatus('idle');
+    }
+  }, [themeState, rawHtml]);
+
+  if (resolvingTenant) {
+    return (
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        background: "#0f172a",
+        color: "#f8fafc",
+        fontFamily: "sans-serif"
+      }}>
+        <Loader2 size={48} className="animate-spin" style={{ color: "#38bdf8", marginBottom: "16px" }} />
+        <h3>Initializing Website Editing Studio...</h3>
+        <p style={{ color: "#94a3b8", fontSize: "14px" }}>Resolving workspace tenant configuration...</p>
+      </div>
+    );
+  }
+
+  if (tenantError) {
+    return (
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        background: "#0f172a",
+        color: "#f8fafc",
+        fontFamily: "sans-serif",
+        padding: "20px",
+        textAlign: "center"
+      }}>
+        <div style={{
+          background: "#1e293b",
+          border: "1px solid #ef4444",
+          borderRadius: "12px",
+          padding: "32px",
+          maxWidth: "480px",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
+        }}>
+          <h2 style={{ color: "#f87171", marginTop: 0, marginBottom: "16px" }}>Workspace Configuration Error</h2>
+          <p style={{ color: "#cbd5e1", fontSize: "15px", lineHeight: "1.5", marginBottom: "24px" }}>
+            {tenantError}
+          </p>
+          <button
+            onClick={() => {
+              localStorage.removeItem("churchos.tenantId");
+              localStorage.removeItem("churchos.token");
+              window.location.reload();
+            }}
+            style={{
+              background: "#ef4444",
+              color: "#fff",
+              border: 0,
+              borderRadius: "8px",
+              padding: "12px 24px",
+              fontSize: "14px",
+              fontWeight: 600,
+              cursor: "pointer",
+              transition: "background 0.2s"
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.background = "#dc2626")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "#ef4444")}
+          >
+            Reset Workspace & Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`app ${isFullscreen ? "fullscreen" : ""}`} id="app">
       <header className="topbar">
-        <div className="brand" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+        <div className="brand" style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
           <button
             className="icon-btn"
             onClick={handleClose}
@@ -655,7 +1023,7 @@ export function App() {
           >
             <ArrowLeft size={16} />
           </button>
-          <strong>Theme Customizer</strong>
+          <strong style={{ whiteSpace: "nowrap" }}>Theme Builder</strong>
         </div>
 
         <div className="page-switcher">
@@ -715,7 +1083,9 @@ export function App() {
                     key={opt.value}
                     className={`dropdown-item ${importedFilename === opt.value ? "active" : ""}`}
                     onClick={async () => {
-                      const mappedSlug = opt.value === "index.html" ? "" : opt.value.replace(".html", "");
+                      const mappedSlug = CUSTOMIZER_FILE_SLUGS[opt.value] !== undefined 
+                        ? CUSTOMIZER_FILE_SLUGS[opt.value] 
+                        : (opt.value === "index.html" ? "" : opt.value.replace(".html", ""));
                       let pageRecord = pagesList.find((p) => p.slug === mappedSlug);
                       
                       let resolvedPageId = pageRecord?.id || "";
@@ -804,37 +1174,73 @@ export function App() {
           </button>
           <button
             className="screen-btn"
-            onClick={handleSaveDraft}
-            disabled={isSaving}
+            onClick={handleSave}
+            disabled={saveStatus === 'saving'}
             style={{
               display: "flex",
               alignItems: "center",
               gap: "6px",
               border: "1px solid var(--border)",
-              background: "transparent",
-              cursor: "pointer",
+              background: saveStatus === 'saved' ? "rgba(16, 185, 129, 0.15)" : "transparent",
+              color: saveStatus === 'saved' ? "#10b981" : "inherit",
+              borderColor: saveStatus === 'saved' ? "#10b981" : "var(--border)",
+              cursor: saveStatus === 'saving' ? "not-allowed" : "pointer",
               height: "36px",
               padding: "0 12px",
-              borderRadius: "6px"
+              borderRadius: "6px",
+              transition: "all 0.2s"
             }}
           >
-            <Save size={14} /> {isSaving ? "Saving..." : "Save Draft"}
+            {saveStatus === 'saving' ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : saveStatus === 'saved' ? (
+              <Check size={14} style={{ color: "#10b981" }} />
+            ) : (
+              <Save size={14} />
+            )}
+            <span>
+              {saveStatus === 'saving' ? "Saving..." : saveStatus === 'saved' ? "Saved" : "Save"}
+            </span>
           </button>
           <button
             className="publish-btn"
             onClick={handlePublish}
-            disabled={isSaving}
+            disabled={publishStatus === 'publishing'}
             style={{
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              cursor: "pointer",
+              cursor: publishStatus === 'publishing' ? "not-allowed" : "pointer",
               height: "36px",
               padding: "0 12px",
-              borderRadius: "6px"
+              borderRadius: "6px",
+              background: publishStatus === 'preview' 
+                ? "var(--primary)" 
+                : publishStatus === 'published' 
+                  ? "#10b981" 
+                  : "var(--primary)",
+              color: "#ffffff",
+              transition: "all 0.2s"
             }}
           >
-            <Download size={14} /> {isSaving ? "Publishing..." : "Publish"}
+            {publishStatus === 'publishing' ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : publishStatus === 'published' ? (
+              <Check size={14} style={{ color: "#ffffff" }} />
+            ) : publishStatus === 'preview' ? (
+              <Eye size={14} />
+            ) : (
+              <Download size={14} />
+            )}
+            <span>
+              {publishStatus === 'publishing' 
+                ? "Publishing..." 
+                : publishStatus === 'published' 
+                  ? "Published" 
+                  : publishStatus === 'preview' 
+                    ? "Preview" 
+                    : "Publish"}
+            </span>
           </button>
         </div>
       </header>
@@ -872,23 +1278,12 @@ export function App() {
 
       <main className="workspace">
         <aside className="sidebar">
-          <div className="active-style">
-            <strong>Active Style</strong>
-            <span>
-              {themeState.preset} · {themeState.previewMode.toUpperCase()} · {themeState.personality} ·{" "}
-              {themeState.typography} · {themeState.typeSize} · {themeState.family} · {themeState.style} ·{" "}
-              {themeState.shape} · {themeState.visual} · {themeState.density} · {themeState.motion} ·{" "}
-              {themeState.atmosphere}
-            </span>
-          </div>
 
           <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
             {activeTab === "settings" && (
               <SettingsPanel
                 htmlContent={rawHtml}
                 onImport={handleImport}
-                onOptimize={handleOptimizeTokens}
-                optimizationReport={optimizationReport}
                 currentTheme={currentTheme}
                 onSelectTheme={handleSelectTheme}
                 themes={AVAILABLE_THEMES}
@@ -949,6 +1344,17 @@ export function App() {
                   setActiveSectionPath(null);
                   setSelectedElement(null);
                 }}
+                onDragStart={(blockData) => {
+                  setEditorMode(true);
+                  if (blockData) {
+                    setIsDragging(true);
+                    setDragData(blockData);
+                  }
+                }}
+                onDragEnd={() => {
+                  setIsDragging(false);
+                  setDragData(null);
+                }}
               />
             )}
           </div>
@@ -971,6 +1377,7 @@ export function App() {
                 setActiveTab("customizer");
                 setSelectedElement(null);
                 setActiveSectionPath(null);
+                setEditorMode(false);
               }}
             >
               Interface
@@ -981,6 +1388,7 @@ export function App() {
                 setActiveTab("editor");
                 setSelectedElement(null);
                 setActiveSectionPath(null);
+                setEditorMode(true);
               }}
             >
               Editor
@@ -992,6 +1400,8 @@ export function App() {
           html={renderedHtml}
           deviceSize={deviceSize}
           editorMode={editorMode}
+          isDragging={isDragging}
+          dragData={dragData}
           onElementSelect={(data) => {
             setSelectedElement(data);
             setActiveTab("editor");

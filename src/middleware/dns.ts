@@ -2,7 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../lib/prisma';
 
 // Standard base domains used to extract subdomains
-const BASE_DOMAINS = ['churchos.local', 'churchos.com', 'localhost'];
+// Production: [churchname].churched.online
+// Local dev:  [churchname].localhost:3000
+const BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
 
 /**
  * DNS & Domain Resolver Middleware
@@ -17,6 +19,30 @@ export async function dnsMiddleware(
   res: Response,
   next: NextFunction
 ): Promise<void> {
+  // 0. Respect x-tenant-id header if present (for test environments or explicit overrides)
+  const headerTenantId = req.headers['x-tenant-id'] as string | undefined;
+  if (headerTenantId) {
+    try {
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: headerTenantId },
+      });
+      if (tenant && tenant.status === 'active') {
+        req.tenantId = tenant.id;
+        const primaryWebsite = await prisma.website.findFirst({
+          where: { tenantId: tenant.id, isActive: true },
+        });
+        if (primaryWebsite) {
+          (req as any).websiteId = primaryWebsite.id;
+        }
+        next();
+        return;
+      }
+    } catch (err) {
+      next(err);
+      return;
+    }
+  }
+
   const rawHost = (req.headers['x-forwarded-host'] || req.headers.host) as string | undefined;
 
   if (!rawHost) {

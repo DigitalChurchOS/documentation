@@ -25,6 +25,9 @@ export async function tenantMiddleware(
     req.originalUrl.startsWith('/api/public/resolve-subdomain') ||
     req.originalUrl.startsWith('/api/auth/register-tenant') ||
     req.originalUrl.startsWith('/api/cms/render') ||
+    req.originalUrl.startsWith('/api/core-website-cms/render') ||
+    req.originalUrl.startsWith('/api/cms/site-context') ||
+    req.originalUrl.startsWith('/api/core-website-cms/site-context') ||
     req.originalUrl.includes('/podcast/feeds/') ||
     req.originalUrl.includes('/api/bible/graphics/render/') ||
     req.originalUrl.includes('/api/mobile/config/') ||

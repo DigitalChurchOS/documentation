@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Settings, FileUp, Sparkles, CheckCircle2, AlertTriangle, ShieldCheck, Palette } from "lucide-react";
+import { Settings, FileUp, CheckCircle2, AlertTriangle, ShieldCheck, Palette } from "lucide-react";
 
 export interface ThemeInfo {
   id: string;
@@ -12,8 +12,6 @@ export interface ThemeInfo {
 interface SettingsPanelProps {
   htmlContent: string;
   onImport: (content: string, filename: string) => void;
-  onOptimize: () => void;
-  optimizationReport: { count: number; details: string[] } | null;
   currentTheme: string;
   onSelectTheme: (folderName: string) => void;
   themes: ThemeInfo[];
@@ -22,8 +20,6 @@ interface SettingsPanelProps {
 export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   htmlContent,
   onImport,
-  onOptimize,
-  optimizationReport,
   currentTheme,
   onSelectTheme,
   themes,
@@ -116,13 +112,13 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       </div>
 
       <div className="edit-box">
-        <h4>Import HTML Page</h4>
-        <p>Import any custom church HTML page to style, optimize, and edit within the customizer dashboard.</p>
+        <h4>Import Theme</h4>
+        <p>Import a theme package (.zip) containing pages, assets, and configuration to load into the customizer.</p>
         
         <input
           ref={fileInputRef}
           type="file"
-          accept=".html,text/html"
+          accept=".zip,application/zip"
           onChange={handleFileChange}
           style={{ display: "none" }}
         />
@@ -141,7 +137,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             onClick={() => fileInputRef.current?.click()}
             style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
           >
-            <FileUp size={14} /> Import HTML
+            <FileUp size={14} /> Import Theme
           </button>
           <button
             className="small-btn"
@@ -178,36 +174,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         </div>
       )}
 
-      <div className="edit-box">
-        <h4>Token Optimization Engine</h4>
-        <p>Scans the DOM, translates hardcoded style parameters (hex values, fonts) into the Ecclesia Theme Token system automatically.</p>
-        <button
-          className="small-btn"
-          onClick={onOptimize}
-          style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}
-        >
-          <Sparkles size={14} style={{ color: "var(--primary)" }} /> Optimize Design Tokens
-        </button>
-
-        {optimizationReport && (
-          <div style={{ marginTop: "12px", borderTop: "1px solid var(--border)", paddingTop: "12px" }}>
-            <p style={{ fontSize: "12px", fontWeight: "600", color: "#10b981", marginBottom: "6px" }}>
-              Successfully optimized {optimizationReport.count} element styles:
-            </p>
-            <div style={{ maxHeight: "120px", overflowY: "auto", fontSize: "11px", color: "var(--text-muted)", lineHeight: "1.4" }}>
-              {optimizationReport.details.length > 0 ? (
-                optimizationReport.details.map((detail, index) => (
-                  <div key={index} style={{ marginBottom: "4px", paddingBottom: "4px", borderBottom: "1px solid rgba(255,255,255,0.02)" }}>
-                    - {detail}
-                  </div>
-                ))
-              ) : (
-                <div>No hardcoded styles needed optimization (already fully tokenized!).</div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 };

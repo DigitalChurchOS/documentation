@@ -739,19 +739,18 @@ export class ThemeEngineService {
     return updatedWebsite;
   }
 
-  private static async seedEcclesiaWebsiteContent(tenantId: string, websiteId: string) {
+  public static async seedEcclesiaWebsiteContent(tenantId: string, websiteId: string) {
     const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
     const churchName = tenant?.name || 'Grace Community Church';
     const globalContent = createEcclesiaGlobalContent(churchName);
 
-    const pagesCount = await prisma.page.count({
-      where: { websiteId, tenantId },
-    });
+    const defaultPages = createEcclesiaDefaultPages(tenantId, websiteId, churchName);
 
-    if (pagesCount === 0) {
-      const defaultPages = createEcclesiaDefaultPages(tenantId, websiteId, churchName);
-
-      for (const page of defaultPages) {
+    for (const page of defaultPages) {
+      const existing = await prisma.page.findFirst({
+        where: { websiteId, slug: page.slug }
+      });
+      if (!existing) {
         const created = await prisma.page.create({ data: page });
         await prisma.pageRevision.create({
           data: {

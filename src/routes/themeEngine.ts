@@ -460,12 +460,55 @@ router.post('/themes/:themeId/customization/publish', requireThemeEnginePermissi
       where: { id: theme.id },
       data: { settings: nextSettings, draftSettings: null }
     });
+
+    // Auto-create missing default pages and publish all drafts for websites using this theme
+    const websites = await prisma.website.findMany({
+      where: { themeId: theme.id, tenantId: req.tenantId! }
+    });
+
+    for (const website of websites) {
+      // Seed any missing pages first
+      await ThemeEngineService.seedEcclesiaWebsiteContent(req.tenantId!, website.id);
+
+      // Now auto-publish all page drafts to the live site
+      const pages = await prisma.page.findMany({
+        where: { websiteId: website.id, tenantId: req.tenantId! }
+      });
+      for (const page of pages) {
+        const nextContent = page.draftContent || page.content;
+        await prisma.page.update({
+          where: { id: page.id },
+          data: {
+            content: nextContent,
+            draftContent: null,
+            status: 'published',
+          }
+        });
+
+        // Save page revision
+        const lastRevision = await prisma.pageRevision.findFirst({
+          where: { pageId: page.id },
+          orderBy: { version: 'desc' },
+        });
+        const nextVersion = lastRevision ? lastRevision.version + 1 : 1;
+
+        await prisma.pageRevision.create({
+          data: {
+            tenantId: req.tenantId!,
+            pageId: page.id,
+            content: nextContent,
+            version: nextVersion,
+            createdById: req.user?.userId || null,
+          },
+        });
+      }
+    }
+
     res.json({ data: updated });
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
 });
-
 /**
  * POST /api/theme-engine/themes/:themeId/customization/discard
  * Discard draft customization.

@@ -265,6 +265,24 @@ model Tenant {
   dynamicBlogPublishingEngineActivities DynamicBlogPublishingEngineModuleActivity[]
   dynamicBlogPublishingEngineSettings   DynamicBlogPublishingEngineModuleSettings[]
 
+  radioStations           RadioStation[]
+  radioPrograms           RadioProgram[]
+  radioSchedules          RadioSchedule[]
+  radioPlaylists          RadioPlaylist[]
+  radioBroadcastArchives  RadioBroadcastArchive[]
+  radioChatMessages       RadioChatMessage[]
+  radioReactions          RadioReaction[]
+
+  tvChannels              TvChannel[]
+  tvPrograms              TvProgram[]
+  tvSchedules             TvSchedule[]
+  tvPlaylists             TvPlaylist[]
+  tvBroadcastArchives     TvBroadcastArchive[]
+  tvChatMessages          TvChatMessage[]
+  tvReactions             TvReaction[]
+  tvPolls                 TvPoll[]
+  tvLowerThirds           TvLowerThird[]
+
   @@map("tenants")
 }
 
@@ -1774,6 +1792,9 @@ model MediaAsset {
 
   assetTags      MediaAssetTag[]
   playlistItems  MediaPlaylistItem[]
+  radioPlaylistItems RadioPlaylistItem[]
+  tvPlaylistItems    TvPlaylistItem[]
+  tvBroadcastArchives TvBroadcastArchive[]
   livestreams    Livestream[]
   sermonServices ChurchService[]     @relation("SermonMedia")
   audioServices  ChurchService[]     @relation("ServiceAudio")
@@ -2412,6 +2433,9 @@ model PodcastEpisode {
 
   tenant Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   show   PodcastShow @relation(fields: [showId], references: [id], onDelete: Cascade)
+
+  radioPlaylistItems   RadioPlaylistItem[]
+  radioBroadcastArchives RadioBroadcastArchive[]
 
   @@unique([tenantId, showId, slug])
   @@index([tenantId])
@@ -5998,5 +6022,381 @@ model DynamicBlogPublishingEngineModuleSettings {
   @@map("dynamic_blog_publishing_engine_module_settings")
 }
 
+model RadioStation {
+id               String   @id @default(uuid())
+tenantId         String   @map("tenant_id")
+name             String
+slug             String
+slogan           String?
+description      String?
+logoUrl          String?  @map("logo_url")
+coverImageUrl    String?  @map("cover_image_url")
+socialLinks      String   @default("[]") @map("social_links")
+streamType       String   @default("managed") @map("stream_type")
+streamProvider   String?  @map("stream_provider")
+streamUrl        String?  @map("stream_url")
+streamKey        String?  @map("stream_key")
+status           String   @default("offline") @map("status")
+isAutoDjEnabled  Boolean  @default(true) @map("is_auto_dj_enabled")
+createdAt        DateTime @default(now()) @map("created_at")
+updatedAt        DateTime @updatedAt @map("updated_at")
 
+tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+programs         RadioProgram[]
+playlists        RadioPlaylist[]
+archives         RadioBroadcastArchive[]
+chatMessages     RadioChatMessage[]
+reactions        RadioReaction[]
 
+}
+
+model RadioProgram {
+id          String   @id @default(uuid())
+tenantId    String   @map("tenant_id")
+stationId   String   @map("station_id")
+title       String
+slug        String
+description String?
+speaker     String?
+category    String
+createdAt   DateTime @default(now()) @map("created_at")
+updatedAt   DateTime @updatedAt @map("updated_at")
+
+tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+station     RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+schedules   RadioSchedule[]
+archives    RadioBroadcastArchive[]
+
+}
+
+model RadioSchedule {
+id             String   @id @default(uuid())
+tenantId       String   @map("tenant_id")
+programId      String   @map("program_id")
+startTime      DateTime @map("start_time")
+endTime        DateTime @map("end_time")
+recurrence     String   @default("none") @map("recurrence")
+daysOfWeek     String?  @map("days_of_week")
+createdAt      DateTime @default(now()) @map("created_at")
+updatedAt      DateTime @updatedAt @map("updated_at")
+
+tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+program        RadioProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+}
+
+model RadioPlaylist {
+id           String   @id @default(uuid())
+tenantId     String   @map("tenant_id")
+stationId    String   @map("station_id")
+name         String
+isAutoDj     Boolean  @default(false) @map("is_auto_dj")
+rotationRule String   @default("random") @map("rotation_rule")
+createdAt    DateTime @default(now()) @map("created_at")
+updatedAt    DateTime @updatedAt @map("updated_at")
+
+tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+station      RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+items        RadioPlaylistItem[]
+
+}
+
+model RadioPlaylistItem {
+id               String   @id @default(uuid())
+playlistId       String   @map("playlist_id")
+mediaAssetId     String?  @map("media_asset_id")
+podcastEpisodeId String?  @map("podcast_episode_id")
+title            String
+audioUrl         String   @map("audio_url")
+durationSeconds  Int?     @map("duration_seconds")
+sortOrder        Int      @default(0) @map("sort_order")
+createdAt        DateTime @default(now()) @map("created_at")
+updatedAt        DateTime @updatedAt @map("updated_at")
+
+playlist         RadioPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+mediaAsset       MediaAsset?   @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+podcastEpisode   PodcastEpisode? @relation(fields: [podcastEpisodeId], references: [id], onDelete: SetNull)
+
+}
+
+model RadioBroadcastArchive {
+id               String   @id @default(uuid())
+tenantId         String   @map("tenant_id")
+stationId        String   @map("station_id")
+programId        String?  @map("program_id")
+title            String
+audioUrl         String   @map("audio_url")
+durationSeconds  Int?     @map("duration_seconds")
+fileSize         Int?     @map("file_size")
+recordedAt       DateTime @default(now()) @map("recorded_at")
+isPodcastEpisode Boolean  @default(false) @map("is_podcast_episode")
+podcastEpisodeId String?  @map("podcast_episode_id")
+createdAt        DateTime @default(now()) @map("created_at")
+updatedAt        DateTime @updatedAt @map("updated_at")
+
+tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+station          RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+program          RadioProgram? @relation(fields: [programId], references: [id], onDelete: SetNull)
+podcastEpisode   PodcastEpisode? @relation(fields: [podcastEpisodeId], references: [id], onDelete: SetNull)
+
+}
+
+model RadioChatMessage {
+id           String   @id @default(uuid())
+tenantId     String   @map("tenant_id")
+stationId    String   @map("station_id")
+userId       String?  @map("user_id")
+displayName  String   @map("display_name")
+message      String
+createdAt    DateTime @default(now()) @map("created_at")
+
+tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+station      RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+}
+
+model RadioReaction {
+id           String   @id @default(uuid())
+tenantId     String   @map("tenant_id")
+stationId    String   @map("station_id")
+reactionType String   @map("reaction_type")
+createdAt    DateTime @default(now()) @map("created_at")
+
+tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+station      RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+}
+
+// ─────────────────────────────────────────────────────────────
+// TV & VIDEO BROADCASTING NETWORK MODULE
+// ─────────────────────────────────────────────────────────────
+
+model TvChannel {
+  id                        String                  @id @default(uuid())
+  tenantId                  String                  @map("tenant_id")
+  name                      String
+  slug                      String
+  slogan                    String?
+  description               String?
+  logoUrl                   String?                 @map("logo_url")
+  coverImageUrl             String?                 @map("cover_image_url")
+  socialLinks               String                  @default("[]") @map("social_links")
+  streamType                String                  @default("managed") @map("stream_type")
+  streamProvider            String?                 @map("stream_provider")
+  streamUrl                 String?                 @map("stream_url")
+  streamKey                 String?                 @map("stream_key")
+  status                    String                  @default("offline") @map("status")
+  isAutoProgrammingEnabled  Boolean                 @default(true) @map("is_auto_programming_enabled")
+  createdAt                 DateTime                @default(now()) @map("created_at")
+  updatedAt                 DateTime                @updatedAt @map("updated_at")
+
+  tenant                    Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  programs                  TvProgram[]
+  playlists                 TvPlaylist[]
+  archives                  TvBroadcastArchive[]
+  chatMessages              TvChatMessage[]
+  reactions                 TvReaction[]
+  polls                     TvPoll[]
+  lowerThirds               TvLowerThird[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([status])
+  @@map("tv_channels")
+}
+
+model TvProgram {
+  id          String                  @id @default(uuid())
+  tenantId    String                  @map("tenant_id")
+  channelId   String                  @map("channel_id")
+  title       String
+  slug        String
+  description String?
+  speaker     String?
+  category    String
+  createdAt   DateTime                @default(now()) @map("created_at")
+  updatedAt   DateTime                @updatedAt @map("updated_at")
+
+  tenant      Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel     TvChannel               @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  schedules   TvSchedule[]
+  archives    TvBroadcastArchive[]
+
+  @@unique([tenantId, channelId, slug])
+  @@index([tenantId])
+  @@index([channelId])
+  @@map("tv_programs")
+}
+
+model TvSchedule {
+  id             String               @id @default(uuid())
+  tenantId       String               @map("tenant_id")
+  programId      String               @map("program_id")
+  startTime      DateTime             @map("start_time")
+  endTime        DateTime             @map("end_time")
+  recurrence     String               @default("none") @map("recurrence")
+  daysOfWeek     String?              @map("days_of_week")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+
+  tenant         Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  program        TvProgram            @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([programId])
+  @@map("tv_schedules")
+}
+
+model TvPlaylist {
+  id                String            @id @default(uuid())
+  tenantId          String            @map("tenant_id")
+  channelId         String            @map("channel_id")
+  name              String
+  isAutoProgramming Boolean           @default(false) @map("is_auto_programming")
+  rotationRule      String            @default("random") @map("rotation_rule")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  tenant            Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel           TvChannel         @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  items             TvPlaylistItem[]
+
+  @@index([tenantId])
+  @@index([channelId])
+  @@map("tv_playlists")
+}
+
+model TvPlaylistItem {
+  id               String             @id @default(uuid())
+  playlistId       String             @map("playlist_id")
+  mediaAssetId     String?            @map("media_asset_id")
+  title            String
+  videoUrl         String             @map("video_url")
+  durationSeconds  Int?               @map("duration_seconds")
+  sortOrder        Int                @default(0) @map("sort_order")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  playlist         TvPlaylist         @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  mediaAsset       MediaAsset?        @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+
+  @@index([playlistId])
+  @@map("tv_playlist_items")
+}
+
+model TvBroadcastArchive {
+  id               String             @id @default(uuid())
+  tenantId         String             @map("tenant_id")
+  channelId        String             @map("channel_id")
+  programId        String?            @map("program_id")
+  title            String
+  videoUrl         String             @map("video_url")
+  durationSeconds  Int?               @map("duration_seconds")
+  fileSize         Int?               @map("file_size")
+  recordedAt       DateTime           @default(now()) @map("recorded_at")
+  isMediaAsset     Boolean            @default(false) @map("is_media_asset")
+  mediaAssetId     String?            @map("media_asset_id")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  tenant           Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel          TvChannel          @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  program          TvProgram?         @relation(fields: [programId], references: [id], onDelete: SetNull)
+  mediaAsset       MediaAsset?        @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([channelId])
+  @@index([programId])
+  @@map("tv_broadcast_archives")
+}
+
+model TvChatMessage {
+  id           String                 @id @default(uuid())
+  tenantId     String                 @map("tenant_id")
+  channelId    String                 @map("channel_id")
+  userId       String?                @map("user_id")
+  displayName  String                 @map("display_name")
+  message      String
+  countryCode  String?                @map("country_code")
+  userRole     String?                @map("user_role")
+  createdAt    DateTime               @default(now()) @map("created_at")
+
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel      TvChannel              @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([channelId])
+  @@map("tv_chat_messages")
+}
+
+model TvReaction {
+  id           String                 @id @default(uuid())
+  tenantId     String                 @map("tenant_id")
+  channelId    String                 @map("channel_id")
+  reactionType String                 @map("reaction_type")
+  createdAt    DateTime               @default(now()) @map("created_at")
+
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel      TvChannel              @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([channelId])
+  @@map("tv_reactions")
+}
+
+model TvPoll {
+  id           String                 @id @default(uuid())
+  tenantId     String                 @map("tenant_id")
+  channelId    String                 @map("channel_id")
+  question     String
+  options      String                 @default("[]") @map("options")
+  isActive     Boolean                @default(true) @map("is_active")
+  createdAt    DateTime               @default(now()) @map("created_at")
+  updatedAt    DateTime               @updatedAt @map("updated_at")
+
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel      TvChannel              @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  responses    TvPollResponse[]
+
+  @@index([tenantId])
+  @@index([channelId])
+  @@map("tv_polls")
+}
+
+model TvPollResponse {
+  id           String                 @id @default(uuid())
+  pollId       String                 @map("poll_id")
+  userId       String?                @map("user_id")
+  option       String
+  createdAt    DateTime               @default(now()) @map("created_at")
+
+  poll         TvPoll                 @relation(fields: [pollId], references: [id], onDelete: Cascade)
+
+  @@index([pollId])
+  @@map("tv_poll_responses")
+}
+
+model TvLowerThird {
+  id           String                 @id @default(uuid())
+  tenantId     String                 @map("tenant_id")
+  channelId    String                 @map("channel_id")
+  type         String                 @map("type")
+  title        String
+  subtitle     String?
+  buttonText   String?                @map("button_text")
+  actionUrl    String?                @map("action_url")
+  startTime    DateTime               @map("start_time")
+  endTime      DateTime               @map("end_time")
+  position     String                 @default("bottom-left") @map("position")
+  audience     String                 @default("all") @map("audience")
+  isActive     Boolean                @default(true) @map("is_active")
+  createdAt    DateTime               @default(now()) @map("created_at")
+  updatedAt    DateTime               @updatedAt @map("updated_at")
+
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  channel      TvChannel              @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([channelId])
+  @@map("tv_lower_thirds")
+}

@@ -28,6 +28,12 @@ export default {
       return Response.redirect(redirectUrl.toString(), 302);
     }
 
+    if (pathname === '/builder' || pathname.startsWith('/builder/')) {
+      const redirectUrl = new URL(request.url);
+      redirectUrl.pathname = pathname.replace(/^\/builder/, '/customizer');
+      return Response.redirect(redirectUrl.toString(), 302);
+    }
+
     // 2. API requests proxy to service binding
     if (pathname.startsWith('/api/')) {
       if (env.API) {
@@ -46,8 +52,23 @@ export default {
       return env.ASSETS.fetch(request);
     }
 
-    // 4. SPA path-based routing (rewrites client-side routes to their respective index.html entries)
-    let targetPath = '/index.html'; // Default to landing page
+    // 4. Subdomain-aware church website routing
+    // Production: [churchname].churched.online → serve church-frontend SPA
+    const WORKER_BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
+    const hostname = url.hostname.toLowerCase();
+    let isSubdomain = false;
+    for (const base of WORKER_BASE_DOMAINS) {
+      if (hostname !== base && hostname.endsWith(`.${base}`)) {
+        isSubdomain = true;
+        break;
+      }
+    }
+    if (!isSubdomain && hostname.split('.').length > 2) {
+      isSubdomain = true;
+    }
+
+    // 5. SPA path-based routing (rewrites client-side routes to their respective index.html entries)
+    let targetPath = isSubdomain ? '/church/index.html' : '/index.html'; // Subdomain → church frontend
 
     if (pathname === '/admin' || pathname.startsWith('/admin/')) {
       targetPath = '/admin/index.html';
@@ -63,6 +84,8 @@ export default {
       targetPath = '/live.html';
     } else if (pathname === '/church' || pathname.startsWith('/church/')) {
       targetPath = '/church/index.html';
+    } else if (pathname === '/customizer' || pathname.startsWith('/customizer/')) {
+      targetPath = '/customizer/index.html';
     }
 
     // Rewrite request URL and fetch from assets
@@ -72,4 +95,3 @@ export default {
     return env.ASSETS.fetch(rewrittenRequest);
   },
 };
-

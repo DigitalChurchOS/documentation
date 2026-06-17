@@ -306,7 +306,26 @@ export const ModelName = {
   MediaModuleSettings: 'MediaModuleSettings',
   DynamicBlogPublishingEngineModule: 'DynamicBlogPublishingEngineModule',
   DynamicBlogPublishingEngineModuleActivity: 'DynamicBlogPublishingEngineModuleActivity',
-  DynamicBlogPublishingEngineModuleSettings: 'DynamicBlogPublishingEngineModuleSettings'
+  DynamicBlogPublishingEngineModuleSettings: 'DynamicBlogPublishingEngineModuleSettings',
+  RadioStation: 'RadioStation',
+  RadioProgram: 'RadioProgram',
+  RadioSchedule: 'RadioSchedule',
+  RadioPlaylist: 'RadioPlaylist',
+  RadioPlaylistItem: 'RadioPlaylistItem',
+  RadioBroadcastArchive: 'RadioBroadcastArchive',
+  RadioChatMessage: 'RadioChatMessage',
+  RadioReaction: 'RadioReaction',
+  TvChannel: 'TvChannel',
+  TvProgram: 'TvProgram',
+  TvSchedule: 'TvSchedule',
+  TvPlaylist: 'TvPlaylist',
+  TvPlaylistItem: 'TvPlaylistItem',
+  TvBroadcastArchive: 'TvBroadcastArchive',
+  TvChatMessage: 'TvChatMessage',
+  TvReaction: 'TvReaction',
+  TvPoll: 'TvPoll',
+  TvPollResponse: 'TvPollResponse',
+  TvLowerThird: 'TvLowerThird'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -4210,6 +4229,307 @@ export const DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum = {
 } as const
 
 export type DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum = (typeof DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum)[keyof typeof DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum]
+
+
+export const RadioStationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  slug: 'slug',
+  slogan: 'slogan',
+  description: 'description',
+  logoUrl: 'logoUrl',
+  coverImageUrl: 'coverImageUrl',
+  socialLinks: 'socialLinks',
+  streamType: 'streamType',
+  streamProvider: 'streamProvider',
+  streamUrl: 'streamUrl',
+  streamKey: 'streamKey',
+  status: 'status',
+  isAutoDjEnabled: 'isAutoDjEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioStationScalarFieldEnum = (typeof RadioStationScalarFieldEnum)[keyof typeof RadioStationScalarFieldEnum]
+
+
+export const RadioProgramScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  title: 'title',
+  slug: 'slug',
+  description: 'description',
+  speaker: 'speaker',
+  category: 'category',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioProgramScalarFieldEnum = (typeof RadioProgramScalarFieldEnum)[keyof typeof RadioProgramScalarFieldEnum]
+
+
+export const RadioScheduleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  programId: 'programId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  recurrence: 'recurrence',
+  daysOfWeek: 'daysOfWeek',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioScheduleScalarFieldEnum = (typeof RadioScheduleScalarFieldEnum)[keyof typeof RadioScheduleScalarFieldEnum]
+
+
+export const RadioPlaylistScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  name: 'name',
+  isAutoDj: 'isAutoDj',
+  rotationRule: 'rotationRule',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioPlaylistScalarFieldEnum = (typeof RadioPlaylistScalarFieldEnum)[keyof typeof RadioPlaylistScalarFieldEnum]
+
+
+export const RadioPlaylistItemScalarFieldEnum = {
+  id: 'id',
+  playlistId: 'playlistId',
+  mediaAssetId: 'mediaAssetId',
+  podcastEpisodeId: 'podcastEpisodeId',
+  title: 'title',
+  audioUrl: 'audioUrl',
+  durationSeconds: 'durationSeconds',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioPlaylistItemScalarFieldEnum = (typeof RadioPlaylistItemScalarFieldEnum)[keyof typeof RadioPlaylistItemScalarFieldEnum]
+
+
+export const RadioBroadcastArchiveScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  programId: 'programId',
+  title: 'title',
+  audioUrl: 'audioUrl',
+  durationSeconds: 'durationSeconds',
+  fileSize: 'fileSize',
+  recordedAt: 'recordedAt',
+  isPodcastEpisode: 'isPodcastEpisode',
+  podcastEpisodeId: 'podcastEpisodeId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioBroadcastArchiveScalarFieldEnum = (typeof RadioBroadcastArchiveScalarFieldEnum)[keyof typeof RadioBroadcastArchiveScalarFieldEnum]
+
+
+export const RadioChatMessageScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  userId: 'userId',
+  displayName: 'displayName',
+  message: 'message',
+  createdAt: 'createdAt'
+} as const
+
+export type RadioChatMessageScalarFieldEnum = (typeof RadioChatMessageScalarFieldEnum)[keyof typeof RadioChatMessageScalarFieldEnum]
+
+
+export const RadioReactionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  reactionType: 'reactionType',
+  createdAt: 'createdAt'
+} as const
+
+export type RadioReactionScalarFieldEnum = (typeof RadioReactionScalarFieldEnum)[keyof typeof RadioReactionScalarFieldEnum]
+
+
+export const TvChannelScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  slug: 'slug',
+  slogan: 'slogan',
+  description: 'description',
+  logoUrl: 'logoUrl',
+  coverImageUrl: 'coverImageUrl',
+  socialLinks: 'socialLinks',
+  streamType: 'streamType',
+  streamProvider: 'streamProvider',
+  streamUrl: 'streamUrl',
+  streamKey: 'streamKey',
+  status: 'status',
+  isAutoProgrammingEnabled: 'isAutoProgrammingEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvChannelScalarFieldEnum = (typeof TvChannelScalarFieldEnum)[keyof typeof TvChannelScalarFieldEnum]
+
+
+export const TvProgramScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  title: 'title',
+  slug: 'slug',
+  description: 'description',
+  speaker: 'speaker',
+  category: 'category',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvProgramScalarFieldEnum = (typeof TvProgramScalarFieldEnum)[keyof typeof TvProgramScalarFieldEnum]
+
+
+export const TvScheduleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  programId: 'programId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  recurrence: 'recurrence',
+  daysOfWeek: 'daysOfWeek',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvScheduleScalarFieldEnum = (typeof TvScheduleScalarFieldEnum)[keyof typeof TvScheduleScalarFieldEnum]
+
+
+export const TvPlaylistScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  name: 'name',
+  isAutoProgramming: 'isAutoProgramming',
+  rotationRule: 'rotationRule',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvPlaylistScalarFieldEnum = (typeof TvPlaylistScalarFieldEnum)[keyof typeof TvPlaylistScalarFieldEnum]
+
+
+export const TvPlaylistItemScalarFieldEnum = {
+  id: 'id',
+  playlistId: 'playlistId',
+  mediaAssetId: 'mediaAssetId',
+  title: 'title',
+  videoUrl: 'videoUrl',
+  durationSeconds: 'durationSeconds',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvPlaylistItemScalarFieldEnum = (typeof TvPlaylistItemScalarFieldEnum)[keyof typeof TvPlaylistItemScalarFieldEnum]
+
+
+export const TvBroadcastArchiveScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  programId: 'programId',
+  title: 'title',
+  videoUrl: 'videoUrl',
+  durationSeconds: 'durationSeconds',
+  fileSize: 'fileSize',
+  recordedAt: 'recordedAt',
+  isMediaAsset: 'isMediaAsset',
+  mediaAssetId: 'mediaAssetId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvBroadcastArchiveScalarFieldEnum = (typeof TvBroadcastArchiveScalarFieldEnum)[keyof typeof TvBroadcastArchiveScalarFieldEnum]
+
+
+export const TvChatMessageScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  userId: 'userId',
+  displayName: 'displayName',
+  message: 'message',
+  countryCode: 'countryCode',
+  userRole: 'userRole',
+  createdAt: 'createdAt'
+} as const
+
+export type TvChatMessageScalarFieldEnum = (typeof TvChatMessageScalarFieldEnum)[keyof typeof TvChatMessageScalarFieldEnum]
+
+
+export const TvReactionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  reactionType: 'reactionType',
+  createdAt: 'createdAt'
+} as const
+
+export type TvReactionScalarFieldEnum = (typeof TvReactionScalarFieldEnum)[keyof typeof TvReactionScalarFieldEnum]
+
+
+export const TvPollScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  question: 'question',
+  options: 'options',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvPollScalarFieldEnum = (typeof TvPollScalarFieldEnum)[keyof typeof TvPollScalarFieldEnum]
+
+
+export const TvPollResponseScalarFieldEnum = {
+  id: 'id',
+  pollId: 'pollId',
+  userId: 'userId',
+  option: 'option',
+  createdAt: 'createdAt'
+} as const
+
+export type TvPollResponseScalarFieldEnum = (typeof TvPollResponseScalarFieldEnum)[keyof typeof TvPollResponseScalarFieldEnum]
+
+
+export const TvLowerThirdScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  type: 'type',
+  title: 'title',
+  subtitle: 'subtitle',
+  buttonText: 'buttonText',
+  actionUrl: 'actionUrl',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  position: 'position',
+  audience: 'audience',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvLowerThirdScalarFieldEnum = (typeof TvLowerThirdScalarFieldEnum)[keyof typeof TvLowerThirdScalarFieldEnum]
 
 
 export const SortOrder = {

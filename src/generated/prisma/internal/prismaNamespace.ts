@@ -639,7 +639,26 @@ export const ModelName = {
   MediaModuleSettings: 'MediaModuleSettings',
   DynamicBlogPublishingEngineModule: 'DynamicBlogPublishingEngineModule',
   DynamicBlogPublishingEngineModuleActivity: 'DynamicBlogPublishingEngineModuleActivity',
-  DynamicBlogPublishingEngineModuleSettings: 'DynamicBlogPublishingEngineModuleSettings'
+  DynamicBlogPublishingEngineModuleSettings: 'DynamicBlogPublishingEngineModuleSettings',
+  RadioStation: 'RadioStation',
+  RadioProgram: 'RadioProgram',
+  RadioSchedule: 'RadioSchedule',
+  RadioPlaylist: 'RadioPlaylist',
+  RadioPlaylistItem: 'RadioPlaylistItem',
+  RadioBroadcastArchive: 'RadioBroadcastArchive',
+  RadioChatMessage: 'RadioChatMessage',
+  RadioReaction: 'RadioReaction',
+  TvChannel: 'TvChannel',
+  TvProgram: 'TvProgram',
+  TvSchedule: 'TvSchedule',
+  TvPlaylist: 'TvPlaylist',
+  TvPlaylistItem: 'TvPlaylistItem',
+  TvBroadcastArchive: 'TvBroadcastArchive',
+  TvChatMessage: 'TvChatMessage',
+  TvReaction: 'TvReaction',
+  TvPoll: 'TvPoll',
+  TvPollResponse: 'TvPollResponse',
+  TvLowerThird: 'TvLowerThird'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -655,7 +674,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "tenant" | "branch" | "branchRegion" | "branchLeader" | "user" | "member" | "role" | "permission" | "rolePermission" | "userRole" | "providerCategory" | "provider" | "tenantConnectedService" | "moduleProviderOverride" | "moduleDefinition" | "tenantModule" | "theme" | "website" | "page" | "family" | "crmPipeline" | "crmStage" | "memberCrmStage" | "crmContact" | "crmTimelineEvent" | "crmFollowUpTask" | "consentRecord" | "communicationTemplate" | "communicationLog" | "notificationPreference" | "scheduledMessage" | "automationWorkflow" | "followUpSequence" | "followUpStep" | "subscriptionPlan" | "tenantSubscription" | "usageMeter" | "invoice" | "billingSubscriptionManagementModule" | "billingSubscriptionManagementModuleActivity" | "billingSubscriptionManagementModuleSettings" | "billingAddOn" | "tenantSubscriptionAddOn" | "billingCoupon" | "analyticsEvent" | "pluginDefinition" | "tenantPlugin" | "pluginWebhook" | "pluginEngine" | "pluginEnginePermission" | "pluginExtensionsEngineModule" | "pluginExtensionsEngineActivity" | "pluginExtensionsEngineSetting" | "developerProfile" | "marketplaceAsset" | "assetSubmission" | "submissionReview" | "assetFeedback" | "assetPurchase" | "sandboxTenant" | "languageRegistry" | "translationKey" | "mediaCategory" | "mediaTag" | "speaker" | "mediaSeries" | "mediaAsset" | "mediaAssetTag" | "mediaPlaylist" | "mediaPlaylistItem" | "livestream" | "livestreamChat" | "livestreamViewer" | "livestreamInteraction" | "churchService" | "serviceScripture" | "serviceAttachment" | "churchServicesModule" | "churchServicesModuleActivity" | "churchServicesModuleSettings" | "livestreamModule" | "livestreamModuleActivity" | "livestreamModuleSettings" | "blogCategory" | "blogTag" | "blogPost" | "blogPostTag" | "blogPostScripture" | "blogPostComment" | "libraryCategory" | "libraryResource" | "libraryPurchase" | "podcastShow" | "podcastEpisode" | "aiMediaJob" | "displayScreen" | "signagePlaylist" | "signageSlide" | "signagePlaylistItem" | "worshipSong" | "worshipPlaylist" | "worshipPlaylistItem" | "worshipSession" | "givingCategory" | "donation" | "recurringGiving" | "partnershipCategory" | "partnership" | "recurringPartnership" | "campaign" | "campaignUpdate" | "productCategory" | "product" | "productVariant" | "storeCoupon" | "storeOrder" | "orderItem" | "financialAccount" | "financialBudget" | "financialTransaction" | "expenseRequest" | "reconciliationRecord" | "ministryFunnel" | "funnelStep" | "funnelSubmission" | "funnelAnalytics" | "memberCheckIn" | "memberNote" | "memberTag" | "memberTagAssignment" | "communityPost" | "prayerRequest" | "testimony" | "communityComment" | "communityReaction" | "chatConversation" | "chatMessage" | "careRequest" | "savedReply" | "chatFollowUpTask" | "outreachCampaign" | "inviteAsset" | "personalizedInvitePage" | "inviteLinkClick" | "shareEvent" | "volunteerProfile" | "volunteerDepartment" | "volunteerTeam" | "volunteerTeamAssignment" | "volunteerAvailability" | "volunteerShift" | "volunteerAssignment" | "volunteerAnnouncement" | "customForm" | "formSubmission" | "formWorkflowTrigger" | "formWorkflowAction" | "prayerSession" | "prayerSessionParticipation" | "prayerPoint" | "prayerSessionReaction" | "prayerMedia" | "newBelieverProfile" | "newBelieverReminder" | "lmsCourse" | "lmsModule" | "lmsLesson" | "lmsQuiz" | "lmsAssignment" | "lmsEnrollment" | "lmsLessonProgress" | "lmsQuizAnswer" | "lmsAssignmentSubmission" | "bibleTranslation" | "bibleBook" | "bibleVerse" | "bibleReadingPlan" | "bibleReadingPlanDay" | "bibleReadingPlanEnrollment" | "bibleBookmark" | "bibleVerseNote" | "dailyDevotional" | "bibleVerseHighlight" | "bibleAudioTrack" | "groupType" | "group" | "groupMember" | "groupMeeting" | "groupAttendance" | "groupInviteLink" | "groupInviteConversion" | "groupNoticeBoard" | "groupNoticePost" | "groupPromotion" | "groupSettings" | "childProfile" | "childGuardian" | "pickupAuthorization" | "childrenClass" | "childrenClassEnrollment" | "childrenClassResource" | "childrenCheckIn" | "eventCategory" | "event" | "eventRegistration" | "eventTicket" | "eventRsvp" | "eventReminder" | "liveMeeting" | "liveMeetingParticipant" | "liveMeetingChat" | "liveMeetingAttendance" | "liveMeetingReminder" | "appointmentType" | "staffAvailability" | "appointment" | "appointmentReminder" | "mobilePushToken" | "whiteLabelApp" | "whiteLabelBuild" | "translationJob" | "translatedContent" | "liveTranslationFeed" | "mediaCaption" | "aiAssistantJob" | "agentPresence" | "communityChannel" | "chatKbArticle" | "altarCallResponse" | "moduleSettings" | "centralizedSettingsEngineModule" | "centralizedSettingsEngineModuleActivity" | "centralizedSettingsEngineModuleSettings" | "pageRevision" | "navigationMenu" | "cmsFooter" | "reusableBlock" | "cmsActivityLog" | "themeEngineModule" | "themeEngineModuleActivity" | "themeEngineModuleSettings" | "developerMarketplaceModule" | "developerMarketplaceModuleActivity" | "developerMarketplaceModuleSettings" | "domainTenantManagementModule" | "domainTenantManagementModuleActivity" | "domainTenantManagementModuleSettings" | "digitalLibraryResourceCenterModule" | "digitalLibraryResourceCenterModuleActivity" | "digitalLibraryResourceCenterModuleSettings" | "mediaModule" | "mediaModuleActivity" | "mediaModuleSettings" | "dynamicBlogPublishingEngineModule" | "dynamicBlogPublishingEngineModuleActivity" | "dynamicBlogPublishingEngineModuleSettings"
+    modelProps: "tenant" | "branch" | "branchRegion" | "branchLeader" | "user" | "member" | "role" | "permission" | "rolePermission" | "userRole" | "providerCategory" | "provider" | "tenantConnectedService" | "moduleProviderOverride" | "moduleDefinition" | "tenantModule" | "theme" | "website" | "page" | "family" | "crmPipeline" | "crmStage" | "memberCrmStage" | "crmContact" | "crmTimelineEvent" | "crmFollowUpTask" | "consentRecord" | "communicationTemplate" | "communicationLog" | "notificationPreference" | "scheduledMessage" | "automationWorkflow" | "followUpSequence" | "followUpStep" | "subscriptionPlan" | "tenantSubscription" | "usageMeter" | "invoice" | "billingSubscriptionManagementModule" | "billingSubscriptionManagementModuleActivity" | "billingSubscriptionManagementModuleSettings" | "billingAddOn" | "tenantSubscriptionAddOn" | "billingCoupon" | "analyticsEvent" | "pluginDefinition" | "tenantPlugin" | "pluginWebhook" | "pluginEngine" | "pluginEnginePermission" | "pluginExtensionsEngineModule" | "pluginExtensionsEngineActivity" | "pluginExtensionsEngineSetting" | "developerProfile" | "marketplaceAsset" | "assetSubmission" | "submissionReview" | "assetFeedback" | "assetPurchase" | "sandboxTenant" | "languageRegistry" | "translationKey" | "mediaCategory" | "mediaTag" | "speaker" | "mediaSeries" | "mediaAsset" | "mediaAssetTag" | "mediaPlaylist" | "mediaPlaylistItem" | "livestream" | "livestreamChat" | "livestreamViewer" | "livestreamInteraction" | "churchService" | "serviceScripture" | "serviceAttachment" | "churchServicesModule" | "churchServicesModuleActivity" | "churchServicesModuleSettings" | "livestreamModule" | "livestreamModuleActivity" | "livestreamModuleSettings" | "blogCategory" | "blogTag" | "blogPost" | "blogPostTag" | "blogPostScripture" | "blogPostComment" | "libraryCategory" | "libraryResource" | "libraryPurchase" | "podcastShow" | "podcastEpisode" | "aiMediaJob" | "displayScreen" | "signagePlaylist" | "signageSlide" | "signagePlaylistItem" | "worshipSong" | "worshipPlaylist" | "worshipPlaylistItem" | "worshipSession" | "givingCategory" | "donation" | "recurringGiving" | "partnershipCategory" | "partnership" | "recurringPartnership" | "campaign" | "campaignUpdate" | "productCategory" | "product" | "productVariant" | "storeCoupon" | "storeOrder" | "orderItem" | "financialAccount" | "financialBudget" | "financialTransaction" | "expenseRequest" | "reconciliationRecord" | "ministryFunnel" | "funnelStep" | "funnelSubmission" | "funnelAnalytics" | "memberCheckIn" | "memberNote" | "memberTag" | "memberTagAssignment" | "communityPost" | "prayerRequest" | "testimony" | "communityComment" | "communityReaction" | "chatConversation" | "chatMessage" | "careRequest" | "savedReply" | "chatFollowUpTask" | "outreachCampaign" | "inviteAsset" | "personalizedInvitePage" | "inviteLinkClick" | "shareEvent" | "volunteerProfile" | "volunteerDepartment" | "volunteerTeam" | "volunteerTeamAssignment" | "volunteerAvailability" | "volunteerShift" | "volunteerAssignment" | "volunteerAnnouncement" | "customForm" | "formSubmission" | "formWorkflowTrigger" | "formWorkflowAction" | "prayerSession" | "prayerSessionParticipation" | "prayerPoint" | "prayerSessionReaction" | "prayerMedia" | "newBelieverProfile" | "newBelieverReminder" | "lmsCourse" | "lmsModule" | "lmsLesson" | "lmsQuiz" | "lmsAssignment" | "lmsEnrollment" | "lmsLessonProgress" | "lmsQuizAnswer" | "lmsAssignmentSubmission" | "bibleTranslation" | "bibleBook" | "bibleVerse" | "bibleReadingPlan" | "bibleReadingPlanDay" | "bibleReadingPlanEnrollment" | "bibleBookmark" | "bibleVerseNote" | "dailyDevotional" | "bibleVerseHighlight" | "bibleAudioTrack" | "groupType" | "group" | "groupMember" | "groupMeeting" | "groupAttendance" | "groupInviteLink" | "groupInviteConversion" | "groupNoticeBoard" | "groupNoticePost" | "groupPromotion" | "groupSettings" | "childProfile" | "childGuardian" | "pickupAuthorization" | "childrenClass" | "childrenClassEnrollment" | "childrenClassResource" | "childrenCheckIn" | "eventCategory" | "event" | "eventRegistration" | "eventTicket" | "eventRsvp" | "eventReminder" | "liveMeeting" | "liveMeetingParticipant" | "liveMeetingChat" | "liveMeetingAttendance" | "liveMeetingReminder" | "appointmentType" | "staffAvailability" | "appointment" | "appointmentReminder" | "mobilePushToken" | "whiteLabelApp" | "whiteLabelBuild" | "translationJob" | "translatedContent" | "liveTranslationFeed" | "mediaCaption" | "aiAssistantJob" | "agentPresence" | "communityChannel" | "chatKbArticle" | "altarCallResponse" | "moduleSettings" | "centralizedSettingsEngineModule" | "centralizedSettingsEngineModuleActivity" | "centralizedSettingsEngineModuleSettings" | "pageRevision" | "navigationMenu" | "cmsFooter" | "reusableBlock" | "cmsActivityLog" | "themeEngineModule" | "themeEngineModuleActivity" | "themeEngineModuleSettings" | "developerMarketplaceModule" | "developerMarketplaceModuleActivity" | "developerMarketplaceModuleSettings" | "domainTenantManagementModule" | "domainTenantManagementModuleActivity" | "domainTenantManagementModuleSettings" | "digitalLibraryResourceCenterModule" | "digitalLibraryResourceCenterModuleActivity" | "digitalLibraryResourceCenterModuleSettings" | "mediaModule" | "mediaModuleActivity" | "mediaModuleSettings" | "dynamicBlogPublishingEngineModule" | "dynamicBlogPublishingEngineModuleActivity" | "dynamicBlogPublishingEngineModuleSettings" | "radioStation" | "radioProgram" | "radioSchedule" | "radioPlaylist" | "radioPlaylistItem" | "radioBroadcastArchive" | "radioChatMessage" | "radioReaction" | "tvChannel" | "tvProgram" | "tvSchedule" | "tvPlaylist" | "tvPlaylistItem" | "tvBroadcastArchive" | "tvChatMessage" | "tvReaction" | "tvPoll" | "tvPollResponse" | "tvLowerThird"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -19603,6 +19622,1412 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RadioStation: {
+      payload: Prisma.$RadioStationPayload<ExtArgs>
+      fields: Prisma.RadioStationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RadioStationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RadioStationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>
+        }
+        findFirst: {
+          args: Prisma.RadioStationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RadioStationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>
+        }
+        findMany: {
+          args: Prisma.RadioStationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>[]
+        }
+        create: {
+          args: Prisma.RadioStationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>
+        }
+        createMany: {
+          args: Prisma.RadioStationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RadioStationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>[]
+        }
+        delete: {
+          args: Prisma.RadioStationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>
+        }
+        update: {
+          args: Prisma.RadioStationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>
+        }
+        deleteMany: {
+          args: Prisma.RadioStationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RadioStationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RadioStationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>[]
+        }
+        upsert: {
+          args: Prisma.RadioStationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioStationPayload>
+        }
+        aggregate: {
+          args: Prisma.RadioStationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRadioStation>
+        }
+        groupBy: {
+          args: Prisma.RadioStationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioStationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RadioStationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioStationCountAggregateOutputType> | number
+        }
+      }
+    }
+    RadioProgram: {
+      payload: Prisma.$RadioProgramPayload<ExtArgs>
+      fields: Prisma.RadioProgramFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RadioProgramFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RadioProgramFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>
+        }
+        findFirst: {
+          args: Prisma.RadioProgramFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RadioProgramFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>
+        }
+        findMany: {
+          args: Prisma.RadioProgramFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>[]
+        }
+        create: {
+          args: Prisma.RadioProgramCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>
+        }
+        createMany: {
+          args: Prisma.RadioProgramCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RadioProgramCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>[]
+        }
+        delete: {
+          args: Prisma.RadioProgramDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>
+        }
+        update: {
+          args: Prisma.RadioProgramUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>
+        }
+        deleteMany: {
+          args: Prisma.RadioProgramDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RadioProgramUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RadioProgramUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>[]
+        }
+        upsert: {
+          args: Prisma.RadioProgramUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioProgramPayload>
+        }
+        aggregate: {
+          args: Prisma.RadioProgramAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRadioProgram>
+        }
+        groupBy: {
+          args: Prisma.RadioProgramGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioProgramGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RadioProgramCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioProgramCountAggregateOutputType> | number
+        }
+      }
+    }
+    RadioSchedule: {
+      payload: Prisma.$RadioSchedulePayload<ExtArgs>
+      fields: Prisma.RadioScheduleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RadioScheduleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RadioScheduleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>
+        }
+        findFirst: {
+          args: Prisma.RadioScheduleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RadioScheduleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>
+        }
+        findMany: {
+          args: Prisma.RadioScheduleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>[]
+        }
+        create: {
+          args: Prisma.RadioScheduleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>
+        }
+        createMany: {
+          args: Prisma.RadioScheduleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RadioScheduleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>[]
+        }
+        delete: {
+          args: Prisma.RadioScheduleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>
+        }
+        update: {
+          args: Prisma.RadioScheduleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>
+        }
+        deleteMany: {
+          args: Prisma.RadioScheduleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RadioScheduleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RadioScheduleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>[]
+        }
+        upsert: {
+          args: Prisma.RadioScheduleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioSchedulePayload>
+        }
+        aggregate: {
+          args: Prisma.RadioScheduleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRadioSchedule>
+        }
+        groupBy: {
+          args: Prisma.RadioScheduleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioScheduleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RadioScheduleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioScheduleCountAggregateOutputType> | number
+        }
+      }
+    }
+    RadioPlaylist: {
+      payload: Prisma.$RadioPlaylistPayload<ExtArgs>
+      fields: Prisma.RadioPlaylistFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RadioPlaylistFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RadioPlaylistFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>
+        }
+        findFirst: {
+          args: Prisma.RadioPlaylistFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RadioPlaylistFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>
+        }
+        findMany: {
+          args: Prisma.RadioPlaylistFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>[]
+        }
+        create: {
+          args: Prisma.RadioPlaylistCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>
+        }
+        createMany: {
+          args: Prisma.RadioPlaylistCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RadioPlaylistCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>[]
+        }
+        delete: {
+          args: Prisma.RadioPlaylistDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>
+        }
+        update: {
+          args: Prisma.RadioPlaylistUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>
+        }
+        deleteMany: {
+          args: Prisma.RadioPlaylistDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RadioPlaylistUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RadioPlaylistUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>[]
+        }
+        upsert: {
+          args: Prisma.RadioPlaylistUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistPayload>
+        }
+        aggregate: {
+          args: Prisma.RadioPlaylistAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRadioPlaylist>
+        }
+        groupBy: {
+          args: Prisma.RadioPlaylistGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioPlaylistGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RadioPlaylistCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioPlaylistCountAggregateOutputType> | number
+        }
+      }
+    }
+    RadioPlaylistItem: {
+      payload: Prisma.$RadioPlaylistItemPayload<ExtArgs>
+      fields: Prisma.RadioPlaylistItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RadioPlaylistItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RadioPlaylistItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>
+        }
+        findFirst: {
+          args: Prisma.RadioPlaylistItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RadioPlaylistItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>
+        }
+        findMany: {
+          args: Prisma.RadioPlaylistItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>[]
+        }
+        create: {
+          args: Prisma.RadioPlaylistItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>
+        }
+        createMany: {
+          args: Prisma.RadioPlaylistItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RadioPlaylistItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>[]
+        }
+        delete: {
+          args: Prisma.RadioPlaylistItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>
+        }
+        update: {
+          args: Prisma.RadioPlaylistItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.RadioPlaylistItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RadioPlaylistItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RadioPlaylistItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.RadioPlaylistItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioPlaylistItemPayload>
+        }
+        aggregate: {
+          args: Prisma.RadioPlaylistItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRadioPlaylistItem>
+        }
+        groupBy: {
+          args: Prisma.RadioPlaylistItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioPlaylistItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RadioPlaylistItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioPlaylistItemCountAggregateOutputType> | number
+        }
+      }
+    }
+    RadioBroadcastArchive: {
+      payload: Prisma.$RadioBroadcastArchivePayload<ExtArgs>
+      fields: Prisma.RadioBroadcastArchiveFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RadioBroadcastArchiveFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RadioBroadcastArchiveFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>
+        }
+        findFirst: {
+          args: Prisma.RadioBroadcastArchiveFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RadioBroadcastArchiveFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>
+        }
+        findMany: {
+          args: Prisma.RadioBroadcastArchiveFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>[]
+        }
+        create: {
+          args: Prisma.RadioBroadcastArchiveCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>
+        }
+        createMany: {
+          args: Prisma.RadioBroadcastArchiveCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RadioBroadcastArchiveCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>[]
+        }
+        delete: {
+          args: Prisma.RadioBroadcastArchiveDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>
+        }
+        update: {
+          args: Prisma.RadioBroadcastArchiveUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>
+        }
+        deleteMany: {
+          args: Prisma.RadioBroadcastArchiveDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RadioBroadcastArchiveUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RadioBroadcastArchiveUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>[]
+        }
+        upsert: {
+          args: Prisma.RadioBroadcastArchiveUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioBroadcastArchivePayload>
+        }
+        aggregate: {
+          args: Prisma.RadioBroadcastArchiveAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRadioBroadcastArchive>
+        }
+        groupBy: {
+          args: Prisma.RadioBroadcastArchiveGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioBroadcastArchiveGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RadioBroadcastArchiveCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioBroadcastArchiveCountAggregateOutputType> | number
+        }
+      }
+    }
+    RadioChatMessage: {
+      payload: Prisma.$RadioChatMessagePayload<ExtArgs>
+      fields: Prisma.RadioChatMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RadioChatMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RadioChatMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.RadioChatMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RadioChatMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>
+        }
+        findMany: {
+          args: Prisma.RadioChatMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>[]
+        }
+        create: {
+          args: Prisma.RadioChatMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>
+        }
+        createMany: {
+          args: Prisma.RadioChatMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RadioChatMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.RadioChatMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>
+        }
+        update: {
+          args: Prisma.RadioChatMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.RadioChatMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RadioChatMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RadioChatMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.RadioChatMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioChatMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.RadioChatMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRadioChatMessage>
+        }
+        groupBy: {
+          args: Prisma.RadioChatMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioChatMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RadioChatMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioChatMessageCountAggregateOutputType> | number
+        }
+      }
+    }
+    RadioReaction: {
+      payload: Prisma.$RadioReactionPayload<ExtArgs>
+      fields: Prisma.RadioReactionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RadioReactionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RadioReactionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>
+        }
+        findFirst: {
+          args: Prisma.RadioReactionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RadioReactionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>
+        }
+        findMany: {
+          args: Prisma.RadioReactionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>[]
+        }
+        create: {
+          args: Prisma.RadioReactionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>
+        }
+        createMany: {
+          args: Prisma.RadioReactionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RadioReactionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>[]
+        }
+        delete: {
+          args: Prisma.RadioReactionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>
+        }
+        update: {
+          args: Prisma.RadioReactionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>
+        }
+        deleteMany: {
+          args: Prisma.RadioReactionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RadioReactionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RadioReactionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>[]
+        }
+        upsert: {
+          args: Prisma.RadioReactionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RadioReactionPayload>
+        }
+        aggregate: {
+          args: Prisma.RadioReactionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRadioReaction>
+        }
+        groupBy: {
+          args: Prisma.RadioReactionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioReactionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RadioReactionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RadioReactionCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvChannel: {
+      payload: Prisma.$TvChannelPayload<ExtArgs>
+      fields: Prisma.TvChannelFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvChannelFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvChannelFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>
+        }
+        findFirst: {
+          args: Prisma.TvChannelFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvChannelFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>
+        }
+        findMany: {
+          args: Prisma.TvChannelFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>[]
+        }
+        create: {
+          args: Prisma.TvChannelCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>
+        }
+        createMany: {
+          args: Prisma.TvChannelCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvChannelCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>[]
+        }
+        delete: {
+          args: Prisma.TvChannelDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>
+        }
+        update: {
+          args: Prisma.TvChannelUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>
+        }
+        deleteMany: {
+          args: Prisma.TvChannelDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvChannelUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvChannelUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>[]
+        }
+        upsert: {
+          args: Prisma.TvChannelUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChannelPayload>
+        }
+        aggregate: {
+          args: Prisma.TvChannelAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvChannel>
+        }
+        groupBy: {
+          args: Prisma.TvChannelGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvChannelGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvChannelCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvChannelCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvProgram: {
+      payload: Prisma.$TvProgramPayload<ExtArgs>
+      fields: Prisma.TvProgramFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvProgramFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvProgramFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>
+        }
+        findFirst: {
+          args: Prisma.TvProgramFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvProgramFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>
+        }
+        findMany: {
+          args: Prisma.TvProgramFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>[]
+        }
+        create: {
+          args: Prisma.TvProgramCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>
+        }
+        createMany: {
+          args: Prisma.TvProgramCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvProgramCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>[]
+        }
+        delete: {
+          args: Prisma.TvProgramDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>
+        }
+        update: {
+          args: Prisma.TvProgramUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>
+        }
+        deleteMany: {
+          args: Prisma.TvProgramDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvProgramUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvProgramUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>[]
+        }
+        upsert: {
+          args: Prisma.TvProgramUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvProgramPayload>
+        }
+        aggregate: {
+          args: Prisma.TvProgramAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvProgram>
+        }
+        groupBy: {
+          args: Prisma.TvProgramGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvProgramGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvProgramCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvProgramCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvSchedule: {
+      payload: Prisma.$TvSchedulePayload<ExtArgs>
+      fields: Prisma.TvScheduleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvScheduleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvScheduleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>
+        }
+        findFirst: {
+          args: Prisma.TvScheduleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvScheduleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>
+        }
+        findMany: {
+          args: Prisma.TvScheduleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>[]
+        }
+        create: {
+          args: Prisma.TvScheduleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>
+        }
+        createMany: {
+          args: Prisma.TvScheduleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvScheduleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>[]
+        }
+        delete: {
+          args: Prisma.TvScheduleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>
+        }
+        update: {
+          args: Prisma.TvScheduleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>
+        }
+        deleteMany: {
+          args: Prisma.TvScheduleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvScheduleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvScheduleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>[]
+        }
+        upsert: {
+          args: Prisma.TvScheduleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvSchedulePayload>
+        }
+        aggregate: {
+          args: Prisma.TvScheduleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvSchedule>
+        }
+        groupBy: {
+          args: Prisma.TvScheduleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvScheduleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvScheduleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvScheduleCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvPlaylist: {
+      payload: Prisma.$TvPlaylistPayload<ExtArgs>
+      fields: Prisma.TvPlaylistFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvPlaylistFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvPlaylistFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>
+        }
+        findFirst: {
+          args: Prisma.TvPlaylistFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvPlaylistFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>
+        }
+        findMany: {
+          args: Prisma.TvPlaylistFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>[]
+        }
+        create: {
+          args: Prisma.TvPlaylistCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>
+        }
+        createMany: {
+          args: Prisma.TvPlaylistCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvPlaylistCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>[]
+        }
+        delete: {
+          args: Prisma.TvPlaylistDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>
+        }
+        update: {
+          args: Prisma.TvPlaylistUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>
+        }
+        deleteMany: {
+          args: Prisma.TvPlaylistDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvPlaylistUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvPlaylistUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>[]
+        }
+        upsert: {
+          args: Prisma.TvPlaylistUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistPayload>
+        }
+        aggregate: {
+          args: Prisma.TvPlaylistAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvPlaylist>
+        }
+        groupBy: {
+          args: Prisma.TvPlaylistGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvPlaylistGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvPlaylistCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvPlaylistCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvPlaylistItem: {
+      payload: Prisma.$TvPlaylistItemPayload<ExtArgs>
+      fields: Prisma.TvPlaylistItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvPlaylistItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvPlaylistItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>
+        }
+        findFirst: {
+          args: Prisma.TvPlaylistItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvPlaylistItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>
+        }
+        findMany: {
+          args: Prisma.TvPlaylistItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>[]
+        }
+        create: {
+          args: Prisma.TvPlaylistItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>
+        }
+        createMany: {
+          args: Prisma.TvPlaylistItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvPlaylistItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>[]
+        }
+        delete: {
+          args: Prisma.TvPlaylistItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>
+        }
+        update: {
+          args: Prisma.TvPlaylistItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.TvPlaylistItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvPlaylistItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvPlaylistItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.TvPlaylistItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPlaylistItemPayload>
+        }
+        aggregate: {
+          args: Prisma.TvPlaylistItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvPlaylistItem>
+        }
+        groupBy: {
+          args: Prisma.TvPlaylistItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvPlaylistItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvPlaylistItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvPlaylistItemCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvBroadcastArchive: {
+      payload: Prisma.$TvBroadcastArchivePayload<ExtArgs>
+      fields: Prisma.TvBroadcastArchiveFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvBroadcastArchiveFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvBroadcastArchiveFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>
+        }
+        findFirst: {
+          args: Prisma.TvBroadcastArchiveFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvBroadcastArchiveFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>
+        }
+        findMany: {
+          args: Prisma.TvBroadcastArchiveFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>[]
+        }
+        create: {
+          args: Prisma.TvBroadcastArchiveCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>
+        }
+        createMany: {
+          args: Prisma.TvBroadcastArchiveCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvBroadcastArchiveCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>[]
+        }
+        delete: {
+          args: Prisma.TvBroadcastArchiveDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>
+        }
+        update: {
+          args: Prisma.TvBroadcastArchiveUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>
+        }
+        deleteMany: {
+          args: Prisma.TvBroadcastArchiveDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvBroadcastArchiveUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvBroadcastArchiveUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>[]
+        }
+        upsert: {
+          args: Prisma.TvBroadcastArchiveUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvBroadcastArchivePayload>
+        }
+        aggregate: {
+          args: Prisma.TvBroadcastArchiveAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvBroadcastArchive>
+        }
+        groupBy: {
+          args: Prisma.TvBroadcastArchiveGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvBroadcastArchiveGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvBroadcastArchiveCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvBroadcastArchiveCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvChatMessage: {
+      payload: Prisma.$TvChatMessagePayload<ExtArgs>
+      fields: Prisma.TvChatMessageFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvChatMessageFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvChatMessageFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>
+        }
+        findFirst: {
+          args: Prisma.TvChatMessageFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvChatMessageFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>
+        }
+        findMany: {
+          args: Prisma.TvChatMessageFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>[]
+        }
+        create: {
+          args: Prisma.TvChatMessageCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>
+        }
+        createMany: {
+          args: Prisma.TvChatMessageCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvChatMessageCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>[]
+        }
+        delete: {
+          args: Prisma.TvChatMessageDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>
+        }
+        update: {
+          args: Prisma.TvChatMessageUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>
+        }
+        deleteMany: {
+          args: Prisma.TvChatMessageDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvChatMessageUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvChatMessageUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>[]
+        }
+        upsert: {
+          args: Prisma.TvChatMessageUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvChatMessagePayload>
+        }
+        aggregate: {
+          args: Prisma.TvChatMessageAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvChatMessage>
+        }
+        groupBy: {
+          args: Prisma.TvChatMessageGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvChatMessageGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvChatMessageCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvChatMessageCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvReaction: {
+      payload: Prisma.$TvReactionPayload<ExtArgs>
+      fields: Prisma.TvReactionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvReactionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvReactionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>
+        }
+        findFirst: {
+          args: Prisma.TvReactionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvReactionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>
+        }
+        findMany: {
+          args: Prisma.TvReactionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>[]
+        }
+        create: {
+          args: Prisma.TvReactionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>
+        }
+        createMany: {
+          args: Prisma.TvReactionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvReactionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>[]
+        }
+        delete: {
+          args: Prisma.TvReactionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>
+        }
+        update: {
+          args: Prisma.TvReactionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>
+        }
+        deleteMany: {
+          args: Prisma.TvReactionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvReactionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvReactionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>[]
+        }
+        upsert: {
+          args: Prisma.TvReactionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvReactionPayload>
+        }
+        aggregate: {
+          args: Prisma.TvReactionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvReaction>
+        }
+        groupBy: {
+          args: Prisma.TvReactionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvReactionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvReactionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvReactionCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvPoll: {
+      payload: Prisma.$TvPollPayload<ExtArgs>
+      fields: Prisma.TvPollFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvPollFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvPollFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>
+        }
+        findFirst: {
+          args: Prisma.TvPollFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvPollFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>
+        }
+        findMany: {
+          args: Prisma.TvPollFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>[]
+        }
+        create: {
+          args: Prisma.TvPollCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>
+        }
+        createMany: {
+          args: Prisma.TvPollCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvPollCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>[]
+        }
+        delete: {
+          args: Prisma.TvPollDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>
+        }
+        update: {
+          args: Prisma.TvPollUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>
+        }
+        deleteMany: {
+          args: Prisma.TvPollDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvPollUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvPollUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>[]
+        }
+        upsert: {
+          args: Prisma.TvPollUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollPayload>
+        }
+        aggregate: {
+          args: Prisma.TvPollAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvPoll>
+        }
+        groupBy: {
+          args: Prisma.TvPollGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvPollGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvPollCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvPollCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvPollResponse: {
+      payload: Prisma.$TvPollResponsePayload<ExtArgs>
+      fields: Prisma.TvPollResponseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvPollResponseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvPollResponseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>
+        }
+        findFirst: {
+          args: Prisma.TvPollResponseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvPollResponseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>
+        }
+        findMany: {
+          args: Prisma.TvPollResponseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>[]
+        }
+        create: {
+          args: Prisma.TvPollResponseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>
+        }
+        createMany: {
+          args: Prisma.TvPollResponseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvPollResponseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>[]
+        }
+        delete: {
+          args: Prisma.TvPollResponseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>
+        }
+        update: {
+          args: Prisma.TvPollResponseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>
+        }
+        deleteMany: {
+          args: Prisma.TvPollResponseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvPollResponseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvPollResponseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>[]
+        }
+        upsert: {
+          args: Prisma.TvPollResponseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvPollResponsePayload>
+        }
+        aggregate: {
+          args: Prisma.TvPollResponseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvPollResponse>
+        }
+        groupBy: {
+          args: Prisma.TvPollResponseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvPollResponseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvPollResponseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvPollResponseCountAggregateOutputType> | number
+        }
+      }
+    }
+    TvLowerThird: {
+      payload: Prisma.$TvLowerThirdPayload<ExtArgs>
+      fields: Prisma.TvLowerThirdFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TvLowerThirdFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TvLowerThirdFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>
+        }
+        findFirst: {
+          args: Prisma.TvLowerThirdFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TvLowerThirdFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>
+        }
+        findMany: {
+          args: Prisma.TvLowerThirdFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>[]
+        }
+        create: {
+          args: Prisma.TvLowerThirdCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>
+        }
+        createMany: {
+          args: Prisma.TvLowerThirdCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TvLowerThirdCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>[]
+        }
+        delete: {
+          args: Prisma.TvLowerThirdDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>
+        }
+        update: {
+          args: Prisma.TvLowerThirdUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>
+        }
+        deleteMany: {
+          args: Prisma.TvLowerThirdDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TvLowerThirdUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TvLowerThirdUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>[]
+        }
+        upsert: {
+          args: Prisma.TvLowerThirdUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TvLowerThirdPayload>
+        }
+        aggregate: {
+          args: Prisma.TvLowerThirdAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTvLowerThird>
+        }
+        groupBy: {
+          args: Prisma.TvLowerThirdGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvLowerThirdGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TvLowerThirdCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TvLowerThirdCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -23529,6 +24954,307 @@ export const DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum = {
 export type DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum = (typeof DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum)[keyof typeof DynamicBlogPublishingEngineModuleSettingsScalarFieldEnum]
 
 
+export const RadioStationScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  slug: 'slug',
+  slogan: 'slogan',
+  description: 'description',
+  logoUrl: 'logoUrl',
+  coverImageUrl: 'coverImageUrl',
+  socialLinks: 'socialLinks',
+  streamType: 'streamType',
+  streamProvider: 'streamProvider',
+  streamUrl: 'streamUrl',
+  streamKey: 'streamKey',
+  status: 'status',
+  isAutoDjEnabled: 'isAutoDjEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioStationScalarFieldEnum = (typeof RadioStationScalarFieldEnum)[keyof typeof RadioStationScalarFieldEnum]
+
+
+export const RadioProgramScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  title: 'title',
+  slug: 'slug',
+  description: 'description',
+  speaker: 'speaker',
+  category: 'category',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioProgramScalarFieldEnum = (typeof RadioProgramScalarFieldEnum)[keyof typeof RadioProgramScalarFieldEnum]
+
+
+export const RadioScheduleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  programId: 'programId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  recurrence: 'recurrence',
+  daysOfWeek: 'daysOfWeek',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioScheduleScalarFieldEnum = (typeof RadioScheduleScalarFieldEnum)[keyof typeof RadioScheduleScalarFieldEnum]
+
+
+export const RadioPlaylistScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  name: 'name',
+  isAutoDj: 'isAutoDj',
+  rotationRule: 'rotationRule',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioPlaylistScalarFieldEnum = (typeof RadioPlaylistScalarFieldEnum)[keyof typeof RadioPlaylistScalarFieldEnum]
+
+
+export const RadioPlaylistItemScalarFieldEnum = {
+  id: 'id',
+  playlistId: 'playlistId',
+  mediaAssetId: 'mediaAssetId',
+  podcastEpisodeId: 'podcastEpisodeId',
+  title: 'title',
+  audioUrl: 'audioUrl',
+  durationSeconds: 'durationSeconds',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioPlaylistItemScalarFieldEnum = (typeof RadioPlaylistItemScalarFieldEnum)[keyof typeof RadioPlaylistItemScalarFieldEnum]
+
+
+export const RadioBroadcastArchiveScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  programId: 'programId',
+  title: 'title',
+  audioUrl: 'audioUrl',
+  durationSeconds: 'durationSeconds',
+  fileSize: 'fileSize',
+  recordedAt: 'recordedAt',
+  isPodcastEpisode: 'isPodcastEpisode',
+  podcastEpisodeId: 'podcastEpisodeId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RadioBroadcastArchiveScalarFieldEnum = (typeof RadioBroadcastArchiveScalarFieldEnum)[keyof typeof RadioBroadcastArchiveScalarFieldEnum]
+
+
+export const RadioChatMessageScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  userId: 'userId',
+  displayName: 'displayName',
+  message: 'message',
+  createdAt: 'createdAt'
+} as const
+
+export type RadioChatMessageScalarFieldEnum = (typeof RadioChatMessageScalarFieldEnum)[keyof typeof RadioChatMessageScalarFieldEnum]
+
+
+export const RadioReactionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  stationId: 'stationId',
+  reactionType: 'reactionType',
+  createdAt: 'createdAt'
+} as const
+
+export type RadioReactionScalarFieldEnum = (typeof RadioReactionScalarFieldEnum)[keyof typeof RadioReactionScalarFieldEnum]
+
+
+export const TvChannelScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  name: 'name',
+  slug: 'slug',
+  slogan: 'slogan',
+  description: 'description',
+  logoUrl: 'logoUrl',
+  coverImageUrl: 'coverImageUrl',
+  socialLinks: 'socialLinks',
+  streamType: 'streamType',
+  streamProvider: 'streamProvider',
+  streamUrl: 'streamUrl',
+  streamKey: 'streamKey',
+  status: 'status',
+  isAutoProgrammingEnabled: 'isAutoProgrammingEnabled',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvChannelScalarFieldEnum = (typeof TvChannelScalarFieldEnum)[keyof typeof TvChannelScalarFieldEnum]
+
+
+export const TvProgramScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  title: 'title',
+  slug: 'slug',
+  description: 'description',
+  speaker: 'speaker',
+  category: 'category',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvProgramScalarFieldEnum = (typeof TvProgramScalarFieldEnum)[keyof typeof TvProgramScalarFieldEnum]
+
+
+export const TvScheduleScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  programId: 'programId',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  recurrence: 'recurrence',
+  daysOfWeek: 'daysOfWeek',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvScheduleScalarFieldEnum = (typeof TvScheduleScalarFieldEnum)[keyof typeof TvScheduleScalarFieldEnum]
+
+
+export const TvPlaylistScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  name: 'name',
+  isAutoProgramming: 'isAutoProgramming',
+  rotationRule: 'rotationRule',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvPlaylistScalarFieldEnum = (typeof TvPlaylistScalarFieldEnum)[keyof typeof TvPlaylistScalarFieldEnum]
+
+
+export const TvPlaylistItemScalarFieldEnum = {
+  id: 'id',
+  playlistId: 'playlistId',
+  mediaAssetId: 'mediaAssetId',
+  title: 'title',
+  videoUrl: 'videoUrl',
+  durationSeconds: 'durationSeconds',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvPlaylistItemScalarFieldEnum = (typeof TvPlaylistItemScalarFieldEnum)[keyof typeof TvPlaylistItemScalarFieldEnum]
+
+
+export const TvBroadcastArchiveScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  programId: 'programId',
+  title: 'title',
+  videoUrl: 'videoUrl',
+  durationSeconds: 'durationSeconds',
+  fileSize: 'fileSize',
+  recordedAt: 'recordedAt',
+  isMediaAsset: 'isMediaAsset',
+  mediaAssetId: 'mediaAssetId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvBroadcastArchiveScalarFieldEnum = (typeof TvBroadcastArchiveScalarFieldEnum)[keyof typeof TvBroadcastArchiveScalarFieldEnum]
+
+
+export const TvChatMessageScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  userId: 'userId',
+  displayName: 'displayName',
+  message: 'message',
+  countryCode: 'countryCode',
+  userRole: 'userRole',
+  createdAt: 'createdAt'
+} as const
+
+export type TvChatMessageScalarFieldEnum = (typeof TvChatMessageScalarFieldEnum)[keyof typeof TvChatMessageScalarFieldEnum]
+
+
+export const TvReactionScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  reactionType: 'reactionType',
+  createdAt: 'createdAt'
+} as const
+
+export type TvReactionScalarFieldEnum = (typeof TvReactionScalarFieldEnum)[keyof typeof TvReactionScalarFieldEnum]
+
+
+export const TvPollScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  question: 'question',
+  options: 'options',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvPollScalarFieldEnum = (typeof TvPollScalarFieldEnum)[keyof typeof TvPollScalarFieldEnum]
+
+
+export const TvPollResponseScalarFieldEnum = {
+  id: 'id',
+  pollId: 'pollId',
+  userId: 'userId',
+  option: 'option',
+  createdAt: 'createdAt'
+} as const
+
+export type TvPollResponseScalarFieldEnum = (typeof TvPollResponseScalarFieldEnum)[keyof typeof TvPollResponseScalarFieldEnum]
+
+
+export const TvLowerThirdScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  channelId: 'channelId',
+  type: 'type',
+  title: 'title',
+  subtitle: 'subtitle',
+  buttonText: 'buttonText',
+  actionUrl: 'actionUrl',
+  startTime: 'startTime',
+  endTime: 'endTime',
+  position: 'position',
+  audience: 'audience',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvLowerThirdScalarFieldEnum = (typeof TvLowerThirdScalarFieldEnum)[keyof typeof TvLowerThirdScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -23951,6 +25677,25 @@ export type GlobalOmitConfig = {
   dynamicBlogPublishingEngineModule?: Prisma.DynamicBlogPublishingEngineModuleOmit
   dynamicBlogPublishingEngineModuleActivity?: Prisma.DynamicBlogPublishingEngineModuleActivityOmit
   dynamicBlogPublishingEngineModuleSettings?: Prisma.DynamicBlogPublishingEngineModuleSettingsOmit
+  radioStation?: Prisma.RadioStationOmit
+  radioProgram?: Prisma.RadioProgramOmit
+  radioSchedule?: Prisma.RadioScheduleOmit
+  radioPlaylist?: Prisma.RadioPlaylistOmit
+  radioPlaylistItem?: Prisma.RadioPlaylistItemOmit
+  radioBroadcastArchive?: Prisma.RadioBroadcastArchiveOmit
+  radioChatMessage?: Prisma.RadioChatMessageOmit
+  radioReaction?: Prisma.RadioReactionOmit
+  tvChannel?: Prisma.TvChannelOmit
+  tvProgram?: Prisma.TvProgramOmit
+  tvSchedule?: Prisma.TvScheduleOmit
+  tvPlaylist?: Prisma.TvPlaylistOmit
+  tvPlaylistItem?: Prisma.TvPlaylistItemOmit
+  tvBroadcastArchive?: Prisma.TvBroadcastArchiveOmit
+  tvChatMessage?: Prisma.TvChatMessageOmit
+  tvReaction?: Prisma.TvReactionOmit
+  tvPoll?: Prisma.TvPollOmit
+  tvPollResponse?: Prisma.TvPollResponseOmit
+  tvLowerThird?: Prisma.TvLowerThirdOmit
 }
 
 /* Types for Logging */

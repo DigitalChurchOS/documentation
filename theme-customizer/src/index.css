@@ -3,6 +3,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
 :root {
   --primary: #0284c7;
   --primary-hover: #0369a1;
@@ -75,7 +82,9 @@ button, input, select, textarea {
 
 .brand {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
 }
 
 .brand strong {
@@ -355,31 +364,10 @@ button, input, select, textarea {
   background: var(--bg-dark);
   border-right: 1px solid var(--border);
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
 }
 
-.active-style {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border);
-}
 
-.active-style strong {
-  display: block;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.active-style span {
-  display: block;
-  color: #cbd5e1;
-  font-size: 11px;
-  line-height: 1.5;
-  font-weight: 500;
-}
 
 /* Panels styling */
 .sidebar-view {

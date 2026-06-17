@@ -1297,3 +1297,98 @@ export type DynamicBlogPublishingEngineModuleActivity = Prisma.DynamicBlogPublis
  * 
  */
 export type DynamicBlogPublishingEngineModuleSettings = Prisma.DynamicBlogPublishingEngineModuleSettingsModel
+/**
+ * Model RadioStation
+ * 
+ */
+export type RadioStation = Prisma.RadioStationModel
+/**
+ * Model RadioProgram
+ * 
+ */
+export type RadioProgram = Prisma.RadioProgramModel
+/**
+ * Model RadioSchedule
+ * 
+ */
+export type RadioSchedule = Prisma.RadioScheduleModel
+/**
+ * Model RadioPlaylist
+ * 
+ */
+export type RadioPlaylist = Prisma.RadioPlaylistModel
+/**
+ * Model RadioPlaylistItem
+ * 
+ */
+export type RadioPlaylistItem = Prisma.RadioPlaylistItemModel
+/**
+ * Model RadioBroadcastArchive
+ * 
+ */
+export type RadioBroadcastArchive = Prisma.RadioBroadcastArchiveModel
+/**
+ * Model RadioChatMessage
+ * 
+ */
+export type RadioChatMessage = Prisma.RadioChatMessageModel
+/**
+ * Model RadioReaction
+ * 
+ */
+export type RadioReaction = Prisma.RadioReactionModel
+/**
+ * Model TvChannel
+ * 
+ */
+export type TvChannel = Prisma.TvChannelModel
+/**
+ * Model TvProgram
+ * 
+ */
+export type TvProgram = Prisma.TvProgramModel
+/**
+ * Model TvSchedule
+ * 
+ */
+export type TvSchedule = Prisma.TvScheduleModel
+/**
+ * Model TvPlaylist
+ * 
+ */
+export type TvPlaylist = Prisma.TvPlaylistModel
+/**
+ * Model TvPlaylistItem
+ * 
+ */
+export type TvPlaylistItem = Prisma.TvPlaylistItemModel
+/**
+ * Model TvBroadcastArchive
+ * 
+ */
+export type TvBroadcastArchive = Prisma.TvBroadcastArchiveModel
+/**
+ * Model TvChatMessage
+ * 
+ */
+export type TvChatMessage = Prisma.TvChatMessageModel
+/**
+ * Model TvReaction
+ * 
+ */
+export type TvReaction = Prisma.TvReactionModel
+/**
+ * Model TvPoll
+ * 
+ */
+export type TvPoll = Prisma.TvPollModel
+/**
+ * Model TvPollResponse
+ * 
+ */
+export type TvPollResponse = Prisma.TvPollResponseModel
+/**
+ * Model TvLowerThird
+ * 
+ */
+export type TvLowerThird = Prisma.TvLowerThirdModel

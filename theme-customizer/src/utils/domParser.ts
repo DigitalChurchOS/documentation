@@ -1196,3 +1196,30 @@ export function cleanPageForExport(doc: Document): string {
 
   return serializeHtml(clone);
 }
+
+export function insertBlockAtSelector(
+  doc: Document,
+  targetSelector: string,
+  position: "before" | "after" | "inside",
+  blockHtml: string
+): string | null {
+  const target = doc.querySelector(targetSelector);
+  if (!target) return null;
+
+  const template = doc.createElement("template");
+  template.innerHTML = blockHtml.trim();
+  const newElement = template.content.firstElementChild;
+  if (!newElement) return null;
+
+  newElement.setAttribute("data-ec-just-added", "true");
+
+  if (position === "before") {
+    target.parentNode?.insertBefore(newElement, target);
+  } else if (position === "after") {
+    target.parentNode?.insertBefore(newElement, target.nextSibling);
+  } else if (position === "inside") {
+    target.appendChild(newElement);
+  }
+
+  return cssPath(newElement);
+}

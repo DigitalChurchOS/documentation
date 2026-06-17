@@ -15530,7 +15530,7 @@ body.customizer-open { overflow: hidden; }
     }
 
     // Native CMS Console State & Integration Logic
-    const cmsState = {
+    const cmsState = window.cmsState = {
       websites: [],
       pages: [],
       reusableBlocks: [],
@@ -16755,7 +16755,7 @@ body.customizer-open { overflow: hidden; }
       return value === true || value === 'true' || value === 'on' || value === '1';
     }
 
-    const websiteBuilderState = {
+    const websiteBuilderState = window.websiteBuilderState = {
       activeWorkspace: 'design',
       activePageId: '',
       activeBlockIndex: null,
@@ -18041,13 +18041,13 @@ body.customizer-open { overflow: hidden; }
       const customizeBtn = document.getElementById('customizeBtn');
       if (customizeBtn) {
         customizeBtn.onclick = () => {
-          const themeId = themeEngineState.activeThemeId || '';
-          const websiteId = cmsState.activeWebsiteId || '';
-          let pageId = websiteBuilderState.activePageId || '';
+          const themeId = (window.themeEngineState && window.themeEngineState.activeThemeId) || 'ecclesia';
+          const websiteId = (window.cmsState && window.cmsState.activeWebsiteId) || (window.cmsState && window.cmsState.websites && window.cmsState.websites[0]?.id) || 'demo-church-website';
+          let pageId = (window.websiteBuilderState && window.websiteBuilderState.activePageId) || '';
           
-          if (!pageId && cmsState.pages && cmsState.pages.length > 0) {
-            const homePage = cmsState.pages.find(p => p.slug === '' || p.isHome);
-            pageId = homePage ? homePage.id : cmsState.pages[0].id;
+          if (!pageId && window.cmsState && window.cmsState.pages && window.cmsState.pages.length > 0) {
+            const homePage = window.cmsState.pages.find(p => p.slug === '' || p.isHome);
+            pageId = homePage ? homePage.id : window.cmsState.pages[0].id;
           }
           
           window.open(`/customizer/?themeId=${themeId}&websiteId=${websiteId}&pageId=${pageId}`, '_blank');
@@ -19166,7 +19166,7 @@ body.customizer-open { overflow: hidden; }
     }
 
     // Native Theme Engine Console State & Integration Logic
-    const themeEngineState = {
+    const themeEngineState = window.themeEngineState = {
       activeTab: 'overview',
       overview: null,
       themes: [],

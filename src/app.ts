@@ -86,6 +86,57 @@ const apiLimiter = rateLimit({
   message: { error: 'Too many requests, please try again later' },
   skip: () => !isProd,
 });
+// ── Subdomain-aware church website routing ──────────────────
+// Production: [churchname].churched.online
+// Local dev:  [churchname].localhost:3000  (e.g. demo.localhost:3000)
+//
+// When a request arrives from a subdomain, serve the church-frontend SPA
+// for all page routes. API, admin, customizer, and asset routes pass through.
+const SUBDOMAIN_BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
+const SUBDOMAIN_PASSTHROUGH_PREFIXES = [
+  '/api/', '/admin', '/central', '/customizer', '/builder',
+  '/themes/', '/church/', '/marketplace', '/developer',
+  '/web', '/start', '/onboarding', '/page-builder',
+  '/live/', '/cms', '/health',
+];
+
+function extractSubdomain(host: string): string | null {
+  const hostname = host.split(':')[0].toLowerCase();
+  for (const base of SUBDOMAIN_BASE_DOMAINS) {
+    if (hostname === base) return null;
+    if (hostname.endsWith(`.${base}`)) {
+      return hostname.slice(0, -(base.length + 1));
+    }
+  }
+  const parts = hostname.split('.');
+  if (parts.length > 2) return parts[0];
+  return null;
+}
+
+const churchFrontendIndexPath = path.join(__dirname, '..', 'apps', 'church-frontend', 'dist', 'index.html');
+
+app.use((req, res, next) => {
+  const rawHost = (req.headers['x-forwarded-host'] || req.headers.host) as string | undefined;
+  if (!rawHost) return next();
+
+  const subdomain = extractSubdomain(rawHost);
+  if (!subdomain) return next();
+
+  // Let internal paths (API, admin, assets, etc.) pass through to normal routing
+  const p = req.path;
+  if (SUBDOMAIN_PASSTHROUGH_PREFIXES.some(prefix => p === prefix || p.startsWith(prefix))) {
+    return next();
+  }
+
+  // Serve static assets that have file extensions (e.g. .js, .css, .png)
+  const lastSegment = p.split('/').pop() || '';
+  if (lastSegment.includes('.') && !lastSegment.endsWith('.html')) {
+    return next();
+  }
+
+  // Serve the church-frontend SPA for all page routes
+  res.sendFile(churchFrontendIndexPath);
+});
 
 // ── Serve static files ──────────────────────────────────────
 app.get(['/', '/index.html'], (_req, res) => {
@@ -94,6 +145,13 @@ app.get(['/', '/index.html'], (_req, res) => {
 
 app.use('/themes/ecclesia', express.static(path.join(__dirname, '..', 'ecclesia-full-theme')));
 app.use('/themes/ecclesia-full-theme', express.static(path.join(__dirname, '..', 'ecclesia-full-theme')));
+
+// Redirect legacy /builder and /builder/* routes to /customizer preserving search parameters
+app.get(/^\/builder(?:\/.*)?$/, (req, res) => {
+  const target = req.originalUrl.replace(/^\/builder/, '/customizer');
+  res.redirect(target);
+});
+
 app.use('/customizer', express.static(path.join(__dirname, '..', 'theme-customizer', 'dist')));
 app.get(/^\/customizer(?:\/.*)?$/, (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'theme-customizer', 'dist', 'index.html'));
@@ -113,8 +171,9 @@ app.get(/^\/central(?:\/.*)?$/, (_req, res) => {
   res.sendFile(path.join(__dirname, '..', 'apps', 'super-admin', 'public', 'index.html'));
 });
 
+app.use('/church', express.static(path.join(__dirname, '..', 'apps', 'church-frontend', 'dist')));
 app.get(/^\/church(?:\/.*)?$/, (_req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'apps', 'church-frontend', 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, '..', 'apps', 'church-frontend', 'dist', 'index.html'));
 });
 
 app.get(/^\/marketplace(?:\/.*)?$/, (_req, res) => {

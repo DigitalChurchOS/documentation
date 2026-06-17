@@ -13,6 +13,214 @@ interface SelectedElementData {
   tagName?: string;
 }
 
+const AVAILABLE_BLOCKS = [
+  // Layout & Sections
+  {
+    id: "hero",
+    category: "section",
+    name: "Hero Section",
+    description: "Large landing header with text and floating media",
+    html: `<section class="hero" data-editor-type="section" data-editor-label="Hero Section">
+  <div class="hero-copy">
+    <span class="section-kicker" data-editor-type="badge">Welcome Home</span>
+    <h1 data-editor-type="title">Enter Your Hero Heading Here</h1>
+    <p data-editor-type="description">Add a short description about your church or event to guide your visitors.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#" data-editor-type="button">Plan Your Visit</a>
+      <a class="btn btn-light" href="#" data-editor-type="button">Watch Live</a>
+    </div>
+  </div>
+  <div class="hero-media">
+    <div class="floating-service">
+      <h3 data-editor-type="title">Worship Service</h3>
+      <p data-editor-type="description">Sunday Services at 9:00 AM & 11:00 AM</p>
+    </div>
+  </div>
+</section>`
+  },
+  {
+    id: "cards-3",
+    category: "section",
+    name: "3-Column Grid",
+    description: "Grid of 3 cards for core ministries or features",
+    html: `<section data-editor-type="section" data-editor-label="3-Column Cards" style="padding: 54px 22px;">
+  <div class="cards-3">
+    <div class="feature-card" data-editor-type="card">
+      <div class="feature-icon"><i data-lucide="sun"></i></div>
+      <h3 data-editor-type="title">Youth Ministry</h3>
+      <p data-editor-type="description">Connecting the next generation to faith, purpose, and community.</p>
+    </div>
+    <div class="feature-card" data-editor-type="card">
+      <div class="feature-icon"><i data-lucide="users"></i></div>
+      <h3 data-editor-type="title">Small Groups</h3>
+      <p data-editor-type="description">Do life together in circles, not just rows. Find a group today.</p>
+    </div>
+    <div class="feature-card" data-editor-type="card">
+      <div class="feature-icon"><i data-lucide="heart"></i></div>
+      <h3 data-editor-type="title">Outreach</h3>
+      <p data-editor-type="description">Serving our local city and global partners through active love.</p>
+    </div>
+  </div>
+</section>`
+  },
+  {
+    id: "wide-panel",
+    category: "section",
+    name: "Featured Wide Panel",
+    description: "A wide banner with an image on the left and content on the right",
+    html: `<section data-editor-type="section" data-editor-label="Wide Panel" style="padding: 54px 22px;">
+  <div class="wide-panel">
+    <div class="wide-image" style="background-image: url('https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=1200&q=85');"></div>
+    <div class="wide-content">
+      <h2 data-editor-type="title">Our Beliefs & Values</h2>
+      <p data-editor-type="description">We are a welcoming community shaped by grace and love. Discover our core doctrines, statement of faith, and vision for the future.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#" data-editor-type="button">What We Believe</a>
+      </div>
+    </div>
+  </div>
+</section>`
+  },
+  {
+    id: "split-columns",
+    category: "section",
+    name: "2-Column Split",
+    description: "Side-by-side blocks for announcements or testimonies",
+    html: `<section data-editor-type="section" data-editor-label="2-Column Split" style="padding: 54px 22px;">
+  <div class="split">
+    <div class="prayer-box" data-editor-type="card">
+      <h3 data-editor-type="title">Need Prayer?</h3>
+      <p data-editor-type="description">Our prayer team is here to support you. Submit your requests and let us stand in faith with you.</p>
+      <div style="margin-top: 20px;">
+        <a class="btn btn-primary" href="#" data-editor-type="button">Request Prayer</a>
+      </div>
+    </div>
+    <div class="testimony-box" data-editor-type="card">
+      <h3 data-editor-type="title">Latest Story</h3>
+      <p class="quote">"Finding this church family completely changed my life. I found real belonging and support."</p>
+      <div class="person">
+        <div class="avatar">JM</div>
+        <div>
+          <strong style="display: block; font-size: 14px;">John Miller</strong>
+          <span style="color: var(--muted); font-size: 12px;">Member since 2024</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>`
+  },
+  {
+    id: "giving",
+    category: "section",
+    name: "Giving Callout",
+    description: "Bold full-width call to action to support ministries",
+    html: `<section class="giving" data-editor-type="section" data-editor-label="Giving Section">
+  <h2 data-editor-type="title">Support Our Mission</h2>
+  <p data-editor-type="description">Your generosity helps us make a difference in our community and around the world. Secure online giving is simple and fast.</p>
+  <a class="btn btn-primary" href="#" data-editor-type="button">Give Online Now</a>
+</section>`
+  },
+  {
+    id: "location-map",
+    category: "section",
+    name: "Location & Times",
+    description: "Sunday times, address, and interactive map card",
+    html: `<section data-editor-type="section" data-editor-label="Location & Map" style="padding: 54px 22px;">
+  <div class="location-grid">
+    <div class="location-card" data-editor-type="card">
+      <h2 data-editor-type="title">Join Us This Sunday</h2>
+      <div class="info-row">
+        <i data-lucide="map-pin"></i>
+        <span data-editor-type="description">123 Grace Street, Cityville</span>
+      </div>
+      <div class="info-row">
+        <i data-lucide="clock"></i>
+        <span data-editor-type="description">Sunday Services at 9:00 AM & 11:00 AM</span>
+      </div>
+    </div>
+    <div class="map-card">
+      <div class="map-pin">
+        <i data-lucide="navigation" style="width: 28px; height: 28px;"></i>
+      </div>
+    </div>
+  </div>
+</section>`
+  },
+  {
+    id: "contact-form",
+    category: "section",
+    name: "Contact Form",
+    description: "Standard input form inside a container card",
+    html: `<section data-editor-type="section" data-editor-label="Contact Form" style="padding: 54px 22px;">
+  <div class="form-card" data-editor-type="card">
+    <h3 data-editor-type="title" style="margin-top: 0; margin-bottom: 20px;">Contact Us</h3>
+    <form class="form-grid" onsubmit="event.preventDefault();">
+      <input type="text" class="input" placeholder="First Name" />
+      <input type="text" class="input" placeholder="Last Name" />
+      <input type="email" class="input full" placeholder="Email Address" />
+      <textarea placeholder="Your Message"></textarea>
+      <div class="full" style="text-align: right; margin-top: 10px;">
+        <button type="submit" class="btn btn-primary" data-editor-type="button">Submit Message</button>
+      </div>
+    </form>
+  </div>
+</section>`
+  },
+  
+  // Elements
+  {
+    id: "heading",
+    category: "element",
+    name: "Section Heading",
+    description: "Standard section title (H2)",
+    html: `<h2 data-editor-type="title">New Heading Element</h2>`
+  },
+  {
+    id: "paragraph",
+    category: "element",
+    name: "Paragraph Text",
+    description: "Standard body description text",
+    html: `<p data-editor-type="description">New description copy. Click to type new text or adjust settings.</p>`
+  },
+  {
+    id: "button",
+    category: "element",
+    name: "Action Button",
+    description: "Interactive themed call to action link",
+    html: `<a class="btn btn-primary" href="#" data-editor-type="button">Click Here</a>`
+  },
+  {
+    id: "image",
+    category: "element",
+    name: "Image Element",
+    description: "Standard image node",
+    html: `<img data-editor-type="image" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=85" alt="New Image Element" style="width: 100%; border-radius: var(--radius-lg);" />`
+  },
+  {
+    id: "accordion",
+    category: "element",
+    name: "Accordion Item",
+    description: "Collapsible details box for FAQs",
+    html: `<details class="mini-card" style="margin-bottom: 12px; cursor: pointer; width: 100%;" data-editor-type="card">
+  <summary style="font-weight: bold; font-size: 15px; outline: none; margin-bottom: 4px;" data-editor-type="title">FAQ / Accordion Question</summary>
+  <p style="margin-top: 8px;" data-editor-type="description">Provide a detailed answer or collapsible content details here.</p>
+</details>`
+  },
+  {
+    id: "tabs",
+    category: "element",
+    name: "Tabs Component",
+    description: "Clickable mock tabs interface block",
+    html: `<div class="mini-card" data-editor-type="card" style="margin-bottom: 12px; width: 100%;">
+  <div style="display: flex; gap: 8px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 8px;">
+    <span style="font-weight: bold; color: var(--accent);" data-editor-type="title">Active Tab</span>
+    <span style="color: var(--muted);" data-editor-type="title">Second Tab</span>
+  </div>
+  <p data-editor-type="description">Active tab content description details. Customize text and links inside.</p>
+</div>`
+  }
+];
+
 interface EditorPanelProps {
   state: ThemeState;
   selectedElement: SelectedElementData | null;
@@ -30,7 +238,144 @@ interface EditorPanelProps {
   activeSectionPath: string | null;
   onSaveSectionStyles: (path: string, bg: string, bgImg: string) => void;
   onBackToSections: () => void;
+  onDragStart?: (blockData: { blockType: string; category: string; html: string }) => void;
+  onDragEnd?: () => void;
 }
+
+const renderBlockIcon = (type: string) => {
+  switch (type) {
+    case "hero":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="6" width="40" height="4" rx="1" fill="var(--primary)" opacity="0.3"/>
+          <rect x="6" y="16" width="20" height="4" rx="1" fill="var(--primary)"/>
+          <rect x="6" y="24" width="16" height="2" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+          <rect x="6" y="28" width="12" height="2" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+          <rect x="6" y="34" width="8" height="4" rx="1" fill="var(--primary)"/>
+          <rect x="16" y="34" width="8" height="4" rx="1" fill="var(--text-muted)" opacity="0.4"/>
+          <rect x="30" y="14" width="12" height="26" rx="2" fill="var(--text-muted)" opacity="0.25"/>
+        </svg>
+      );
+    case "cards-3":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="10" width="11" height="28" rx="1.5" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)" strokeWidth="1"/>
+          <rect x="18" y="10" width="11" height="28" rx="1.5" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)" strokeWidth="1"/>
+          <rect x="32" y="10" width="11" height="28" rx="1.5" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)" strokeWidth="1"/>
+          <circle cx="9.5" cy="16" r="2.5" fill="var(--primary)"/>
+          <circle cx="23.5" cy="16" r="2.5" fill="var(--primary)"/>
+          <circle cx="37.5" cy="16" r="2.5" fill="var(--primary)"/>
+          <rect x="6" y="24" width="7" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+          <rect x="20" y="24" width="7" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+          <rect x="34" y="24" width="7" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+        </svg>
+      );
+    case "wide-panel":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="10" width="40" height="28" rx="2" fill="var(--text-muted)" opacity="0.1" stroke="var(--border)" strokeWidth="1"/>
+          <rect x="4" y="10" width="16" height="28" rx="2" fill="var(--text-muted)" opacity="0.25"/>
+          <circle cx="12" cy="24" r="3" fill="var(--text-muted)" opacity="0.4"/>
+          <rect x="24" y="16" width="16" height="3" rx="1" fill="var(--primary)"/>
+          <rect x="24" y="23" width="14" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+          <rect x="24" y="27" width="12" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+        </svg>
+      );
+    case "split-columns":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="10" width="18" height="28" rx="2" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)" strokeWidth="1"/>
+          <rect x="26" y="10" width="18" height="28" rx="2" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)" strokeWidth="1"/>
+          <rect x="7" y="16" width="12" height="3" rx="0.5" fill="var(--primary)"/>
+          <rect x="7" y="23" width="10" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+          <circle cx="35" cy="16" r="3" fill="var(--primary)"/>
+          <rect x="30" y="23" width="10" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+        </svg>
+      );
+    case "giving":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="10" width="40" height="28" rx="3" fill="var(--primary)" opacity="0.15" stroke="var(--primary)" strokeWidth="1"/>
+          <path d="M24 29C24 29 17 25 17 20C17 17 19 14.5 22 14.5C23.2 14.5 23.8 15 24 15.5C24.2 15 24.8 14.5 26 14.5C29 14.5 31 17 31 20C31 25 24 29 24 29Z" fill="var(--primary)"/>
+          <rect x="14" y="10" width="20" height="2" rx="0.5" fill="var(--primary)" opacity="0.5"/>
+        </svg>
+      );
+    case "location-map":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="10" width="18" height="28" rx="2" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)"/>
+          <rect x="7" y="15" width="12" height="2" rx="0.5" fill="var(--primary)"/>
+          <rect x="7" y="21" width="10" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+          <rect x="26" y="10" width="18" height="28" rx="2" fill="var(--text-muted)" opacity="0.1" stroke="var(--border)"/>
+          <circle cx="35" cy="18" r="3" fill="var(--primary)" opacity="0.3"/>
+          <path d="M35 14C33.5 14 32.5 15 32.5 16.5C32.5 18.5 35 22 35 22C35 22 37.5 18.5 37.5 16.5C37.5 15 36.5 14 35 14Z" fill="var(--primary)"/>
+        </svg>
+      );
+    case "contact-form":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="8" width="36" height="32" rx="3" fill="var(--text-muted)" opacity="0.1" stroke="var(--border)" strokeWidth="1"/>
+          <rect x="10" y="13" width="13" height="3" rx="1" fill="var(--text-muted)" opacity="0.2"/>
+          <rect x="25" y="13" width="13" height="3" rx="1" fill="var(--text-muted)" opacity="0.2"/>
+          <rect x="10" y="20" width="28" height="3" rx="1" fill="var(--text-muted)" opacity="0.2"/>
+          <rect x="10" y="27" width="28" height="7" rx="1" fill="var(--text-muted)" opacity="0.2"/>
+        </svg>
+      );
+    case "heading":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 14H32M24 14V30" stroke="var(--primary)" strokeWidth="3" strokeLinecap="round"/>
+          <rect x="12" y="32" width="24" height="2" rx="1" fill="var(--text-muted)" opacity="0.4"/>
+        </svg>
+      );
+    case "paragraph":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="14" width="32" height="2.5" rx="1" fill="var(--text-muted)"/>
+          <rect x="8" y="22" width="32" height="2.5" rx="1" fill="var(--text-muted)"/>
+          <rect x="8" y="30" width="20" height="2.5" rx="1" fill="var(--text-muted)"/>
+        </svg>
+      );
+    case "button":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="18" width="32" height="12" rx="6" fill="var(--primary)"/>
+          <rect x="16" y="23" width="16" height="2" rx="1" fill="white"/>
+        </svg>
+      );
+    case "image":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="10" width="36" height="28" rx="2" fill="var(--text-muted)" opacity="0.1" stroke="var(--border)" strokeWidth="2"/>
+          <circle cx="30" cy="18" r="3" fill="var(--primary)" opacity="0.6"/>
+          <path d="M6 34L18 22L30 32L36 26L42 32" stroke="var(--primary)" strokeWidth="2" strokeLinejoin="round"/>
+        </svg>
+      );
+    case "accordion":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="10" width="36" height="7" rx="1.5" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)"/>
+          <rect x="6" y="20" width="36" height="7" rx="1.5" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)"/>
+          <rect x="6" y="30" width="36" height="7" rx="1.5" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)"/>
+          <path d="M35 13L37 14.5L35 16" stroke="var(--text-muted)" strokeWidth="1.5" fill="none"/>
+          <path d="M35 23L37 24.5L35 26" stroke="var(--text-muted)" strokeWidth="1.5" fill="none"/>
+          <path d="M35 33L37 34.5L35 36" stroke="var(--text-muted)" strokeWidth="1.5" fill="none"/>
+        </svg>
+      );
+    case "tabs":
+      return (
+        <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="10" width="12" height="4" rx="1" fill="var(--primary)"/>
+          <rect x="20" y="10" width="12" height="4" rx="1" fill="var(--text-muted)" opacity="0.3"/>
+          <rect x="6" y="14" width="36" height="24" rx="2" fill="var(--text-muted)" opacity="0.15" stroke="var(--border)"/>
+          <rect x="10" y="20" width="28" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+          <rect x="10" y="25" width="22" height="1.5" rx="0.5" fill="var(--text-muted)" opacity="0.7"/>
+        </svg>
+      );
+    default:
+      return null;
+  }
+};
 
 export const EditorPanel: React.FC<EditorPanelProps> = ({
   state,
@@ -49,9 +394,12 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
   activeSectionPath,
   onSaveSectionStyles,
   onBackToSections,
+  onDragStart,
+  onDragEnd,
 }) => {
   const [subView, setSubView] = useState<"sections" | "section-detail" | "header" | "footer" | "element">("sections");
   const [localTab, setLocalTab] = useState<string>("style");
+  const [editorSubTab, setEditorSubTab] = useState<"sections" | "blocks">("sections");
   
   // Element edit fields state
   const [editText, setEditText] = useState("");
@@ -151,39 +499,238 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
   if (subView === "sections") {
     return (
       <div className="sidebar-view">
-        <div className="panel">
-          <div className="section-title">
-            <div className="title-icon">
-              <LayoutTemplate size={18} />
-            </div>
-            <h3>Page Sections</h3>
-          </div>
+        <div className="mode-tabs" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          <button
+            className={`mode-tab ${editorSubTab === "sections" ? "active" : ""}`}
+            onClick={() => setEditorSubTab("sections")}
+          >
+            Sections
+          </button>
+          <button
+            className={`mode-tab ${editorSubTab === "blocks" ? "active" : ""}`}
+            onClick={() => setEditorSubTab("blocks")}
+          >
+            Blocks
+          </button>
+        </div>
 
-          {sections.length > 0 ? (
-            sections.map((section, idx) => (
-              <button
-                key={idx}
-                className="editor-card"
-                onClick={() => {
-                  if (section.type === "header") openHeaderEditor();
-                  else if (section.type === "footer") openFooterEditor();
-                  else onSelectSection(section.path);
-                }}
-              >
-                <strong>{section.label}</strong>
-                <span>
-                  {section.type === "header"
-                    ? "Header Layout & Navigation styles"
-                    : section.type === "footer"
-                    ? "Footer Layout, columns & bottom credits"
-                    : "Section background styles & elements"}
-                </span>
-              </button>
-            ))
+        <div className="panel">
+          {editorSubTab === "sections" ? (
+            <>
+              <div className="section-title">
+                <div className="title-icon">
+                  <LayoutTemplate size={18} />
+                </div>
+                <h3>Page Sections</h3>
+              </div>
+
+              {sections.length > 0 ? (
+                sections.map((section, idx) => (
+                  <button
+                    key={idx}
+                    className="editor-card"
+                    onClick={() => {
+                      if (section.type === "header") openHeaderEditor();
+                      else if (section.type === "footer") openFooterEditor();
+                      else onSelectSection(section.path);
+                    }}
+                  >
+                    <strong>{section.label}</strong>
+                    <span>
+                      {section.type === "header"
+                        ? "Header Layout & Navigation styles"
+                        : section.type === "footer"
+                        ? "Footer Layout, columns & bottom credits"
+                        : "Section background styles & elements"}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="edit-box">
+                  <p>No editable sections found. Import a page or add HTML elements to get started.</p>
+                </div>
+              )}
+            </>
           ) : (
-            <div className="edit-box">
-              <p>No editable sections found. Import a page or add HTML elements to get started.</p>
-            </div>
+            <>
+              <div className="section-title">
+                <div className="title-icon">
+                  <LayoutTemplate size={18} />
+                </div>
+                <h3>Drag Blocks</h3>
+              </div>
+              <div style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "16px", lineHeight: "1.4" }}>
+                Drag a layout or element from below and drop it onto the live preview site page to build content.
+              </div>
+
+              <h4 style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)", marginBottom: "8px", marginTop: "16px" }}>
+                Layout & Sections
+              </h4>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {AVAILABLE_BLOCKS.filter(b => b.category === "section").map((block) => (
+                  <div
+                    key={block.id}
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData("application/json", JSON.stringify({
+                        blockType: block.id,
+                        category: block.category,
+                        html: block.html
+                      }));
+                      e.dataTransfer.setData("text/plain", JSON.stringify({
+                        blockType: block.id,
+                        category: block.category,
+                        html: block.html
+                      }));
+                      e.dataTransfer.effectAllowed = "copy";
+                      if (onDragStart) onDragStart({
+                        blockType: block.id,
+                        category: block.category,
+                        html: block.html
+                      });
+                      
+                      const iframe = document.querySelector(".preview-frame") as HTMLIFrameElement;
+                      if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage({
+                          type: "ec-drag-start",
+                          category: block.category
+                        }, "*");
+                      }
+                    }}
+                    onDragEnd={() => {
+                      const iframe = document.querySelector(".preview-frame") as HTMLIFrameElement;
+                      if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage({
+                          type: "ec-drag-end"
+                        }, "*");
+                      }
+                      if (onDragEnd) onDragEnd();
+                    }}
+                    className="preset-card"
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "12px", 
+                      textAlign: "left", 
+                      padding: "10px",
+                      cursor: "grab",
+                      width: "100%",
+                      background: "rgba(255, 255, 255, 0.03)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      boxSizing: "border-box",
+                      marginBottom: "0px"
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '6px',
+                        background: 'rgba(0, 0, 0, 0.2)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {renderBlockIcon(block.id)}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <strong style={{ display: "block", fontSize: "14px" }}>{block.name}</strong>
+                      <span style={{ fontSize: "11px", color: "var(--muted)", display: "block", marginTop: "2px", whiteSpace: "normal", lineHeight: "1.3" }}>
+                        {block.description}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <h4 style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)", marginBottom: "8px", marginTop: "24px" }}>
+                Inner Elements
+              </h4>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {AVAILABLE_BLOCKS.filter(b => b.category === "element").map((block) => (
+                  <div
+                    key={block.id}
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.setData("application/json", JSON.stringify({
+                        blockType: block.id,
+                        category: block.category,
+                        html: block.html
+                      }));
+                      e.dataTransfer.setData("text/plain", JSON.stringify({
+                        blockType: block.id,
+                        category: block.category,
+                        html: block.html
+                      }));
+                      e.dataTransfer.effectAllowed = "copy";
+                      if (onDragStart) onDragStart({
+                        blockType: block.id,
+                        category: block.category,
+                        html: block.html
+                      });
+
+                      const iframe = document.querySelector(".preview-frame") as HTMLIFrameElement;
+                      if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage({
+                          type: "ec-drag-start",
+                          category: block.category
+                        }, "*");
+                      }
+                    }}
+                    onDragEnd={() => {
+                      const iframe = document.querySelector(".preview-frame") as HTMLIFrameElement;
+                      if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.postMessage({
+                          type: "ec-drag-end"
+                        }, "*");
+                      }
+                      if (onDragEnd) onDragEnd();
+                    }}
+                    className="preset-card"
+                    style={{ 
+                      display: "flex", 
+                      alignItems: "center", 
+                      gap: "12px", 
+                      textAlign: "left", 
+                      padding: "10px",
+                      cursor: "grab",
+                      width: "100%",
+                      background: "rgba(255, 255, 255, 0.03)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      boxSizing: "border-box",
+                      marginBottom: "0px"
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        borderRadius: '6px',
+                        background: 'rgba(0, 0, 0, 0.2)',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {renderBlockIcon(block.id)}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <strong style={{ display: "block", fontSize: "14px" }}>{block.name}</strong>
+                      <span style={{ fontSize: "11px", color: "var(--muted)", display: "block", marginTop: "2px", whiteSpace: "normal", lineHeight: "1.3" }}>
+                        {block.description}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>

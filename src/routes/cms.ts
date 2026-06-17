@@ -153,6 +153,120 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
 });
 
 // ─────────────────────────────────────────────────────────────
+// PUBLIC ENDPOINT: GET /api/cms/site-context
+// ─────────────────────────────────────────────────────────────
+// Resolves website global settings, active theme, and navigation.
+// No auth required.
+// ─────────────────────────────────────────────────────────────
+router.get('/site-context', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    const websiteId = (req as any).websiteId as string | undefined;
+
+    if (!tenantId || !websiteId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    const tenant = await prisma.tenant.findUnique({
+      where: { id: tenantId },
+    });
+
+    if (!tenant || tenant.status !== 'active') {
+      res.status(404).json({ error: 'Tenant not found or inactive' });
+      return;
+    }
+
+    // Enforce that the 'website-cms' module is active for the tenant
+    const entitlement = await prisma.tenantModule.findUnique({
+      where: { tenantId_moduleKey: { tenantId, moduleKey: 'website-cms' } },
+    });
+
+    if (!entitlement || entitlement.status !== 'active') {
+      res.status(403).json({ error: 'Website CMS module is inactive' });
+      return;
+    }
+
+    const website = await prisma.website.findUnique({
+      where: { id: websiteId },
+      include: { theme: true },
+    });
+
+    if (!website) {
+      res.status(404).json({ error: 'Website not found' });
+      return;
+    }
+
+    // Fetch active navigation menu for this website
+    const navMenu = await prisma.navigationMenu.findFirst({
+      where: { websiteId, isActive: true },
+    });
+
+    // Fetch footer configuration for this website
+    const cmsFooter = await prisma.cmsFooter.findFirst({
+      where: { websiteId },
+    });
+
+    // Fetch active plugins for this tenant
+    const plugins = await prisma.tenantPlugin.findMany({
+      where: { tenantId, status: 'active' },
+    });
+    const enabledPlugins = plugins.map(p => p.pluginId);
+    const pluginSettings: Record<string, any> = {};
+    for (const p of plugins) {
+      pluginSettings[p.pluginId] = safeJson(p.settings, {});
+    }
+
+    // Fetch modules to build moduleEntitlements list
+    const modules = await prisma.tenantModule.findMany({
+      where: { tenantId },
+    });
+    const moduleEntitlements = modules.map(m => ({
+      moduleKey: m.moduleKey,
+      enabled: m.status === 'active',
+    }));
+
+    res.json({
+      data: {
+        tenant: {
+          id: tenant.id,
+          name: tenant.name,
+          subdomain: tenant.subdomain,
+          status: tenant.status,
+        },
+        theme: {
+          id: website.theme.id,
+          name: website.theme.name,
+          settings: safeJson(website.theme.settings, {}),
+          draftSettings: safeJson(website.theme.draftSettings, null),
+        },
+        moduleEntitlements,
+        navigation: navMenu ? {
+          id: navMenu.id,
+          items: safeJson(navMenu.items, []),
+        } : null,
+        footer: cmsFooter ? {
+          id: cmsFooter.id,
+          copyrightText: cmsFooter.copyrightText,
+          socialLinks: safeJson(cmsFooter.socialLinks, []),
+          secondaryLinks: safeJson(cmsFooter.secondaryLinks, []),
+        } : null,
+        announcement: {
+          id: 'default-announcement',
+          isActive: false,
+          text: '',
+        },
+        enabledPlugins,
+        pluginSettings,
+      },
+    });
+  } catch (err) {
+    console.error('Fetch site context error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
 // ADMIN ENDPOINTS (Requires authentication & entitlement locks)
 // ─────────────────────────────────────────────────────────────
 router.use(authMiddleware);
@@ -267,6 +381,20 @@ router.post('/websites', requireCmsPermission('core-website-cms.create', 'core-w
     res.status(201).json({ data: website });
   } catch (err) {
     console.error('Create website error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all websites for the active tenant
+router.get('/websites', requireCmsPermission('core-website-cms.read'), async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId!;
+    const websites = await prisma.website.findMany({
+      where: { tenantId },
+    });
+    res.json({ data: websites });
+  } catch (err) {
+    console.error('Fetch websites error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

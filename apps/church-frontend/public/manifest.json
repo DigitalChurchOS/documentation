@@ -1,0 +1,21 @@
+{
+  "name": "Digital Church OS Portal",
+  "short_name": "ChurchOS",
+  "description": "CMS-driven modern church website with native application feel and offline support.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#f97316",
+  "icons": [
+    {
+      "src": "/light.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/dark.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

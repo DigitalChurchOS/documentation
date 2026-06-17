@@ -76,7 +76,15 @@ img { max-width: 100%; display: block; }
 .btn-light { background:white; color:var(--text); border:1px solid var(--border); }
 .mobile-menu-btn { display:none; width:42px; height:42px; border:1px solid var(--border); border-radius:14px; background:var(--surface); color:var(--text); }
 .mobile-drawer { display:none; border-top:1px solid var(--border); padding:12px 22px 22px; background:rgba(255,250,243,.96); }
-.mobile-drawer.open { display:block; }
+@media (max-width: 1050px) {
+  .mobile-drawer.open { display:block; }
+}
+@media (min-width: 1051px) {
+  .mobile-drawer, #mobileDrawer {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
 .mobile-drawer a { display:block; padding:14px 0; color:var(--muted); font-weight:800; border-bottom:1px solid var(--border); }
 .section { max-width:var(--max); margin:0 auto; padding:var(--section) 22px; }
 .page-hero { max-width:var(--max); margin:0 auto; padding:80px 22px 44px; }

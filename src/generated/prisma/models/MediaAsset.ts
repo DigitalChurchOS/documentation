@@ -392,6 +392,9 @@ export type MediaAssetWhereInput = {
   clips?: Prisma.MediaAssetListRelationFilter
   assetTags?: Prisma.MediaAssetTagListRelationFilter
   playlistItems?: Prisma.MediaPlaylistItemListRelationFilter
+  radioPlaylistItems?: Prisma.RadioPlaylistItemListRelationFilter
+  tvPlaylistItems?: Prisma.TvPlaylistItemListRelationFilter
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveListRelationFilter
   livestreams?: Prisma.LivestreamListRelationFilter
   sermonServices?: Prisma.ChurchServiceListRelationFilter
   audioServices?: Prisma.ChurchServiceListRelationFilter
@@ -432,6 +435,9 @@ export type MediaAssetOrderByWithRelationInput = {
   clips?: Prisma.MediaAssetOrderByRelationAggregateInput
   assetTags?: Prisma.MediaAssetTagOrderByRelationAggregateInput
   playlistItems?: Prisma.MediaPlaylistItemOrderByRelationAggregateInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemOrderByRelationAggregateInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemOrderByRelationAggregateInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveOrderByRelationAggregateInput
   livestreams?: Prisma.LivestreamOrderByRelationAggregateInput
   sermonServices?: Prisma.ChurchServiceOrderByRelationAggregateInput
   audioServices?: Prisma.ChurchServiceOrderByRelationAggregateInput
@@ -475,6 +481,9 @@ export type MediaAssetWhereUniqueInput = Prisma.AtLeast<{
   clips?: Prisma.MediaAssetListRelationFilter
   assetTags?: Prisma.MediaAssetTagListRelationFilter
   playlistItems?: Prisma.MediaPlaylistItemListRelationFilter
+  radioPlaylistItems?: Prisma.RadioPlaylistItemListRelationFilter
+  tvPlaylistItems?: Prisma.TvPlaylistItemListRelationFilter
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveListRelationFilter
   livestreams?: Prisma.LivestreamListRelationFilter
   sermonServices?: Prisma.ChurchServiceListRelationFilter
   audioServices?: Prisma.ChurchServiceListRelationFilter
@@ -572,6 +581,9 @@ export type MediaAssetCreateInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -607,6 +619,9 @@ export type MediaAssetUncheckedCreateInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -642,6 +657,9 @@ export type MediaAssetUpdateInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -677,6 +695,9 @@ export type MediaAssetUncheckedUpdateInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -1209,6 +1230,54 @@ export type MediaAssetUpdateOneRequiredWithoutMediaCaptionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MediaAssetUpdateToOneWithWhereWithoutMediaCaptionsInput, Prisma.MediaAssetUpdateWithoutMediaCaptionsInput>, Prisma.MediaAssetUncheckedUpdateWithoutMediaCaptionsInput>
 }
 
+export type MediaAssetCreateNestedOneWithoutRadioPlaylistItemsInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutRadioPlaylistItemsInput, Prisma.MediaAssetUncheckedCreateWithoutRadioPlaylistItemsInput>
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutRadioPlaylistItemsInput
+  connect?: Prisma.MediaAssetWhereUniqueInput
+}
+
+export type MediaAssetUpdateOneWithoutRadioPlaylistItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutRadioPlaylistItemsInput, Prisma.MediaAssetUncheckedCreateWithoutRadioPlaylistItemsInput>
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutRadioPlaylistItemsInput
+  upsert?: Prisma.MediaAssetUpsertWithoutRadioPlaylistItemsInput
+  disconnect?: Prisma.MediaAssetWhereInput | boolean
+  delete?: Prisma.MediaAssetWhereInput | boolean
+  connect?: Prisma.MediaAssetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MediaAssetUpdateToOneWithWhereWithoutRadioPlaylistItemsInput, Prisma.MediaAssetUpdateWithoutRadioPlaylistItemsInput>, Prisma.MediaAssetUncheckedUpdateWithoutRadioPlaylistItemsInput>
+}
+
+export type MediaAssetCreateNestedOneWithoutTvPlaylistItemsInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutTvPlaylistItemsInput, Prisma.MediaAssetUncheckedCreateWithoutTvPlaylistItemsInput>
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutTvPlaylistItemsInput
+  connect?: Prisma.MediaAssetWhereUniqueInput
+}
+
+export type MediaAssetUpdateOneWithoutTvPlaylistItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutTvPlaylistItemsInput, Prisma.MediaAssetUncheckedCreateWithoutTvPlaylistItemsInput>
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutTvPlaylistItemsInput
+  upsert?: Prisma.MediaAssetUpsertWithoutTvPlaylistItemsInput
+  disconnect?: Prisma.MediaAssetWhereInput | boolean
+  delete?: Prisma.MediaAssetWhereInput | boolean
+  connect?: Prisma.MediaAssetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MediaAssetUpdateToOneWithWhereWithoutTvPlaylistItemsInput, Prisma.MediaAssetUpdateWithoutTvPlaylistItemsInput>, Prisma.MediaAssetUncheckedUpdateWithoutTvPlaylistItemsInput>
+}
+
+export type MediaAssetCreateNestedOneWithoutTvBroadcastArchivesInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutTvBroadcastArchivesInput, Prisma.MediaAssetUncheckedCreateWithoutTvBroadcastArchivesInput>
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutTvBroadcastArchivesInput
+  connect?: Prisma.MediaAssetWhereUniqueInput
+}
+
+export type MediaAssetUpdateOneWithoutTvBroadcastArchivesNestedInput = {
+  create?: Prisma.XOR<Prisma.MediaAssetCreateWithoutTvBroadcastArchivesInput, Prisma.MediaAssetUncheckedCreateWithoutTvBroadcastArchivesInput>
+  connectOrCreate?: Prisma.MediaAssetCreateOrConnectWithoutTvBroadcastArchivesInput
+  upsert?: Prisma.MediaAssetUpsertWithoutTvBroadcastArchivesInput
+  disconnect?: Prisma.MediaAssetWhereInput | boolean
+  delete?: Prisma.MediaAssetWhereInput | boolean
+  connect?: Prisma.MediaAssetWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MediaAssetUpdateToOneWithWhereWithoutTvBroadcastArchivesInput, Prisma.MediaAssetUpdateWithoutTvBroadcastArchivesInput>, Prisma.MediaAssetUncheckedUpdateWithoutTvBroadcastArchivesInput>
+}
+
 export type MediaAssetCreateWithoutTenantInput = {
   id?: string
   title: string
@@ -1236,6 +1305,9 @@ export type MediaAssetCreateWithoutTenantInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -1270,6 +1342,9 @@ export type MediaAssetUncheckedCreateWithoutTenantInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -1359,6 +1434,9 @@ export type MediaAssetCreateWithoutCategoryInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -1393,6 +1471,9 @@ export type MediaAssetUncheckedCreateWithoutCategoryInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -1452,6 +1533,9 @@ export type MediaAssetCreateWithoutSpeakerInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -1486,6 +1570,9 @@ export type MediaAssetUncheckedCreateWithoutSpeakerInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -1545,6 +1632,9 @@ export type MediaAssetCreateWithoutSeriesInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -1579,6 +1669,9 @@ export type MediaAssetUncheckedCreateWithoutSeriesInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -1638,6 +1731,9 @@ export type MediaAssetCreateWithoutClipsInput = {
   parentAsset?: Prisma.MediaAssetCreateNestedOneWithoutClipsInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -1672,6 +1768,9 @@ export type MediaAssetUncheckedCreateWithoutClipsInput = {
   clipEndSeconds?: number | null
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -1711,6 +1810,9 @@ export type MediaAssetCreateWithoutParentAssetInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -1745,6 +1847,9 @@ export type MediaAssetUncheckedCreateWithoutParentAssetInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -1799,6 +1904,9 @@ export type MediaAssetUpdateWithoutClipsInput = {
   parentAsset?: Prisma.MediaAssetUpdateOneWithoutClipsNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -1833,6 +1941,9 @@ export type MediaAssetUncheckedUpdateWithoutClipsInput = {
   clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -1883,6 +1994,9 @@ export type MediaAssetCreateWithoutAssetTagsInput = {
   parentAsset?: Prisma.MediaAssetCreateNestedOneWithoutClipsInput
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -1917,6 +2031,9 @@ export type MediaAssetUncheckedCreateWithoutAssetTagsInput = {
   clipEndSeconds?: number | null
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -1967,6 +2084,9 @@ export type MediaAssetUpdateWithoutAssetTagsInput = {
   parentAsset?: Prisma.MediaAssetUpdateOneWithoutClipsNestedInput
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -2001,6 +2121,9 @@ export type MediaAssetUncheckedUpdateWithoutAssetTagsInput = {
   clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -2035,6 +2158,9 @@ export type MediaAssetCreateWithoutPlaylistItemsInput = {
   parentAsset?: Prisma.MediaAssetCreateNestedOneWithoutClipsInput
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -2069,6 +2195,9 @@ export type MediaAssetUncheckedCreateWithoutPlaylistItemsInput = {
   clipEndSeconds?: number | null
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -2119,6 +2248,9 @@ export type MediaAssetUpdateWithoutPlaylistItemsInput = {
   parentAsset?: Prisma.MediaAssetUpdateOneWithoutClipsNestedInput
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -2153,6 +2285,9 @@ export type MediaAssetUncheckedUpdateWithoutPlaylistItemsInput = {
   clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -2188,6 +2323,9 @@ export type MediaAssetCreateWithoutLivestreamsInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
   aiMediaJobs?: Prisma.AiMediaJobCreateNestedManyWithoutMediaAssetInput
@@ -2222,6 +2360,9 @@ export type MediaAssetUncheckedCreateWithoutLivestreamsInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
   aiMediaJobs?: Prisma.AiMediaJobUncheckedCreateNestedManyWithoutMediaAssetInput
@@ -2272,6 +2413,9 @@ export type MediaAssetUpdateWithoutLivestreamsInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
   aiMediaJobs?: Prisma.AiMediaJobUpdateManyWithoutMediaAssetNestedInput
@@ -2306,6 +2450,9 @@ export type MediaAssetUncheckedUpdateWithoutLivestreamsInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
   aiMediaJobs?: Prisma.AiMediaJobUncheckedUpdateManyWithoutMediaAssetNestedInput
@@ -2340,6 +2487,9 @@ export type MediaAssetCreateWithoutSermonServicesInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
   aiMediaJobs?: Prisma.AiMediaJobCreateNestedManyWithoutMediaAssetInput
@@ -2374,6 +2524,9 @@ export type MediaAssetUncheckedCreateWithoutSermonServicesInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
   aiMediaJobs?: Prisma.AiMediaJobUncheckedCreateNestedManyWithoutMediaAssetInput
@@ -2413,6 +2566,9 @@ export type MediaAssetCreateWithoutAudioServicesInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   aiMediaJobs?: Prisma.AiMediaJobCreateNestedManyWithoutMediaAssetInput
@@ -2447,6 +2603,9 @@ export type MediaAssetUncheckedCreateWithoutAudioServicesInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   aiMediaJobs?: Prisma.AiMediaJobUncheckedCreateNestedManyWithoutMediaAssetInput
@@ -2497,6 +2656,9 @@ export type MediaAssetUpdateWithoutSermonServicesInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
   aiMediaJobs?: Prisma.AiMediaJobUpdateManyWithoutMediaAssetNestedInput
@@ -2531,6 +2693,9 @@ export type MediaAssetUncheckedUpdateWithoutSermonServicesInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
   aiMediaJobs?: Prisma.AiMediaJobUncheckedUpdateManyWithoutMediaAssetNestedInput
@@ -2576,6 +2741,9 @@ export type MediaAssetUpdateWithoutAudioServicesInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   aiMediaJobs?: Prisma.AiMediaJobUpdateManyWithoutMediaAssetNestedInput
@@ -2610,6 +2778,9 @@ export type MediaAssetUncheckedUpdateWithoutAudioServicesInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   aiMediaJobs?: Prisma.AiMediaJobUncheckedUpdateManyWithoutMediaAssetNestedInput
@@ -2644,6 +2815,9 @@ export type MediaAssetCreateWithoutAiMediaJobsInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -2678,6 +2852,9 @@ export type MediaAssetUncheckedCreateWithoutAiMediaJobsInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -2728,6 +2905,9 @@ export type MediaAssetUpdateWithoutAiMediaJobsInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -2762,6 +2942,9 @@ export type MediaAssetUncheckedUpdateWithoutAiMediaJobsInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -2796,6 +2979,9 @@ export type MediaAssetCreateWithoutMediaCaptionsInput = {
   clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
@@ -2830,6 +3016,9 @@ export type MediaAssetUncheckedCreateWithoutMediaCaptionsInput = {
   clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
   assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
   livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
   sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
   audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
@@ -2880,6 +3069,9 @@ export type MediaAssetUpdateWithoutMediaCaptionsInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -2914,10 +3106,505 @@ export type MediaAssetUncheckedUpdateWithoutMediaCaptionsInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
   aiMediaJobs?: Prisma.AiMediaJobUncheckedUpdateManyWithoutMediaAssetNestedInput
+}
+
+export type MediaAssetCreateWithoutRadioPlaylistItemsInput = {
+  id?: string
+  title: string
+  description?: string | null
+  type: string
+  providerType: string
+  providerKey?: string | null
+  sourceUrl?: string | null
+  thumbnailUrl?: string | null
+  durationSeconds?: number | null
+  fileSizeBytes?: number | null
+  mimeType?: string | null
+  seriesOrder?: number | null
+  visibility?: string
+  status?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  clipStartSeconds?: number | null
+  clipEndSeconds?: number | null
+  tenant: Prisma.TenantCreateNestedOneWithoutMediaAssetsInput
+  category?: Prisma.MediaCategoryCreateNestedOneWithoutAssetsInput
+  series?: Prisma.MediaSeriesCreateNestedOneWithoutAssetsInput
+  speaker?: Prisma.SpeakerCreateNestedOneWithoutAssetsInput
+  parentAsset?: Prisma.MediaAssetCreateNestedOneWithoutClipsInput
+  clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
+  assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
+  playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
+  livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
+  sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
+  audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
+  aiMediaJobs?: Prisma.AiMediaJobCreateNestedManyWithoutMediaAssetInput
+  mediaCaptions?: Prisma.MediaCaptionCreateNestedManyWithoutMediaAssetInput
+}
+
+export type MediaAssetUncheckedCreateWithoutRadioPlaylistItemsInput = {
+  id?: string
+  tenantId: string
+  title: string
+  description?: string | null
+  type: string
+  providerType: string
+  providerKey?: string | null
+  sourceUrl?: string | null
+  thumbnailUrl?: string | null
+  durationSeconds?: number | null
+  fileSizeBytes?: number | null
+  mimeType?: string | null
+  categoryId?: string | null
+  seriesId?: string | null
+  seriesOrder?: number | null
+  speakerId?: string | null
+  visibility?: string
+  status?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parentAssetId?: string | null
+  clipStartSeconds?: number | null
+  clipEndSeconds?: number | null
+  clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
+  assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
+  playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
+  livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
+  sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
+  audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
+  aiMediaJobs?: Prisma.AiMediaJobUncheckedCreateNestedManyWithoutMediaAssetInput
+  mediaCaptions?: Prisma.MediaCaptionUncheckedCreateNestedManyWithoutMediaAssetInput
+}
+
+export type MediaAssetCreateOrConnectWithoutRadioPlaylistItemsInput = {
+  where: Prisma.MediaAssetWhereUniqueInput
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutRadioPlaylistItemsInput, Prisma.MediaAssetUncheckedCreateWithoutRadioPlaylistItemsInput>
+}
+
+export type MediaAssetUpsertWithoutRadioPlaylistItemsInput = {
+  update: Prisma.XOR<Prisma.MediaAssetUpdateWithoutRadioPlaylistItemsInput, Prisma.MediaAssetUncheckedUpdateWithoutRadioPlaylistItemsInput>
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutRadioPlaylistItemsInput, Prisma.MediaAssetUncheckedCreateWithoutRadioPlaylistItemsInput>
+  where?: Prisma.MediaAssetWhereInput
+}
+
+export type MediaAssetUpdateToOneWithWhereWithoutRadioPlaylistItemsInput = {
+  where?: Prisma.MediaAssetWhereInput
+  data: Prisma.XOR<Prisma.MediaAssetUpdateWithoutRadioPlaylistItemsInput, Prisma.MediaAssetUncheckedUpdateWithoutRadioPlaylistItemsInput>
+}
+
+export type MediaAssetUpdateWithoutRadioPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  providerType?: Prisma.StringFieldUpdateOperationsInput | string
+  providerKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clipStartSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutMediaAssetsNestedInput
+  category?: Prisma.MediaCategoryUpdateOneWithoutAssetsNestedInput
+  series?: Prisma.MediaSeriesUpdateOneWithoutAssetsNestedInput
+  speaker?: Prisma.SpeakerUpdateOneWithoutAssetsNestedInput
+  parentAsset?: Prisma.MediaAssetUpdateOneWithoutClipsNestedInput
+  clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
+  assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
+  playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
+  livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
+  sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
+  audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
+  aiMediaJobs?: Prisma.AiMediaJobUpdateManyWithoutMediaAssetNestedInput
+  mediaCaptions?: Prisma.MediaCaptionUpdateManyWithoutMediaAssetNestedInput
+}
+
+export type MediaAssetUncheckedUpdateWithoutRadioPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  providerType?: Prisma.StringFieldUpdateOperationsInput | string
+  providerKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  speakerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentAssetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clipStartSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
+  assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
+  playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
+  livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
+  sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
+  audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
+  aiMediaJobs?: Prisma.AiMediaJobUncheckedUpdateManyWithoutMediaAssetNestedInput
+  mediaCaptions?: Prisma.MediaCaptionUncheckedUpdateManyWithoutMediaAssetNestedInput
+}
+
+export type MediaAssetCreateWithoutTvPlaylistItemsInput = {
+  id?: string
+  title: string
+  description?: string | null
+  type: string
+  providerType: string
+  providerKey?: string | null
+  sourceUrl?: string | null
+  thumbnailUrl?: string | null
+  durationSeconds?: number | null
+  fileSizeBytes?: number | null
+  mimeType?: string | null
+  seriesOrder?: number | null
+  visibility?: string
+  status?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  clipStartSeconds?: number | null
+  clipEndSeconds?: number | null
+  tenant: Prisma.TenantCreateNestedOneWithoutMediaAssetsInput
+  category?: Prisma.MediaCategoryCreateNestedOneWithoutAssetsInput
+  series?: Prisma.MediaSeriesCreateNestedOneWithoutAssetsInput
+  speaker?: Prisma.SpeakerCreateNestedOneWithoutAssetsInput
+  parentAsset?: Prisma.MediaAssetCreateNestedOneWithoutClipsInput
+  clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
+  assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
+  playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveCreateNestedManyWithoutMediaAssetInput
+  livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
+  sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
+  audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
+  aiMediaJobs?: Prisma.AiMediaJobCreateNestedManyWithoutMediaAssetInput
+  mediaCaptions?: Prisma.MediaCaptionCreateNestedManyWithoutMediaAssetInput
+}
+
+export type MediaAssetUncheckedCreateWithoutTvPlaylistItemsInput = {
+  id?: string
+  tenantId: string
+  title: string
+  description?: string | null
+  type: string
+  providerType: string
+  providerKey?: string | null
+  sourceUrl?: string | null
+  thumbnailUrl?: string | null
+  durationSeconds?: number | null
+  fileSizeBytes?: number | null
+  mimeType?: string | null
+  categoryId?: string | null
+  seriesId?: string | null
+  seriesOrder?: number | null
+  speakerId?: string | null
+  visibility?: string
+  status?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parentAssetId?: string | null
+  clipStartSeconds?: number | null
+  clipEndSeconds?: number | null
+  clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
+  assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
+  playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedCreateNestedManyWithoutMediaAssetInput
+  livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
+  sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
+  audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
+  aiMediaJobs?: Prisma.AiMediaJobUncheckedCreateNestedManyWithoutMediaAssetInput
+  mediaCaptions?: Prisma.MediaCaptionUncheckedCreateNestedManyWithoutMediaAssetInput
+}
+
+export type MediaAssetCreateOrConnectWithoutTvPlaylistItemsInput = {
+  where: Prisma.MediaAssetWhereUniqueInput
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutTvPlaylistItemsInput, Prisma.MediaAssetUncheckedCreateWithoutTvPlaylistItemsInput>
+}
+
+export type MediaAssetUpsertWithoutTvPlaylistItemsInput = {
+  update: Prisma.XOR<Prisma.MediaAssetUpdateWithoutTvPlaylistItemsInput, Prisma.MediaAssetUncheckedUpdateWithoutTvPlaylistItemsInput>
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutTvPlaylistItemsInput, Prisma.MediaAssetUncheckedCreateWithoutTvPlaylistItemsInput>
+  where?: Prisma.MediaAssetWhereInput
+}
+
+export type MediaAssetUpdateToOneWithWhereWithoutTvPlaylistItemsInput = {
+  where?: Prisma.MediaAssetWhereInput
+  data: Prisma.XOR<Prisma.MediaAssetUpdateWithoutTvPlaylistItemsInput, Prisma.MediaAssetUncheckedUpdateWithoutTvPlaylistItemsInput>
+}
+
+export type MediaAssetUpdateWithoutTvPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  providerType?: Prisma.StringFieldUpdateOperationsInput | string
+  providerKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clipStartSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutMediaAssetsNestedInput
+  category?: Prisma.MediaCategoryUpdateOneWithoutAssetsNestedInput
+  series?: Prisma.MediaSeriesUpdateOneWithoutAssetsNestedInput
+  speaker?: Prisma.SpeakerUpdateOneWithoutAssetsNestedInput
+  parentAsset?: Prisma.MediaAssetUpdateOneWithoutClipsNestedInput
+  clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
+  assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
+  playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
+  livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
+  sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
+  audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
+  aiMediaJobs?: Prisma.AiMediaJobUpdateManyWithoutMediaAssetNestedInput
+  mediaCaptions?: Prisma.MediaCaptionUpdateManyWithoutMediaAssetNestedInput
+}
+
+export type MediaAssetUncheckedUpdateWithoutTvPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  providerType?: Prisma.StringFieldUpdateOperationsInput | string
+  providerKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  speakerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentAssetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clipStartSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
+  assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
+  playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
+  livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
+  sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
+  audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
+  aiMediaJobs?: Prisma.AiMediaJobUncheckedUpdateManyWithoutMediaAssetNestedInput
+  mediaCaptions?: Prisma.MediaCaptionUncheckedUpdateManyWithoutMediaAssetNestedInput
+}
+
+export type MediaAssetCreateWithoutTvBroadcastArchivesInput = {
+  id?: string
+  title: string
+  description?: string | null
+  type: string
+  providerType: string
+  providerKey?: string | null
+  sourceUrl?: string | null
+  thumbnailUrl?: string | null
+  durationSeconds?: number | null
+  fileSizeBytes?: number | null
+  mimeType?: string | null
+  seriesOrder?: number | null
+  visibility?: string
+  status?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  clipStartSeconds?: number | null
+  clipEndSeconds?: number | null
+  tenant: Prisma.TenantCreateNestedOneWithoutMediaAssetsInput
+  category?: Prisma.MediaCategoryCreateNestedOneWithoutAssetsInput
+  series?: Prisma.MediaSeriesCreateNestedOneWithoutAssetsInput
+  speaker?: Prisma.SpeakerCreateNestedOneWithoutAssetsInput
+  parentAsset?: Prisma.MediaAssetCreateNestedOneWithoutClipsInput
+  clips?: Prisma.MediaAssetCreateNestedManyWithoutParentAssetInput
+  assetTags?: Prisma.MediaAssetTagCreateNestedManyWithoutAssetInput
+  playlistItems?: Prisma.MediaPlaylistItemCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemCreateNestedManyWithoutMediaAssetInput
+  livestreams?: Prisma.LivestreamCreateNestedManyWithoutReplayAssetInput
+  sermonServices?: Prisma.ChurchServiceCreateNestedManyWithoutSermonMediaInput
+  audioServices?: Prisma.ChurchServiceCreateNestedManyWithoutServiceAudioInput
+  aiMediaJobs?: Prisma.AiMediaJobCreateNestedManyWithoutMediaAssetInput
+  mediaCaptions?: Prisma.MediaCaptionCreateNestedManyWithoutMediaAssetInput
+}
+
+export type MediaAssetUncheckedCreateWithoutTvBroadcastArchivesInput = {
+  id?: string
+  tenantId: string
+  title: string
+  description?: string | null
+  type: string
+  providerType: string
+  providerKey?: string | null
+  sourceUrl?: string | null
+  thumbnailUrl?: string | null
+  durationSeconds?: number | null
+  fileSizeBytes?: number | null
+  mimeType?: string | null
+  categoryId?: string | null
+  seriesId?: string | null
+  seriesOrder?: number | null
+  speakerId?: string | null
+  visibility?: string
+  status?: string
+  publishedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  parentAssetId?: string | null
+  clipStartSeconds?: number | null
+  clipEndSeconds?: number | null
+  clips?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutParentAssetInput
+  assetTags?: Prisma.MediaAssetTagUncheckedCreateNestedManyWithoutAssetInput
+  playlistItems?: Prisma.MediaPlaylistItemUncheckedCreateNestedManyWithoutAssetInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedCreateNestedManyWithoutMediaAssetInput
+  livestreams?: Prisma.LivestreamUncheckedCreateNestedManyWithoutReplayAssetInput
+  sermonServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutSermonMediaInput
+  audioServices?: Prisma.ChurchServiceUncheckedCreateNestedManyWithoutServiceAudioInput
+  aiMediaJobs?: Prisma.AiMediaJobUncheckedCreateNestedManyWithoutMediaAssetInput
+  mediaCaptions?: Prisma.MediaCaptionUncheckedCreateNestedManyWithoutMediaAssetInput
+}
+
+export type MediaAssetCreateOrConnectWithoutTvBroadcastArchivesInput = {
+  where: Prisma.MediaAssetWhereUniqueInput
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutTvBroadcastArchivesInput, Prisma.MediaAssetUncheckedCreateWithoutTvBroadcastArchivesInput>
+}
+
+export type MediaAssetUpsertWithoutTvBroadcastArchivesInput = {
+  update: Prisma.XOR<Prisma.MediaAssetUpdateWithoutTvBroadcastArchivesInput, Prisma.MediaAssetUncheckedUpdateWithoutTvBroadcastArchivesInput>
+  create: Prisma.XOR<Prisma.MediaAssetCreateWithoutTvBroadcastArchivesInput, Prisma.MediaAssetUncheckedCreateWithoutTvBroadcastArchivesInput>
+  where?: Prisma.MediaAssetWhereInput
+}
+
+export type MediaAssetUpdateToOneWithWhereWithoutTvBroadcastArchivesInput = {
+  where?: Prisma.MediaAssetWhereInput
+  data: Prisma.XOR<Prisma.MediaAssetUpdateWithoutTvBroadcastArchivesInput, Prisma.MediaAssetUncheckedUpdateWithoutTvBroadcastArchivesInput>
+}
+
+export type MediaAssetUpdateWithoutTvBroadcastArchivesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  providerType?: Prisma.StringFieldUpdateOperationsInput | string
+  providerKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  clipStartSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutMediaAssetsNestedInput
+  category?: Prisma.MediaCategoryUpdateOneWithoutAssetsNestedInput
+  series?: Prisma.MediaSeriesUpdateOneWithoutAssetsNestedInput
+  speaker?: Prisma.SpeakerUpdateOneWithoutAssetsNestedInput
+  parentAsset?: Prisma.MediaAssetUpdateOneWithoutClipsNestedInput
+  clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
+  assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
+  playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
+  sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
+  audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
+  aiMediaJobs?: Prisma.AiMediaJobUpdateManyWithoutMediaAssetNestedInput
+  mediaCaptions?: Prisma.MediaCaptionUpdateManyWithoutMediaAssetNestedInput
+}
+
+export type MediaAssetUncheckedUpdateWithoutTvBroadcastArchivesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  providerType?: Prisma.StringFieldUpdateOperationsInput | string
+  providerKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  thumbnailUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSizeBytes?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  categoryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  seriesOrder?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  speakerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  visibility?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parentAssetId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  clipStartSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clipEndSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
+  assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
+  playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
+  sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
+  audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
+  aiMediaJobs?: Prisma.AiMediaJobUncheckedUpdateManyWithoutMediaAssetNestedInput
+  mediaCaptions?: Prisma.MediaCaptionUncheckedUpdateManyWithoutMediaAssetNestedInput
 }
 
 export type MediaAssetCreateManyTenantInput = {
@@ -2973,6 +3660,9 @@ export type MediaAssetUpdateWithoutTenantInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -3007,6 +3697,9 @@ export type MediaAssetUncheckedUpdateWithoutTenantInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -3093,6 +3786,9 @@ export type MediaAssetUpdateWithoutCategoryInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -3127,6 +3823,9 @@ export type MediaAssetUncheckedUpdateWithoutCategoryInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -3213,6 +3912,9 @@ export type MediaAssetUpdateWithoutSpeakerInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -3247,6 +3949,9 @@ export type MediaAssetUncheckedUpdateWithoutSpeakerInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -3333,6 +4038,9 @@ export type MediaAssetUpdateWithoutSeriesInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -3367,6 +4075,9 @@ export type MediaAssetUncheckedUpdateWithoutSeriesInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -3453,6 +4164,9 @@ export type MediaAssetUpdateWithoutParentAssetInput = {
   clips?: Prisma.MediaAssetUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUpdateManyWithoutServiceAudioNestedInput
@@ -3487,6 +4201,9 @@ export type MediaAssetUncheckedUpdateWithoutParentAssetInput = {
   clips?: Prisma.MediaAssetUncheckedUpdateManyWithoutParentAssetNestedInput
   assetTags?: Prisma.MediaAssetTagUncheckedUpdateManyWithoutAssetNestedInput
   playlistItems?: Prisma.MediaPlaylistItemUncheckedUpdateManyWithoutAssetNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvPlaylistItems?: Prisma.TvPlaylistItemUncheckedUpdateManyWithoutMediaAssetNestedInput
+  tvBroadcastArchives?: Prisma.TvBroadcastArchiveUncheckedUpdateManyWithoutMediaAssetNestedInput
   livestreams?: Prisma.LivestreamUncheckedUpdateManyWithoutReplayAssetNestedInput
   sermonServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutSermonMediaNestedInput
   audioServices?: Prisma.ChurchServiceUncheckedUpdateManyWithoutServiceAudioNestedInput
@@ -3529,6 +4246,9 @@ export type MediaAssetCountOutputType = {
   clips: number
   assetTags: number
   playlistItems: number
+  radioPlaylistItems: number
+  tvPlaylistItems: number
+  tvBroadcastArchives: number
   livestreams: number
   sermonServices: number
   audioServices: number
@@ -3540,6 +4260,9 @@ export type MediaAssetCountOutputTypeSelect<ExtArgs extends runtime.Types.Extens
   clips?: boolean | MediaAssetCountOutputTypeCountClipsArgs
   assetTags?: boolean | MediaAssetCountOutputTypeCountAssetTagsArgs
   playlistItems?: boolean | MediaAssetCountOutputTypeCountPlaylistItemsArgs
+  radioPlaylistItems?: boolean | MediaAssetCountOutputTypeCountRadioPlaylistItemsArgs
+  tvPlaylistItems?: boolean | MediaAssetCountOutputTypeCountTvPlaylistItemsArgs
+  tvBroadcastArchives?: boolean | MediaAssetCountOutputTypeCountTvBroadcastArchivesArgs
   livestreams?: boolean | MediaAssetCountOutputTypeCountLivestreamsArgs
   sermonServices?: boolean | MediaAssetCountOutputTypeCountSermonServicesArgs
   audioServices?: boolean | MediaAssetCountOutputTypeCountAudioServicesArgs
@@ -3576,6 +4299,27 @@ export type MediaAssetCountOutputTypeCountAssetTagsArgs<ExtArgs extends runtime.
  */
 export type MediaAssetCountOutputTypeCountPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.MediaPlaylistItemWhereInput
+}
+
+/**
+ * MediaAssetCountOutputType without action
+ */
+export type MediaAssetCountOutputTypeCountRadioPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RadioPlaylistItemWhereInput
+}
+
+/**
+ * MediaAssetCountOutputType without action
+ */
+export type MediaAssetCountOutputTypeCountTvPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TvPlaylistItemWhereInput
+}
+
+/**
+ * MediaAssetCountOutputType without action
+ */
+export type MediaAssetCountOutputTypeCountTvBroadcastArchivesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TvBroadcastArchiveWhereInput
 }
 
 /**
@@ -3647,6 +4391,9 @@ export type MediaAssetSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   clips?: boolean | Prisma.MediaAsset$clipsArgs<ExtArgs>
   assetTags?: boolean | Prisma.MediaAsset$assetTagsArgs<ExtArgs>
   playlistItems?: boolean | Prisma.MediaAsset$playlistItemsArgs<ExtArgs>
+  radioPlaylistItems?: boolean | Prisma.MediaAsset$radioPlaylistItemsArgs<ExtArgs>
+  tvPlaylistItems?: boolean | Prisma.MediaAsset$tvPlaylistItemsArgs<ExtArgs>
+  tvBroadcastArchives?: boolean | Prisma.MediaAsset$tvBroadcastArchivesArgs<ExtArgs>
   livestreams?: boolean | Prisma.MediaAsset$livestreamsArgs<ExtArgs>
   sermonServices?: boolean | Prisma.MediaAsset$sermonServicesArgs<ExtArgs>
   audioServices?: boolean | Prisma.MediaAsset$audioServicesArgs<ExtArgs>
@@ -3756,6 +4503,9 @@ export type MediaAssetInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   clips?: boolean | Prisma.MediaAsset$clipsArgs<ExtArgs>
   assetTags?: boolean | Prisma.MediaAsset$assetTagsArgs<ExtArgs>
   playlistItems?: boolean | Prisma.MediaAsset$playlistItemsArgs<ExtArgs>
+  radioPlaylistItems?: boolean | Prisma.MediaAsset$radioPlaylistItemsArgs<ExtArgs>
+  tvPlaylistItems?: boolean | Prisma.MediaAsset$tvPlaylistItemsArgs<ExtArgs>
+  tvBroadcastArchives?: boolean | Prisma.MediaAsset$tvBroadcastArchivesArgs<ExtArgs>
   livestreams?: boolean | Prisma.MediaAsset$livestreamsArgs<ExtArgs>
   sermonServices?: boolean | Prisma.MediaAsset$sermonServicesArgs<ExtArgs>
   audioServices?: boolean | Prisma.MediaAsset$audioServicesArgs<ExtArgs>
@@ -3789,6 +4539,9 @@ export type $MediaAssetPayload<ExtArgs extends runtime.Types.Extensions.Internal
     clips: Prisma.$MediaAssetPayload<ExtArgs>[]
     assetTags: Prisma.$MediaAssetTagPayload<ExtArgs>[]
     playlistItems: Prisma.$MediaPlaylistItemPayload<ExtArgs>[]
+    radioPlaylistItems: Prisma.$RadioPlaylistItemPayload<ExtArgs>[]
+    tvPlaylistItems: Prisma.$TvPlaylistItemPayload<ExtArgs>[]
+    tvBroadcastArchives: Prisma.$TvBroadcastArchivePayload<ExtArgs>[]
     livestreams: Prisma.$LivestreamPayload<ExtArgs>[]
     sermonServices: Prisma.$ChurchServicePayload<ExtArgs>[]
     audioServices: Prisma.$ChurchServicePayload<ExtArgs>[]
@@ -4222,6 +4975,9 @@ export interface Prisma__MediaAssetClient<T, Null = never, ExtArgs extends runti
   clips<T extends Prisma.MediaAsset$clipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$clipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assetTags<T extends Prisma.MediaAsset$assetTagsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$assetTagsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaAssetTagPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   playlistItems<T extends Prisma.MediaAsset$playlistItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$playlistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaPlaylistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  radioPlaylistItems<T extends Prisma.MediaAsset$radioPlaylistItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$radioPlaylistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RadioPlaylistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tvPlaylistItems<T extends Prisma.MediaAsset$tvPlaylistItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$tvPlaylistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TvPlaylistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tvBroadcastArchives<T extends Prisma.MediaAsset$tvBroadcastArchivesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$tvBroadcastArchivesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TvBroadcastArchivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   livestreams<T extends Prisma.MediaAsset$livestreamsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$livestreamsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LivestreamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sermonServices<T extends Prisma.MediaAsset$sermonServicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$sermonServicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChurchServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   audioServices<T extends Prisma.MediaAsset$audioServicesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$audioServicesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChurchServicePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -4824,6 +5580,78 @@ export type MediaAsset$playlistItemsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.MediaPlaylistItemScalarFieldEnum | Prisma.MediaPlaylistItemScalarFieldEnum[]
+}
+
+/**
+ * MediaAsset.radioPlaylistItems
+ */
+export type MediaAsset$radioPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RadioPlaylistItem
+   */
+  select?: Prisma.RadioPlaylistItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RadioPlaylistItem
+   */
+  omit?: Prisma.RadioPlaylistItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RadioPlaylistItemInclude<ExtArgs> | null
+  where?: Prisma.RadioPlaylistItemWhereInput
+  orderBy?: Prisma.RadioPlaylistItemOrderByWithRelationInput | Prisma.RadioPlaylistItemOrderByWithRelationInput[]
+  cursor?: Prisma.RadioPlaylistItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RadioPlaylistItemScalarFieldEnum | Prisma.RadioPlaylistItemScalarFieldEnum[]
+}
+
+/**
+ * MediaAsset.tvPlaylistItems
+ */
+export type MediaAsset$tvPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TvPlaylistItem
+   */
+  select?: Prisma.TvPlaylistItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TvPlaylistItem
+   */
+  omit?: Prisma.TvPlaylistItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TvPlaylistItemInclude<ExtArgs> | null
+  where?: Prisma.TvPlaylistItemWhereInput
+  orderBy?: Prisma.TvPlaylistItemOrderByWithRelationInput | Prisma.TvPlaylistItemOrderByWithRelationInput[]
+  cursor?: Prisma.TvPlaylistItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TvPlaylistItemScalarFieldEnum | Prisma.TvPlaylistItemScalarFieldEnum[]
+}
+
+/**
+ * MediaAsset.tvBroadcastArchives
+ */
+export type MediaAsset$tvBroadcastArchivesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TvBroadcastArchive
+   */
+  select?: Prisma.TvBroadcastArchiveSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TvBroadcastArchive
+   */
+  omit?: Prisma.TvBroadcastArchiveOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TvBroadcastArchiveInclude<ExtArgs> | null
+  where?: Prisma.TvBroadcastArchiveWhereInput
+  orderBy?: Prisma.TvBroadcastArchiveOrderByWithRelationInput | Prisma.TvBroadcastArchiveOrderByWithRelationInput[]
+  cursor?: Prisma.TvBroadcastArchiveWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TvBroadcastArchiveScalarFieldEnum | Prisma.TvBroadcastArchiveScalarFieldEnum[]
 }
 
 /**

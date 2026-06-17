@@ -358,6 +358,8 @@ export type PodcastEpisodeWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"PodcastEpisode"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   show?: Prisma.XOR<Prisma.PodcastShowScalarRelationFilter, Prisma.PodcastShowWhereInput>
+  radioPlaylistItems?: Prisma.RadioPlaylistItemListRelationFilter
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveListRelationFilter
 }
 
 export type PodcastEpisodeOrderByWithRelationInput = {
@@ -383,6 +385,8 @@ export type PodcastEpisodeOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   tenant?: Prisma.TenantOrderByWithRelationInput
   show?: Prisma.PodcastShowOrderByWithRelationInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemOrderByRelationAggregateInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveOrderByRelationAggregateInput
 }
 
 export type PodcastEpisodeWhereUniqueInput = Prisma.AtLeast<{
@@ -412,6 +416,8 @@ export type PodcastEpisodeWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"PodcastEpisode"> | Date | string
   tenant?: Prisma.XOR<Prisma.TenantScalarRelationFilter, Prisma.TenantWhereInput>
   show?: Prisma.XOR<Prisma.PodcastShowScalarRelationFilter, Prisma.PodcastShowWhereInput>
+  radioPlaylistItems?: Prisma.RadioPlaylistItemListRelationFilter
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveListRelationFilter
 }, "id" | "tenantId_showId_slug">
 
 export type PodcastEpisodeOrderByWithAggregationInput = {
@@ -489,6 +495,8 @@ export type PodcastEpisodeCreateInput = {
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutPodcastEpisodesInput
   show: Prisma.PodcastShowCreateNestedOneWithoutEpisodesInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutPodcastEpisodeInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveCreateNestedManyWithoutPodcastEpisodeInput
 }
 
 export type PodcastEpisodeUncheckedCreateInput = {
@@ -512,6 +520,8 @@ export type PodcastEpisodeUncheckedCreateInput = {
   playCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutPodcastEpisodeInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUncheckedCreateNestedManyWithoutPodcastEpisodeInput
 }
 
 export type PodcastEpisodeUpdateInput = {
@@ -535,6 +545,8 @@ export type PodcastEpisodeUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPodcastEpisodesNestedInput
   show?: Prisma.PodcastShowUpdateOneRequiredWithoutEpisodesNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutPodcastEpisodeNestedInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUpdateManyWithoutPodcastEpisodeNestedInput
 }
 
 export type PodcastEpisodeUncheckedUpdateInput = {
@@ -558,6 +570,8 @@ export type PodcastEpisodeUncheckedUpdateInput = {
   playCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutPodcastEpisodeNestedInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUncheckedUpdateManyWithoutPodcastEpisodeNestedInput
 }
 
 export type PodcastEpisodeCreateManyInput = {
@@ -730,6 +744,11 @@ export type PodcastEpisodeSumOrderByAggregateInput = {
   playCount?: Prisma.SortOrder
 }
 
+export type PodcastEpisodeNullableScalarRelationFilter = {
+  is?: Prisma.PodcastEpisodeWhereInput | null
+  isNot?: Prisma.PodcastEpisodeWhereInput | null
+}
+
 export type PodcastEpisodeCreateNestedManyWithoutTenantInput = {
   create?: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutTenantInput, Prisma.PodcastEpisodeUncheckedCreateWithoutTenantInput> | Prisma.PodcastEpisodeCreateWithoutTenantInput[] | Prisma.PodcastEpisodeUncheckedCreateWithoutTenantInput[]
   connectOrCreate?: Prisma.PodcastEpisodeCreateOrConnectWithoutTenantInput | Prisma.PodcastEpisodeCreateOrConnectWithoutTenantInput[]
@@ -814,6 +833,38 @@ export type PodcastEpisodeUncheckedUpdateManyWithoutShowNestedInput = {
   deleteMany?: Prisma.PodcastEpisodeScalarWhereInput | Prisma.PodcastEpisodeScalarWhereInput[]
 }
 
+export type PodcastEpisodeCreateNestedOneWithoutRadioPlaylistItemsInput = {
+  create?: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutRadioPlaylistItemsInput, Prisma.PodcastEpisodeUncheckedCreateWithoutRadioPlaylistItemsInput>
+  connectOrCreate?: Prisma.PodcastEpisodeCreateOrConnectWithoutRadioPlaylistItemsInput
+  connect?: Prisma.PodcastEpisodeWhereUniqueInput
+}
+
+export type PodcastEpisodeUpdateOneWithoutRadioPlaylistItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutRadioPlaylistItemsInput, Prisma.PodcastEpisodeUncheckedCreateWithoutRadioPlaylistItemsInput>
+  connectOrCreate?: Prisma.PodcastEpisodeCreateOrConnectWithoutRadioPlaylistItemsInput
+  upsert?: Prisma.PodcastEpisodeUpsertWithoutRadioPlaylistItemsInput
+  disconnect?: Prisma.PodcastEpisodeWhereInput | boolean
+  delete?: Prisma.PodcastEpisodeWhereInput | boolean
+  connect?: Prisma.PodcastEpisodeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PodcastEpisodeUpdateToOneWithWhereWithoutRadioPlaylistItemsInput, Prisma.PodcastEpisodeUpdateWithoutRadioPlaylistItemsInput>, Prisma.PodcastEpisodeUncheckedUpdateWithoutRadioPlaylistItemsInput>
+}
+
+export type PodcastEpisodeCreateNestedOneWithoutRadioBroadcastArchivesInput = {
+  create?: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutRadioBroadcastArchivesInput, Prisma.PodcastEpisodeUncheckedCreateWithoutRadioBroadcastArchivesInput>
+  connectOrCreate?: Prisma.PodcastEpisodeCreateOrConnectWithoutRadioBroadcastArchivesInput
+  connect?: Prisma.PodcastEpisodeWhereUniqueInput
+}
+
+export type PodcastEpisodeUpdateOneWithoutRadioBroadcastArchivesNestedInput = {
+  create?: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutRadioBroadcastArchivesInput, Prisma.PodcastEpisodeUncheckedCreateWithoutRadioBroadcastArchivesInput>
+  connectOrCreate?: Prisma.PodcastEpisodeCreateOrConnectWithoutRadioBroadcastArchivesInput
+  upsert?: Prisma.PodcastEpisodeUpsertWithoutRadioBroadcastArchivesInput
+  disconnect?: Prisma.PodcastEpisodeWhereInput | boolean
+  delete?: Prisma.PodcastEpisodeWhereInput | boolean
+  connect?: Prisma.PodcastEpisodeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PodcastEpisodeUpdateToOneWithWhereWithoutRadioBroadcastArchivesInput, Prisma.PodcastEpisodeUpdateWithoutRadioBroadcastArchivesInput>, Prisma.PodcastEpisodeUncheckedUpdateWithoutRadioBroadcastArchivesInput>
+}
+
 export type PodcastEpisodeCreateWithoutTenantInput = {
   id?: string
   title: string
@@ -834,6 +885,8 @@ export type PodcastEpisodeCreateWithoutTenantInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   show: Prisma.PodcastShowCreateNestedOneWithoutEpisodesInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutPodcastEpisodeInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveCreateNestedManyWithoutPodcastEpisodeInput
 }
 
 export type PodcastEpisodeUncheckedCreateWithoutTenantInput = {
@@ -856,6 +909,8 @@ export type PodcastEpisodeUncheckedCreateWithoutTenantInput = {
   playCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutPodcastEpisodeInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUncheckedCreateNestedManyWithoutPodcastEpisodeInput
 }
 
 export type PodcastEpisodeCreateOrConnectWithoutTenantInput = {
@@ -929,6 +984,8 @@ export type PodcastEpisodeCreateWithoutShowInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   tenant: Prisma.TenantCreateNestedOneWithoutPodcastEpisodesInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutPodcastEpisodeInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveCreateNestedManyWithoutPodcastEpisodeInput
 }
 
 export type PodcastEpisodeUncheckedCreateWithoutShowInput = {
@@ -951,6 +1008,8 @@ export type PodcastEpisodeUncheckedCreateWithoutShowInput = {
   playCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutPodcastEpisodeInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUncheckedCreateNestedManyWithoutPodcastEpisodeInput
 }
 
 export type PodcastEpisodeCreateOrConnectWithoutShowInput = {
@@ -976,6 +1035,230 @@ export type PodcastEpisodeUpdateWithWhereUniqueWithoutShowInput = {
 export type PodcastEpisodeUpdateManyWithWhereWithoutShowInput = {
   where: Prisma.PodcastEpisodeScalarWhereInput
   data: Prisma.XOR<Prisma.PodcastEpisodeUpdateManyMutationInput, Prisma.PodcastEpisodeUncheckedUpdateManyWithoutShowInput>
+}
+
+export type PodcastEpisodeCreateWithoutRadioPlaylistItemsInput = {
+  id?: string
+  title: string
+  slug: string
+  description?: string | null
+  audioUrl: string
+  durationSeconds?: number | null
+  fileSize?: number | null
+  mimeType?: string
+  publishDate?: Date | string
+  status?: string
+  season?: number | null
+  episodeNumber?: number | null
+  episodeType?: string
+  explicit?: boolean
+  downloadCount?: number
+  playCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutPodcastEpisodesInput
+  show: Prisma.PodcastShowCreateNestedOneWithoutEpisodesInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveCreateNestedManyWithoutPodcastEpisodeInput
+}
+
+export type PodcastEpisodeUncheckedCreateWithoutRadioPlaylistItemsInput = {
+  id?: string
+  tenantId: string
+  showId: string
+  title: string
+  slug: string
+  description?: string | null
+  audioUrl: string
+  durationSeconds?: number | null
+  fileSize?: number | null
+  mimeType?: string
+  publishDate?: Date | string
+  status?: string
+  season?: number | null
+  episodeNumber?: number | null
+  episodeType?: string
+  explicit?: boolean
+  downloadCount?: number
+  playCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUncheckedCreateNestedManyWithoutPodcastEpisodeInput
+}
+
+export type PodcastEpisodeCreateOrConnectWithoutRadioPlaylistItemsInput = {
+  where: Prisma.PodcastEpisodeWhereUniqueInput
+  create: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutRadioPlaylistItemsInput, Prisma.PodcastEpisodeUncheckedCreateWithoutRadioPlaylistItemsInput>
+}
+
+export type PodcastEpisodeUpsertWithoutRadioPlaylistItemsInput = {
+  update: Prisma.XOR<Prisma.PodcastEpisodeUpdateWithoutRadioPlaylistItemsInput, Prisma.PodcastEpisodeUncheckedUpdateWithoutRadioPlaylistItemsInput>
+  create: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutRadioPlaylistItemsInput, Prisma.PodcastEpisodeUncheckedCreateWithoutRadioPlaylistItemsInput>
+  where?: Prisma.PodcastEpisodeWhereInput
+}
+
+export type PodcastEpisodeUpdateToOneWithWhereWithoutRadioPlaylistItemsInput = {
+  where?: Prisma.PodcastEpisodeWhereInput
+  data: Prisma.XOR<Prisma.PodcastEpisodeUpdateWithoutRadioPlaylistItemsInput, Prisma.PodcastEpisodeUncheckedUpdateWithoutRadioPlaylistItemsInput>
+}
+
+export type PodcastEpisodeUpdateWithoutRadioPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audioUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  publishDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  season?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  episodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  episodeType?: Prisma.StringFieldUpdateOperationsInput | string
+  explicit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  downloadCount?: Prisma.IntFieldUpdateOperationsInput | number
+  playCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutPodcastEpisodesNestedInput
+  show?: Prisma.PodcastShowUpdateOneRequiredWithoutEpisodesNestedInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUpdateManyWithoutPodcastEpisodeNestedInput
+}
+
+export type PodcastEpisodeUncheckedUpdateWithoutRadioPlaylistItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  showId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audioUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  publishDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  season?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  episodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  episodeType?: Prisma.StringFieldUpdateOperationsInput | string
+  explicit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  downloadCount?: Prisma.IntFieldUpdateOperationsInput | number
+  playCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUncheckedUpdateManyWithoutPodcastEpisodeNestedInput
+}
+
+export type PodcastEpisodeCreateWithoutRadioBroadcastArchivesInput = {
+  id?: string
+  title: string
+  slug: string
+  description?: string | null
+  audioUrl: string
+  durationSeconds?: number | null
+  fileSize?: number | null
+  mimeType?: string
+  publishDate?: Date | string
+  status?: string
+  season?: number | null
+  episodeNumber?: number | null
+  episodeType?: string
+  explicit?: boolean
+  downloadCount?: number
+  playCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  tenant: Prisma.TenantCreateNestedOneWithoutPodcastEpisodesInput
+  show: Prisma.PodcastShowCreateNestedOneWithoutEpisodesInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemCreateNestedManyWithoutPodcastEpisodeInput
+}
+
+export type PodcastEpisodeUncheckedCreateWithoutRadioBroadcastArchivesInput = {
+  id?: string
+  tenantId: string
+  showId: string
+  title: string
+  slug: string
+  description?: string | null
+  audioUrl: string
+  durationSeconds?: number | null
+  fileSize?: number | null
+  mimeType?: string
+  publishDate?: Date | string
+  status?: string
+  season?: number | null
+  episodeNumber?: number | null
+  episodeType?: string
+  explicit?: boolean
+  downloadCount?: number
+  playCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedCreateNestedManyWithoutPodcastEpisodeInput
+}
+
+export type PodcastEpisodeCreateOrConnectWithoutRadioBroadcastArchivesInput = {
+  where: Prisma.PodcastEpisodeWhereUniqueInput
+  create: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutRadioBroadcastArchivesInput, Prisma.PodcastEpisodeUncheckedCreateWithoutRadioBroadcastArchivesInput>
+}
+
+export type PodcastEpisodeUpsertWithoutRadioBroadcastArchivesInput = {
+  update: Prisma.XOR<Prisma.PodcastEpisodeUpdateWithoutRadioBroadcastArchivesInput, Prisma.PodcastEpisodeUncheckedUpdateWithoutRadioBroadcastArchivesInput>
+  create: Prisma.XOR<Prisma.PodcastEpisodeCreateWithoutRadioBroadcastArchivesInput, Prisma.PodcastEpisodeUncheckedCreateWithoutRadioBroadcastArchivesInput>
+  where?: Prisma.PodcastEpisodeWhereInput
+}
+
+export type PodcastEpisodeUpdateToOneWithWhereWithoutRadioBroadcastArchivesInput = {
+  where?: Prisma.PodcastEpisodeWhereInput
+  data: Prisma.XOR<Prisma.PodcastEpisodeUpdateWithoutRadioBroadcastArchivesInput, Prisma.PodcastEpisodeUncheckedUpdateWithoutRadioBroadcastArchivesInput>
+}
+
+export type PodcastEpisodeUpdateWithoutRadioBroadcastArchivesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audioUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  publishDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  season?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  episodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  episodeType?: Prisma.StringFieldUpdateOperationsInput | string
+  explicit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  downloadCount?: Prisma.IntFieldUpdateOperationsInput | number
+  playCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  tenant?: Prisma.TenantUpdateOneRequiredWithoutPodcastEpisodesNestedInput
+  show?: Prisma.PodcastShowUpdateOneRequiredWithoutEpisodesNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutPodcastEpisodeNestedInput
+}
+
+export type PodcastEpisodeUncheckedUpdateWithoutRadioBroadcastArchivesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  tenantId?: Prisma.StringFieldUpdateOperationsInput | string
+  showId?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  audioUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  durationSeconds?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  fileSize?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  mimeType?: Prisma.StringFieldUpdateOperationsInput | string
+  publishDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  season?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  episodeNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  episodeType?: Prisma.StringFieldUpdateOperationsInput | string
+  explicit?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  downloadCount?: Prisma.IntFieldUpdateOperationsInput | number
+  playCount?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutPodcastEpisodeNestedInput
 }
 
 export type PodcastEpisodeCreateManyTenantInput = {
@@ -1020,6 +1303,8 @@ export type PodcastEpisodeUpdateWithoutTenantInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   show?: Prisma.PodcastShowUpdateOneRequiredWithoutEpisodesNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutPodcastEpisodeNestedInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUpdateManyWithoutPodcastEpisodeNestedInput
 }
 
 export type PodcastEpisodeUncheckedUpdateWithoutTenantInput = {
@@ -1042,6 +1327,8 @@ export type PodcastEpisodeUncheckedUpdateWithoutTenantInput = {
   playCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutPodcastEpisodeNestedInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUncheckedUpdateManyWithoutPodcastEpisodeNestedInput
 }
 
 export type PodcastEpisodeUncheckedUpdateManyWithoutTenantInput = {
@@ -1108,6 +1395,8 @@ export type PodcastEpisodeUpdateWithoutShowInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   tenant?: Prisma.TenantUpdateOneRequiredWithoutPodcastEpisodesNestedInput
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUpdateManyWithoutPodcastEpisodeNestedInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUpdateManyWithoutPodcastEpisodeNestedInput
 }
 
 export type PodcastEpisodeUncheckedUpdateWithoutShowInput = {
@@ -1130,6 +1419,8 @@ export type PodcastEpisodeUncheckedUpdateWithoutShowInput = {
   playCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  radioPlaylistItems?: Prisma.RadioPlaylistItemUncheckedUpdateManyWithoutPodcastEpisodeNestedInput
+  radioBroadcastArchives?: Prisma.RadioBroadcastArchiveUncheckedUpdateManyWithoutPodcastEpisodeNestedInput
 }
 
 export type PodcastEpisodeUncheckedUpdateManyWithoutShowInput = {
@@ -1155,6 +1446,44 @@ export type PodcastEpisodeUncheckedUpdateManyWithoutShowInput = {
 }
 
 
+/**
+ * Count Type PodcastEpisodeCountOutputType
+ */
+
+export type PodcastEpisodeCountOutputType = {
+  radioPlaylistItems: number
+  radioBroadcastArchives: number
+}
+
+export type PodcastEpisodeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  radioPlaylistItems?: boolean | PodcastEpisodeCountOutputTypeCountRadioPlaylistItemsArgs
+  radioBroadcastArchives?: boolean | PodcastEpisodeCountOutputTypeCountRadioBroadcastArchivesArgs
+}
+
+/**
+ * PodcastEpisodeCountOutputType without action
+ */
+export type PodcastEpisodeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PodcastEpisodeCountOutputType
+   */
+  select?: Prisma.PodcastEpisodeCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * PodcastEpisodeCountOutputType without action
+ */
+export type PodcastEpisodeCountOutputTypeCountRadioPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RadioPlaylistItemWhereInput
+}
+
+/**
+ * PodcastEpisodeCountOutputType without action
+ */
+export type PodcastEpisodeCountOutputTypeCountRadioBroadcastArchivesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RadioBroadcastArchiveWhereInput
+}
+
 
 export type PodcastEpisodeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1179,6 +1508,9 @@ export type PodcastEpisodeSelect<ExtArgs extends runtime.Types.Extensions.Intern
   updatedAt?: boolean
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   show?: boolean | Prisma.PodcastShowDefaultArgs<ExtArgs>
+  radioPlaylistItems?: boolean | Prisma.PodcastEpisode$radioPlaylistItemsArgs<ExtArgs>
+  radioBroadcastArchives?: boolean | Prisma.PodcastEpisode$radioBroadcastArchivesArgs<ExtArgs>
+  _count?: boolean | Prisma.PodcastEpisodeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["podcastEpisode"]>
 
 export type PodcastEpisodeSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1258,6 +1590,9 @@ export type PodcastEpisodeOmit<ExtArgs extends runtime.Types.Extensions.Internal
 export type PodcastEpisodeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
   show?: boolean | Prisma.PodcastShowDefaultArgs<ExtArgs>
+  radioPlaylistItems?: boolean | Prisma.PodcastEpisode$radioPlaylistItemsArgs<ExtArgs>
+  radioBroadcastArchives?: boolean | Prisma.PodcastEpisode$radioBroadcastArchivesArgs<ExtArgs>
+  _count?: boolean | Prisma.PodcastEpisodeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type PodcastEpisodeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   tenant?: boolean | Prisma.TenantDefaultArgs<ExtArgs>
@@ -1273,6 +1608,8 @@ export type $PodcastEpisodePayload<ExtArgs extends runtime.Types.Extensions.Inte
   objects: {
     tenant: Prisma.$TenantPayload<ExtArgs>
     show: Prisma.$PodcastShowPayload<ExtArgs>
+    radioPlaylistItems: Prisma.$RadioPlaylistItemPayload<ExtArgs>[]
+    radioBroadcastArchives: Prisma.$RadioBroadcastArchivePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1691,6 +2028,8 @@ export interface Prisma__PodcastEpisodeClient<T, Null = never, ExtArgs extends r
   readonly [Symbol.toStringTag]: "PrismaPromise"
   tenant<T extends Prisma.TenantDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.TenantDefaultArgs<ExtArgs>>): Prisma.Prisma__TenantClient<runtime.Types.Result.GetResult<Prisma.$TenantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   show<T extends Prisma.PodcastShowDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PodcastShowDefaultArgs<ExtArgs>>): Prisma.Prisma__PodcastShowClient<runtime.Types.Result.GetResult<Prisma.$PodcastShowPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  radioPlaylistItems<T extends Prisma.PodcastEpisode$radioPlaylistItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PodcastEpisode$radioPlaylistItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RadioPlaylistItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  radioBroadcastArchives<T extends Prisma.PodcastEpisode$radioBroadcastArchivesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PodcastEpisode$radioBroadcastArchivesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RadioBroadcastArchivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2136,6 +2475,54 @@ export type PodcastEpisodeDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many PodcastEpisodes to delete.
    */
   limit?: number
+}
+
+/**
+ * PodcastEpisode.radioPlaylistItems
+ */
+export type PodcastEpisode$radioPlaylistItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RadioPlaylistItem
+   */
+  select?: Prisma.RadioPlaylistItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RadioPlaylistItem
+   */
+  omit?: Prisma.RadioPlaylistItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RadioPlaylistItemInclude<ExtArgs> | null
+  where?: Prisma.RadioPlaylistItemWhereInput
+  orderBy?: Prisma.RadioPlaylistItemOrderByWithRelationInput | Prisma.RadioPlaylistItemOrderByWithRelationInput[]
+  cursor?: Prisma.RadioPlaylistItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RadioPlaylistItemScalarFieldEnum | Prisma.RadioPlaylistItemScalarFieldEnum[]
+}
+
+/**
+ * PodcastEpisode.radioBroadcastArchives
+ */
+export type PodcastEpisode$radioBroadcastArchivesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RadioBroadcastArchive
+   */
+  select?: Prisma.RadioBroadcastArchiveSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RadioBroadcastArchive
+   */
+  omit?: Prisma.RadioBroadcastArchiveOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RadioBroadcastArchiveInclude<ExtArgs> | null
+  where?: Prisma.RadioBroadcastArchiveWhereInput
+  orderBy?: Prisma.RadioBroadcastArchiveOrderByWithRelationInput | Prisma.RadioBroadcastArchiveOrderByWithRelationInput[]
+  cursor?: Prisma.RadioBroadcastArchiveWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RadioBroadcastArchiveScalarFieldEnum | Prisma.RadioBroadcastArchiveScalarFieldEnum[]
 }
 
 /**
