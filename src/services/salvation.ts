@@ -1,4 +1,17 @@
 import prisma from '../lib/prisma';
+import { trackEvent } from './analytics';
+
+export const SALVATION_MODULE_KEY = 'salvation-new-believer-journey';
+export const SALVATION_LEGACY_MODULE_KEY = 'salvation';
+export const SALVATION_MODULE_KEYS = [SALVATION_MODULE_KEY, SALVATION_LEGACY_MODULE_KEY];
+export const SALVATION_PERMISSIONS = [
+  `${SALVATION_MODULE_KEY}.read`,
+  `${SALVATION_MODULE_KEY}.create`,
+  `${SALVATION_MODULE_KEY}.update`,
+  `${SALVATION_MODULE_KEY}.delete`,
+  `${SALVATION_MODULE_KEY}.manage_settings`,
+  `${SALVATION_MODULE_KEY}.view_reports`,
+];
 
 // ─────────────────────────────────────────────────────────────
 // 1. SALVATION RESPONSE & ONBOARDING AUTOMATIONS
@@ -114,6 +127,24 @@ export async function registerSalvationResponse(
     }
   }
 
+  try {
+    await trackEvent(tenantId, {
+      category: 'salvation',
+      name: 'response',
+      entityId: profile.id,
+      value: 1,
+      metadata: {
+        source: data.source,
+        serviceId: data.serviceId || null,
+        funnelId: data.funnelId || null,
+        memberId: member.id,
+        assignedAgentId: agentId,
+      },
+    });
+  } catch {
+    // Analytics should never block a pastoral follow-up path.
+  }
+
   return await prisma.newBelieverProfile.findUnique({
     where: { id: profile.id },
     include: {
@@ -173,6 +204,44 @@ export async function updateMilestone(
   });
 }
 
+export async function assignCareAgent(tenantId: string, profileId: string, assignedAgentId?: string): Promise<any> {
+  const profile = await prisma.newBelieverProfile.findFirst({
+    where: { id: profileId, tenantId },
+  });
+  if (!profile) {
+    throw new Error('New believer profile not found');
+  }
+
+  let agentId = assignedAgentId || null;
+  if (agentId) {
+    const agent = await prisma.member.findFirst({
+      where: { id: agentId, tenantId },
+    });
+    if (!agent) {
+      throw new Error('Care agent not found');
+    }
+  } else {
+    const leader = await prisma.member.findFirst({
+      where: { tenantId, membershipStatus: 'leader' },
+    });
+    agentId = leader?.id || null;
+  }
+
+  return prisma.newBelieverProfile.update({
+    where: { id: profile.id },
+    data: { assignedAgentId: agentId },
+    include: {
+      member: {
+        select: { id: true, firstName: true, lastName: true, email: true, phone: true },
+      },
+      assignedAgent: {
+        select: { id: true, firstName: true, lastName: true },
+      },
+      reminders: true,
+    },
+  });
+}
+
 export async function getNewBelieverProfile(tenantId: string, memberId: string): Promise<any> {
   const profile = await prisma.newBelieverProfile.findFirst({
     where: { memberId, tenantId },
@@ -191,6 +260,108 @@ export async function getNewBelieverProfile(tenantId: string, memberId: string):
   }
 
   return profile;
+}
+
+export async function listNewBelieverProfiles(tenantId: string): Promise<any[]> {
+  return prisma.newBelieverProfile.findMany({
+    where: { tenantId },
+    include: {
+      member: {
+        select: { id: true, firstName: true, lastName: true, email: true, phone: true },
+      },
+      assignedAgent: {
+        select: { id: true, firstName: true, lastName: true },
+      },
+      reminders: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
+export async function getNewBelieverProfileById(tenantId: string, profileId: string): Promise<any> {
+  const profile = await prisma.newBelieverProfile.findFirst({
+    where: { id: profileId, tenantId },
+    include: {
+      member: {
+        select: { id: true, firstName: true, lastName: true, email: true, phone: true },
+      },
+      assignedAgent: {
+        select: { id: true, firstName: true, lastName: true },
+      },
+      reminders: true,
+    },
+  });
+  if (!profile) {
+    throw new Error('New believer profile not found');
+  }
+  return profile;
+}
+
+export async function updateNewBelieverProfile(
+  tenantId: string,
+  profileId: string,
+  input: {
+    assignedAgentId?: string | null;
+    cellId?: string | null;
+    joinedGroup?: boolean;
+    finishedClass?: boolean;
+    isBaptized?: boolean;
+    baptismDate?: string | Date | null;
+  }
+): Promise<any> {
+  const existing = await prisma.newBelieverProfile.findFirst({
+    where: { id: profileId, tenantId },
+  });
+  if (!existing) {
+    throw new Error('New believer profile not found');
+  }
+
+  if (input.assignedAgentId) {
+    const agent = await prisma.member.findFirst({
+      where: { id: input.assignedAgentId, tenantId },
+    });
+    if (!agent) {
+      throw new Error('Care agent not found');
+    }
+  }
+
+  const data: any = {};
+  if (input.assignedAgentId !== undefined) data.assignedAgentId = input.assignedAgentId;
+  if (input.cellId !== undefined) data.cellId = input.cellId;
+  if (input.joinedGroup !== undefined) data.joinedGroup = Boolean(input.joinedGroup);
+  if (input.finishedClass !== undefined) {
+    data.finishedClass = Boolean(input.finishedClass);
+    data.lmsCompletedAt = input.finishedClass ? new Date() : null;
+  }
+  if (input.isBaptized !== undefined) data.isBaptized = Boolean(input.isBaptized);
+  if (input.baptismDate !== undefined) data.baptismDate = input.baptismDate ? new Date(input.baptismDate) : null;
+
+  return prisma.newBelieverProfile.update({
+    where: { id: existing.id },
+    data,
+    include: {
+      member: {
+        select: { id: true, firstName: true, lastName: true, email: true, phone: true },
+      },
+      assignedAgent: {
+        select: { id: true, firstName: true, lastName: true },
+      },
+      reminders: true,
+    },
+  });
+}
+
+export async function deleteNewBelieverProfile(tenantId: string, profileId: string): Promise<any> {
+  const existing = await prisma.newBelieverProfile.findFirst({
+    where: { id: profileId, tenantId },
+  });
+  if (!existing) {
+    throw new Error('New believer profile not found');
+  }
+
+  return prisma.newBelieverProfile.delete({
+    where: { id: existing.id },
+  });
 }
 
 // ─────────────────────────────────────────────────────────────

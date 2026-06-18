@@ -115,6 +115,14 @@ const PERMISSIONS = [
   { name: 'livestream.delete', description: 'Remove or archive livestream broadcasts and replay assets' },
   { name: 'livestream.manage_settings', description: 'Configure livestream provider settings, CTA rules, chat, and attachment preferences' },
   { name: 'livestream.view_reports', description: 'View livestream concurrent viewers, engagement funnels, and interaction logs' },
+
+  // Salvation & New Believer Journey Module
+  { name: 'salvation-new-believer-journey.read', description: 'View salvation responses, new believer profiles, reminders, and resources' },
+  { name: 'salvation-new-believer-journey.create', description: 'Create salvation response and new believer journey records' },
+  { name: 'salvation-new-believer-journey.update', description: 'Update new believer milestones, care routing, baptism, and reminder status' },
+  { name: 'salvation-new-believer-journey.delete', description: 'Delete or archive salvation journey records' },
+  { name: 'salvation-new-believer-journey.manage_settings', description: 'Manage Salvation & New Believer Journey settings' },
+  { name: 'salvation-new-believer-journey.view_reports', description: 'View new believer journey completion and source reports' },
 ];
 
 
@@ -191,6 +199,7 @@ async function seed() {
     { key: 'digital-library-resource-center', name: 'Digital Library & Resource Center', category: 'Content', dependencies: '[]' },
     { key: 'dynamic-blog-publishing-engine', name: 'Dynamic Blog & Publishing Engine', category: 'Content', dependencies: '[]' },
     { key: 'livestream', name: 'Livestream Module', category: 'Content', dependencies: '["media"]' },
+    { key: 'salvation-new-believer-journey', name: 'Salvation & New Believer Journey', category: 'Discipleship', dependencies: '["member-crm"]' },
   ];
   for (const mod of MODULES) {
     await prisma.moduleDefinition.upsert({

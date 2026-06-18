@@ -39,6 +39,7 @@ const CORE_MODULES = [
   { key: 'member-crm', name: 'Member CRM', category: 'Engagement' },
   { key: 'church-services', name: 'Church Services', category: 'Content' },
   { key: 'livestream', name: 'Livestream Studio', category: 'Content' },
+  { key: 'salvation-new-believer-journey', name: 'Salvation & New Believer Journey', category: 'Discipleship' },
 ];
 
 const ESSENTIAL_PERMISSIONS = [
@@ -97,6 +98,12 @@ const ESSENTIAL_PERMISSIONS = [
   'livestream.delete',
   'livestream.manage_settings',
   'livestream.view_reports',
+  'salvation-new-believer-journey.read',
+  'salvation-new-believer-journey.create',
+  'salvation-new-believer-journey.update',
+  'salvation-new-believer-journey.delete',
+  'salvation-new-believer-journey.manage_settings',
+  'salvation-new-believer-journey.view_reports',
 ];
 
 const DEFAULT_ONBOARDING_STEPS = [

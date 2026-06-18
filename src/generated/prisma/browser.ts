@@ -1173,6 +1173,11 @@ export type ModuleSettings = Prisma.ModuleSettingsModel
  */
 export type CentralizedSettingsEngineModule = Prisma.CentralizedSettingsEngineModuleModel
 /**
+ * Model ObservabilityLog
+ * 
+ */
+export type ObservabilityLog = Prisma.ObservabilityLogModel
+/**
  * Model CentralizedSettingsEngineModuleActivity
  * 
  */

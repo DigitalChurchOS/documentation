@@ -388,6 +388,7 @@ const LivestreamPage: React.FC<{ streamId?: string | null }> = ({ streamId }) =>
     notes: settings.notesPanelEnabled !== false,
     prayer: settings.prayerRequestEnabled !== false,
     give: settings.givingButtonEnabled !== false,
+    new: settings.salvationResponseEnabled !== false,
   };
   const pastStreams = useMemo(() => {
     const currentId = stream?.id;
@@ -630,11 +631,45 @@ const LivestreamPage: React.FC<{ streamId?: string | null }> = ({ streamId }) =>
     const form = event.currentTarget;
     const data = new FormData(form);
     const name = String(data.get('name') || '').trim();
-    const email = String(data.get('email') || '').trim();
+    const email = String(data.get('email') || '').trim().toLowerCase();
     if (!name && !email) return;
-    const ok = await submitInteraction('salvation_response', `First timer: ${name || 'Guest'} ${email ? `(${email})` : ''}`).catch(() => false);
-    setNewVisitorNotice(ok ? 'Thanks for connecting. We are glad you joined service.' : 'Connection card could not be sent.');
-    if (ok) form.reset();
+    if (!email) {
+      setNewVisitorNotice('Share an email so the care team can follow up.');
+      return;
+    }
+    if (!tenant?.id) {
+      setNewVisitorNotice('Church profile is still loading. Please try again.');
+      return;
+    }
+
+    const nameParts = name.split(/\s+/).filter(Boolean);
+    const firstName = nameParts[0] || email.split('@')[0] || 'Guest';
+    const lastName = nameParts.slice(1).join(' ') || 'Friend';
+
+    try {
+      const res = await httpRequest('/api/salvation-new-believer-journey/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-tenant-id': tenant.id },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          source: 'livestream',
+          serviceId: stream?.relatedService?.id || context.relatedService?.id,
+          preferredLanguage: 'en',
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Connection card could not be sent.');
+      }
+
+      await submitInteraction('salvation_response', `First timer: ${name || firstName} (${email})`).catch(() => false);
+      setNewVisitorNotice('Thanks for connecting. The care team will follow up with your next steps.');
+      form.reset();
+    } catch (err: any) {
+      setNewVisitorNotice(err?.message || 'Connection card could not be sent.');
+    }
   };
 
   const saveNote = async () => {
@@ -697,7 +732,7 @@ const LivestreamPage: React.FC<{ streamId?: string | null }> = ({ streamId }) =>
   const shareText = encodeURIComponent(`Join ${tenant?.name || 'our church'} for service online`);
   const encodedUrl = encodeURIComponent(shareUrl);
   const actionButtons = [
-    { panel: 'new' as const, label: "I'm New", icon: UserPlus, enabled: true },
+    { panel: 'new' as const, label: "I'm New", icon: UserPlus, enabled: featureEnabled.new },
     { panel: 'prayer' as const, label: 'Prayer', icon: HandHeart, enabled: featureEnabled.prayer },
     { panel: 'bible' as const, label: 'Bible', icon: BookOpen, enabled: featureEnabled.bible },
     { panel: 'notes' as const, label: 'Notes', icon: NotebookPen, enabled: featureEnabled.notes },
@@ -900,7 +935,7 @@ const LivestreamPage: React.FC<{ streamId?: string | null }> = ({ streamId }) =>
                       <form className="stack-form" onSubmit={submitNewVisitor}>
                         <p>We are glad you joined us. Share your details so the church can welcome you.</p>
                         <input name="name" placeholder="Full name" />
-                        <input name="email" type="email" placeholder="Email address" />
+                        <input name="email" type="email" placeholder="Email address" required />
                         <button type="submit">Submit</button>
                         {newVisitorNotice && <div className="live-inline-note">{newVisitorNotice}</div>}
                       </form>

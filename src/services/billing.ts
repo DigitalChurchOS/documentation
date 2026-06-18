@@ -163,7 +163,7 @@ const DEFAULT_PLANS: PlanInput[] = [
     aiTokenOverageRate: 0,
     meetingParticipantHourRate: 0,
     featuresJson: ['Website CMS preview', 'Member directory preview', 'Basic support'],
-    modulesJson: ['website-cms', 'member-crm'],
+    modulesJson: ['website-cms', 'member-crm', 'salvation-new-believer-journey'],
   },
   {
     name: 'Growth',
@@ -185,7 +185,7 @@ const DEFAULT_PLANS: PlanInput[] = [
     aiTokenOverageRate: 0.0001,
     meetingParticipantHourRate: 1.5,
     featuresJson: ['Module add-ons', 'Usage billing', 'Invoices', 'Email and SMS metering'],
-    modulesJson: ['website-cms', 'member-crm', 'media-sermons', 'giving-donations'],
+    modulesJson: ['website-cms', 'member-crm', 'media-sermons', 'giving-donations', 'salvation-new-believer-journey'],
   },
   {
     name: 'Enterprise',
@@ -207,7 +207,7 @@ const DEFAULT_PLANS: PlanInput[] = [
     aiTokenOverageRate: 0.000075,
     meetingParticipantHourRate: 1,
     featuresJson: ['Enterprise contracts', 'White-label options', 'Advanced provider controls', 'Priority support'],
-    modulesJson: ['website-cms', 'member-crm', 'media-sermons', 'giving-donations', 'live-meetings', 'commerce'],
+    modulesJson: ['website-cms', 'member-crm', 'media-sermons', 'giving-donations', 'salvation-new-believer-journey', 'live-meetings', 'commerce'],
   },
 ];
 

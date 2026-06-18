@@ -52,3 +52,53 @@ export function requireModule(moduleKey: string) {
     }
   };
 }
+
+export function requireAnyModule(...moduleKeys: string[]) {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const tenantId = req.tenantId;
+
+    if (!tenantId) {
+      res.status(400).json({ error: 'Tenant context required' });
+      return;
+    }
+
+    try {
+      const activeStatuses = ['active', 'trialing'];
+      const entitlement = await prisma.tenantModule.findFirst({
+        where: {
+          tenantId,
+          moduleKey: { in: moduleKeys },
+          status: { in: activeStatuses },
+        },
+      });
+
+      if (!entitlement) {
+        const inactiveEntitlement = await prisma.tenantModule.findFirst({
+          where: {
+            tenantId,
+            moduleKey: { in: moduleKeys },
+          },
+        });
+        if (!inactiveEntitlement) {
+          res.status(403).json({
+            error: 'Module not activated',
+            moduleKeys,
+            message: `One of these modules must be activated for this church: ${moduleKeys.join(', ')}.`,
+          });
+          return;
+        }
+        res.status(403).json({
+          error: 'Module suspended',
+          moduleKey: inactiveEntitlement.moduleKey,
+          status: inactiveEntitlement.status,
+          message: `Your access to '${inactiveEntitlement.moduleKey}' is suspended or expired (current status: ${inactiveEntitlement.status}).`,
+        });
+        return;
+      }
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+}

@@ -16,17 +16,17 @@ const ROUTE_RULES: RouteRule[] = [
   { patterns: [/sermon/, /media/], moduleKeys: ['media-sermons', 'media'] },
   { patterns: [/podcast/], moduleKeys: ['podcast'] },
   { patterns: [/library/, /resource/], moduleKeys: ['digital-library-resource-center', 'library'] },
-  { patterns: [/course/, /lesson/, /\blms\b/], moduleKeys: ['lms'] },
+  { patterns: [/course/, /lesson/, /\blms\b/], moduleKeys: ['lms-discipleship-training', 'lms'] },
   { patterns: [/blog/, /article/, /news/], moduleKeys: ['dynamic-blog-publishing-engine', 'blog'] },
   { patterns: [/worship/], moduleKeys: ['worship'] },
   { patterns: [/radio/], moduleKeys: ['radio-broadcasting', 'radio'] },
   { patterns: [/\btv\b/, /television/], moduleKeys: ['tv-broadcasting', 'tv'] },
-  { patterns: [/group/, /cell/], moduleKeys: ['groups', 'cell-groups'] },
+  { patterns: [/group/, /cell/], moduleKeys: ['cell-fellowship', 'groups', 'cell-groups'] },
   { patterns: [/children/, /kids/], moduleKeys: ['children'] },
   { patterns: [/store/, /shop/], moduleKeys: ['store'] },
   { patterns: [/booking/], moduleKeys: ['bookings'] },
   { patterns: [/form/], moduleKeys: ['forms'] },
-  { patterns: [/salvation/], moduleKeys: ['salvation'] },
+  { patterns: [/salvation/], moduleKeys: ['salvation-new-believer-journey', 'salvation'] },
 ];
 
 const ALWAYS_VISIBLE_PATHS = new Set(['', '/', '/home', '/about', '/contact', '/ministries', '/new-visitor']);

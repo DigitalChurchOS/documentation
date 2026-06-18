@@ -282,6 +282,7 @@ export const ModelName = {
   AltarCallResponse: 'AltarCallResponse',
   ModuleSettings: 'ModuleSettings',
   CentralizedSettingsEngineModule: 'CentralizedSettingsEngineModule',
+  ObservabilityLog: 'ObservabilityLog',
   CentralizedSettingsEngineModuleActivity: 'CentralizedSettingsEngineModuleActivity',
   CentralizedSettingsEngineModuleSettings: 'CentralizedSettingsEngineModuleSettings',
   PageRevision: 'PageRevision',
@@ -3884,6 +3885,19 @@ export const CentralizedSettingsEngineModuleScalarFieldEnum = {
 } as const
 
 export type CentralizedSettingsEngineModuleScalarFieldEnum = (typeof CentralizedSettingsEngineModuleScalarFieldEnum)[keyof typeof CentralizedSettingsEngineModuleScalarFieldEnum]
+
+
+export const ObservabilityLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  logLevel: 'logLevel',
+  scope: 'scope',
+  message: 'message',
+  contextJson: 'contextJson',
+  createdAt: 'createdAt'
+} as const
+
+export type ObservabilityLogScalarFieldEnum = (typeof ObservabilityLogScalarFieldEnum)[keyof typeof ObservabilityLogScalarFieldEnum]
 
 
 export const CentralizedSettingsEngineModuleActivityScalarFieldEnum = {

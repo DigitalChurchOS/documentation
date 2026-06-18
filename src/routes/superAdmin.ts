@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/prisma';
 import { BillingService } from '../services/billing';
@@ -11,6 +11,30 @@ if (!process.env.JWT_SECRET) {
   throw new Error('FATAL: JWT_SECRET environment variable is not defined.');
 }
 const JWT_SECRET = process.env.JWT_SECRET;
+
+function superAdminTokenMiddleware(req: Request, res: Response, next: NextFunction): void {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Missing or malformed Authorization header' });
+    return;
+  }
+
+  try {
+    const payload = jwt.verify(authHeader.slice(7), JWT_SECRET) as { role?: string; email?: string };
+    if (payload.role !== 'super-admin') {
+      res.status(403).json({ error: 'Forbidden: Super Admin access required' });
+      return;
+    }
+    (req as any).superAdmin = { email: payload.email || 'superadmin@churchos.local', role: payload.role };
+    next();
+  } catch (err: any) {
+    if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
+      res.status(401).json({ error: 'Invalid or expired token' });
+      return;
+    }
+    next(err);
+  }
+}
 
 type PlatformModule = {
   key: string;
@@ -220,6 +244,9 @@ router.post('/login', (req: Request, res: Response) => {
   }
 });
 
+// Enforce standard authentication and Super Admin checks on all subsequent routes
+router.use(superAdminTokenMiddleware);
+
 router.get('/overview', async (_req: Request, res: Response) => {
   try {
     const [totalChurches, activeChurches, trialChurches, customDomains, subscriptions, activities] = await Promise.all([
@@ -335,26 +362,96 @@ router.get('/tenants', async (req: Request, res: Response) => {
 
 router.post('/tenants', async (req: Request, res: Response) => {
   try {
-    const result = await TenantProvisioningService.registerTenant({
-      name: req.body?.name || req.body?.churchName,
-      subdomain: req.body?.subdomain,
-      ownerName: req.body?.ownerName || 'Church Owner',
-      ownerEmail: req.body?.ownerEmail,
-      ownerPassword: req.body?.ownerPassword || req.body?.password || `ChangeMe-${Date.now()}`,
-      planId: req.body?.planId,
-      plan: req.body?.plan,
-      trialDays: req.body?.trialDays,
-      country: req.body?.country,
-      city: req.body?.city,
+    const { name, subdomain, customDomain } = req.body;
+
+    if (!name || !subdomain) {
+      res.status(400).json({ error: 'name and subdomain are required' });
+      return;
+    }
+
+    // Verify subdomain unique
+    const existingSubdomain = await prisma.tenant.findUnique({
+      where: { subdomain },
     });
-    const tenant = await tenantWithAdminIncludes(result.tenant!.id);
-    res.status(201).json({
-      data: tenant ? await TenantProvisioningService.tenantListItem(tenant) : result.tenant,
-      token: result.token,
-      user: result.user,
+    if (existingSubdomain) {
+      res.status(409).json({ error: 'Subdomain already exists' });
+      return;
+    }
+
+    // Verify custom domain unique if provided
+    if (customDomain) {
+      const existingDomain = await prisma.tenant.findUnique({
+        where: { customDomain },
+      });
+      if (existingDomain) {
+        res.status(409).json({ error: 'Custom domain already registered' });
+        return;
+      }
+    }
+
+    const tenant = await prisma.$transaction(async (tx) => {
+      // Create tenant
+      const newTenant = await tx.tenant.create({
+        data: {
+          name,
+          subdomain,
+          customDomain: customDomain || null,
+          status: 'active',
+        },
+      });
+
+      // Assign default demo plan if it exists
+      const defaultPlan = await tx.subscriptionPlan.findFirst();
+      if (defaultPlan) {
+        const now = new Date();
+        const nextMonth = new Date(now);
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+        await tx.tenantSubscription.create({
+          data: {
+            tenantId: newTenant.id,
+            planId: defaultPlan.id,
+            status: 'active',
+            currentPeriodStart: now,
+            currentPeriodEnd: nextMonth,
+          },
+        });
+      }
+
+      // Seed default modules for newly created tenants.
+      const defaultModules = ['website-cms', 'theme-engine', 'member-crm', 'salvation-new-believer-journey'];
+      for (const modKey of defaultModules) {
+        const catalog = platformModules.find((item) => item.key === modKey);
+        const def = await tx.moduleDefinition.upsert({
+          where: { key: modKey },
+          update: catalog ? { name: catalog.name, category: catalog.category, dependencies: JSON.stringify(catalog.dependencies) } : {},
+          create: {
+            key: modKey,
+            name: catalog?.name || modKey.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' '),
+            category: catalog?.category || 'Platform',
+            dependencies: JSON.stringify(catalog?.dependencies || []),
+          },
+        });
+        if (def) {
+          await tx.tenantModule.create({
+            data: {
+              tenantId: newTenant.id,
+              moduleKey: modKey,
+              status: 'active',
+              billingRule: 'free',
+              usageLimits: '{}',
+            },
+          });
+        }
+      }
+
+      return newTenant;
     });
+
+    res.status(201).json({ data: tenant });
   } catch (err: any) {
-    sendRouteError(res, err);
+    console.error('Super Admin create tenant error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -381,33 +478,47 @@ router.get('/tenants/:id', async (req: Request, res: Response) => {
 
 router.patch('/tenants/:id', async (req: Request, res: Response) => {
   try {
-    const tenantId = req.params.id as string;
-    const updateData: Record<string, any> = {};
-    if (req.body?.name !== undefined) updateData.name = String(req.body.name).trim();
-    if (req.body?.status !== undefined) updateData.status = String(req.body.status).trim();
-    if (req.body?.customDomain !== undefined) {
-      updateData.customDomain = req.body.customDomain ? String(req.body.customDomain).trim().toLowerCase() : null;
+    const id = req.params.id as string;
+    const { name, subdomain, customDomain, status } = req.body;
+
+    const existing = await prisma.tenant.findUnique({ where: { id } });
+    if (!existing) {
+      res.status(404).json({ error: 'Tenant not found' });
+      return;
     }
 
-    const updated = await prisma.tenant.update({ where: { id: tenantId }, data: updateData });
-    if (req.body?.customDomain !== undefined) {
-      await prisma.website.updateMany({
-        where: { tenantId, isActive: true },
-        data: { domain: updated.customDomain || subdomainHost(updated.subdomain) },
-      });
+    // Validate unique subdomain if changing
+    if (subdomain && subdomain !== existing.subdomain) {
+      const dupeSub = await prisma.tenant.findUnique({ where: { subdomain } });
+      if (dupeSub) {
+        res.status(409).json({ error: 'Subdomain already exists' });
+        return;
+      }
     }
 
-    if (req.body?.city !== undefined || req.body?.country !== undefined) {
-      await TenantProvisioningService.mergeChurchDetails(tenantId, {
-        ...(req.body.city !== undefined && { city: req.body.city }),
-        ...(req.body.country !== undefined && { country: req.body.country }),
-      });
+    // Validate unique custom domain if changing
+    if (customDomain && customDomain !== existing.customDomain) {
+      const dupeDom = await prisma.tenant.findUnique({ where: { customDomain } });
+      if (dupeDom) {
+        res.status(409).json({ error: 'Custom domain already registered' });
+        return;
+      }
     }
 
-    const tenant = await tenantWithAdminIncludes(tenantId);
-    res.json({ data: tenant ? await TenantProvisioningService.tenantListItem(tenant) : updated });
+    const updated = await prisma.tenant.update({
+      where: { id },
+      data: {
+        ...(name !== undefined && { name }),
+        ...(subdomain !== undefined && { subdomain }),
+        ...(customDomain !== undefined && { customDomain: customDomain || null }),
+        ...(status !== undefined && { status }),
+      },
+    });
+
+    res.json({ data: updated });
   } catch (err: any) {
-    sendRouteError(res, err);
+    console.error('Super Admin update tenant error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

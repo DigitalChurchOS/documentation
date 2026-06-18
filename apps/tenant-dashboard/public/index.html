@@ -14330,7 +14330,7 @@ body.customizer-open { overflow: hidden; }
       { key: 'liveMeetings', name: 'Live Meetings', icon: 'video', category: 'Connect', desc: 'Host video conference calls, virtual webinars, and private counseling rooms.', settings: [] },
       { key: 'multiBranch', name: 'Multi-Campus CRM', icon: 'map', category: 'Church Admin', desc: 'Coordinate campus locations, leaders role scopes, activities, and campus revenue splits.', settings: [] },
       { key: 'outreach', name: 'Outreach Campaigns', icon: 'megaphone', category: 'Outreach', desc: 'AI outreach content draft generator, Meta/Instagram social promotions, custom invite cards, and leads referral analytics.', settings: [] },
-      { key: 'salvation', name: 'Salvation Journeys', icon: 'heart', category: 'Discipleship', desc: 'Monitor salvation decision logs, assign mentors, and track newcomer assimilation.', settings: [] },
+      { key: 'salvation', resourceKey: 'salvation-new-believer-journey', entitlementKey: 'salvation-new-believer-journey', apiBase: '/api/salvation-new-believer-journey', name: 'Salvation Journeys', icon: 'heart', category: 'Discipleship', desc: 'Monitor salvation decision logs, assign mentors, and track newcomer assimilation.', settings: [] },
       { key: 'whiteLabel', name: 'White-Label App', icon: 'smartphone', category: 'Media', desc: 'Compile white-label iOS and Android apps, customize splash pages, and draft listings.', settings: [] },
       { key: 'community', name: 'Notice & Forums', icon: 'messages-square', category: 'Connect', desc: 'Configure public notice boards, forum rooms threads, and user profiles directories.', settings: [] },
       { key: 'liveChat', name: 'Pastoral Live Chat', icon: 'message-circle', category: 'Connect', desc: 'Real-time pastoral care live chat support desk, handling tickets and response SLAs.', settings: [] },
@@ -32675,15 +32675,51 @@ function renderOutreachTab(tab) {
       renderSalvationTab(tab);
     };
 
+    function salvationDecisionFromProfile(profile) {
+      const member = profile.member || {};
+      const agent = profile.assignedAgent || {};
+      const mentor = [agent.firstName, agent.lastName].filter(Boolean).join(' ') || 'None';
+      const completed = Boolean(profile.finishedClass || profile.lmsCompletedAt);
+      return {
+        id: profile.id,
+        memberId: profile.memberId,
+        name: [member.firstName, member.lastName].filter(Boolean).join(' ') || 'New Believer',
+        email: member.email || '',
+        phone: member.phone || 'None',
+        mentor,
+        status: mentor === 'None' ? 'Awaiting Mentor' : completed ? 'Completed' : 'In Discipleship',
+        profile
+      };
+    }
+
+    function salvationMentorsFromDecisions(decisions) {
+      const grouped = new Map();
+      decisions.forEach((decision) => {
+        if (!decision.mentor || decision.mentor === 'None') return;
+        grouped.set(decision.mentor, (grouped.get(decision.mentor) || 0) + 1);
+      });
+      return Array.from(grouped.entries()).map(([name, allocated]) => ({
+        name,
+        allocated,
+        speed: 'Live',
+        status: 'Available'
+      }));
+    }
+
     window.bootstrapSalvation = async function() {
       showToast('Resolving new convert decision logs...');
-      if (window.salvationState.decisions.length === 0) {
+      const res = await cmsApiRequest('GET', '/api/salvation-new-believer-journey/profiles');
+      const loadedFromApi = Boolean(res && res.ok && Array.isArray(res.data));
+      if (loadedFromApi) {
+        window.salvationState.decisions = res.data.map(salvationDecisionFromProfile);
+        window.salvationState.mentors = salvationMentorsFromDecisions(window.salvationState.decisions);
+      } else if (window.salvationState.decisions.length === 0) {
         window.salvationState.decisions = [
           { id: 'dec-1', name: 'Peter Obi', email: 'peter@obi.com', phone: '+2348030000001', mentor: 'Bro. Emmanuel', status: 'In Discipleship' },
           { id: 'dec-2', name: 'Sister Faith Convert', email: 'faith@seeker.com', phone: '+15550199', mentor: 'None', status: 'Awaiting Mentor' }
         ];
       }
-      if (window.salvationState.mentors.length === 0) {
+      if (!loadedFromApi && window.salvationState.mentors.length === 0) {
         window.salvationState.mentors = [
           { name: 'Bro. Emmanuel', allocated: 1, speed: '12 mins', status: 'Available' },
           { name: 'Sister Faith', allocated: 0, speed: '8 mins', status: 'Available' }
@@ -32707,11 +32743,13 @@ function renderOutreachTab(tab) {
       const listEl = document.getElementById('salvationMilestonesList');
       if (!convert || !listEl) return;
 
+      const profile = convert.profile || {};
       const defaultSteps = [
         { label: 'Spiritual Affirmation Confession', done: true },
-        { label: 'Welcome Video Call check-off', done: convert.status !== 'Awaiting Mentor' },
-        { label: 'Foundational LMS Course Enrollment', done: convert.status === 'In Discipleship' },
-        { label: 'Accredited Cell Fellowship assigned', done: false }
+        { label: 'Welcome Video Call check-off', done: Boolean(profile.welcomeSentAt) || convert.status !== 'Awaiting Mentor' },
+        { label: 'Foundational LMS Course Enrollment', done: Boolean(profile.lmsEnrolledAt) || convert.status === 'In Discipleship' },
+        { label: 'Accredited Cell Fellowship assigned', done: Boolean(profile.cellId || profile.joinedGroup) },
+        { label: 'Water Baptism recorded', done: Boolean(profile.isBaptized) }
       ];
 
       listEl.innerHTML = defaultSteps.map(s => `
@@ -32737,7 +32775,7 @@ function renderOutreachTab(tab) {
       if (tab === 'wall') {
         const grid = document.getElementById('salvationDecisionsGrid');
         if (grid) {
-          grid.innerHTML = window.salvationState.decisions.map(d => `
+          grid.innerHTML = window.salvationState.decisions.length ? window.salvationState.decisions.map(d => `
             <div class="panel" style="display:flex; flex-direction:column; gap:10px;">
               <h3>${escapeHtml(d.name)}</h3>
               <p class="muted" style="font-size:11px;">Contact: <code>${escapeHtml(d.phone)}</code></p>
@@ -32749,27 +32787,35 @@ function renderOutreachTab(tab) {
                 ${d.mentor === 'None' ? `<button class="btn btn-sm" onclick="allocateSalvationMentor('${d.id}')"><i data-lucide="user-plus" style="width:12px;"></i>Assign Mentor</button>` : ''}
               </div>
             </div>
-          `).join('');
+          `).join('') : `<div class="empty-state" style="padding:24px; text-align:center;"><i data-lucide="heart"></i><span class="muted">No salvation decisions logged yet.</span></div>`;
         }
       } else if (tab === 'mentors') {
         const tbody = document.getElementById('salvationMentorsTableBody');
         if (tbody) {
-          tbody.innerHTML = window.salvationState.mentors.map(m => `
+          tbody.innerHTML = window.salvationState.mentors.length ? window.salvationState.mentors.map(m => `
             <tr>
               <td><strong>${escapeHtml(m.name)}</strong></td>
               <td><code>${m.allocated} converts</code></td>
               <td><strong>${escapeHtml(m.speed)} Response</strong></td>
               <td><span class="badge success">${escapeHtml(m.status)}</span></td>
             </tr>
-          `).join('');
+          `).join('') : `<tr><td colspan="4" class="muted" style="text-align:center; padding:18px;">No assigned mentors yet.</td></tr>`;
         }
       }
       refreshIcons();
     }
 
-    window.allocateSalvationMentor = function(id) {
+    window.allocateSalvationMentor = async function(id) {
       const convert = window.salvationState.decisions.find(d => d.id === id);
       if (!convert) return;
+      const res = await cmsApiRequest('PATCH', `/api/salvation-new-believer-journey/profiles/${encodeURIComponent(id)}/assign-agent`, {});
+      if (res && res.ok && res.data) {
+        const updated = salvationDecisionFromProfile(res.data);
+        Object.assign(convert, updated);
+        showToast('Convert allocated to follow-up mentor.');
+        bootstrapSalvation();
+        return;
+      }
       convert.mentor = 'Bro. Emmanuel';
       convert.status = 'In Discipleship';
       const m = window.salvationState.mentors.find(x => x.name === 'Bro. Emmanuel');
@@ -32793,6 +32839,10 @@ function renderOutreachTab(tab) {
             <label>Phone Number</label>
             <input type="text" id="newDecPhone" class="input" placeholder="e.g. +234803" style="width:100%;">
           </div>
+          <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="newDecEmail" class="input" placeholder="e.g. peter@example.com" style="width:100%;">
+          </div>
         </div>
       `;
 
@@ -32807,13 +32857,28 @@ function renderOutreachTab(tab) {
         const fn = document.getElementById('newDecFirst').value.trim();
         const ln = document.getElementById('newDecLast').value.trim();
         const phone = document.getElementById('newDecPhone').value.trim();
+        const email = document.getElementById('newDecEmail').value.trim().toLowerCase();
 
-        if (!fn || !ln) return;
+        if (!fn || !ln || !email) return;
+
+        const res = await cmsApiRequest('POST', '/api/salvation-new-believer-journey/respond', {
+          firstName: fn,
+          lastName: ln,
+          email,
+          phone,
+          source: 'physical_service'
+        });
+
+        if (res && res.ok && res.data) {
+          showToast('Salvation decision logged successfully.');
+          bootstrapSalvation();
+          return;
+        }
 
         window.salvationState.decisions.unshift({
           id: 'dec-' + Date.now(),
           name: fn + ' ' + ln,
-          email: fn.toLowerCase() + '@seeker.com',
+          email,
           phone: phone || 'None',
           mentor: 'None',
           status: 'Awaiting Mentor'

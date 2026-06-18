@@ -266,6 +266,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/forms', formsRoutes);
 app.use('/api/prayer', prayerRoutes);
+app.use('/api/salvation-new-believer-journey', salvationRoutes);
 app.use('/api/salvation', salvationRoutes);
 app.use('/api/lms', lmsRoutes);
 app.use('/api/bible', bibleRoutes);

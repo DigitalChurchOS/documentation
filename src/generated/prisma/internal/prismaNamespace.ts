@@ -615,6 +615,7 @@ export const ModelName = {
   AltarCallResponse: 'AltarCallResponse',
   ModuleSettings: 'ModuleSettings',
   CentralizedSettingsEngineModule: 'CentralizedSettingsEngineModule',
+  ObservabilityLog: 'ObservabilityLog',
   CentralizedSettingsEngineModuleActivity: 'CentralizedSettingsEngineModuleActivity',
   CentralizedSettingsEngineModuleSettings: 'CentralizedSettingsEngineModuleSettings',
   PageRevision: 'PageRevision',
@@ -674,7 +675,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "tenant" | "branch" | "branchRegion" | "branchLeader" | "user" | "member" | "role" | "permission" | "rolePermission" | "userRole" | "providerCategory" | "provider" | "tenantConnectedService" | "moduleProviderOverride" | "moduleDefinition" | "tenantModule" | "theme" | "website" | "page" | "family" | "crmPipeline" | "crmStage" | "memberCrmStage" | "crmContact" | "crmTimelineEvent" | "crmFollowUpTask" | "consentRecord" | "communicationTemplate" | "communicationLog" | "notificationPreference" | "scheduledMessage" | "automationWorkflow" | "followUpSequence" | "followUpStep" | "subscriptionPlan" | "tenantSubscription" | "usageMeter" | "invoice" | "billingSubscriptionManagementModule" | "billingSubscriptionManagementModuleActivity" | "billingSubscriptionManagementModuleSettings" | "billingAddOn" | "tenantSubscriptionAddOn" | "billingCoupon" | "analyticsEvent" | "pluginDefinition" | "tenantPlugin" | "pluginWebhook" | "pluginEngine" | "pluginEnginePermission" | "pluginExtensionsEngineModule" | "pluginExtensionsEngineActivity" | "pluginExtensionsEngineSetting" | "developerProfile" | "marketplaceAsset" | "assetSubmission" | "submissionReview" | "assetFeedback" | "assetPurchase" | "sandboxTenant" | "languageRegistry" | "translationKey" | "mediaCategory" | "mediaTag" | "speaker" | "mediaSeries" | "mediaAsset" | "mediaAssetTag" | "mediaPlaylist" | "mediaPlaylistItem" | "livestream" | "livestreamChat" | "livestreamViewer" | "livestreamInteraction" | "churchService" | "serviceScripture" | "serviceAttachment" | "churchServicesModule" | "churchServicesModuleActivity" | "churchServicesModuleSettings" | "livestreamModule" | "livestreamModuleActivity" | "livestreamModuleSettings" | "blogCategory" | "blogTag" | "blogPost" | "blogPostTag" | "blogPostScripture" | "blogPostComment" | "libraryCategory" | "libraryResource" | "libraryPurchase" | "podcastShow" | "podcastEpisode" | "aiMediaJob" | "displayScreen" | "signagePlaylist" | "signageSlide" | "signagePlaylistItem" | "worshipSong" | "worshipPlaylist" | "worshipPlaylistItem" | "worshipSession" | "givingCategory" | "donation" | "recurringGiving" | "partnershipCategory" | "partnership" | "recurringPartnership" | "campaign" | "campaignUpdate" | "productCategory" | "product" | "productVariant" | "storeCoupon" | "storeOrder" | "orderItem" | "financialAccount" | "financialBudget" | "financialTransaction" | "expenseRequest" | "reconciliationRecord" | "ministryFunnel" | "funnelStep" | "funnelSubmission" | "funnelAnalytics" | "memberCheckIn" | "memberNote" | "memberTag" | "memberTagAssignment" | "communityPost" | "prayerRequest" | "testimony" | "communityComment" | "communityReaction" | "chatConversation" | "chatMessage" | "careRequest" | "savedReply" | "chatFollowUpTask" | "outreachCampaign" | "inviteAsset" | "personalizedInvitePage" | "inviteLinkClick" | "shareEvent" | "volunteerProfile" | "volunteerDepartment" | "volunteerTeam" | "volunteerTeamAssignment" | "volunteerAvailability" | "volunteerShift" | "volunteerAssignment" | "volunteerAnnouncement" | "customForm" | "formSubmission" | "formWorkflowTrigger" | "formWorkflowAction" | "prayerSession" | "prayerSessionParticipation" | "prayerPoint" | "prayerSessionReaction" | "prayerMedia" | "newBelieverProfile" | "newBelieverReminder" | "lmsCourse" | "lmsModule" | "lmsLesson" | "lmsQuiz" | "lmsAssignment" | "lmsEnrollment" | "lmsLessonProgress" | "lmsQuizAnswer" | "lmsAssignmentSubmission" | "bibleTranslation" | "bibleBook" | "bibleVerse" | "bibleReadingPlan" | "bibleReadingPlanDay" | "bibleReadingPlanEnrollment" | "bibleBookmark" | "bibleVerseNote" | "dailyDevotional" | "bibleVerseHighlight" | "bibleAudioTrack" | "groupType" | "group" | "groupMember" | "groupMeeting" | "groupAttendance" | "groupInviteLink" | "groupInviteConversion" | "groupNoticeBoard" | "groupNoticePost" | "groupPromotion" | "groupSettings" | "childProfile" | "childGuardian" | "pickupAuthorization" | "childrenClass" | "childrenClassEnrollment" | "childrenClassResource" | "childrenCheckIn" | "eventCategory" | "event" | "eventRegistration" | "eventTicket" | "eventRsvp" | "eventReminder" | "liveMeeting" | "liveMeetingParticipant" | "liveMeetingChat" | "liveMeetingAttendance" | "liveMeetingReminder" | "appointmentType" | "staffAvailability" | "appointment" | "appointmentReminder" | "mobilePushToken" | "whiteLabelApp" | "whiteLabelBuild" | "translationJob" | "translatedContent" | "liveTranslationFeed" | "mediaCaption" | "aiAssistantJob" | "agentPresence" | "communityChannel" | "chatKbArticle" | "altarCallResponse" | "moduleSettings" | "centralizedSettingsEngineModule" | "centralizedSettingsEngineModuleActivity" | "centralizedSettingsEngineModuleSettings" | "pageRevision" | "navigationMenu" | "cmsFooter" | "reusableBlock" | "cmsActivityLog" | "themeEngineModule" | "themeEngineModuleActivity" | "themeEngineModuleSettings" | "developerMarketplaceModule" | "developerMarketplaceModuleActivity" | "developerMarketplaceModuleSettings" | "domainTenantManagementModule" | "domainTenantManagementModuleActivity" | "domainTenantManagementModuleSettings" | "digitalLibraryResourceCenterModule" | "digitalLibraryResourceCenterModuleActivity" | "digitalLibraryResourceCenterModuleSettings" | "mediaModule" | "mediaModuleActivity" | "mediaModuleSettings" | "dynamicBlogPublishingEngineModule" | "dynamicBlogPublishingEngineModuleActivity" | "dynamicBlogPublishingEngineModuleSettings" | "radioStation" | "radioProgram" | "radioSchedule" | "radioPlaylist" | "radioPlaylistItem" | "radioBroadcastArchive" | "radioChatMessage" | "radioReaction" | "tvChannel" | "tvProgram" | "tvSchedule" | "tvPlaylist" | "tvPlaylistItem" | "tvBroadcastArchive" | "tvChatMessage" | "tvReaction" | "tvPoll" | "tvPollResponse" | "tvLowerThird"
+    modelProps: "tenant" | "branch" | "branchRegion" | "branchLeader" | "user" | "member" | "role" | "permission" | "rolePermission" | "userRole" | "providerCategory" | "provider" | "tenantConnectedService" | "moduleProviderOverride" | "moduleDefinition" | "tenantModule" | "theme" | "website" | "page" | "family" | "crmPipeline" | "crmStage" | "memberCrmStage" | "crmContact" | "crmTimelineEvent" | "crmFollowUpTask" | "consentRecord" | "communicationTemplate" | "communicationLog" | "notificationPreference" | "scheduledMessage" | "automationWorkflow" | "followUpSequence" | "followUpStep" | "subscriptionPlan" | "tenantSubscription" | "usageMeter" | "invoice" | "billingSubscriptionManagementModule" | "billingSubscriptionManagementModuleActivity" | "billingSubscriptionManagementModuleSettings" | "billingAddOn" | "tenantSubscriptionAddOn" | "billingCoupon" | "analyticsEvent" | "pluginDefinition" | "tenantPlugin" | "pluginWebhook" | "pluginEngine" | "pluginEnginePermission" | "pluginExtensionsEngineModule" | "pluginExtensionsEngineActivity" | "pluginExtensionsEngineSetting" | "developerProfile" | "marketplaceAsset" | "assetSubmission" | "submissionReview" | "assetFeedback" | "assetPurchase" | "sandboxTenant" | "languageRegistry" | "translationKey" | "mediaCategory" | "mediaTag" | "speaker" | "mediaSeries" | "mediaAsset" | "mediaAssetTag" | "mediaPlaylist" | "mediaPlaylistItem" | "livestream" | "livestreamChat" | "livestreamViewer" | "livestreamInteraction" | "churchService" | "serviceScripture" | "serviceAttachment" | "churchServicesModule" | "churchServicesModuleActivity" | "churchServicesModuleSettings" | "livestreamModule" | "livestreamModuleActivity" | "livestreamModuleSettings" | "blogCategory" | "blogTag" | "blogPost" | "blogPostTag" | "blogPostScripture" | "blogPostComment" | "libraryCategory" | "libraryResource" | "libraryPurchase" | "podcastShow" | "podcastEpisode" | "aiMediaJob" | "displayScreen" | "signagePlaylist" | "signageSlide" | "signagePlaylistItem" | "worshipSong" | "worshipPlaylist" | "worshipPlaylistItem" | "worshipSession" | "givingCategory" | "donation" | "recurringGiving" | "partnershipCategory" | "partnership" | "recurringPartnership" | "campaign" | "campaignUpdate" | "productCategory" | "product" | "productVariant" | "storeCoupon" | "storeOrder" | "orderItem" | "financialAccount" | "financialBudget" | "financialTransaction" | "expenseRequest" | "reconciliationRecord" | "ministryFunnel" | "funnelStep" | "funnelSubmission" | "funnelAnalytics" | "memberCheckIn" | "memberNote" | "memberTag" | "memberTagAssignment" | "communityPost" | "prayerRequest" | "testimony" | "communityComment" | "communityReaction" | "chatConversation" | "chatMessage" | "careRequest" | "savedReply" | "chatFollowUpTask" | "outreachCampaign" | "inviteAsset" | "personalizedInvitePage" | "inviteLinkClick" | "shareEvent" | "volunteerProfile" | "volunteerDepartment" | "volunteerTeam" | "volunteerTeamAssignment" | "volunteerAvailability" | "volunteerShift" | "volunteerAssignment" | "volunteerAnnouncement" | "customForm" | "formSubmission" | "formWorkflowTrigger" | "formWorkflowAction" | "prayerSession" | "prayerSessionParticipation" | "prayerPoint" | "prayerSessionReaction" | "prayerMedia" | "newBelieverProfile" | "newBelieverReminder" | "lmsCourse" | "lmsModule" | "lmsLesson" | "lmsQuiz" | "lmsAssignment" | "lmsEnrollment" | "lmsLessonProgress" | "lmsQuizAnswer" | "lmsAssignmentSubmission" | "bibleTranslation" | "bibleBook" | "bibleVerse" | "bibleReadingPlan" | "bibleReadingPlanDay" | "bibleReadingPlanEnrollment" | "bibleBookmark" | "bibleVerseNote" | "dailyDevotional" | "bibleVerseHighlight" | "bibleAudioTrack" | "groupType" | "group" | "groupMember" | "groupMeeting" | "groupAttendance" | "groupInviteLink" | "groupInviteConversion" | "groupNoticeBoard" | "groupNoticePost" | "groupPromotion" | "groupSettings" | "childProfile" | "childGuardian" | "pickupAuthorization" | "childrenClass" | "childrenClassEnrollment" | "childrenClassResource" | "childrenCheckIn" | "eventCategory" | "event" | "eventRegistration" | "eventTicket" | "eventRsvp" | "eventReminder" | "liveMeeting" | "liveMeetingParticipant" | "liveMeetingChat" | "liveMeetingAttendance" | "liveMeetingReminder" | "appointmentType" | "staffAvailability" | "appointment" | "appointmentReminder" | "mobilePushToken" | "whiteLabelApp" | "whiteLabelBuild" | "translationJob" | "translatedContent" | "liveTranslationFeed" | "mediaCaption" | "aiAssistantJob" | "agentPresence" | "communityChannel" | "chatKbArticle" | "altarCallResponse" | "moduleSettings" | "centralizedSettingsEngineModule" | "observabilityLog" | "centralizedSettingsEngineModuleActivity" | "centralizedSettingsEngineModuleSettings" | "pageRevision" | "navigationMenu" | "cmsFooter" | "reusableBlock" | "cmsActivityLog" | "themeEngineModule" | "themeEngineModuleActivity" | "themeEngineModuleSettings" | "developerMarketplaceModule" | "developerMarketplaceModuleActivity" | "developerMarketplaceModuleSettings" | "domainTenantManagementModule" | "domainTenantManagementModuleActivity" | "domainTenantManagementModuleSettings" | "digitalLibraryResourceCenterModule" | "digitalLibraryResourceCenterModuleActivity" | "digitalLibraryResourceCenterModuleSettings" | "mediaModule" | "mediaModuleActivity" | "mediaModuleSettings" | "dynamicBlogPublishingEngineModule" | "dynamicBlogPublishingEngineModuleActivity" | "dynamicBlogPublishingEngineModuleSettings" | "radioStation" | "radioProgram" | "radioSchedule" | "radioPlaylist" | "radioPlaylistItem" | "radioBroadcastArchive" | "radioChatMessage" | "radioReaction" | "tvChannel" | "tvProgram" | "tvSchedule" | "tvPlaylist" | "tvPlaylistItem" | "tvBroadcastArchive" | "tvChatMessage" | "tvReaction" | "tvPoll" | "tvPollResponse" | "tvLowerThird"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -17772,6 +17773,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ObservabilityLog: {
+      payload: Prisma.$ObservabilityLogPayload<ExtArgs>
+      fields: Prisma.ObservabilityLogFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ObservabilityLogFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ObservabilityLogFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>
+        }
+        findFirst: {
+          args: Prisma.ObservabilityLogFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ObservabilityLogFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>
+        }
+        findMany: {
+          args: Prisma.ObservabilityLogFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>[]
+        }
+        create: {
+          args: Prisma.ObservabilityLogCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>
+        }
+        createMany: {
+          args: Prisma.ObservabilityLogCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ObservabilityLogCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>[]
+        }
+        delete: {
+          args: Prisma.ObservabilityLogDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>
+        }
+        update: {
+          args: Prisma.ObservabilityLogUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>
+        }
+        deleteMany: {
+          args: Prisma.ObservabilityLogDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ObservabilityLogUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ObservabilityLogUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>[]
+        }
+        upsert: {
+          args: Prisma.ObservabilityLogUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ObservabilityLogPayload>
+        }
+        aggregate: {
+          args: Prisma.ObservabilityLogAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateObservabilityLog>
+        }
+        groupBy: {
+          args: Prisma.ObservabilityLogGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservabilityLogGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ObservabilityLogCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ObservabilityLogCountAggregateOutputType> | number
+        }
+      }
+    }
     CentralizedSettingsEngineModuleActivity: {
       payload: Prisma.$CentralizedSettingsEngineModuleActivityPayload<ExtArgs>
       fields: Prisma.CentralizedSettingsEngineModuleActivityFieldRefs
@@ -24609,6 +24684,19 @@ export const CentralizedSettingsEngineModuleScalarFieldEnum = {
 export type CentralizedSettingsEngineModuleScalarFieldEnum = (typeof CentralizedSettingsEngineModuleScalarFieldEnum)[keyof typeof CentralizedSettingsEngineModuleScalarFieldEnum]
 
 
+export const ObservabilityLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  logLevel: 'logLevel',
+  scope: 'scope',
+  message: 'message',
+  contextJson: 'contextJson',
+  createdAt: 'createdAt'
+} as const
+
+export type ObservabilityLogScalarFieldEnum = (typeof ObservabilityLogScalarFieldEnum)[keyof typeof ObservabilityLogScalarFieldEnum]
+
+
 export const CentralizedSettingsEngineModuleActivityScalarFieldEnum = {
   id: 'id',
   tenantId: 'tenantId',
@@ -25652,6 +25740,7 @@ export type GlobalOmitConfig = {
   altarCallResponse?: Prisma.AltarCallResponseOmit
   moduleSettings?: Prisma.ModuleSettingsOmit
   centralizedSettingsEngineModule?: Prisma.CentralizedSettingsEngineModuleOmit
+  observabilityLog?: Prisma.ObservabilityLogOmit
   centralizedSettingsEngineModuleActivity?: Prisma.CentralizedSettingsEngineModuleActivityOmit
   centralizedSettingsEngineModuleSettings?: Prisma.CentralizedSettingsEngineModuleSettingsOmit
   pageRevision?: Prisma.PageRevisionOmit

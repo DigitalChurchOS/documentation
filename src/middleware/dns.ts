@@ -115,6 +115,21 @@ export async function dnsMiddleware(
           (req as any).websiteId = primaryWebsite.id;
         }
       }
+    } else if (host === 'localhost') {
+      // Local dev fallback to theme-test tenant
+      const tenant = await prisma.tenant.findFirst({
+        where: { subdomain: 'theme-test' },
+      });
+
+      if (tenant) {
+        req.tenantId = tenant.id;
+        const primaryWebsite = await prisma.website.findFirst({
+          where: { tenantId: tenant.id, isActive: true },
+        });
+        if (primaryWebsite) {
+          (req as any).websiteId = primaryWebsite.id;
+        }
+      }
     }
 
     next();

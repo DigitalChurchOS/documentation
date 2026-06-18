@@ -31,8 +31,16 @@ describe('Module 44: Centralized Dynamic Settings Engine', () => {
     tenantId = tenant.id;
 
     // ── Set up Roles & Permissions ─────────────────────────
-    const settingsPermission = await prisma.permission.findUnique({ where: { name: 'tenant.settings' } });
-    const readPermission = await prisma.permission.findUnique({ where: { name: 'member.read' } });
+    const settingsPermission = await prisma.permission.upsert({
+      where: { name: 'tenant.settings' },
+      update: {},
+      create: { name: 'tenant.settings', description: 'Manage church/tenant settings' },
+    });
+    const readPermission = await prisma.permission.upsert({
+      where: { name: 'member.read' },
+      update: {},
+      create: { name: 'member.read', description: 'View member profiles' },
+    });
 
     // Admin role (has settings + read permissions)
     const adminRole = await prisma.role.create({ data: { tenantId, name: 'Admin', isCustom: false } });
@@ -89,6 +97,11 @@ describe('Module 44: Centralized Dynamic Settings Engine', () => {
       const screeningField = chatSchema.fields.find((f: any) => f.key === 'enableAiScreening');
       expect(screeningField.type).toBe('boolean');
       expect(screeningField.default).toBe(true);
+
+      const salvationSchema = res.body.data.find((m: any) => m.moduleKey === 'salvation-new-believer-journey');
+      expect(salvationSchema).toBeDefined();
+      expect(salvationSchema.moduleName).toBe('Salvation & New Believer Journey');
+      expect(salvationSchema.fields.find((f: any) => f.key === 'displayPublicDecisionFlow').default).toBe(true);
     });
 
     it('should reject requests without authentication', async () => {
@@ -112,6 +125,7 @@ describe('Module 44: Centralized Dynamic Settings Engine', () => {
       expect(res.body.data.liveChat.enableAiScreening).toBe(true);
       expect(res.body.data.liveChat.autoEscalateTimer).toBe(15);
       expect(res.body.data.giving.defaultCurrency).toBe('USD');
+      expect(res.body.data['salvation-new-believer-journey'].followUpSequenceDays).toBe(30);
     });
 
     it('should return settings for a single specific module', async () => {

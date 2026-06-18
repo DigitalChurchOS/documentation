@@ -206,6 +206,100 @@ export const SETTINGS_REGISTRY: Record<string, ModuleSettingsSchema> = {
       }
     ]
   },
+  'salvation-new-believer-journey': {
+    moduleKey: 'salvation-new-believer-journey',
+    moduleName: 'Salvation & New Believer Journey',
+    category: 'discipleship',
+    fields: [
+      {
+        key: 'enabled',
+        label: 'Enable New Believer Journey',
+        description: 'Activates public decision intake, care routing, reminders, and journey reports.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'displayPublicDecisionFlow',
+        label: 'Public Decision Flow',
+        description: 'Displays salvation and new visitor calls to action on public website and livestream surfaces.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'autoSendWelcomeMessage',
+        label: 'Automatic Welcome Message',
+        description: 'Marks the pastoral welcome message as started when a new believer profile is created.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'followUpSequenceDays',
+        label: 'Follow-Up Sequence Length',
+        description: 'Number of days the default care sequence should cover for each new believer.',
+        type: 'number',
+        default: 30,
+        min: 1,
+        max: 90,
+        step: 1
+      },
+      {
+        key: 'day7CareReminderEnabled',
+        label: 'Day 7 Care Reminder',
+        description: 'Schedules a first-week pastoral check-in reminder for the assigned care agent.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'day30CareReminderEnabled',
+        label: 'Day 30 Care Reminder',
+        description: 'Schedules a one-month pastoral follow-up reminder for the assigned care agent.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'autoAssignCareAgent',
+        label: 'Automatic Care Agent',
+        description: 'Assigns the first available leader in the tenant as the care agent for new responses.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'autoEnrollFoundationSchool',
+        label: 'Foundation School Enrollment',
+        description: 'Starts the LMS discipleship path when a new believer profile is created.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'autoAssignBibleReadingPlan',
+        label: 'Bible Reading Plan',
+        description: 'Starts the new believer Bible reading plan after a public response is submitted.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'autoAssignCellGroup',
+        label: 'Cell Group Routing',
+        description: 'Assigns a suggested cell or fellowship group based on the response location.',
+        type: 'boolean',
+        default: true
+      },
+      {
+        key: 'defaultSource',
+        label: 'Default Response Source',
+        description: 'Source label applied when public forms do not provide a more specific channel.',
+        type: 'select',
+        default: 'web',
+        options: [
+          { label: 'Website', value: 'web' },
+          { label: 'Livestream', value: 'livestream' },
+          { label: 'Physical Service', value: 'physical_service' },
+          { label: 'Ministry Funnel', value: 'funnel' },
+          { label: 'Event', value: 'event' }
+        ]
+      }
+    ]
+  },
   liveChat: {
     moduleKey: 'liveChat',
     moduleName: 'Live Chat & Pastoral Care',
