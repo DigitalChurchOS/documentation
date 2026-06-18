@@ -23,6 +23,7 @@ export async function tenantMiddleware(
     req.originalUrl.startsWith('/api/super-admin') ||
     req.originalUrl.startsWith('/api/public/check-subdomain') ||
     req.originalUrl.startsWith('/api/public/resolve-subdomain') ||
+    req.originalUrl.startsWith('/api/public/resolve-website-tenant') ||
     req.originalUrl.startsWith('/api/auth/register-tenant') ||
     req.originalUrl.startsWith('/api/cms/render') ||
     req.originalUrl.startsWith('/api/core-website-cms/render') ||

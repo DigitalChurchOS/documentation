@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { TenantProvisioningService } from '../services/tenantProvisioning';
+import prisma from '../lib/prisma';
 
 const router = Router();
 
@@ -53,6 +54,27 @@ router.post('/resolve-subdomain', async (req: Request, res: Response) => {
     res.json({ data });
   } catch (err: any) {
     sendRouteError(res, err);
+  }
+});
+
+router.get('/resolve-website-tenant', async (req: Request, res: Response) => {
+  try {
+    const websiteId = (req.query.websiteId || '') as string;
+    if (!websiteId) {
+      res.status(400).json({ error: 'websiteId is required' });
+      return;
+    }
+    const website = await prisma.website.findUnique({
+      where: { id: websiteId },
+      select: { tenantId: true }
+    });
+    if (!website) {
+      res.status(404).json({ error: 'Website not found' });
+      return;
+    }
+    res.json({ data: { tenantId: website.tenantId } });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 });
 

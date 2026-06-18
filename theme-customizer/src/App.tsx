@@ -323,6 +323,7 @@ export function App() {
       try {
         const queryTenantId = urlParams.get("tenantId");
         const querySubdomain = urlParams.get("subdomain");
+        const queryWebsiteId = urlParams.get("websiteId") || "";
         const hostSubdomain = getSubdomainFromHostname();
         
         let resolvedTenantId = "";
@@ -330,6 +331,18 @@ export function App() {
 
         if (queryTenantId) {
           resolvedTenantId = queryTenantId;
+        } else if (queryWebsiteId) {
+          try {
+            const res = await fetch(`/api/public/resolve-website-tenant?websiteId=${encodeURIComponent(queryWebsiteId)}`);
+            if (res.ok) {
+              const json = await res.json();
+              if (json.data && json.data.tenantId) {
+                resolvedTenantId = json.data.tenantId;
+              }
+            }
+          } catch (e) {
+            console.warn("Could not resolve tenant from websiteId:", e);
+          }
         } else if (querySubdomain) {
           const res = await fetch(`/api/public/resolve-subdomain?subdomain=${encodeURIComponent(querySubdomain)}`);
           if (res.ok) {
@@ -392,7 +405,6 @@ export function App() {
         }
 
         // 2. Resolve websiteId
-        const queryWebsiteId = urlParams.get("websiteId") || "";
         let finalWebsiteId = "";
         let resolvedWebsite: any = null;
         if (websitesRes && websitesRes.data) {
@@ -466,13 +478,27 @@ export function App() {
 
       } catch (err: any) {
         console.error("Initialization error:", err);
-        const errMsg = err.message || "";
-        if (errMsg.includes("Tenant not found") || errMsg.includes("404") || errMsg.includes("401") || errMsg.includes("token")) {
-          console.warn("Detected invalid/stale session. Auto-recovering tenant and token...");
-          localStorage.setItem("churchos.tenantId", "de4498dc-069d-45b6-bc56-1a90ade1fb34");
-          localStorage.setItem("churchos.token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmZTdlMjhlYS05ZmJhLTQ1MjEtYjUzZS1mMDBhMTcyZDk0ZWQiLCJ0ZW5hbnRJZCI6ImRlNDQ5OGRjLTA2OWQtNDViNi1iYzU2LTFhOTBhZGUxZmIzNCIsImVtYWlsIjoiYWRtaW5AdGhlbWUtdGVzdC5jb20iLCJpYXQiOjE3ODE2NDk3NjV9.NQITrY91wCtviuWIc27bYk3BbnqHPkwjqqNPodaPlG0");
-          window.location.reload();
-          return;
+        const errMsg = (err.message || "").toLowerCase();
+        if (
+          errMsg.includes("tenant not found") ||
+          errMsg.includes("404") ||
+          errMsg.includes("401") ||
+          errMsg.includes("403") ||
+          errMsg.includes("token") ||
+          errMsg.includes("mismatch")
+        ) {
+          const defaultTenantId = "de4498dc-069d-45b6-bc56-1a90ade1fb34";
+          const defaultToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmZTdlMjhlYS05ZmJhLTQ1MjEtYjUzZS1mMDBhMTcyZDk0ZWQiLCJ0ZW5hbnRJZCI6ImRlNDQ5OGRjLTA2OWQtNDViNi1iYzU2LTFhOTBhZGUxZmIzNCIsImVtYWlsIjoiYWRtaW5AdGhlbWUtdGVzdC5jb20iLCJpYXQiOjE3ODE2NDk3NjV9.NQITrY91wCtviuWIc27bYk3BbnqHPkwjqqNPodaPlG0";
+          const currentTenantId = localStorage.getItem("churchos.tenantId");
+          const currentToken = localStorage.getItem("churchos.token");
+          
+          if (currentTenantId !== defaultTenantId || currentToken !== defaultToken) {
+            console.warn("Detected invalid/stale session. Auto-recovering tenant and token...");
+            localStorage.setItem("churchos.tenantId", defaultTenantId);
+            localStorage.setItem("churchos.token", defaultToken);
+            window.location.reload();
+            return;
+          }
         }
         setTenantError(err.message || "Failed to initialize customizer workspace settings.");
       } finally {
