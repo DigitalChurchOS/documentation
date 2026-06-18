@@ -101,6 +101,7 @@ describe('Church Services module', () => {
   let sundayServiceId: string;
   let midweekServiceId: string;
   let draftServiceId: string;
+  let publicServiceId: string;
 
   beforeAll(async () => {
     await cleanTestTenants();
@@ -417,6 +418,104 @@ describe('Church Services module', () => {
       .post(`/api/church-services/${sundayServiceId}/attachments`)
       .send({ title: 'Other Tenant Notes', fileUrl: 'https://cdn.example.com/notes/other.pdf' });
     expect(otherTenantRes.status).toBe(404);
+  });
+
+  it('publishes tenant-scoped services through the public subdomain CMS archive', async () => {
+    const createRes = await authorized()
+      .post('/api/church-services')
+      .send({
+        title: 'Public Communion Service',
+        serviceType: 'communion',
+        serviceDate: '2026-06-14T10:00:00Z',
+        description: 'Published communion service for the public archive.',
+        notes: 'Communion, worship, and salvation response follow-up.',
+        thumbnailUrl: 'https://cdn.example.com/thumbs/communion.jpg',
+        speakerId,
+        sermonMediaId,
+        serviceAudioId: audioMediaId,
+        livestreamId,
+        attendanceCount: 240,
+        givingTotal: 5125,
+        salvationCount: 3,
+        status: 'published',
+        visibility: 'public',
+        locationMode: 'hybrid',
+      });
+
+    expect(createRes.status).toBe(201);
+    publicServiceId = createRes.body.data.id;
+
+    await authorized()
+      .post(`/api/church-services/${publicServiceId}/scriptures`)
+      .send({ references: [{ reference: '1 Corinthians 11:23-26', order: 1 }] });
+    await authorized()
+      .post(`/api/church-services/${publicServiceId}/attachments`)
+      .send({
+        title: 'Communion Guide',
+        fileUrl: 'https://cdn.example.com/notes/communion.pdf',
+        fileType: 'pdf',
+      });
+
+    const archiveRes = await request(app)
+      .get('/api/cms/services?serviceType=communion&search=Communion')
+      .set('Host', `${TEST_SUBDOMAINS[0]}.churched.online`);
+
+    expect(archiveRes.status).toBe(200);
+    expect(archiveRes.body.data.map((item: any) => item.id)).toContain(publicServiceId);
+    expect(archiveRes.body.data.map((item: any) => item.id)).not.toContain(sundayServiceId);
+    expect(archiveRes.body.serviceTypes.some((item: any) => item.key === 'communion')).toBe(true);
+    expect(archiveRes.body.summary.published).toBeGreaterThanOrEqual(1);
+    expect(archiveRes.body.summary.attendance).toBeUndefined();
+    expect(archiveRes.body.summary.giving).toBeUndefined();
+    expect(archiveRes.body.summary.salvation).toBeUndefined();
+    const publicArchiveItem = archiveRes.body.data.find((item: any) => item.id === publicServiceId);
+    expect(publicArchiveItem.watchUrl).toContain(`/livestream/${livestreamId}`);
+    expect(publicArchiveItem.attendanceCount).toBeUndefined();
+    expect(publicArchiveItem.givingTotal).toBeUndefined();
+    expect(publicArchiveItem.salvationCount).toBeUndefined();
+    expect(publicArchiveItem.createdById).toBeUndefined();
+    expect(publicArchiveItem.settingsJson).toBeUndefined();
+    expect(publicArchiveItem.livestream.streamKey).toBeUndefined();
+    expect(publicArchiveItem.livestream.rtmpIngestUrl).toBeUndefined();
+
+    const detailRes = await request(app)
+      .get(`/api/cms/services/${publicServiceId}`)
+      .set('Host', `${TEST_SUBDOMAINS[0]}.churched.online`);
+
+    expect(detailRes.status).toBe(200);
+    expect(detailRes.body.data.id).toBe(publicServiceId);
+    expect(detailRes.body.data.scriptures[0].reference).toBe('1 Corinthians 11:23-26');
+    expect(detailRes.body.data.attachments[0].title).toBe('Communion Guide');
+    expect(detailRes.body.data.watchUrl).toContain(`/livestream/${livestreamId}`);
+    expect(detailRes.body.data.attendanceCount).toBeUndefined();
+    expect(detailRes.body.data.givingTotal).toBeUndefined();
+    expect(detailRes.body.data.salvationCount).toBeUndefined();
+
+    const otherArchiveRes = await request(app)
+      .get('/api/cms/services')
+      .set('Host', `${TEST_SUBDOMAINS[1]}.churched.online`);
+
+    expect(otherArchiveRes.status).toBe(200);
+    expect(otherArchiveRes.body.data.map((item: any) => item.id)).not.toContain(publicServiceId);
+
+    const unentitledRes = await request(app)
+      .get('/api/cms/services')
+      .set('Host', `${TEST_SUBDOMAINS[2]}.churched.online`);
+
+    expect(unentitledRes.status).toBe(403);
+
+    const replayRes = await request(app)
+      .post(`/api/cms/services/${publicServiceId}/replay`)
+      .set('Host', `${TEST_SUBDOMAINS[0]}.churched.online`);
+
+    expect(replayRes.status).toBe(200);
+    expect(replayRes.body.data.replayAvailable).toBe(true);
+
+    const event = await prisma.analyticsEvent.findFirst({
+      where: { tenantId, category: 'church_services', name: 'replay_requested', entityId: publicServiceId },
+    });
+    expect(event).not.toBeNull();
+    expect(JSON.parse(event!.metadata).source).toBe('churchfront');
   });
 
   it('generates recurring services within the configured batch limit', async () => {

@@ -451,6 +451,34 @@ describe('ChurchOS Livestream Module', () => {
       expect(res.body.data.rtmpIngestUrl).toBeUndefined(); // Sanitize check
     });
 
+    it('should expose tenant churchfront livestream context through CMS without ingest secrets', async () => {
+      const res = await request(app)
+        .get(`/api/cms/livestream/${publicStreamId}`)
+        .set('Host', 'live-test.churched.online');
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.stream.id).toBe(publicStreamId);
+      expect(res.body.data.stream.streamKey).toBeUndefined();
+      expect(res.body.data.stream.rtmpIngestUrl).toBeUndefined();
+      expect(res.body.data.upcomingStreams.some((stream: any) => stream.id === publicStreamId)).toBe(true);
+      expect(res.body.data.settings.chatEnabled).toBe(true);
+      expect(res.body.data.settings.serviceMomentCtas).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: 'welcome',
+            title: 'First Time Here?',
+            buttonUrl: '/account',
+            enabled: true,
+          }),
+          expect.objectContaining({
+            id: 'prayer',
+            buttonUrl: '#prayer',
+            theme: 'ocean',
+          }),
+        ])
+      );
+    });
+
     it('should register guest viewer joining', async () => {
       const res = await request(app)
         .post(`/api/public/livestream/${publicStreamId}/viewers/join`)
@@ -495,6 +523,23 @@ describe('ChurchOS Livestream Module', () => {
 
       expect(chatRes2.status).toBe(201);
       expect(chatRes2.body.data.message).toBe('Hello active stream');
+    });
+
+    it('should accept churchfront comments and reactions through CMS endpoints', async () => {
+      const reactionRes = await request(app)
+        .post(`/api/cms/livestream/${publicStreamId}/interactions`)
+        .set('Host', 'live-test.churched.online')
+        .send({ type: 'reaction', content: 'Amen' });
+
+      const chatRes = await request(app)
+        .post(`/api/cms/livestream/${publicStreamId}/chat`)
+        .set('Host', 'live-test.churched.online')
+        .send({ displayName: 'Churchfront Guest', message: 'Watching from the website.' });
+
+      expect(reactionRes.status).toBe(201);
+      expect(reactionRes.body.data.type).toBe('reaction');
+      expect(chatRes.status).toBe(201);
+      expect(chatRes.body.data.displayName).toBe('Churchfront Guest');
     });
 
     it('should track viewer leaving', async () => {

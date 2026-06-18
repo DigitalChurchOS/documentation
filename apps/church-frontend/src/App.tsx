@@ -9,6 +9,8 @@ import StaticHtmlPage from './themes/ecclesia/StaticHtmlPage';
 import GenericPage from './themes/ecclesia/GenericPage';
 import MemberAuthPage from './themes/ecclesia/pages/MemberAuthPage';
 import MemberAccountPage from './themes/ecclesia/pages/MemberAccountPage';
+import ServicesPage from './themes/ecclesia/pages/ServicesPage';
+import LivestreamPage from './themes/ecclesia/pages/LivestreamPage';
 import { routeFromHref, slugFromPathname } from './routing';
 import { httpRequest } from './http';
 
@@ -114,6 +116,23 @@ function getMemberPortalRoute(pathname: string): 'login' | 'account' | null {
   const path = normalizedAppPath(pathname).replace(/\/+$/, '') || '/';
   if (['/login', '/member-login', '/members/login'].includes(path)) return 'login';
   if (['/account', '/profile', '/my-giving'].includes(path) || path.startsWith('/account/')) return 'account';
+  return null;
+}
+
+function getServicesRoute(pathname: string): { serviceId?: string } | null {
+  const path = normalizedAppPath(pathname).replace(/\/+$/, '') || '/';
+  if (path === '/services' || path === '/services-archive.html') return {};
+  const detailMatch = path.match(/^\/services\/([^/]+)$/);
+  if (detailMatch) return { serviceId: decodeURIComponent(detailMatch[1]) };
+  if (path === '/service-single.html') return { serviceId: 'sample-service' };
+  return null;
+}
+
+function getLivestreamRoute(pathname: string): { streamId?: string } | null {
+  const path = normalizedAppPath(pathname).replace(/\/+$/, '') || '/';
+  if (path === '/livestream' || path === '/livestream-page.html') return {};
+  const detailMatch = path.match(/^\/livestream\/([^/]+)$/);
+  if (detailMatch) return { streamId: decodeURIComponent(detailMatch[1]) };
   return null;
 }
 
@@ -237,6 +256,20 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
         return;
       }
 
+      if (getServicesRoute(location.pathname)) {
+        setLoading(false);
+        setError(null);
+        setPageData(null);
+        return;
+      }
+
+      if (getLivestreamRoute(location.pathname)) {
+        setLoading(false);
+        setError(null);
+        setPageData(null);
+        return;
+      }
+
       setLoading(true);
       setError(null);
       try {
@@ -343,6 +376,8 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
   };
 
   const memberPortalRoute = getMemberPortalRoute(location.pathname);
+  const servicesRoute = getServicesRoute(location.pathname);
+  const livestreamRoute = getLivestreamRoute(location.pathname);
 
   if (memberPortalRoute) {
     return (
@@ -353,6 +388,26 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
           ) : (
             <MemberAccountPage tenant={siteContext.tenant} />
           )}
+        </EcclesiaLayout>
+      </EcclesiaProvider>
+    );
+  }
+
+  if (servicesRoute) {
+    return (
+      <EcclesiaProvider value={contextValue}>
+        <EcclesiaLayout useStaticLayout={false}>
+          <ServicesPage serviceId={servicesRoute.serviceId} />
+        </EcclesiaLayout>
+      </EcclesiaProvider>
+    );
+  }
+
+  if (livestreamRoute) {
+    return (
+      <EcclesiaProvider value={contextValue}>
+        <EcclesiaLayout useStaticLayout={false}>
+          <LivestreamPage streamId={livestreamRoute.streamId} />
         </EcclesiaLayout>
       </EcclesiaProvider>
     );

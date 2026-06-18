@@ -220,7 +220,7 @@ router.post('/:id/interactions', async (req: Request, res: Response) => {
       return;
     }
 
-    const validTypes = ['prayer_request', 'salvation_response', 'note', 'giving_click'];
+    const validTypes = ['prayer_request', 'salvation_response', 'note', 'giving_click', 'reaction'];
     if (!validTypes.includes(type)) {
       res.status(400).json({ error: `type must be one of: ${validTypes.join(', ')}` });
       return;

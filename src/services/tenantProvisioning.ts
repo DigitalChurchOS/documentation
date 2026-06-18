@@ -37,6 +37,8 @@ const CORE_MODULES = [
   { key: 'developer-marketplace', name: 'Developer Marketplace', category: 'Core' },
   { key: 'plugin-extensions-engine', name: 'Plugin Extensions Engine', category: 'Core' },
   { key: 'member-crm', name: 'Member CRM', category: 'Engagement' },
+  { key: 'church-services', name: 'Church Services', category: 'Content' },
+  { key: 'livestream', name: 'Livestream Studio', category: 'Content' },
 ];
 
 const ESSENTIAL_PERMISSIONS = [
@@ -83,6 +85,18 @@ const ESSENTIAL_PERMISSIONS = [
   'developer-marketplace.delete',
   'developer-marketplace.manage_settings',
   'developer-marketplace.view_reports',
+  'church-services.read',
+  'church-services.create',
+  'church-services.update',
+  'church-services.delete',
+  'church-services.manage_settings',
+  'church-services.view_reports',
+  'livestream.read',
+  'livestream.create',
+  'livestream.update',
+  'livestream.delete',
+  'livestream.manage_settings',
+  'livestream.view_reports',
 ];
 
 const DEFAULT_ONBOARDING_STEPS = [
@@ -440,7 +454,10 @@ export class TenantProvisioningService {
           items: jsonString([
             { label: 'Home', url: '/' },
             { label: 'About', url: '/about' },
+            { label: 'Services', url: '/services' },
+            { label: 'Watch Live', url: '/livestream' },
             { label: 'Give', url: '/giving' },
+            { label: 'Account', url: '/account' },
           ]),
         },
       });
@@ -509,6 +526,84 @@ export class TenantProvisioningService {
           tenantId: tenant.id,
           moduleKey: CHURCH_DETAILS_MODULE_KEY,
           settings: jsonString(brandingSeed),
+        },
+      });
+
+      const livestreamPublicSettings = {
+        enabled: true,
+        adminPreviewOnly: false,
+        publicPublishingEnabled: true,
+        providerMode: 'hybrid',
+        chatEnabled: true,
+        replayAutoArchive: true,
+        givingButtonEnabled: true,
+        prayerRequestEnabled: true,
+        salvationResponseEnabled: true,
+        biblePanelEnabled: true,
+        notesPanelEnabled: true,
+        serviceMomentCtas: [
+          {
+            id: 'welcome',
+            title: 'First Time Here?',
+            summary: 'Tell us you are worshipping with us and a host can help you take the next step.',
+            details: 'Use this card to route first-time guests toward a welcome form, connection card, or membership path during the livestream.',
+            buttonLabel: 'Connect With Us',
+            buttonUrl: '/account',
+            theme: 'sunrise',
+            enabled: true,
+          },
+          {
+            id: 'prayer',
+            title: 'Need Prayer?',
+            summary: 'Share a prayer request with the ministry team while service is in progress.',
+            details: 'Prayer requests submitted from the livestream are captured as broadcast interactions for follow-up.',
+            buttonLabel: 'Open Prayer',
+            buttonUrl: '#prayer',
+            theme: 'ocean',
+            enabled: true,
+          },
+          {
+            id: 'giving',
+            title: 'Give During Service',
+            summary: 'Honor God with your giving through the secure church giving page.',
+            details: 'Giving clicks are tracked as livestream interactions so admins can understand service engagement.',
+            buttonLabel: 'Give Now',
+            buttonUrl: '/giving',
+            theme: 'rose',
+            enabled: true,
+          },
+          {
+            id: 'notes',
+            title: 'Capture The Word',
+            summary: 'Open the Bible and notes panel to keep scriptures and sermon points together.',
+            details: 'Viewers can search the KJV Bible, copy selected verses, and save personal notes locally.',
+            buttonLabel: 'Open Notes',
+            buttonUrl: '#notes',
+            theme: 'forest',
+            enabled: true,
+          },
+        ],
+        analyticsTrackingEnabled: true,
+        autoAttachToServices: true,
+        defaultVisibility: 'public',
+      };
+
+      await tx.livestreamModuleSettings.create({
+        data: {
+          tenantId: tenant.id,
+          moduleKey: 'livestream',
+          enabled: true,
+          billingPlan: 'free',
+          providerMode: 'hybrid',
+          configJson: jsonString(livestreamPublicSettings),
+        },
+      });
+
+      await tx.moduleSettings.create({
+        data: {
+          tenantId: tenant.id,
+          moduleKey: 'livestream',
+          settings: jsonString(livestreamPublicSettings),
         },
       });
 

@@ -18,7 +18,10 @@ const EcclesiaLayout: React.FC<Props> = ({ children, useStaticLayout = false }) 
   const { themeSettings } = useEcclesia();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
-  const isLivestream = location.pathname.startsWith('/livestream');
+  const normalizedPath = location.pathname.startsWith('/church')
+    ? location.pathname.substring('/church'.length) || '/'
+    : location.pathname;
+  const isLivestream = normalizedPath.startsWith('/livestream');
 
   // Toggle cinema-mode class on body for livestream page
   useEffect(() => {

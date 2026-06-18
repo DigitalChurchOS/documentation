@@ -53,6 +53,7 @@ describe('Tenant registration and onboarding synchronization', () => {
       include: {
         users: { include: { member: true } },
         websites: true,
+        tenantModules: true,
         subscription: { include: { plan: true } },
       },
     });
@@ -61,6 +62,29 @@ describe('Tenant registration and onboarding synchronization', () => {
     expect(tenant?.websites[0].domain).toBe(`${subdomain}.churched.online`);
     expect(tenant?.users[0].member?.firstName).toBe('Ada');
     expect(tenant?.subscription?.plan.slug).toBe('growth');
+    expect(tenant?.tenantModules.some((module) => module.moduleKey === 'church-services' && module.status === 'active')).toBe(true);
+    expect(tenant?.tenantModules.some((module) => module.moduleKey === 'livestream' && module.status === 'active')).toBe(true);
+
+    const ownerRole = await prisma.role.findFirst({
+      where: { tenantId, name: 'Owner' },
+      include: { rolePermissions: { include: { permission: true } } },
+    });
+    const ownerPermissionNames = ownerRole?.rolePermissions.map((item) => item.permission.name) || [];
+    expect(ownerPermissionNames).toContain('church-services.manage_settings');
+    expect(ownerPermissionNames).toContain('livestream.manage_settings');
+
+    const liveSettings = await prisma.livestreamModuleSettings.findUnique({
+      where: { tenantId_moduleKey: { tenantId, moduleKey: 'livestream' } },
+    });
+    expect(liveSettings).not.toBeNull();
+    const liveConfig = JSON.parse(liveSettings!.configJson);
+    expect(liveConfig.publicPublishingEnabled).toBe(true);
+    expect(liveConfig.serviceMomentCtas).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'welcome', title: 'First Time Here?', buttonUrl: '/account' }),
+        expect.objectContaining({ id: 'giving', title: 'Give During Service', buttonUrl: '/giving' }),
+      ])
+    );
   });
 
   it('resolves the public subdomain and loads billing-aware onboarding state', async () => {

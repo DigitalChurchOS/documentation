@@ -116,9 +116,16 @@ function extractSubdomain(host: string): string | null {
 const churchFrontendDistPath = path.join(__dirname, '..', 'apps', 'church-frontend', 'dist');
 const churchFrontendIndexPath = path.join(churchFrontendDistPath, 'index.html');
 
+function isIpHost(hostname: string): boolean {
+  return /^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname) || hostname === '::1' || hostname === '[::1]';
+}
+
 app.use((req, res, next) => {
   const rawHost = (req.headers['x-forwarded-host'] || req.headers.host) as string | undefined;
   if (!rawHost) return next();
+
+  const hostname = rawHost.split(':')[0].toLowerCase();
+  if (isIpHost(hostname)) return next();
 
   const subdomain = extractSubdomain(rawHost);
   if (!subdomain) return next();

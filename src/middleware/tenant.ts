@@ -28,6 +28,12 @@ export async function tenantMiddleware(
     req.originalUrl.startsWith('/api/core-website-cms/render') ||
     req.originalUrl.startsWith('/api/cms/site-context') ||
     req.originalUrl.startsWith('/api/core-website-cms/site-context') ||
+    req.originalUrl.startsWith('/api/cms/services') ||
+    req.originalUrl.startsWith('/api/core-website-cms/services') ||
+    req.originalUrl.startsWith('/api/cms/livestream') ||
+    req.originalUrl.startsWith('/api/core-website-cms/livestream') ||
+    req.originalUrl.startsWith('/api/cms/bible') ||
+    req.originalUrl.startsWith('/api/core-website-cms/bible') ||
     req.originalUrl.includes('/podcast/feeds/') ||
     req.originalUrl.includes('/api/bible/graphics/render/') ||
     req.originalUrl.includes('/api/mobile/config/') ||

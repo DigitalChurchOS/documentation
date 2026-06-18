@@ -6,6 +6,10 @@ import prisma from '../lib/prisma';
 // Local dev:  [churchname].localhost:3000
 const BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
 
+function isIpHost(hostname: string): boolean {
+  return /^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname) || hostname === '::1' || hostname === '[::1]';
+}
+
 /**
  * DNS & Domain Resolver Middleware
  * --------------------------------
@@ -52,6 +56,11 @@ export async function dnsMiddleware(
 
   // Strip port from host header (e.g. "grace.localhost:3000" -> "grace.localhost")
   const host = rawHost.split(':')[0].toLowerCase();
+
+  if (isIpHost(host)) {
+    next();
+    return;
+  }
 
   try {
     // 1. Try to resolve via custom domain mapping on Website entity

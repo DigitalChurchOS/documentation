@@ -6,8 +6,356 @@ import { authMiddleware } from '../middleware/auth';
 import { requireAnyPermission } from '../middleware/rbac';
 import { requireModule } from '../middleware/entitlements';
 import { ECCLESIA_GLOBAL_CONTENT_KEY, createEcclesiaGlobalContent } from '../themes/ecclesia';
+import { CHURCH_SERVICES_MODULE_KEY, ChurchServicesService } from '../services/churchServices';
+import {
+  LIVESTREAM_MODULE_KEY,
+  getSettings as getLivestreamSettings,
+  getChatMessages,
+  sendChatMessage,
+  trackViewerJoin,
+  trackViewerLeave,
+  submitInteraction,
+} from '../services/livestream';
+import { getChapter, searchBible, resolveScriptureReference } from '../services/bible';
 
 const router = Router();
+
+function statusForChurchServices(error: Error) {
+  const message = error.message.toLowerCase();
+  if (message.includes('not found')) return 404;
+  if (message.includes('disabled') || message.includes('inactive')) return 403;
+  return 400;
+}
+
+async function hasActiveModule(tenantId: string, moduleKey: string) {
+  const entitlement = await prisma.tenantModule.findUnique({
+    where: { tenantId_moduleKey: { tenantId, moduleKey } },
+  });
+  return entitlement?.status === 'active';
+}
+
+function churchServiceFilters(req: Request) {
+  return {
+    serviceType: req.query.serviceType as string | undefined,
+    speakerId: req.query.speakerId as string | undefined,
+    dateFrom: req.query.dateFrom as string | undefined,
+    dateTo: req.query.dateTo as string | undefined,
+    search: req.query.search as string | undefined,
+    sortOrder: (req.query.sortOrder as 'asc' | 'desc') || undefined,
+    page: req.query.page ? Number(req.query.page) : undefined,
+    pageSize: req.query.pageSize ? Number(req.query.pageSize) : undefined,
+  };
+}
+
+const PUBLIC_STREAM_STATUSES = ['live', 'scheduled', 'ended'];
+const PUBLIC_INTERACTION_TYPES = ['prayer_request', 'salvation_response', 'note', 'giving_click', 'reaction'];
+
+function parseMultiPlatformLinks(value: string | null | undefined) {
+  const links = safeJson<any[]>(value, []);
+  return Array.isArray(links)
+    ? links.filter((item) => item && typeof item.platform === 'string' && typeof item.url === 'string')
+    : [];
+}
+
+const SERVICE_MOMENT_THEMES = new Set(['sunrise', 'ocean', 'rose', 'forest', 'gold']);
+
+function trimString(value: any, fallback = '', max = 500) {
+  return typeof value === 'string'
+    ? value.trim().slice(0, max)
+    : fallback;
+}
+
+function safeActionUrl(value: any) {
+  const url = trimString(value, '#', 300);
+  if (url.startsWith('/') || url.startsWith('#') || /^https?:\/\//i.test(url) || /^mailto:/i.test(url)) return url;
+  return '#';
+}
+
+function sanitizeServiceMomentCtas(value: any) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .slice(0, 8)
+    .map((item, index) => {
+      if (!item || typeof item !== 'object') return null;
+      const title = trimString(item.title, '', 90);
+      const summary = trimString(item.summary, '', 180);
+      if (!title || !summary) return null;
+      const theme = trimString(item.theme, 'sunrise', 24);
+      return {
+        id: trimString(item.id, `service-moment-${index}`, 80),
+        title,
+        summary,
+        details: trimString(item.details, summary, 1200),
+        buttonLabel: trimString(item.buttonLabel, 'Open', 60),
+        buttonUrl: safeActionUrl(item.buttonUrl),
+        theme: SERVICE_MOMENT_THEMES.has(theme) ? theme : 'sunrise',
+        enabled: item.enabled !== false,
+      };
+    })
+    .filter(Boolean);
+}
+
+function serviceTypeLabel(value: string | null | undefined) {
+  const labels: Record<string, string> = {
+    sunday: 'Sunday Service',
+    midweek: 'Midweek Service',
+    prayer: 'Prayer Service',
+    communion: 'Communion Service',
+    healing: 'Healing Service',
+    thanksgiving: 'Thanksgiving Service',
+    youth: 'Youth Service',
+    special: 'Special Service',
+    other: 'Other Service',
+  };
+  return value ? labels[value] || value : 'Service';
+}
+
+function sanitizeMediaAsset(asset: any) {
+  if (!asset) return null;
+  return {
+    id: asset.id,
+    title: asset.title,
+    description: asset.description || null,
+    type: asset.type,
+    providerType: asset.providerType || null,
+    sourceUrl: asset.sourceUrl || null,
+    thumbnailUrl: asset.thumbnailUrl || null,
+    durationSeconds: asset.durationSeconds || null,
+    publishedAt: asset.publishedAt || null,
+  };
+}
+
+function sanitizeLivestreamService(service: any) {
+  if (!service) return null;
+  return {
+    id: service.id,
+    title: service.title,
+    description: service.description || null,
+    serviceDate: service.serviceDate,
+    serviceType: service.serviceType,
+    serviceTypeLabel: serviceTypeLabel(service.serviceType),
+    detailUrl: `/services/${encodeURIComponent(service.id)}`,
+    speaker: service.speaker ? {
+      id: service.speaker.id,
+      name: service.speaker.name,
+      title: service.speaker.title || null,
+      photoUrl: service.speaker.photoUrl || null,
+    } : null,
+    scriptures: service.scriptures || [],
+    attachments: service.attachments || [],
+    sermonMedia: sanitizeMediaAsset(service.sermonMedia),
+    serviceAudio: sanitizeMediaAsset(service.serviceAudio),
+  };
+}
+
+function sanitizeStream(stream: any, relatedService?: any) {
+  if (!stream) return null;
+  const service = relatedService || stream.churchServices?.[0] || null;
+  const replayAsset = sanitizeMediaAsset(stream.replayAsset);
+  return {
+    id: stream.id,
+    title: stream.title,
+    description: stream.description || null,
+    scheduledAt: stream.scheduledAt || null,
+    startedAt: stream.startedAt || null,
+    endedAt: stream.endedAt || null,
+    status: stream.status,
+    thumbnailUrl: stream.thumbnailUrl || replayAsset?.thumbnailUrl || null,
+    countdownEnabled: stream.countdownEnabled,
+    chatEnabled: stream.chatEnabled,
+    multiPlatformLinks: parseMultiPlatformLinks(stream.multiPlatformLinks),
+    replayAsset,
+    playbackUrl: replayAsset?.sourceUrl || null,
+    watchUrl: `/livestream/${encodeURIComponent(stream.id)}`,
+    relatedService: sanitizeLivestreamService(service),
+  };
+}
+
+async function assertPublicLivestreamAccess(tenantId: string) {
+  if (!(await hasActiveModule(tenantId, LIVESTREAM_MODULE_KEY))) {
+    throw new Error('Livestream module is inactive');
+  }
+  const settings = await getLivestreamSettings(tenantId);
+  if (!settings.enabled) {
+    throw new Error('Livestream module is disabled');
+  }
+  const config = safeJson<Record<string, any>>(settings.configJson, {});
+  return {
+    settings,
+    config: {
+      chatEnabled: config.chatEnabled !== false,
+      givingButtonEnabled: config.givingButtonEnabled !== false,
+      prayerRequestEnabled: config.prayerRequestEnabled !== false,
+      salvationResponseEnabled: config.salvationResponseEnabled !== false,
+      biblePanelEnabled: config.biblePanelEnabled !== false,
+      notesPanelEnabled: config.notesPanelEnabled !== false,
+      replayAutoArchive: config.replayAutoArchive !== false,
+      publicPublishingEnabled: config.publicPublishingEnabled !== false,
+      serviceMomentCtas: sanitizeServiceMomentCtas(config.serviceMomentCtas),
+    },
+  };
+}
+
+async function findPublicLivestream(tenantId: string, streamId: string) {
+  return prisma.livestream.findFirst({
+    where: { id: streamId, tenantId, status: { in: PUBLIC_STREAM_STATUSES } },
+    include: {
+      replayAsset: true,
+      churchServices: {
+        where: { status: 'published', visibility: { in: ['public', 'unlisted'] } },
+        include: {
+          speaker: true,
+          sermonMedia: true,
+          serviceAudio: true,
+          scriptures: { orderBy: { order: 'asc' } },
+          attachments: { orderBy: { createdAt: 'desc' } },
+        },
+        take: 1,
+      },
+    },
+  });
+}
+
+async function findPublicLivestreamService(tenantId: string, serviceId: string) {
+  return prisma.churchService.findFirst({
+    where: { id: serviceId, tenantId, status: 'published', visibility: { in: ['public', 'unlisted'] } },
+    include: {
+      speaker: true,
+      sermonMedia: true,
+      serviceAudio: true,
+      scriptures: { orderBy: { order: 'asc' } },
+      attachments: { orderBy: { createdAt: 'desc' } },
+      livestream: { include: { replayAsset: true } },
+    },
+  });
+}
+
+function chooseDefaultStream(streams: any[]) {
+  const now = Date.now();
+  const live = streams.find((stream) => stream.status === 'live');
+  if (live) return live;
+
+  const upcoming = streams
+    .filter((stream) => stream.status === 'scheduled' && (!stream.scheduledAt || new Date(stream.scheduledAt).getTime() >= now))
+    .sort((a, b) => new Date(a.scheduledAt || a.createdAt).getTime() - new Date(b.scheduledAt || b.createdAt).getTime())[0];
+  if (upcoming) return upcoming;
+
+  return streams
+    .filter((stream) => stream.status === 'ended')
+    .sort((a, b) => new Date(b.endedAt || b.updatedAt || b.createdAt).getTime() - new Date(a.endedAt || a.updatedAt || a.createdAt).getTime())[0]
+    || streams[0]
+    || null;
+}
+
+async function getPublicLivestreamContext(tenantId: string, query: Record<string, any>, streamId?: string) {
+  const access = await assertPublicLivestreamAccess(tenantId);
+  let selectedStream: any = null;
+  let relatedService: any = null;
+
+  if (query.serviceId) {
+    relatedService = await findPublicLivestreamService(tenantId, String(query.serviceId));
+    if (relatedService?.livestream) selectedStream = relatedService.livestream;
+  }
+
+  if (!selectedStream && streamId) {
+    selectedStream = await findPublicLivestream(tenantId, streamId);
+    relatedService = selectedStream?.churchServices?.[0] || null;
+  }
+
+  const streams = await prisma.livestream.findMany({
+    where: { tenantId, status: { in: PUBLIC_STREAM_STATUSES } },
+    include: {
+      replayAsset: true,
+      churchServices: {
+        where: { status: 'published', visibility: { in: ['public', 'unlisted'] } },
+        include: {
+          speaker: true,
+          sermonMedia: true,
+          serviceAudio: true,
+          scriptures: { orderBy: { order: 'asc' } },
+          attachments: { orderBy: { createdAt: 'desc' } },
+        },
+        take: 1,
+      },
+    },
+    orderBy: [{ scheduledAt: 'desc' }, { createdAt: 'desc' }],
+    take: 50,
+  });
+
+  if (!selectedStream) selectedStream = chooseDefaultStream(streams);
+  if (selectedStream && !relatedService) relatedService = selectedStream.churchServices?.[0] || null;
+
+  const sanitizedStreams = streams
+    .map((stream) => sanitizeStream(stream))
+    .filter((stream): stream is NonNullable<ReturnType<typeof sanitizeStream>> => Boolean(stream));
+  return {
+    stream: sanitizeStream(selectedStream, relatedService),
+    streams: sanitizedStreams,
+    liveStreams: sanitizedStreams.filter((stream) => stream.status === 'live'),
+    upcomingStreams: sanitizedStreams.filter((stream) => stream.status === 'scheduled'),
+    replayStreams: sanitizedStreams.filter((stream) => stream.status === 'ended'),
+    relatedService: sanitizeLivestreamService(relatedService),
+    settings: access.config,
+  };
+}
+
+const FALLBACK_KJV_VERSES = [
+  { bookSlug: 'genesis', book: 'Genesis', chapter: 1, verse: 1, text: 'In the beginning God created the heaven and the earth.' },
+  { bookSlug: 'psalms', book: 'Psalms', chapter: 23, verse: 1, text: 'The LORD is my shepherd; I shall not want.' },
+  { bookSlug: 'john', book: 'John', chapter: 3, verse: 16, text: 'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.' },
+  { bookSlug: 'romans', book: 'Romans', chapter: 8, verse: 28, text: 'And we know that all things work together for good to them that love God, to them who are the called according to his purpose.' },
+  { bookSlug: 'hebrews', book: 'Hebrews', chapter: 11, verse: 1, text: 'Now faith is the substance of things hoped for, the evidence of things not seen.' },
+];
+
+function bookSlug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function normalizeBibleVerse(verse: any) {
+  const book = verse.book || verse.book_name || verse.bookSlug || verse.bookSlug?.replace(/-/g, ' ') || '';
+  const slug = verse.bookSlug || bookSlug(book);
+  return {
+    id: verse.id || `${slug}-${verse.chapter}-${verse.verse}`,
+    translationCode: (verse.translationCode || 'kjv').toLowerCase(),
+    bookSlug: slug,
+    book: book || slug.replace(/-/g, ' '),
+    chapter: Number(verse.chapter),
+    verse: Number(verse.verse),
+    text: verse.text,
+    reference: `${book || slug.replace(/-/g, ' ')} ${verse.chapter}:${verse.verse}`,
+  };
+}
+
+async function fetchKjvReference(reference: string) {
+  try {
+    const response = await fetch(`https://bible-api.com/${encodeURIComponent(reference)}?translation=kjv`);
+    if (!response.ok) return [];
+    const json: any = await response.json();
+    const verses = Array.isArray(json.verses) ? json.verses : [];
+    return verses.map(normalizeBibleVerse);
+  } catch {
+    return [];
+  }
+}
+
+async function bibleChapterFallback(translation: string, book: string, chapter: number) {
+  if (translation.toLowerCase() !== 'kjv') return [];
+  const remote = await fetchKjvReference(`${book} ${chapter}`);
+  if (remote.length) return remote;
+  return FALLBACK_KJV_VERSES
+    .filter((verse) => verse.bookSlug === bookSlug(book) && verse.chapter === chapter)
+    .map(normalizeBibleVerse);
+}
+
+async function bibleReferenceFallback(translation: string, reference: string) {
+  if (translation.toLowerCase() !== 'kjv') return [];
+  const remote = await fetchKjvReference(reference);
+  if (remote.length) return remote;
+  const needle = reference.toLowerCase().replace(/\s+/g, ' ').trim();
+  return FALLBACK_KJV_VERSES
+    .filter((verse) => `${verse.book} ${verse.chapter}:${verse.verse}`.toLowerCase() === needle)
+    .map(normalizeBibleVerse);
+}
 
 function safeJson<T>(value: string | null | undefined, fallback: T): T {
   if (!value) return fallback;
@@ -288,6 +636,334 @@ router.get('/site-context', dnsMiddleware, async (req: Request, res: Response) =
 // ─────────────────────────────────────────────────────────────
 // ADMIN ENDPOINTS (Requires authentication & entitlement locks)
 // ─────────────────────────────────────────────────────────────
+// Public Church Services archive/detail/replay endpoints.
+router.get('/services', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    if (!(await hasActiveModule(tenantId, CHURCH_SERVICES_MODULE_KEY))) {
+      res.status(403).json({ error: 'Church Services module is inactive' });
+      return;
+    }
+
+    const result = await ChurchServicesService.listPublicServices(tenantId, churchServiceFilters(req));
+    res.json({
+      data: result.services,
+      meta: {
+        total: result.total,
+        page: result.page,
+        pageSize: result.pageSize,
+      },
+      serviceTypes: result.serviceTypes,
+      latestService: result.latestService,
+      upcomingServices: result.upcomingServices,
+      summary: result.summary,
+    });
+  } catch (err: any) {
+    console.error('Fetch public church services error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.get('/services/:id', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    if (!(await hasActiveModule(tenantId, CHURCH_SERVICES_MODULE_KEY))) {
+      res.status(403).json({ error: 'Church Services module is inactive' });
+      return;
+    }
+
+    const data = await ChurchServicesService.getPublicService(req.params.id as string, tenantId, { trackView: true });
+    res.json({ data });
+  } catch (err: any) {
+    console.error('Fetch public church service detail error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.post('/services/:id/replay', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    if (!(await hasActiveModule(tenantId, CHURCH_SERVICES_MODULE_KEY))) {
+      res.status(403).json({ error: 'Church Services module is inactive' });
+      return;
+    }
+
+    const data = await ChurchServicesService.recordPublicReplay(tenantId, req.params.id as string);
+    res.json({ data });
+  } catch (err: any) {
+    console.error('Record public church service replay error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+// Public Livestream player context, chat, interactions, and Bible lookup endpoints.
+router.get('/livestream', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    const data = await getPublicLivestreamContext(tenantId, req.query as Record<string, any>);
+    res.json({ data });
+  } catch (err: any) {
+    console.error('Fetch public livestream context error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.get('/livestream/:id', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    const data = await getPublicLivestreamContext(tenantId, req.query as Record<string, any>, req.params.id as string);
+    if (!data.stream) {
+      res.status(404).json({ error: 'Livestream not found' });
+      return;
+    }
+    res.json({ data });
+  } catch (err: any) {
+    console.error('Fetch public livestream detail error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.get('/livestream/:id/chat', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+    await assertPublicLivestreamAccess(tenantId);
+    const stream = await findPublicLivestream(tenantId, req.params.id as string);
+    if (!stream) {
+      res.status(404).json({ error: 'Livestream not found' });
+      return;
+    }
+    if (!stream.chatEnabled) {
+      res.status(403).json({ error: 'Live chat is disabled for this stream.' });
+      return;
+    }
+
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
+    const messages = await getChatMessages(stream.id, limit);
+    res.json({ data: messages });
+  } catch (err: any) {
+    console.error('Fetch public livestream chat error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.post('/livestream/:id/chat', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+    await assertPublicLivestreamAccess(tenantId);
+    const stream = await findPublicLivestream(tenantId, req.params.id as string);
+    if (!stream) {
+      res.status(404).json({ error: 'Livestream not found' });
+      return;
+    }
+    if (stream.status !== 'live') {
+      res.status(400).json({ error: 'Cannot send chat message to an inactive broadcast.' });
+      return;
+    }
+    if (!stream.chatEnabled) {
+      res.status(403).json({ error: 'Live chat is disabled for this stream.' });
+      return;
+    }
+
+    const displayName = String(req.body?.displayName || '').trim();
+    const message = String(req.body?.message || '').trim();
+    if (!displayName || !message) {
+      res.status(400).json({ error: 'displayName and message are required' });
+      return;
+    }
+
+    const chat = await sendChatMessage(stream.id, tenantId, null, displayName.slice(0, 80), message.slice(0, 1000));
+    res.status(201).json({ data: chat });
+  } catch (err: any) {
+    console.error('Send public livestream chat error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.post('/livestream/:id/interactions', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+    await assertPublicLivestreamAccess(tenantId);
+    const stream = await findPublicLivestream(tenantId, req.params.id as string);
+    if (!stream) {
+      res.status(404).json({ error: 'Livestream not found' });
+      return;
+    }
+
+    const type = String(req.body?.type || '').trim();
+    const content = req.body?.content === undefined ? undefined : String(req.body.content).slice(0, 2000);
+    if (!PUBLIC_INTERACTION_TYPES.includes(type)) {
+      res.status(400).json({ error: `type must be one of: ${PUBLIC_INTERACTION_TYPES.join(', ')}` });
+      return;
+    }
+
+    const interaction = await submitInteraction(stream.id, tenantId, type, undefined, content);
+    res.status(201).json({ data: interaction });
+  } catch (err: any) {
+    console.error('Submit public livestream interaction error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.post('/livestream/:id/viewers/join', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+    await assertPublicLivestreamAccess(tenantId);
+    const stream = await findPublicLivestream(tenantId, req.params.id as string);
+    if (!stream) {
+      res.status(404).json({ error: 'Livestream not found' });
+      return;
+    }
+
+    const viewer = await trackViewerJoin(stream.id, tenantId, undefined, req.body?.sessionId);
+    res.status(201).json({ data: viewer });
+  } catch (err: any) {
+    console.error('Public livestream viewer join error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.post('/livestream/:id/viewers/leave', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+    await assertPublicLivestreamAccess(tenantId);
+    if (!req.body?.viewerId) {
+      res.status(400).json({ error: 'viewerId is required' });
+      return;
+    }
+
+    const viewer = await trackViewerLeave(req.body.viewerId as string);
+    res.json({ data: viewer });
+  } catch (err: any) {
+    console.error('Public livestream viewer leave error:', err);
+    res.status(statusForChurchServices(err)).json({ error: err.message });
+  }
+});
+
+router.get('/bible/read/:translation/:book/:chapter', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    const translation = req.params.translation as string;
+    const book = req.params.book as string;
+    const chapter = parseInt(req.params.chapter as string, 10);
+    const verses = await getChapter(tenantId, translation, bookSlug(book), chapter);
+    const data = verses.length ? verses.map(normalizeBibleVerse) : await bibleChapterFallback(translation, book, chapter);
+    res.json({ data });
+  } catch (err: any) {
+    console.error('Public Bible chapter error:', err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.get('/bible/search', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    const translation = String(req.query.translation || 'kjv');
+    const q = String(req.query.q || '').trim();
+    if (!q) {
+      res.status(400).json({ error: 'q is required' });
+      return;
+    }
+
+    const verses = await searchBible(tenantId, translation, q);
+    let data = verses.map(normalizeBibleVerse);
+    if (!data.length && /\d+:\d+/.test(q)) {
+      data = await bibleReferenceFallback(translation, q);
+    }
+    if (!data.length && translation.toLowerCase() === 'kjv') {
+      const needle = q.toLowerCase();
+      data = FALLBACK_KJV_VERSES
+        .filter((verse) => verse.text.toLowerCase().includes(needle) || `${verse.book} ${verse.chapter}:${verse.verse}`.toLowerCase().includes(needle))
+        .map(normalizeBibleVerse);
+    }
+    res.json({ data });
+  } catch (err: any) {
+    console.error('Public Bible search error:', err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.get('/bible/resolve', dnsMiddleware, async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.tenantId;
+    if (!tenantId) {
+      res.status(404).json({ error: 'Website context not found' });
+      return;
+    }
+
+    const translation = String(req.query.translation || 'kjv');
+    const ref = String(req.query.ref || '').trim();
+    if (!ref) {
+      res.status(400).json({ error: 'ref is required' });
+      return;
+    }
+
+    const verses = await resolveScriptureReference(tenantId, translation, ref).catch(() => []);
+    const data = verses.length ? verses.map(normalizeBibleVerse) : await bibleReferenceFallback(translation, ref);
+    res.json({ data });
+  } catch (err: any) {
+    console.error('Public Bible resolve error:', err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
 router.use(authMiddleware);
 router.use(requireModule('website-cms'));
 

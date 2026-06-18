@@ -8364,6 +8364,10 @@ body.customizer-open { overflow: hidden; }
                     <i data-lucide="activity"></i>
                     <span>Interactions Log</span>
                   </button>
+                  <button class="cms-nav-item" data-live-tab="settings" onclick="switchLiveTab('settings')">
+                    <i data-lucide="layout-template"></i>
+                    <span>Player CTAs</span>
+                  </button>
                 </div>
               </aside>
 
@@ -8388,6 +8392,7 @@ body.customizer-open { overflow: hidden; }
                           <th>Countdown</th>
                           <th>Chat</th>
                           <th>Status</th>
+                          <th>Churchfront</th>
                           <th style="text-align:right; padding-right:18px;">Actions & Control</th>
                         </tr>
                       </thead>
@@ -8517,6 +8522,52 @@ body.customizer-open { overflow: hidden; }
                         <!-- Populated dynamically -->
                       </tbody>
                     </table>
+                  </div>
+                </div>
+
+                <!-- 5. LIVESTREAM PLAYER CTA SETTINGS TAB -->
+                <div id="liveSettingsTab" class="live-tab-content hidden">
+                  <div class="section-head" style="margin-bottom:20px; align-items:center; justify-content:space-between;">
+                    <div>
+                      <h2>Livestream Player CTAs</h2>
+                      <p>Configure the service-moment cards shown as Today in Service, Earlier on in Service, Yesterday in Service, and In this Service.</p>
+                    </div>
+                    <button class="btn primary" onclick="saveLivestreamPlayerSettings()"><i data-lucide="save"></i>Save Player CTAs</button>
+                  </div>
+                  <div class="panel" style="display:grid; gap:18px;">
+                    <div class="grid" style="grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px;">
+                      <div class="setting-row row">
+                        <div>
+                          <strong>Prayer panel</strong>
+                          <span class="muted">Allow public prayer CTAs.</span>
+                        </div>
+                        <button id="livePrayerToggle" class="toggle on" onclick="toggleLivestreamSetting('prayerRequestEnabled')" aria-label="Toggle prayer panel"></button>
+                      </div>
+                      <div class="setting-row row">
+                        <div>
+                          <strong>Giving panel</strong>
+                          <span class="muted">Show giving links in player.</span>
+                        </div>
+                        <button id="liveGivingToggle" class="toggle on" onclick="toggleLivestreamSetting('givingButtonEnabled')" aria-label="Toggle giving panel"></button>
+                      </div>
+                      <div class="setting-row row">
+                        <div>
+                          <strong>Notes panel</strong>
+                          <span class="muted">Let viewers save sermon notes.</span>
+                        </div>
+                        <button id="liveNotesToggle" class="toggle on" onclick="toggleLivestreamSetting('notesPanelEnabled')" aria-label="Toggle notes panel"></button>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="section-head" style="margin-bottom:12px;">
+                        <div>
+                          <h3 style="margin:0;">Service Moment Cards</h3>
+                          <p>Each card can open an internal player panel with <code>#prayer</code>, <code>#notes</code>, <code>#bible</code>, <code>#chat</code>, or link to a churchfront path like <code>/giving</code>.</p>
+                        </div>
+                        <button class="btn small" onclick="addLivestreamCtaCard()"><i data-lucide="plus"></i>Add Card</button>
+                      </div>
+                      <div id="livestreamCtaSettingsList" class="settings-list"></div>
+                    </div>
                   </div>
                 </div>
 
@@ -9994,14 +10045,35 @@ body.customizer-open { overflow: hidden; }
                     </div>
                   </div>
 
+                  <div id="servicesSummaryCards" class="grid" style="grid-template-columns: repeat(4, minmax(150px, 1fr)); gap:12px; margin-bottom:16px;">
+                    <div class="panel" style="display:flex; flex-direction:column; gap:6px;">
+                      <span class="muted">Published</span>
+                      <strong id="csSummaryPublished" style="font-size:22px;">0</strong>
+                    </div>
+                    <div class="panel" style="display:flex; flex-direction:column; gap:6px;">
+                      <span class="muted">Upcoming</span>
+                      <strong id="csSummaryUpcoming" style="font-size:22px;">0</strong>
+                    </div>
+                    <div class="panel" style="display:flex; flex-direction:column; gap:6px;">
+                      <span class="muted">Attendance</span>
+                      <strong id="csSummaryAttendance" style="font-size:22px;">0</strong>
+                    </div>
+                    <div class="panel" style="display:flex; flex-direction:column; gap:8px;">
+                      <span class="muted">Public Archive</span>
+                      <a id="csPublicArchiveLink" class="btn btn-sm" href="/services" target="_blank" rel="noopener"><i data-lucide="external-link"></i>Open</a>
+                    </div>
+                  </div>
+
                   <div class="panel" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
                     <div class="field" style="margin-bottom:0;">
                       <select id="servicesFilterType" class="select" onchange="bootstrapChurchServices()" style="min-width:140px;">
                         <option value="">All Service Types</option>
-                        <option value="Sunday Main">Sunday Main</option>
-                        <option value="Mid-week Service">Mid-week Service</option>
-                        <option value="Youth Service">Youth Service</option>
-                        <option value="Special Service">Special Service</option>
+                        <option value="sunday">Sunday Service</option>
+                        <option value="midweek">Midweek Service</option>
+                        <option value="prayer">Prayer Service</option>
+                        <option value="communion">Communion Service</option>
+                        <option value="youth">Youth Service</option>
+                        <option value="special">Special Service</option>
                       </select>
                     </div>
                     <div class="field" style="margin-bottom:0; flex:1; min-width:200px;">
@@ -10044,9 +10116,10 @@ body.customizer-open { overflow: hidden; }
                       <div class="field">
                         <label>Service Type</label>
                         <select id="csGenType" class="select" style="width:100%;">
-                          <option value="Sunday Main">Sunday Main</option>
-                          <option value="Mid-week Service">Mid-week Service</option>
-                          <option value="Youth Service">Youth Service</option>
+                          <option value="sunday">Sunday Service</option>
+                          <option value="midweek">Midweek Service</option>
+                          <option value="prayer">Prayer Service</option>
+                          <option value="youth">Youth Service</option>
                         </select>
                       </div>
                       <div class="field">
@@ -24725,9 +24798,83 @@ body.customizer-open { overflow: hidden; }
       chatMessages: [],
       interactions: [],
       analytics: null,
+      settings: null,
       activeViewerSessionId: null,
       chatPollInterval: null
     };
+
+    const DEFAULT_LIVESTREAM_CTAS = [
+      {
+        id: 'welcome',
+        title: 'First Time Here?',
+        summary: 'Tell us you are worshipping with us and a host can help you take the next step.',
+        details: 'Use this card to route first-time guests toward a welcome form, connection card, or membership path during the livestream.',
+        buttonLabel: 'Connect With Us',
+        buttonUrl: '/account',
+        theme: 'sunrise',
+        enabled: true
+      },
+      {
+        id: 'prayer',
+        title: 'Need Prayer?',
+        summary: 'Share a prayer request with the ministry team while service is in progress.',
+        details: 'Prayer requests submitted from the livestream are captured as broadcast interactions for follow-up.',
+        buttonLabel: 'Open Prayer',
+        buttonUrl: '#prayer',
+        theme: 'ocean',
+        enabled: true
+      },
+      {
+        id: 'giving',
+        title: 'Give During Service',
+        summary: 'Honor God with your giving through the secure church giving page.',
+        details: 'Giving clicks are tracked as livestream interactions so admins can understand service engagement.',
+        buttonLabel: 'Give Now',
+        buttonUrl: '/giving',
+        theme: 'rose',
+        enabled: true
+      },
+      {
+        id: 'notes',
+        title: 'Capture The Word',
+        summary: 'Open the Bible and notes panel to keep scriptures and sermon points together.',
+        details: 'Viewers can search the KJV Bible, copy selected verses, and save personal notes locally.',
+        buttonLabel: 'Open Notes',
+        buttonUrl: '#notes',
+        theme: 'forest',
+        enabled: true
+      }
+    ];
+
+    function parseLivestreamConfig() {
+      const raw = liveState.settings?.configJson;
+      if (!raw) return {};
+      if (typeof raw === 'object') return raw;
+      try {
+        return JSON.parse(raw);
+      } catch {
+        return {};
+      }
+    }
+
+    function setLivestreamConfig(config) {
+      liveState.settings = liveState.settings || {};
+      liveState.settings.configJson = JSON.stringify(config || {});
+    }
+
+    function getLivestreamCtas() {
+      const config = parseLivestreamConfig();
+      return Array.isArray(config.serviceMomentCtas) && config.serviceMomentCtas.length
+        ? config.serviceMomentCtas
+        : DEFAULT_LIVESTREAM_CTAS.map(item => ({ ...item }));
+    }
+
+    function livestreamPublicPlayerUrl(streamId) {
+      const subdomain = localStorage.getItem('churchos.subdomain') || state.tenant?.subdomain || '';
+      const path = streamId ? `/livestream/${streamId}` : '/livestream';
+      if (subdomain) return `https://${subdomain}.churched.online${path}`;
+      return path;
+    }
 
     window.switchLiveTab = function(tabId) {
       // Clear existing poll intervals if leaving interactive player tab
@@ -24753,7 +24900,10 @@ body.customizer-open { overflow: hidden; }
     };
 
     window.bootstrapLive = async function() {
-      const res = await cmsApiRequest('GET', '/api/livestream/streams');
+      const [res, settingsRes] = await Promise.all([
+        cmsApiRequest('GET', '/api/livestream/streams'),
+        cmsApiRequest('GET', '/api/livestream/settings')
+      ]);
       if (res && res.ok) {
         liveState.streams = res.data || [];
         
@@ -24767,6 +24917,9 @@ body.customizer-open { overflow: hidden; }
           }
         }
       }
+      if (settingsRes && settingsRes.ok) {
+        liveState.settings = settingsRes.data || null;
+      }
       window.switchLiveTab(liveState.activeTab);
     };
 
@@ -24775,7 +24928,7 @@ body.customizer-open { overflow: hidden; }
         const tbody = document.getElementById('liveStreamsList');
         if (!tbody) return;
         if (liveState.streams.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="muted" style="text-align:center; padding:20px;">No broadcast streams found.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="muted" style="text-align:center; padding:20px;">No broadcast streams found.</td></tr>`;
           return;
         }
         tbody.innerHTML = liveState.streams.map(s => {
@@ -24804,6 +24957,11 @@ body.customizer-open { overflow: hidden; }
               <td>${s.countdownEnabled ? '✅ Enabled' : '❌ Disabled'}</td>
               <td>${s.chatEnabled ? '✅ Enabled' : '❌ Disabled'}</td>
               <td><span class="${statusClass}">${s.status.toUpperCase()}</span></td>
+              <td>
+                <a class="btn small" href="${livestreamPublicPlayerUrl(s.id)}" target="_blank" rel="noopener">
+                  <i data-lucide="external-link"></i>Player
+                </a>
+              </td>
               <td style="text-align:right; padding-right:18px;">
                 <div class="row" style="gap:6px; justify-content:flex-end;">${actions}</div>
               </td>
@@ -24961,9 +25119,146 @@ body.customizer-open { overflow: hidden; }
         } else {
           tbody.innerHTML = `<tr><td colspan="4" class="muted" style="text-align:center; padding:20px;">Failed to load interaction records.</td></tr>`;
         }
+      } else if (tabId === 'settings') {
+        renderLivestreamSettingsTab();
       }
       refreshIcons();
     }
+
+    function renderLivestreamSettingsTab() {
+      const config = parseLivestreamConfig();
+      const ctas = getLivestreamCtas();
+      const toggles = [
+        ['livePrayerToggle', 'prayerRequestEnabled'],
+        ['liveGivingToggle', 'givingButtonEnabled'],
+        ['liveNotesToggle', 'notesPanelEnabled']
+      ];
+      toggles.forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('on', config[key] !== false);
+      });
+
+      const list = document.getElementById('livestreamCtaSettingsList');
+      if (!list) return;
+      list.innerHTML = ctas.map((item, index) => `
+        <div class="settings-card" style="display:grid; gap:12px;">
+          <div class="row" style="align-items:center; justify-content:space-between; gap:12px;">
+            <div>
+              <strong>CTA Card ${index + 1}</strong>
+              <span class="muted">Published in the public livestream service-moment carousel.</span>
+            </div>
+            <div class="row" style="gap:8px;">
+              <label class="row" style="gap:6px; font-size:12px; color:var(--muted);">
+                <input type="checkbox" data-live-cta-field="enabled" data-live-cta-index="${index}" ${item.enabled !== false ? 'checked' : ''} style="width:16px; height:16px;">
+                Enabled
+              </label>
+              <button class="btn btn-sm btn-outline danger" onclick="removeLivestreamCtaCard(${index})"><i data-lucide="trash-2"></i></button>
+            </div>
+          </div>
+          <div class="grid" style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px;">
+            <div class="field">
+              <label>Title</label>
+              <input class="form-control" data-live-cta-field="title" data-live-cta-index="${index}" value="${escapeHtml(item.title || '')}" placeholder="e.g. Need Prayer?" />
+            </div>
+            <div class="field">
+              <label>Button Label</label>
+              <input class="form-control" data-live-cta-field="buttonLabel" data-live-cta-index="${index}" value="${escapeHtml(item.buttonLabel || '')}" placeholder="e.g. Open Prayer" />
+            </div>
+            <div class="field">
+              <label>Target URL / Panel</label>
+              <input class="form-control" data-live-cta-field="buttonUrl" data-live-cta-index="${index}" value="${escapeHtml(item.buttonUrl || '')}" placeholder="#prayer, #notes, /giving" />
+            </div>
+            <div class="field">
+              <label>Visual Theme</label>
+              <select class="select" data-live-cta-field="theme" data-live-cta-index="${index}">
+                ${['sunrise', 'ocean', 'rose', 'forest', 'gold'].map(theme => `<option value="${theme}" ${item.theme === theme ? 'selected' : ''}>${theme}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Short Summary</label>
+            <input class="form-control" data-live-cta-field="summary" data-live-cta-index="${index}" value="${escapeHtml(item.summary || '')}" placeholder="Short text shown on the card" />
+          </div>
+          <div class="field">
+            <label>Modal Details</label>
+            <textarea class="form-control" data-live-cta-field="details" data-live-cta-index="${index}" style="height:82px; resize:vertical;" placeholder="Longer details shown when a viewer opens the card">${escapeHtml(item.details || '')}</textarea>
+          </div>
+        </div>
+      `).join('');
+      refreshIcons();
+    }
+
+    window.toggleLivestreamSetting = function(key) {
+      const config = parseLivestreamConfig();
+      config[key] = config[key] === false;
+      setLivestreamConfig(config);
+      renderLivestreamSettingsTab();
+    };
+
+    function collectLivestreamCtaForm() {
+      const rows = getLivestreamCtas();
+      document.querySelectorAll('[data-live-cta-index]').forEach((el) => {
+        const index = Number(el.dataset.liveCtaIndex);
+        const field = el.dataset.liveCtaField;
+        if (!rows[index] || !field) return;
+        rows[index][field] = field === 'enabled' ? el.checked : el.value;
+      });
+      return rows
+        .map((item, index) => ({
+          id: item.id || `cta-${Date.now()}-${index}`,
+          title: (item.title || '').trim(),
+          summary: (item.summary || '').trim(),
+          details: (item.details || '').trim(),
+          buttonLabel: (item.buttonLabel || '').trim() || 'Open',
+          buttonUrl: (item.buttonUrl || '').trim() || '#',
+          theme: item.theme || 'sunrise',
+          enabled: item.enabled !== false
+        }))
+        .filter(item => item.title && item.summary);
+    }
+
+    window.addLivestreamCtaCard = function() {
+      const config = parseLivestreamConfig();
+      config.serviceMomentCtas = collectLivestreamCtaForm();
+      config.serviceMomentCtas.push({
+        id: `cta-${Date.now()}`,
+        title: 'New Service Action',
+        summary: 'Describe the action viewers should take during service.',
+        details: 'Add details church members and visitors should see when they open this service action.',
+        buttonLabel: 'Open',
+        buttonUrl: '#prayer',
+        theme: 'gold',
+        enabled: true
+      });
+      setLivestreamConfig(config);
+      renderLivestreamSettingsTab();
+    };
+
+    window.removeLivestreamCtaCard = function(index) {
+      const config = parseLivestreamConfig();
+      config.serviceMomentCtas = collectLivestreamCtaForm().filter((_, idx) => idx !== index);
+      setLivestreamConfig(config);
+      renderLivestreamSettingsTab();
+    };
+
+    window.saveLivestreamPlayerSettings = async function() {
+      const config = parseLivestreamConfig();
+      config.serviceMomentCtas = collectLivestreamCtaForm();
+      showToast('Saving livestream player CTAs...');
+      const res = await cmsApiRequest('PATCH', '/api/livestream/settings', {
+        enabled: liveState.settings?.enabled !== false,
+        billingPlan: liveState.settings?.billingPlan || 'free',
+        providerMode: liveState.settings?.providerMode || 'hybrid',
+        configJson: config
+      });
+      if (res && res.ok) {
+        liveState.settings = res.data || liveState.settings;
+        showToast('Livestream player CTAs saved.');
+        renderLivestreamSettingsTab();
+      } else {
+        alert('Failed to save livestream player CTAs: ' + (res?.error || 'Server error'));
+      }
+    };
 
     async function loadChatMessages() {
       if (!liveState.selectedStreamId) return;
@@ -28810,8 +29105,49 @@ body.customizer-open { overflow: hidden; }
     const churchServicesState = {
       activeTab: 'directory',
       services: [],
-      selectedServiceId: null
+      selectedServiceId: null,
+      overview: null,
+      reports: null
     };
+
+    function formatChurchServiceType(value) {
+      const labels = {
+        sunday: 'Sunday Service',
+        midweek: 'Midweek Service',
+        prayer: 'Prayer Service',
+        communion: 'Communion Service',
+        healing: 'Healing Service',
+        thanksgiving: 'Thanksgiving Service',
+        youth: 'Youth Service',
+        special: 'Special Service',
+        other: 'Other Service',
+        'Sunday Main': 'Sunday Service',
+        'Mid-week Service': 'Midweek Service'
+      };
+      return labels[value] || String(value || 'Service').replace(/[-_]+/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    function churchServicesPublicArchiveUrl() {
+      const subdomain = localStorage.getItem('churchos.subdomain') || state.tenant?.subdomain || '';
+      if (subdomain) return `https://${subdomain}.churched.online/services`;
+      return '/services';
+    }
+
+    function renderChurchServicesSummary() {
+      const overview = churchServicesState.overview || {};
+      const reports = churchServicesState.reports || {};
+      const counts = overview.counts || {};
+      const totals = overview.totals || {};
+      const summary = reports.summary || {};
+      const publicLink = document.getElementById('csPublicArchiveLink');
+      const publishedEl = document.getElementById('csSummaryPublished');
+      const upcomingEl = document.getElementById('csSummaryUpcoming');
+      const attendanceEl = document.getElementById('csSummaryAttendance');
+      if (publishedEl) publishedEl.textContent = String(counts.published || summary.published || churchServicesState.services.filter(s => s.status === 'published').length);
+      if (upcomingEl) upcomingEl.textContent = String(counts.upcoming || 0);
+      if (attendanceEl) attendanceEl.textContent = String(totals.attendance || summary.attendance || 0);
+      if (publicLink) publicLink.href = churchServicesPublicArchiveUrl();
+    }
 
     window.switchServicesTab = function(tabId) {
       churchServicesState.activeTab = tabId;
@@ -28834,17 +29170,24 @@ body.customizer-open { overflow: hidden; }
       let url = `/api/church-services?search=${encodeURIComponent(search)}`;
       if (type) url += `&serviceType=${encodeURIComponent(type)}`;
       
-      const res = await cmsApiRequest('GET', url);
+      const [res, overviewRes, reportsRes] = await Promise.all([
+        cmsApiRequest('GET', url),
+        cmsApiRequest('GET', '/api/church-services/overview'),
+        cmsApiRequest('GET', '/api/church-services/reports')
+      ]);
       if (res && res.ok) {
         churchServicesState.services = res.data || [];
       } else {
         churchServicesState.services = [
-          { id: 'svc-1', serviceDate: '2026-05-24T09:00:00Z', serviceType: 'Sunday Main', title: 'Sunday Worship Service', status: 'published', scriptures: [{reference:'Psalm 23'}], attachments: [] },
-          { id: 'svc-2', serviceDate: '2026-05-27T18:00:00Z', serviceType: 'Mid-week Service', title: 'Wednesday Communion & Prayer', status: 'published', scriptures: [], attachments: [] }
+          { id: 'svc-1', serviceDate: '2026-05-24T09:00:00Z', serviceType: 'sunday', title: 'Sunday Worship Service', status: 'published', visibility: 'public', scriptures: [{reference:'Psalm 23'}], attachments: [] },
+          { id: 'svc-2', serviceDate: '2026-05-27T18:00:00Z', serviceType: 'midweek', title: 'Wednesday Communion & Prayer', status: 'published', visibility: 'public', scriptures: [], attachments: [] }
         ];
       }
+      churchServicesState.overview = overviewRes && overviewRes.ok ? overviewRes.data : null;
+      churchServicesState.reports = reportsRes && reportsRes.ok ? reportsRes.data : null;
       
       populateServiceSelects();
+      renderChurchServicesSummary();
       window.switchServicesTab(churchServicesState.activeTab);
     };
 
@@ -28874,7 +29217,7 @@ body.customizer-open { overflow: hidden; }
         tbody.innerHTML = churchServicesState.services.map(s => `
           <tr>
             <td><strong>${new Date(s.serviceDate).toLocaleDateString()}</strong></td>
-            <td><span class="badge font-semibold text-[10px]">${escapeHtml(s.serviceType)}</span></td>
+            <td><span class="badge font-semibold text-[10px]">${escapeHtml(formatChurchServiceType(s.serviceType))}</span></td>
             <td><strong>${escapeHtml(s.title)}</strong></td>
             <td><span class="badge ${s.status === 'published' ? 'success' : 'warning'}">${escapeHtml(s.status)}</span></td>
             <td>${s.scriptures && s.scriptures.length ? s.scriptures.map(sc => `<span class="tag">${escapeHtml(sc.reference)}</span>`).join(' ') : '<span class="muted">-</span>'}</td>
@@ -28917,7 +29260,7 @@ body.customizer-open { overflow: hidden; }
       if (res && res.ok) {
         showToast('Services successfully generated.');
         consoleLog.innerHTML = res.data.map(svc => 
-          `<div><span style="color:#4ade80;">[Success]</span> Created ${escapeHtml(svc.title)} for ${new Date(svc.serviceDate).toLocaleDateString()} [Status: ${svc.status}]</div>`
+          `<div><span style="color:#4ade80;">[Success]</span> Created ${escapeHtml(svc.title)} for ${new Date(svc.serviceDate).toLocaleDateString()} [${escapeHtml(formatChurchServiceType(svc.serviceType))} - ${svc.status}]</div>`
         ).join('');
         bootstrapChurchServices();
       } else {
@@ -29036,10 +29379,12 @@ body.customizer-open { overflow: hidden; }
           <div class="field">
             <label>Service Type</label>
             <select id="newSvcType" class="select" style="width:100%;">
-              <option value="Sunday Main">Sunday Main</option>
-              <option value="Mid-week Service">Mid-week Service</option>
-              <option value="Youth Service">Youth Service</option>
-              <option value="Special Service">Special Service</option>
+              <option value="sunday">Sunday Service</option>
+              <option value="midweek">Midweek Service</option>
+              <option value="prayer">Prayer Service</option>
+              <option value="communion">Communion Service</option>
+              <option value="youth">Youth Service</option>
+              <option value="special">Special Service</option>
             </select>
           </div>
           <div class="field">
@@ -29065,7 +29410,7 @@ body.customizer-open { overflow: hidden; }
         
         showToast('Registering service...');
         const res = await cmsApiRequest('POST', '/api/church-services', {
-          serviceDate, serviceType, title, status: 'published'
+          serviceDate, serviceType, title, status: 'published', visibility: 'public', locationMode: 'hybrid'
         });
         
         if (res && res.ok) {
@@ -29090,10 +29435,12 @@ body.customizer-open { overflow: hidden; }
           <div class="field">
             <label>Service Type</label>
             <select id="editSvcType" class="select" style="width:100%;">
-              <option value="Sunday Main" ${service.serviceType === 'Sunday Main' ? 'selected' : ''}>Sunday Main</option>
-              <option value="Mid-week Service" ${service.serviceType === 'Mid-week Service' ? 'selected' : ''}>Mid-week Service</option>
-              <option value="Youth Service" ${service.serviceType === 'Youth Service' ? 'selected' : ''}>Youth Service</option>
-              <option value="Special Service" ${service.serviceType === 'Special Service' ? 'selected' : ''}>Special Service</option>
+              <option value="sunday" ${service.serviceType === 'sunday' ? 'selected' : ''}>Sunday Service</option>
+              <option value="midweek" ${service.serviceType === 'midweek' ? 'selected' : ''}>Midweek Service</option>
+              <option value="prayer" ${service.serviceType === 'prayer' ? 'selected' : ''}>Prayer Service</option>
+              <option value="communion" ${service.serviceType === 'communion' ? 'selected' : ''}>Communion Service</option>
+              <option value="youth" ${service.serviceType === 'youth' ? 'selected' : ''}>Youth Service</option>
+              <option value="special" ${service.serviceType === 'special' ? 'selected' : ''}>Special Service</option>
             </select>
           </div>
           <div class="field">

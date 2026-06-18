@@ -283,6 +283,59 @@ export class ChurchServicesService {
     } as const;
   }
 
+  private static serviceTypesForConfig(config: Record<string, any>) {
+    return Array.from(SERVICE_TYPES)
+      .filter((key) => {
+        const feature = SERVICE_TYPE_FEATURES[key];
+        return !feature || config[feature] !== false;
+      })
+      .map((key) => ({ key, label: SERVICE_TYPE_LABELS[key] }));
+  }
+
+  private static withPublicLabels<T extends { id: string; serviceType: string; settingsJson?: string | null; livestreamId?: string | null; livestream?: any }>(service: T) {
+    const source: any = service;
+    const {
+      tenantId,
+      attendanceCount,
+      givingTotal,
+      salvationCount,
+      settingsJson,
+      createdById,
+      livestream,
+      ...publicService
+    } = source;
+    const livestreamId = livestream?.id || source.livestreamId || null;
+
+    return {
+      ...publicService,
+      livestream: livestream ? {
+        id: livestream.id,
+        title: livestream.title,
+        description: livestream.description,
+        scheduledAt: livestream.scheduledAt,
+        startedAt: livestream.startedAt,
+        endedAt: livestream.endedAt,
+        status: livestream.status,
+        thumbnailUrl: livestream.thumbnailUrl,
+        countdownEnabled: livestream.countdownEnabled,
+        chatEnabled: livestream.chatEnabled,
+        replayAssetId: livestream.replayAssetId || null,
+      } : null,
+      serviceTypeLabel: SERVICE_TYPE_LABELS[service.serviceType] || service.serviceType,
+      watchUrl: livestreamId
+        ? `/livestream/${encodeURIComponent(livestreamId)}?serviceId=${encodeURIComponent(service.id)}`
+        : `/livestream?serviceId=${encodeURIComponent(service.id)}`,
+    };
+  }
+
+  private static async assertPublicArchiveEnabled(tenantId: string) {
+    const settings = await this.getSettings(tenantId);
+    assertEnabled(settings);
+    const config = parseJson<Record<string, any>>(settings.configJson, DEFAULT_CONFIG);
+    if (config.enablePublicArchive === false) throw new Error('Public service archive is disabled');
+    return { settings, config };
+  }
+
   static async logActivity(tenantId: string, userId: string | null | undefined, actionType: string, metadata: any = {}) {
     const activity = await prisma.churchServicesModuleActivity.create({
       data: {
@@ -543,6 +596,122 @@ export class ChurchServicesService {
     return { services, total, page, pageSize };
   }
 
+  static async listPublicServices(tenantId: string, filters: ChurchServiceFilters = {}) {
+    const { config } = await this.assertPublicArchiveEnabled(tenantId);
+    const page = Math.max(Number(filters.page || 1), 1);
+    const pageSize = Math.min(Math.max(Number(filters.pageSize || 24), 1), 100);
+    const sortOrder = filters.sortOrder && SORT_ORDERS.has(filters.sortOrder)
+      ? filters.sortOrder
+      : (config.archiveSortOrder === 'asc' ? 'asc' : 'desc');
+    const where: any = {
+      tenantId,
+      status: 'published',
+      visibility: 'public',
+    };
+
+    if (filters.serviceType) {
+      const serviceType = normalizeServiceType(filters.serviceType, false);
+      if (serviceType) {
+        serviceTypeAllowed(serviceType, config);
+        where.serviceType = serviceType;
+      }
+    }
+    if (filters.speakerId) where.speakerId = filters.speakerId;
+    if (filters.search) {
+      where.OR = [
+        { title: { contains: filters.search } },
+        { description: { contains: filters.search } },
+        { notes: { contains: filters.search } },
+      ];
+    }
+    const from = rangeStart(filters.dateFrom);
+    const to = rangeEnd(filters.dateTo);
+    if (from || to) {
+      where.serviceDate = {};
+      if (from) where.serviceDate.gte = from;
+      if (to) where.serviceDate.lte = to;
+    }
+
+    const nowDate = new Date();
+    const [services, total, upcomingServices, latestService, publicServices] = await Promise.all([
+      prisma.churchService.findMany({
+        where,
+        include: this.includeService(),
+        orderBy: [{ serviceDate: sortOrder }, { archiveOrder: 'asc' }, { createdAt: 'desc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.churchService.count({ where }),
+      prisma.churchService.findMany({
+        where: { tenantId, status: 'published', visibility: 'public', serviceDate: { gte: nowDate } },
+        include: this.includeService(),
+        orderBy: [{ serviceDate: 'asc' }, { createdAt: 'desc' }],
+        take: 3,
+      }),
+      prisma.churchService.findFirst({
+        where: { tenantId, status: 'published', visibility: 'public', serviceDate: { lte: nowDate } },
+        include: this.includeService(),
+        orderBy: [{ serviceDate: 'desc' }, { createdAt: 'desc' }],
+      }),
+      prisma.churchService.findMany({
+        where: { tenantId, status: 'published', visibility: 'public' },
+        select: {
+          serviceType: true,
+          sermonMediaId: true,
+          livestreamId: true,
+          serviceAudioId: true,
+        },
+      }),
+    ]);
+
+    const byType: Record<string, number> = {};
+    let replayReady = 0;
+    for (const service of publicServices) {
+      byType[service.serviceType] = (byType[service.serviceType] || 0) + 1;
+      if (service.sermonMediaId || service.livestreamId || service.serviceAudioId) replayReady += 1;
+    }
+
+    return {
+      services: services.map((service) => this.withPublicLabels(service)),
+      total,
+      page,
+      pageSize,
+      serviceTypes: this.serviceTypesForConfig(config),
+      latestService: latestService ? this.withPublicLabels(latestService) : null,
+      upcomingServices: upcomingServices.map((service) => this.withPublicLabels(service)),
+      summary: {
+        published: publicServices.length,
+        replayReady,
+        byType,
+      },
+    };
+  }
+
+  static async getPublicService(id: string, tenantId: string, options: { trackView?: boolean } = {}) {
+    await this.assertPublicArchiveEnabled(tenantId);
+    const service = await prisma.churchService.findFirst({
+      where: {
+        id,
+        tenantId,
+        status: 'published',
+        visibility: { in: ['public', 'unlisted'] },
+      },
+      include: this.includeService(),
+    });
+    if (!service) throw new Error('Service not found');
+
+    if (options.trackView) {
+      await this.logActivity(tenantId, null, 'public_service_viewed', {
+        serviceId: service.id,
+        title: service.title,
+        source: 'churchfront',
+        value: 1,
+      }).catch(() => undefined);
+    }
+
+    return this.withPublicLabels(service);
+  }
+
   static async updateService(id: string, tenantId: string, data: Partial<ChurchServiceInput>, userId?: string | null) {
     const settings = await this.getSettings(tenantId);
     assertEnabled(settings);
@@ -724,6 +893,26 @@ export class ChurchServicesService {
     };
   }
 
+  static async recordPublicReplay(tenantId: string, serviceId: string) {
+    const service = await this.getPublicService(serviceId, tenantId);
+    await this.logActivity(tenantId, null, 'replay_requested', {
+      serviceId,
+      title: service.title,
+      source: 'churchfront',
+      value: 1,
+    });
+    return {
+      serviceId: service.id,
+      title: service.title,
+      serviceType: service.serviceType,
+      serviceTypeLabel: service.serviceTypeLabel,
+      sermonMedia: service.sermonMedia,
+      serviceAudio: service.serviceAudio,
+      livestream: service.livestream,
+      replayAvailable: Boolean(service.sermonMedia || service.livestream || service.serviceAudio),
+    };
+  }
+
   static async getTemplates(tenantId: string) {
     const [speakers, mediaAssets, audioAssets, livestreams, settings] = await Promise.all([
       prisma.speaker.findMany({ where: { tenantId }, orderBy: { name: 'asc' }, take: 100 }),
@@ -736,7 +925,7 @@ export class ChurchServicesService {
     return {
       moduleKey: CHURCH_SERVICES_MODULE_KEY,
       settings,
-      serviceTypes: Array.from(SERVICE_TYPES).map((key) => ({ key, label: SERVICE_TYPE_LABELS[key] })),
+      serviceTypes: this.serviceTypesForConfig(parseJson<Record<string, any>>(settings.configJson, DEFAULT_CONFIG)),
       defaultSchedules: [
         { serviceType: 'sunday', titleTemplate: 'Sunday Morning Service', dayOfWeek: 0, frequency: 'weekly' },
         { serviceType: 'midweek', titleTemplate: 'Wednesday Word & Prayer', dayOfWeek: 3, frequency: 'weekly' },
