@@ -88,7 +88,7 @@ const apiLimiter = rateLimit({
 });
 // ── Subdomain-aware church website routing ──────────────────
 // Production: [churchname].churched.online
-// Local dev:  [churchname].localhost:3000  (e.g. demo.localhost:3000)
+// Local dev:  [churchname].localhost:3000  (e.g. grace.localhost:3000)
 //
 // When a request arrives from a subdomain, serve the church-frontend SPA
 // for all page routes. API, admin, customizer, and asset routes pass through.
@@ -113,7 +113,8 @@ function extractSubdomain(host: string): string | null {
   return null;
 }
 
-const churchFrontendIndexPath = path.join(__dirname, '..', 'apps', 'church-frontend', 'dist', 'index.html');
+const churchFrontendDistPath = path.join(__dirname, '..', 'apps', 'church-frontend', 'dist');
+const churchFrontendIndexPath = path.join(churchFrontendDistPath, 'index.html');
 
 app.use((req, res, next) => {
   const rawHost = (req.headers['x-forwarded-host'] || req.headers.host) as string | undefined;
@@ -126,6 +127,10 @@ app.use((req, res, next) => {
   const p = req.path;
   if (SUBDOMAIN_PASSTHROUGH_PREFIXES.some(prefix => p === prefix || p.startsWith(prefix))) {
     return next();
+  }
+
+  if (p === '/sw.js' || p === '/manifest.json' || p.startsWith('/assets/')) {
+    return res.sendFile(path.join(churchFrontendDistPath, p.replace(/^\/+/, '')));
   }
 
   // Serve static assets that have file extensions (e.g. .js, .css, .png)
@@ -216,6 +221,7 @@ app.use('/api', apiLimiter, tenantMiddleware, localeMiddleware);
 // ── Route mounts ──────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/members', memberRoutes);
+app.use('/api/member-management', memberRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/cms', cmsRoutes);
 app.use('/api/core-website-cms', cmsRoutes);

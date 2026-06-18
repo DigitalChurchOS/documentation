@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Tv, Video, Mic, Newspaper, Calendar, BookOpen, GraduationCap, Music } from 'lucide-react';
+import { Tv, Video, Mic, Newspaper, Calendar, BookOpen, GraduationCap, Music, UserCircle } from 'lucide-react';
 import { useEcclesia } from './EcclesiaContext';
 import { isUrlEntitled } from '../../entitlements';
+import { withLocalChurchBase } from '../../routing';
 
 const RAIL_ITEMS = [
   { label: 'Media', path: '/media', icon: Tv },
@@ -13,6 +14,7 @@ const RAIL_ITEMS = [
   { label: 'Library', path: '/library', icon: BookOpen },
   { label: 'LMS', path: '/courses', icon: GraduationCap },
   { label: 'Worship', path: '/worship', icon: Music },
+  { label: 'Account', path: '/account', icon: UserCircle },
 ];
 
 interface Props {
@@ -22,7 +24,9 @@ interface Props {
 const EcclesiaLeftRail: React.FC<Props> = ({ embedded = false }) => {
   const { moduleEntitlements } = useEcclesia();
   const location = useLocation();
-  const activePath = location.pathname;
+  const activePath = location.pathname.startsWith('/church')
+    ? location.pathname.substring('/church'.length) || '/'
+    : location.pathname;
 
   // Filter items based on active module entitlements for the tenant
   const entitledItems = RAIL_ITEMS.filter(item => isUrlEntitled(item.path, moduleEntitlements));
@@ -37,7 +41,7 @@ const EcclesiaLeftRail: React.FC<Props> = ({ embedded = false }) => {
         return (
           <Link
             key={item.path}
-            to={item.path}
+            to={withLocalChurchBase(item.path)}
             className={`rail-item ${isActive ? 'active' : ''}`}
             title={item.label}
           >

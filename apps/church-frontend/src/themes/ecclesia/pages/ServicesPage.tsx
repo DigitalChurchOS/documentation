@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useEcclesia } from '../EcclesiaContext';
 import { Calendar, Clock, MapPin, User, Compass, Info } from 'lucide-react';
+import { httpRequest } from '../../../http';
 
 interface ChurchService {
   id: string;
@@ -41,7 +42,7 @@ const ServicesPage: React.FC = () => {
   useEffect(() => {
     const loadServices = async () => {
       try {
-        const res = await fetch('/api/cms/services');
+        const res = await httpRequest('/api/cms/services');
         if (!res.ok) throw new Error();
         const json = await res.json();
         if (Array.isArray(json.data) && json.data.length > 0) {

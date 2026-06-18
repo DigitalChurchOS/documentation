@@ -42,11 +42,17 @@ const onboardingSteps = [
   metadataJson: '{}',
 }));
 
+const platformDomain = 'churched.online';
+
+function makeSubdomainHost(subdomain: string) {
+  return `${subdomain}.${platformDomain}`;
+}
+
 const demoTenant = {
   id: 'demo-church-local',
   name: 'Demo Church',
   subdomain: 'demo',
-  subdomainHost: 'demo.churched.online',
+  subdomainHost: makeSubdomainHost('demo'),
   plan: 'growth',
   country: 'United States',
   city: 'Online',
@@ -144,10 +150,6 @@ function cleanSubdomain(value: unknown) {
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-');
   return cleaned || demoTenant.subdomain;
-}
-
-function makeSubdomainHost(subdomain: string) {
-  return `${subdomain}.churched.online`;
 }
 
 function makeTenantFromBody(body: Record<string, unknown>) {

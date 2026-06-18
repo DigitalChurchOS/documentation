@@ -18,6 +18,25 @@ function safeJson<T>(value: string | null | undefined, fallback: T): T {
   }
 }
 
+function normalizeNavigationItems(value: string | null | undefined) {
+  const items = safeJson<any[]>(value, []);
+  if (!Array.isArray(items)) return [];
+  return items
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null;
+      const url = typeof item.url === 'string' && item.url.trim()
+        ? item.url
+        : typeof item.href === 'string' && item.href.trim()
+          ? item.href
+          : '';
+      return {
+        ...item,
+        url,
+      };
+    })
+    .filter((item): item is Record<string, any> => Boolean(item?.url));
+}
+
 async function ensureEcclesiaGlobalContent(tenantId: string) {
   const existing = await prisma.reusableBlock.findUnique({
     where: { tenantId_key: { tenantId, key: ECCLESIA_GLOBAL_CONTENT_KEY } },
@@ -132,7 +151,7 @@ router.get('/render', dnsMiddleware, async (req: Request, res: Response) => {
         navigation: navMenu ? {
           id: navMenu.id,
           name: navMenu.name,
-          items: safeJson(navMenu.items, []),
+          items: normalizeNavigationItems(navMenu.items),
         } : null,
         footer: cmsFooter ? {
           id: cmsFooter.id,
@@ -243,7 +262,7 @@ router.get('/site-context', dnsMiddleware, async (req: Request, res: Response) =
         moduleEntitlements,
         navigation: navMenu ? {
           id: navMenu.id,
-          items: safeJson(navMenu.items, []),
+          items: normalizeNavigationItems(navMenu.items),
         } : null,
         footer: cmsFooter ? {
           id: cmsFooter.id,

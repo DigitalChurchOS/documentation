@@ -16,6 +16,8 @@ describe('DigitalChurchOS Member Management Module (Module 25)', () => {
   let member1Id: string; // Alice Smith (member, tag: Choir, volunteer)
   let member2Id: string; // Bob Smith (visitor, tag: Choir)
   let member3Id: string; // Charlie Brown (leader)
+  let portalMemberId: string;
+  let portalToken: string;
   
   let choirTagId: string;
   let volunteerTagId: string;
@@ -539,6 +541,98 @@ describe('DigitalChurchOS Member Management Module (Module 25)', () => {
   // ─────────────────────────────────────────────────────────────
   // 7. CASCADE DELETION AND TEARDOWN
   // ─────────────────────────────────────────────────────────────
+  describe('Public Member Account Portal', () => {
+    it('should let a public website visitor register a member login without admin permissions', async () => {
+      const res = await request(app)
+        .post('/api/auth/member-register')
+        .set('x-tenant-id', tenantId)
+        .send({
+          firstName: 'Portal',
+          lastName: 'Member',
+          email: 'portal.member@example.com',
+          phone: '+1 555 0100',
+          password: 'password123',
+        });
+
+      expect(res.status).toBe(201);
+      expect(res.body.token).toBeDefined();
+      expect(res.body.user.member.firstName).toBe('Portal');
+      portalToken = res.body.token;
+      portalMemberId = res.body.user.member.id;
+
+      const blocked = await request(app)
+        .post('/api/members')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${portalToken}`)
+        .send({ firstName: 'Nope', lastName: 'Nope' });
+
+      expect(blocked.status).toBe(403);
+    });
+
+    it('should expose and update only the signed-in member account profile', async () => {
+      const account = await request(app)
+        .get('/api/members/me')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${portalToken}`);
+
+      expect(account.status).toBe(200);
+      expect(account.body.data.member.id).toBe(portalMemberId);
+      expect(account.body.data.giving.totalGiven).toBe(0);
+
+      const updated = await request(app)
+        .patch('/api/members/me')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${portalToken}`)
+        .send({ phone: '+1 555 0199', address: '44 Portal Way' });
+
+      expect(updated.status).toBe(200);
+      expect(updated.body.data.phone).toBe('+1 555 0199');
+      expect(updated.body.data.address).toBe('44 Portal Way');
+    });
+
+    it('should save member portal notification preferences', async () => {
+      const res = await request(app)
+        .patch('/api/members/me/preferences')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${portalToken}`)
+        .send({ preferEmail: true, preferSms: true, preferPush: false, preferWhatsapp: true });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.memberId).toBe(portalMemberId);
+      expect(res.body.data.preferSms).toBe(true);
+      expect(res.body.data.preferPush).toBe(false);
+    });
+
+    it('should let admins configure portal settings and read member reports through the module alias', async () => {
+      const settings = await request(app)
+        .patch('/api/member-management/settings')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ showCourseProgress: false, followUpDays: 5 });
+
+      expect(settings.status).toBe(200);
+      expect(settings.body.data.showCourseProgress).toBe(false);
+      expect(settings.body.data.followUpDays).toBe(5);
+
+      const report = await request(app)
+        .get('/api/member-management/reports/summary')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(report.status).toBe(200);
+      expect(report.body.data.totals.members).toBeGreaterThanOrEqual(4);
+      expect(report.body.data.totals.linkedAccounts).toBeGreaterThanOrEqual(1);
+
+      const segment = await request(app)
+        .get('/api/member-management/segments?hasEmail=true')
+        .set('x-tenant-id', tenantId)
+        .set('Authorization', `Bearer ${adminToken}`);
+
+      expect(segment.status).toBe(200);
+      expect(segment.body.count).toBeGreaterThanOrEqual(1);
+    });
+  });
+
   describe('Cascade Profile Deletion Teardown', () => {
     it('should cascadingly delete check-ins, notes, and tag assignments when member profile is purged', async () => {
       // Verify counts exist before delete

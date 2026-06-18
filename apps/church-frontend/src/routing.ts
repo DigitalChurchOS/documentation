@@ -7,6 +7,8 @@ const SOURCE_FILE_SLUGS: Record<string, string> = {
   'ministries.html': 'ministries',
   'prayer.html': 'prayer',
   'contact.html': 'contact',
+  'login.html': 'login',
+  'account.html': 'account',
   'giving.html': 'giving',
   'giving-partnership.html': 'partnership',
   'livestream-page.html': 'livestream',
@@ -97,4 +99,10 @@ export function routeFromHref(href: string): string | null {
   const slug = slugFromPathname(path);
   const routePath = slug ? `/${slug}` : '/';
   return `${routePath}${url.search}${url.hash}`;
+}
+
+export function withLocalChurchBase(path: string): string {
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  if (typeof window === 'undefined') return normalizedPath;
+  return window.location.pathname.startsWith('/church') ? `/church${normalizedPath}` : normalizedPath;
 }

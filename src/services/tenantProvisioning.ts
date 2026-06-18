@@ -438,9 +438,9 @@ export class TenantProvisioningService {
           websiteId: website.id,
           name: 'Header',
           items: jsonString([
-            { label: 'Home', href: '/' },
-            { label: 'About', href: '/about' },
-            { label: 'Give', href: '/give' },
+            { label: 'Home', url: '/' },
+            { label: 'About', url: '/about' },
+            { label: 'Give', url: '/giving' },
           ]),
         },
       });

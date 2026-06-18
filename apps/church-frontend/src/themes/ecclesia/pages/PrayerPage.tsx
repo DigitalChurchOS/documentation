@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useEcclesia } from '../EcclesiaContext';
 import { Heart, MessageSquare, Send, CheckCircle, HelpCircle, Star } from 'lucide-react';
+import { httpRequest } from '../../../http';
 
 interface PrayerRequest {
   id: string;
@@ -50,8 +51,8 @@ const PrayerPage: React.FC = () => {
     const loadData = async () => {
       try {
         const [prayersRes, testimoniesRes] = await Promise.all([
-          fetch('/api/cms/prayers'),
-          fetch('/api/cms/testimonies')
+          httpRequest('/api/cms/prayers'),
+          httpRequest('/api/cms/testimonies')
         ]);
         
         const prayersJson = prayersRes.ok ? await prayersRes.json() : { data: [] };

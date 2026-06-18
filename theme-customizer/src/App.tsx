@@ -158,6 +158,8 @@ const CUSTOMIZER_PAGES_LIST = [
   { value: "index.html", label: "Home Page (index.html)" },
   { value: "about.html", label: "About Page (about.html)" },
   { value: "contact.html", label: "Contact Page (contact.html)" },
+  { value: "login.html", label: "Member Login / Register (login.html)" },
+  { value: "account.html", label: "Member Account Profile (account.html)" },
   { value: "ministries.html", label: "Ministries Page (ministries.html)" },
   { value: "sermons.html", label: "Sermons Archive (sermons.html)" },
   { value: "media-single.html", label: "Single Sermon (media-single.html)" },
@@ -200,6 +202,8 @@ const CUSTOMIZER_FILE_SLUGS: Record<string, string> = {
   'ministries.html': 'ministries',
   'prayer.html': 'prayer',
   'contact.html': 'contact',
+  'login.html': 'login',
+  'account.html': 'account',
   'giving.html': 'giving',
   'giving-partnership.html': 'partnership',
   'livestream-page.html': 'livestream',
@@ -299,6 +303,7 @@ export function App() {
   const [websiteId, setWebsiteId] = useState<string>("");
   const [resolvingTenant, setResolvingTenant] = useState(true);
   const [tenantError, setTenantError] = useState<string | null>(null);
+  const [tenantSubdomain, setTenantSubdomain] = useState<string>(() => localStorage.getItem("churchos.subdomain") || "");
   
   const [pagesList, setPagesList] = useState<any[]>([]);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
@@ -321,6 +326,7 @@ export function App() {
         const hostSubdomain = getSubdomainFromHostname();
         
         let resolvedTenantId = "";
+        let resolvedSubdomain = "";
 
         if (queryTenantId) {
           resolvedTenantId = queryTenantId;
@@ -330,6 +336,7 @@ export function App() {
             const json = await res.json();
             if (json.data && json.data.id) {
               resolvedTenantId = json.data.id;
+              resolvedSubdomain = json.data.subdomain || querySubdomain;
             }
           }
         } else if (hostSubdomain) {
@@ -338,12 +345,17 @@ export function App() {
             const json = await res.json();
             if (json.data && json.data.id) {
               resolvedTenantId = json.data.id;
+              resolvedSubdomain = json.data.subdomain || hostSubdomain;
             }
           }
         }
 
         if (resolvedTenantId) {
           localStorage.setItem("churchos.tenantId", resolvedTenantId);
+          if (resolvedSubdomain) {
+            localStorage.setItem("churchos.subdomain", resolvedSubdomain);
+            setTenantSubdomain(resolvedSubdomain);
+          }
         } else {
           const existing = localStorage.getItem("churchos.tenantId");
           if (!existing || existing === "demo-church-local") {
@@ -360,6 +372,20 @@ export function App() {
         const themesRes = await apiFetch("GET", "/api/theme-engine/themes");
         const websitesRes = await apiFetch("GET", "/api/cms/websites");
         const pagesRes = await apiFetch("GET", "/api/cms/pages");
+        if (!resolvedSubdomain) {
+          try {
+            const domainRes = await apiFetch("GET", "/api/tenant/domain");
+            const domainSubdomain = domainRes?.data?.subdomain || "";
+            if (domainSubdomain) {
+              localStorage.setItem("churchos.subdomain", domainSubdomain);
+              setTenantSubdomain(domainSubdomain);
+            }
+          } catch (domainErr) {
+            const storedSubdomain = localStorage.getItem("churchos.subdomain") || "";
+            if (storedSubdomain) setTenantSubdomain(storedSubdomain);
+            console.warn("Could not resolve tenant subdomain for preview URLs:", domainErr);
+          }
+        }
 
         if (pagesRes && pagesRes.data) {
           setPagesList(pagesRes.data);
@@ -692,7 +718,10 @@ export function App() {
   };
 
   const navigateCustomizerPage = async (filename: string) => {
-    const urlFilename = filename.split("/").pop() || "index.html";
+    const rawFilename = filename.split(/[?#]/)[0].split("/").filter(Boolean).pop() || "index.html";
+    const urlFilename = rawFilename.includes(".")
+      ? rawFilename
+      : (Object.keys(CUSTOMIZER_FILE_SLUGS).find((key) => CUSTOMIZER_FILE_SLUGS[key] === rawFilename) || `${rawFilename}.html`);
     const mappedSlug = CUSTOMIZER_FILE_SLUGS[urlFilename] !== undefined 
       ? CUSTOMIZER_FILE_SLUGS[urlFilename] 
       : (urlFilename === "index.html" ? "" : urlFilename.replace(".html", ""));
@@ -942,17 +971,18 @@ export function App() {
       const port = window.location.port;
       const protocol = window.location.protocol;
       const subdomain = getSubdomainFromHostname();
+      const previewSubdomain = subdomain || tenantSubdomain || localStorage.getItem("churchos.subdomain") || "demo";
 
       let previewOrigin: string;
       if (subdomain) {
         // Already on a subdomain — use same origin
         previewOrigin = `${protocol}//${window.location.host}`;
       } else if (currentHost === 'localhost' || currentHost.endsWith('.localhost')) {
-        // Local dev — use demo.localhost:PORT
-        previewOrigin = `${protocol}//demo.localhost${port ? `:${port}` : ''}`;
+        // Local dev mirrors production subdomain routing.
+        previewOrigin = `${protocol}//${previewSubdomain}.localhost${port ? `:${port}` : ''}`;
       } else {
-        // Production — use demo.churched.online
-        previewOrigin = `${protocol}//demo.churched.online`;
+        // Production uses the tenant subdomain on churched.online.
+        previewOrigin = `${protocol}//${previewSubdomain}.churched.online`;
       }
       const previewUrl = `${previewOrigin}${slugPath}`;
       

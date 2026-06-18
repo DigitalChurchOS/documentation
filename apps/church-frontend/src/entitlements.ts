@@ -6,6 +6,7 @@ type RouteRule = {
 };
 
 const ROUTE_RULES: RouteRule[] = [
+  { patterns: [/account/, /profile/, /my-giving/, /member-login/, /login/], moduleKeys: ['members', 'member-crm'] },
   { patterns: [/livestream/, /\blive\b/, /watch/], moduleKeys: ['livestream'] },
   { patterns: [/giving/, /\bgive\b/, /partnership/], moduleKeys: ['giving', 'giving-donations'] },
   { patterns: [/volunteer/], moduleKeys: ['volunteer'] },
@@ -34,12 +35,13 @@ function enabledModuleKeys(entitlements?: ModuleEntitlement[]): Set<string> | nu
   if (!entitlements || entitlements.length === 0) return null;
   return new Set(
     entitlements
-      .filter((entitlement) => entitlement.enabled)
+      .filter((entitlement) => entitlement.enabled && typeof entitlement.moduleKey === 'string')
       .map((entitlement) => entitlement.moduleKey.toLowerCase())
   );
 }
 
-export function requiredModuleKeysForUrl(url: string): string[] {
+export function requiredModuleKeysForUrl(url?: string | null): string[] {
+  if (!url) return [];
   const normalized = url.toLowerCase().replace(/\.html(?:$|[?#])/i, '').replace(/\/+$/, '');
   if (ALWAYS_VISIBLE_PATHS.has(normalized)) return [];
 
@@ -47,7 +49,7 @@ export function requiredModuleKeysForUrl(url: string): string[] {
   return match?.moduleKeys || [];
 }
 
-export function isUrlEntitled(url: string, entitlements?: ModuleEntitlement[]): boolean {
+export function isUrlEntitled(url?: string | null, entitlements?: ModuleEntitlement[]): boolean {
   const requiredKeys = requiredModuleKeysForUrl(url);
   if (requiredKeys.length === 0) return true;
 

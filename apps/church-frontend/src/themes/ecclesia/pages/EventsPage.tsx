@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useEcclesia } from '../EcclesiaContext';
 import { Calendar, MapPin, Clock, Tag, Plus, CheckCircle, Info } from 'lucide-react';
+import { httpRequest } from '../../../http';
 
 interface Event {
   id: string;
@@ -77,7 +78,7 @@ const EventsPage: React.FC = () => {
   useEffect(() => {
     const loadEvents = async () => {
       try {
-        const res = await fetch('/api/cms/events');
+        const res = await httpRequest('/api/cms/events');
         if (!res.ok) throw new Error();
         const json = await res.json();
         if (Array.isArray(json.data) && json.data.length > 0) {

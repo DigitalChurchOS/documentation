@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { routeFromHref } from '../../routing';
 import type { ModuleEntitlement, ThemeSettings } from '../../types';
 import { isUrlEntitled } from '../../entitlements';
+import { httpRequest } from '../../http';
 import { useEcclesia, EcclesiaContextValue } from './EcclesiaContext';
 
 const ASSET_BASE = '/themes/ecclesia';
@@ -732,7 +733,7 @@ async function runExternalScript(src: string): Promise<HTMLScriptElement | null>
     return null;
   }
 
-  const response = await fetch(url.href, { cache: 'force-cache' });
+  const response = await httpRequest(url.href, { cache: 'force-cache' });
   if (!response.ok) throw new Error(`Failed to fetch ${url.href}`);
   const code = await response.text();
   return appendInlineScript(code, url.href);

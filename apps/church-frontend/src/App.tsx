@@ -7,7 +7,10 @@ import { EcclesiaProvider } from './themes/ecclesia/EcclesiaContext';
 import EcclesiaLayout from './themes/ecclesia/EcclesiaLayout';
 import StaticHtmlPage from './themes/ecclesia/StaticHtmlPage';
 import GenericPage from './themes/ecclesia/GenericPage';
+import MemberAuthPage from './themes/ecclesia/pages/MemberAuthPage';
+import MemberAccountPage from './themes/ecclesia/pages/MemberAccountPage';
 import { routeFromHref, slugFromPathname } from './routing';
+import { httpRequest } from './http';
 
 // Extract query parameters helper
 function getQueryParams() {
@@ -102,6 +105,18 @@ function isEcclesiaTheme(siteContext: SiteContext): boolean {
   return /ecclesia/i.test(`${themeName} ${themeKey}`);
 }
 
+function normalizedAppPath(pathname: string): string {
+  const path = pathname.startsWith('/church') ? pathname.substring('/church'.length) : pathname;
+  return path || '/';
+}
+
+function getMemberPortalRoute(pathname: string): 'login' | 'account' | null {
+  const path = normalizedAppPath(pathname).replace(/\/+$/, '') || '/';
+  if (['/login', '/member-login', '/members/login'].includes(path)) return 'login';
+  if (['/account', '/profile', '/my-giving'].includes(path) || path.startsWith('/account/')) return 'account';
+  return null;
+}
+
 const slugToTemplateMap: Record<string, string> = {
   '': 'index.html',
   'about': 'about.html',
@@ -110,6 +125,8 @@ const slugToTemplateMap: Record<string, string> = {
   'ministries': 'ministries.html',
   'prayer': 'prayer.html',
   'contact': 'contact.html',
+  'login': 'login.html',
+  'account': 'account.html',
   'giving': 'giving.html',
   'partnership': 'giving-partnership.html',
   'livestream': 'livestream-page.html',
@@ -213,6 +230,13 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
   useEffect(() => {
     let active = true;
     const loadPage = async () => {
+      if (getMemberPortalRoute(location.pathname)) {
+        setLoading(false);
+        setError(null);
+        setPageData(null);
+        return;
+      }
+
       setLoading(true);
       setError(null);
       try {
@@ -234,7 +258,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
           if (templateFile) {
             try {
               const themeFolder = data?.theme?.settings?.metadata?.sourcePackage || 'ecclesia-full-theme';
-              const tRes = await fetch(`/themes/${themeFolder}/${templateFile}?t=${Date.now()}`);
+              const tRes = await httpRequest(`/themes/${themeFolder}/${templateFile}?t=${Date.now()}`);
               if (tRes.ok) {
                 const templateHtml = await tRes.text();
                 data = {
@@ -317,6 +341,22 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     headerCTAs,
     setHeaderCTAs,
   };
+
+  const memberPortalRoute = getMemberPortalRoute(location.pathname);
+
+  if (memberPortalRoute) {
+    return (
+      <EcclesiaProvider value={contextValue}>
+        <EcclesiaLayout useStaticLayout={false}>
+          {memberPortalRoute === 'login' ? (
+            <MemberAuthPage tenant={siteContext.tenant} />
+          ) : (
+            <MemberAccountPage tenant={siteContext.tenant} />
+          )}
+        </EcclesiaLayout>
+      </EcclesiaProvider>
+    );
+  }
 
   if (loading) {
     return (

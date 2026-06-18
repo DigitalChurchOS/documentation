@@ -329,11 +329,22 @@ async function recordBillingEvent(tenantId: string, name: string, metadata: Reco
 
 export class BillingService {
   static async ensureDefaultPlans() {
-    const count = await prisma.subscriptionPlan.count();
-    if (count > 0) return;
-
     for (const plan of DEFAULT_PLANS) {
-      await prisma.subscriptionPlan.create({ data: this.normalizePlanInput(plan, true) as any });
+      const data = { ...this.normalizePlanInput(plan, true), isActive: true } as any;
+      const existing = await prisma.subscriptionPlan.findFirst({
+        where: {
+          OR: [
+            { slug: plan.slug },
+            { name: plan.name },
+          ],
+        },
+      });
+
+      if (existing) {
+        await prisma.subscriptionPlan.update({ where: { id: existing.id }, data });
+      } else {
+        await prisma.subscriptionPlan.create({ data });
+      }
     }
   }
 

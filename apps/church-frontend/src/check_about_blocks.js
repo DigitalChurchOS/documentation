@@ -5,7 +5,7 @@ const options = {
   path: '/api/cms/render?slug=about',
   method: 'GET',
   headers: {
-    'Host': 'demo.localhost:3000'
+    'Host': process.env.PREVIEW_HOST || 'grace.localhost:3000'
   }
 };
 const req = http.request(options, (res) => {

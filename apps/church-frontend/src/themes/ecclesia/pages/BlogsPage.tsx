@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useEcclesia } from '../EcclesiaContext';
 import { Newspaper, User, Calendar, BookOpen, ChevronLeft, ArrowRight, Info } from 'lucide-react';
+import { httpRequest } from '../../../http';
 
 interface BlogPost {
   id: string;
@@ -80,7 +81,7 @@ const BlogsPage: React.FC = () => {
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const res = await fetch('/api/cms/blogs');
+        const res = await httpRequest('/api/cms/blogs');
         if (!res.ok) throw new Error();
         const json = await res.json();
         if (Array.isArray(json.data) && json.data.length > 0) {

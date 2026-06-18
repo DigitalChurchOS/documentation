@@ -1,9 +1,11 @@
 /* ── Ecclesia Header ────────────────────────────────── */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Church, PlayCircle, Menu } from 'lucide-react';
+import { Church, PlayCircle, Menu, UserCircle } from 'lucide-react';
 import { useEcclesia } from './EcclesiaContext';
 import { isUrlEntitled } from '../../entitlements';
+import { loadMemberSession, MEMBER_AUTH_CHANGE_EVENT, type MemberSession } from '../../memberAccount';
+import { withLocalChurchBase } from '../../routing';
 
 const ctaConfig: Record<string, { primary?: string; primaryUrl?: string; secondary?: string; secondaryUrl?: string }> = {
   'index.html': { primary: 'Plan Visit', primaryUrl: '/contact', secondary: 'Watch Live', secondaryUrl: '/livestream' },
@@ -48,6 +50,7 @@ interface Props {
 const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
   const { tenant, navigation, themeSettings, globalContent, moduleEntitlements, headerCTAs } = useEcclesia();
   const location = useLocation();
+  const [memberSession, setMemberSession] = useState<MemberSession | null>(() => loadMemberSession());
   
   // Filter items based on active module entitlements
   const items = (navigation?.items || []).filter(item => isUrlEntitled(item.url, moduleEntitlements));
@@ -75,6 +78,18 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
   const ctaLabel = themeSettings.header?.ctaLabel || 'Watch Live';
   const ctaUrl = themeSettings.header?.ctaUrl || '/livestream';
   const showHeaderCta = isUrlEntitled(ctaUrl, moduleEntitlements);
+  const showMemberPortal = isUrlEntitled('/account', moduleEntitlements);
+  const activeMemberSession = memberSession?.tenantId === tenant.id ? memberSession : null;
+
+  useEffect(() => {
+    const refreshSession = () => setMemberSession(loadMemberSession());
+    window.addEventListener(MEMBER_AUTH_CHANGE_EVENT, refreshSession);
+    window.addEventListener('storage', refreshSession);
+    return () => {
+      window.removeEventListener(MEMBER_AUTH_CHANGE_EVENT, refreshSession);
+      window.removeEventListener('storage', refreshSession);
+    };
+  }, []);
 
   const headerClasses = [
     'header',
@@ -130,7 +145,7 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
       );
     }
     return (
-      <Link key={text} className={className} to={url}>
+      <Link key={text} className={className} to={withLocalChurchBase(url)}>
         {text === 'Watch Live' && <PlayCircle size={16} />} {text}
       </Link>
     );
@@ -139,24 +154,32 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
   return (
     <header className={headerClasses} {...headerData}>
       <div className="nav-wrap">
-        <Link to="/" className="brand">
+        <Link to={withLocalChurchBase('/')} className="brand">
           <span className="brand-mark"><Church size={20} /></span>
           <span>{churchName}</span>
         </Link>
  
         <nav className="nav">
-          {items.map((item) => (
+          {items.map((item) => {
+            const itemUrl = item.url === '/home' ? '/' : item.url;
+            return (
             <Link
               key={item.url}
-              to={item.url === '/home' ? '/' : item.url}
+              to={withLocalChurchBase(itemUrl)}
               className={isActive(item.url) ? 'active' : ''}
             >
               {item.label}
             </Link>
-          ))}
+          );
+          })}
         </nav>
  
         <div className="header-actions">
+          {showMemberPortal && (
+            <Link className="btn btn-soft member-account-link" to={withLocalChurchBase(activeMemberSession ? '/account' : '/login')}>
+              <UserCircle size={16} /> {activeMemberSession ? 'My Account' : 'Log In'}
+            </Link>
+          )}
           {activeCtaConfig ? (
             <>
               {activeCtaConfig.secondary && activeCtaConfig.secondaryUrl && isUrlEntitled(activeCtaConfig.secondaryUrl, moduleEntitlements) && (
@@ -175,11 +198,11 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
           ) : (
             <>
               {showHeaderCta && (
-                <Link className="btn btn-soft" to={ctaUrl}>
+                <Link className="btn btn-soft" to={withLocalChurchBase(ctaUrl)}>
                   <PlayCircle size={16} /> {ctaLabel}
                 </Link>
               )}
-              <Link className="btn btn-primary" to="/contact">Plan Visit</Link>
+              <Link className="btn btn-primary" to={withLocalChurchBase('/contact')}>Plan Visit</Link>
             </>
           )}
           <button className="mobile-menu-btn" onClick={onOpenDrawer} aria-label="Open menu">

@@ -45,14 +45,7 @@ export default {
       );
     }
 
-    // 3. Static assets: serve directly if it looks like a physical file (has extension)
-    // We check for '.' to identify file extensions like .js, .css, .png, .ico, etc.
-    const isStaticFile = pathname.includes('.') && !pathname.endsWith('/');
-    if (isStaticFile) {
-      return env.ASSETS.fetch(request);
-    }
-
-    // 4. Subdomain-aware church website routing
+    // 3. Subdomain-aware church website routing
     // Production: [churchname].churched.online → serve church-frontend SPA
     const WORKER_BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
     const hostname = url.hostname.toLowerCase();
@@ -65,6 +58,19 @@ export default {
     }
     if (!isSubdomain && hostname.split('.').length > 2) {
       isSubdomain = true;
+    }
+
+    if (isSubdomain && (pathname === '/sw.js' || pathname === '/manifest.json' || pathname.startsWith('/assets/'))) {
+      const assetUrl = new URL(request.url);
+      assetUrl.pathname = `/church${pathname}`;
+      return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+    }
+
+    // 4. Static assets: serve directly if it looks like a physical file (has extension)
+    // We check for '.' to identify file extensions like .js, .css, .png, .ico, etc.
+    const isStaticFile = pathname.includes('.') && !pathname.endsWith('/');
+    if (isStaticFile) {
+      return env.ASSETS.fetch(request);
     }
 
     // 5. SPA path-based routing (rewrites client-side routes to their respective index.html entries)

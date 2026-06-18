@@ -8535,6 +8535,10 @@ body.customizer-open { overflow: hidden; }
                     <i data-lucide="users"></i>
                     <span>Members Directory</span>
                   </button>
+                  <button class="cms-nav-item" data-members-tab="portal" onclick="switchMembersTab('portal')">
+                    <i data-lucide="user-circle"></i>
+                    <span>Account Portal</span>
+                  </button>
                   <button class="cms-nav-item" data-members-tab="contacts" onclick="switchMembersTab('contacts')">
                     <i data-lucide="contact"></i>
                     <span>CRM Contacts</span>
@@ -8586,6 +8590,69 @@ body.customizer-open { overflow: hidden; }
                         <!-- Populated dynamically -->
                       </tbody>
                     </table>
+                  </div>
+                </div>
+
+                <!-- 1B. MEMBER ACCOUNT PORTAL TAB -->
+                <div id="membersPortalTab" class="members-tab-content hidden">
+                  <div class="section-head" style="margin-bottom:20px; align-items: center; justify-content: space-between;">
+                    <div>
+                      <h2>Member Account Portal</h2>
+                      <p>Control public website account access, data visibility, and platform-wide member reporting hooks.</p>
+                    </div>
+                    <button class="btn primary" onclick="saveMembersPortalSettings()"><i data-lucide="save"></i>Save Settings</button>
+                  </div>
+
+                  <div class="grid" style="grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 16px;">
+                    <div class="card" style="padding:16px;">
+                      <div class="muted" style="font-size:12px;">Total Profiles</div>
+                      <h2 id="membersReportTotal" style="margin:8px 0 0; font-size:24px;">0</h2>
+                    </div>
+                    <div class="card" style="padding:16px;">
+                      <div class="muted" style="font-size:12px;">Linked Accounts</div>
+                      <h2 id="membersReportLinked" style="margin:8px 0 0; font-size:24px;">0</h2>
+                    </div>
+                    <div class="card" style="padding:16px;">
+                      <div class="muted" style="font-size:12px;">Check-ins 30d</div>
+                      <h2 id="membersReportCheckins" style="margin:8px 0 0; font-size:24px;">0</h2>
+                    </div>
+                    <div class="card" style="padding:16px;">
+                      <div class="muted" style="font-size:12px;">Portal Logins 30d</div>
+                      <h2 id="membersReportLogins" style="margin:8px 0 0; font-size:24px;">0</h2>
+                    </div>
+                  </div>
+
+                  <div class="grid" style="grid-template-columns: minmax(0, 1fr) minmax(300px, .8fr); gap:16px;">
+                    <div class="panel">
+                      <h3 style="margin-top:0;">Portal Visibility</h3>
+                      <div class="module-settings-list" id="membersPortalSettingsList">
+                        <div class="setting-row">
+                          <div><strong>Enable member portal</strong><span class="muted">Show login and account pages on public themes.</span></div>
+                          <button id="membersPortalEnabledToggle" class="toggle on" onclick="toggleMembersPortalSetting('memberPortalEnabled')" aria-label="Toggle member portal"></button>
+                        </div>
+                        <div class="setting-row">
+                          <div><strong>Public registration</strong><span class="muted">Visitors can create their own member login.</span></div>
+                          <button id="membersAllowRegistrationToggle" class="toggle on" onclick="toggleMembersPortalSetting('allowPublicRegistration')" aria-label="Toggle public registration"></button>
+                        </div>
+                        <div class="setting-row">
+                          <div><strong>Giving records</strong><span class="muted">Members can view giving and partnership history.</span></div>
+                          <button id="membersShowGivingToggle" class="toggle on" onclick="toggleMembersPortalSetting('showGivingHistory')" aria-label="Toggle giving history"></button>
+                        </div>
+                        <div class="setting-row">
+                          <div><strong>Attendance history</strong><span class="muted">Members can view check-ins and participation.</span></div>
+                          <button id="membersShowAttendanceToggle" class="toggle on" onclick="toggleMembersPortalSetting('showAttendanceHistory')" aria-label="Toggle attendance history"></button>
+                        </div>
+                        <div class="setting-row">
+                          <div><strong>Course progress</strong><span class="muted">Members can view LMS enrollments.</span></div>
+                          <button id="membersShowCoursesToggle" class="toggle on" onclick="toggleMembersPortalSetting('showCourseProgress')" aria-label="Toggle course progress"></button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="panel">
+                      <h3 style="margin-top:0;">Recent Member Activity</h3>
+                      <div id="membersPortalActivityList" style="display:flex; flex-direction:column; gap:10px; margin-top:12px;"></div>
+                    </div>
                   </div>
                 </div>
 
@@ -25089,7 +25156,10 @@ body.customizer-open { overflow: hidden; }
       pipelines: [],
       tasks: [],
       leaderboard: [],
-      report: null
+      report: null,
+      summary: null,
+      settings: {},
+      activity: []
     };
 
     window.switchMembersTab = function(tabId) {
@@ -25110,13 +25180,16 @@ body.customizer-open { overflow: hidden; }
     };
 
     window.bootstrapMembers = async function() {
-      const [memRes, conRes, pipeRes, taskRes, leaderRes, repRes] = await Promise.all([
+      const [memRes, conRes, pipeRes, taskRes, leaderRes, repRes, summaryRes, settingsRes, activityRes] = await Promise.all([
         cmsApiRequest('GET', '/api/members'),
         cmsApiRequest('GET', '/api/crm/contacts'),
         cmsApiRequest('GET', '/api/crm/pipelines'),
         cmsApiRequest('GET', '/api/crm/tasks'),
         cmsApiRequest('GET', '/api/crm/engagement/leaderboard'),
-        cmsApiRequest('GET', '/api/crm/reports')
+        cmsApiRequest('GET', '/api/crm/reports'),
+        cmsApiRequest('GET', '/api/members/reports/summary'),
+        cmsApiRequest('GET', '/api/members/settings'),
+        cmsApiRequest('GET', '/api/members/activities?limit=20')
       ]);
 
       if (memRes && memRes.ok) membersState.members = memRes.data || [];
@@ -25125,6 +25198,9 @@ body.customizer-open { overflow: hidden; }
       if (taskRes && taskRes.ok) membersState.tasks = taskRes.data || [];
       if (leaderRes && leaderRes.ok) membersState.leaderboard = leaderRes.data || [];
       if (repRes && repRes.ok) membersState.report = repRes.data || null;
+      if (summaryRes && summaryRes.ok) membersState.summary = summaryRes.data || null;
+      if (settingsRes && settingsRes.ok) membersState.settings = settingsRes.data || {};
+      if (activityRes && activityRes.ok) membersState.activity = activityRes.data || [];
 
       window.switchMembersTab(membersState.activeTab);
     };
@@ -25169,6 +25245,52 @@ body.customizer-open { overflow: hidden; }
             </tr>
           `;
         }).join('');
+      } else if (tabId === 'portal') {
+        const totals = membersState.summary && membersState.summary.totals ? membersState.summary.totals : {};
+        const totalEl = document.getElementById('membersReportTotal');
+        const linkedEl = document.getElementById('membersReportLinked');
+        const checkinsEl = document.getElementById('membersReportCheckins');
+        const loginsEl = document.getElementById('membersReportLogins');
+        if (totalEl) totalEl.textContent = totals.members || membersState.members.length || 0;
+        if (linkedEl) linkedEl.textContent = totals.linkedAccounts || 0;
+        if (checkinsEl) checkinsEl.textContent = totals.checkIns30d || 0;
+        if (loginsEl) loginsEl.textContent = totals.logins30d || 0;
+
+        const toggles = [
+          ['membersPortalEnabledToggle', 'memberPortalEnabled'],
+          ['membersAllowRegistrationToggle', 'allowPublicRegistration'],
+          ['membersShowGivingToggle', 'showGivingHistory'],
+          ['membersShowAttendanceToggle', 'showAttendanceHistory'],
+          ['membersShowCoursesToggle', 'showCourseProgress']
+        ];
+        toggles.forEach(([id, key]) => {
+          const btn = document.getElementById(id);
+          if (!btn) return;
+          const enabled = membersState.settings[key] !== false;
+          btn.classList.toggle('on', enabled);
+          btn.setAttribute('aria-pressed', String(enabled));
+        });
+
+        const activityList = document.getElementById('membersPortalActivityList');
+        if (activityList) {
+          if (!membersState.activity || membersState.activity.length === 0) {
+            activityList.innerHTML = `<div class="muted" style="text-align:center; padding:18px;">No member portal activity yet.</div>`;
+          } else {
+            activityList.innerHTML = membersState.activity.slice(0, 8).map((item) => {
+              let metadata = {};
+              try { metadata = JSON.parse(item.metadata || '{}'); } catch {}
+              return `
+                <div class="row" style="justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding-bottom:10px;">
+                  <div>
+                    <strong style="font-size:13px;">${escapeHtml(item.name || 'member activity')}</strong>
+                    <div class="muted" style="font-size:11px;">${escapeHtml(metadata.source || item.entityId || 'member')}</div>
+                  </div>
+                  <span class="muted" style="font-size:11px;">${new Date(item.createdAt).toLocaleDateString()}</span>
+                </div>
+              `;
+            }).join('');
+          }
+        }
       } else if (tabId === 'contacts') {
         const tbody = document.getElementById('crmContactsList');
         if (!tbody) return;
@@ -25352,6 +25474,23 @@ body.customizer-open { overflow: hidden; }
       }
       refreshIcons();
     }
+
+    window.toggleMembersPortalSetting = function(key) {
+      membersState.settings[key] = membersState.settings[key] === false;
+      renderMembersTab('portal');
+    };
+
+    window.saveMembersPortalSettings = async function() {
+      showToast('Saving member portal settings...');
+      const res = await cmsApiRequest('PATCH', '/api/members/settings', membersState.settings);
+      if (res && res.ok) {
+        membersState.settings = res.data || membersState.settings;
+        showToast('Member portal settings saved.');
+        renderMembersTab('portal');
+      } else {
+        alert('Failed to save member portal settings.');
+      }
+    };
 
     window.openCreateMemberModal = async function() {
       const html = `

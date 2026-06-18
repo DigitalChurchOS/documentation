@@ -25,10 +25,19 @@
     <script>
       // Service worker registration for offline PWA functionality
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('Service Worker registered successfully:', reg.scope))
-            .catch(err => console.error('Service Worker registration failed:', err));
+        window.addEventListener('load', async () => {
+          const candidates = ['/sw.js', '/church/sw.js'];
+          for (const swUrl of candidates) {
+            try {
+              const response = await fetch(swUrl, { method: 'HEAD' });
+              if (!response.ok) continue;
+              const reg = await navigator.serviceWorker.register(swUrl);
+              console.log('Service Worker registered successfully:', reg.scope);
+              break;
+            } catch {
+              // Keep trying known deployment paths.
+            }
+          }
         });
       }
     </script>

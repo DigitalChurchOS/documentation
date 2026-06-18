@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Tv, Mic, Newspaper, Calendar, BookOpen, Music } from 'lucide-react';
+import { Tv, Mic, Newspaper, Calendar, BookOpen, Music, UserCircle } from 'lucide-react';
 import { useEcclesia } from './EcclesiaContext';
 import { isUrlEntitled } from '../../entitlements';
+import { withLocalChurchBase } from '../../routing';
 
 const TAB_ITEMS = [
   { label: 'Media', path: '/media', icon: Tv },
@@ -11,6 +12,7 @@ const TAB_ITEMS = [
   { label: 'Services', path: '/services', icon: Calendar },
   { label: 'Library', path: '/library', icon: BookOpen },
   { label: 'Worship', path: '/worship', icon: Music },
+  { label: 'Account', path: '/account', icon: UserCircle },
 ];
 
 interface Props {
@@ -20,7 +22,9 @@ interface Props {
 const EcclesiaMobileTabRail: React.FC<Props> = ({ embedded = false }) => {
   const { moduleEntitlements } = useEcclesia();
   const location = useLocation();
-  const activePath = location.pathname;
+  const activePath = location.pathname.startsWith('/church')
+    ? location.pathname.substring('/church'.length) || '/'
+    : location.pathname;
 
   // Filter items based on active module entitlements for the tenant
   const entitledItems = TAB_ITEMS.filter(item => isUrlEntitled(item.path, moduleEntitlements));
@@ -35,7 +39,7 @@ const EcclesiaMobileTabRail: React.FC<Props> = ({ embedded = false }) => {
         return (
           <Link
             key={item.path}
-            to={item.path}
+            to={withLocalChurchBase(item.path)}
             className={`mobile-tab-item ${isActive ? 'active' : ''}`}
           >
             <Icon size={20} />
