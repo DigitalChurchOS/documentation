@@ -43,6 +43,11 @@ export async function authMiddleware(
   try {
     const payload = jwt.verify(token, JWT_SECRET) as TokenPayload;
 
+    if (!payload || !payload.userId) {
+      res.status(401).json({ error: 'Invalid token payload: userId is missing' });
+      return;
+    }
+
     // Cross-tenant check: token tenant must match request tenant
     if (req.tenantId && payload.tenantId !== req.tenantId) {
       res.status(403).json({ error: 'Token tenant mismatch' });
