@@ -257,6 +257,57 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   root.style.setProperty('--title-spacing', typographyChoice === 'Bold' ? '0.04em' : '-0.08em');
   root.style.setProperty('--subtitle-spacing', typographyChoice === 'Bold' ? '0.05em' : '-0.065em');
   root.style.setProperty('--button-padding', buttonPadding);
+
+  // Compute header font size and button paddings based on headerFontSize setting
+  const headerFontSizeSetting = settings.headerFontSize || 'medium';
+  let navSize = '14px';
+  let btnSize = '14px';
+  let btnPaddingVal = '13px 19px';
+
+  if (headerFontSizeSetting === 'tiny') {
+    navSize = '11px';
+    btnSize = '11px';
+    btnPaddingVal = '7px 12px';
+  } else if (headerFontSizeSetting === 'small') {
+    navSize = '13px';
+    btnSize = '12px';
+    btnPaddingVal = '10px 15px';
+  } else if (headerFontSizeSetting === 'big') {
+    navSize = '16px';
+    btnSize = '16px';
+    btnPaddingVal = '15px 22px';
+  } else if (headerFontSizeSetting === 'large') {
+    navSize = '18px';
+    btnSize = '18px';
+    btnPaddingVal = '17px 25px';
+  }
+
+  root.style.setProperty('--header-nav-size', navSize);
+  root.style.setProperty('--header-btn-size', btnSize);
+  root.style.setProperty('--header-btn-padding', btnPaddingVal);
+
+  // Compute header font weight based on headerFontWeight setting (thin, normal, semi-bold, bold)
+  const headerFontWeightSetting = settings.headerFontWeight || 'bold';
+  let navWeight = '720';
+  let btnWeight = '850';
+
+  if (headerFontWeightSetting === 'thin') {
+    navWeight = '300';
+    btnWeight = '400';
+  } else if (headerFontWeightSetting === 'normal') {
+    navWeight = '500';
+    btnWeight = '600';
+  } else if (headerFontWeightSetting === 'semi-bold') {
+    navWeight = '700';
+    btnWeight = '750';
+  } else if (headerFontWeightSetting === 'bold') {
+    navWeight = '720';
+    btnWeight = '850';
+  }
+
+  root.style.setProperty('--header-nav-weight', navWeight);
+  root.style.setProperty('--header-btn-weight', btnWeight);
+
   if (settings.headerSolidThemed) {
     root.style.setProperty('--header-bg', 'var(--primary)');
     root.style.setProperty('--header-border', 'color-mix(in srgb, #fff 15%, transparent)');
@@ -274,8 +325,10 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   if (!customizerStyle) {
     customizerStyle = document.createElement('style');
     customizerStyle.id = 'churchos-customizer-token-style';
-    document.head.appendChild(customizerStyle);
   }
+  // Always append to make sure it remains the last stylesheet in the head,
+  // overriding any subsequently injected theme stylesheets.
+  document.head.appendChild(customizerStyle);
 
   customizerStyle.textContent = `
 body, html, button, input, select, textarea { font-family: var(--font-body), sans-serif !important; }
@@ -421,6 +474,16 @@ header[data-header-solid-themed="true"][data-mobile-hamburger-shape="plain"] .mo
   border-color: transparent !important;
   box-shadow: none !important;
 }
+
+header .nav a, .header .nav a, header .nav-link-item, .header .nav-link-item, header .nav-more-btn, .header .nav-more-btn {
+  font-size: var(--header-nav-size) !important;
+  font-weight: var(--header-nav-weight) !important;
+}
+header .btn, .header .btn, header .button, .header .button {
+  font-size: var(--header-btn-size) !important;
+  font-weight: var(--header-btn-weight) !important;
+  padding: var(--header-btn-padding) !important;
+}
 `;
 }
 
@@ -428,8 +491,9 @@ function applyEcclesiaRuntimeStyle(): void {
   if (!runtimeStyle) {
     runtimeStyle = document.createElement('style');
     runtimeStyle.id = 'churchos-ecclesia-runtime-style';
-    document.head.appendChild(runtimeStyle);
   }
+  // Always append/move to the end of the head so runtime styles consistently override standard ones
+  document.head.appendChild(runtimeStyle);
 
   runtimeStyle.textContent = `
 html, body, #root { min-height: 100%; }

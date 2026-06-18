@@ -505,6 +505,8 @@ export function App() {
       headerBorderColor: "accent",
       headerLayout: "logo-left",
       headerEffect: "static",
+      headerFontSize: "medium",
+      headerFontWeight: "bold",
       mobileMenuPosition: "right",
       mobileDrawerMode: "reveal",
       mobileHamburgerShape: "circle",

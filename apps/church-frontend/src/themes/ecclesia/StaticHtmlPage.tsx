@@ -322,8 +322,24 @@ function buildStaticPayload(
   const mobileTabHtml = options.enableModuleRails ? renderMobileTabHtml(options.pathname, options.moduleEntitlements) : '';
 
   doc.head.querySelectorAll<HTMLLinkElement>('link[rel~="stylesheet"][href]').forEach((link) => {
+    const rawHref = link.getAttribute('href') || '';
+    const href = rewriteAssetUrl(rawHref);
+
+    // Skip core theme stylesheets when rendering inside the dynamic shell wrapper
+    // (where these sheets are already loaded globally) to avoid overriding customizer style tags.
+    if (options.isShellStatic) {
+      const cleanHref = href.split('?')[0].split('#')[0];
+      if (
+        cleanHref.startsWith('/themes/ecclesia/assets/') ||
+        cleanHref.startsWith('assets/') ||
+        cleanHref.endsWith('/assets/styles.css')
+      ) {
+        return;
+      }
+    }
+
     headLinks.push({
-      href: rewriteAssetUrl(link.getAttribute('href') || ''),
+      href,
       rel: link.getAttribute('rel') || 'stylesheet',
       media: link.getAttribute('media') || undefined,
       crossOrigin: link.getAttribute('crossorigin') || undefined,

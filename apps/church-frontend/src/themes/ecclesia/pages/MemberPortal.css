@@ -1,7 +1,11 @@
 .member-portal {
   display: grid;
   gap: 24px;
-  padding: clamp(24px, 4vw, 56px) 0;
+  padding: clamp(24px, 4vw, 56px) 22px;
+  max-width: var(--max, 1200px);
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .member-portal__hero,

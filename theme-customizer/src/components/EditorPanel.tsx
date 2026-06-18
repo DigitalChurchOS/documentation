@@ -837,11 +837,14 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
               headerBorderColor: "accent",
               headerLayout: "logo-left",
               headerEffect: "static",
+              headerFontSize: "medium",
+              headerFontWeight: "bold",
               mobileMenuPosition: "right",
               mobileDrawerMode: "reveal",
               mobileHamburgerShape: "circle",
               mobileDrawerButtonsFullWidth: false
             })}
+
           >
             <RotateCcw size={14} />
           </button>
@@ -1028,27 +1031,117 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           )}
 
           {localTab === "layout" && (
-            <div className="edit-box">
-              <h4>Menu Alignment</h4>
-              <p>Reposition logo alignment and inline navigation menus.</p>
-              <div className="choice-grid">
-                {[
-                  { key: "logo-left", name: "Logo Left", desc: "Logo left, menu right" },
-                  { key: "logo-right", name: "Logo Right", desc: "Menu left, logo right" },
-                  { key: "stacked", name: "Logo Above", desc: "Logo above menu" },
-                  { key: "menu-top", name: "Menu Above", desc: "Menu above logo" },
-                ].map((item) => (
-                  <button
-                    key={item.key}
-                    className={`visual-card ${state.headerLayout === item.key ? "active" : ""}`}
-                    onClick={() => onChange({ headerLayout: item.key })}
-                  >
-                    <strong>{item.name}</strong>
-                    <span>{item.desc}</span>
-                  </button>
-                ))}
+            <>
+              <div className="edit-box">
+                <h4>Menu Alignment</h4>
+                <p>Reposition logo alignment and inline navigation menus.</p>
+                <div className="choice-grid">
+                  {[
+                    { key: "logo-left", name: "Logo Left", desc: "Logo left, menu right" },
+                    { key: "logo-right", name: "Logo Right", desc: "Menu left, logo right" },
+                    { key: "stacked", name: "Logo Above", desc: "Logo above menu" },
+                    { key: "menu-top", name: "Menu Above", desc: "Menu above logo" },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      className={`visual-card ${state.headerLayout === item.key ? "active" : ""}`}
+                      onClick={() => onChange({ headerLayout: item.key })}
+                    >
+                      <strong>{item.name}</strong>
+                      <span>{item.desc}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+
+              <div className="edit-box" style={{ marginTop: '24px' }}>
+                <h4>Header Font Size</h4>
+                <p>Adjust the size of the header navigation menu links and action buttons.</p>
+                <div className="field-group" style={{ marginBottom: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '12px', fontWeight: 600 }}>
+                    <span>Size</span>
+                    <span style={{ color: 'var(--muted)', textTransform: 'capitalize' }}>
+                      {state.headerFontSize || 'medium'}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="5"
+                    step="1"
+                    value={
+                      state.headerFontSize === 'tiny' ? '1' :
+                      state.headerFontSize === 'small' ? '2' :
+                      state.headerFontSize === 'medium' ? '3' :
+                      state.headerFontSize === 'big' ? '4' :
+                      state.headerFontSize === 'large' ? '5' : '3'
+                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const sizeMap: Record<string, string> = {
+                        '1': 'tiny',
+                        '2': 'small',
+                        '3': 'medium',
+                        '4': 'big',
+                        '5': 'large'
+                      };
+                      onChange({ headerFontSize: sizeMap[val] || 'medium' });
+                    }}
+                    style={{ width: '100%', accentColor: 'var(--primary)', margin: 0, display: 'block' }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                    <span>Tiny</span>
+                    <span>Small</span>
+                    <span>Medium</span>
+                    <span>Big</span>
+                    <span>Large</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="edit-box" style={{ marginTop: '24px' }}>
+                <h4>Header Font Weight</h4>
+                <p>Adjust the thickness of the header navigation menu links and action buttons.</p>
+                <div className="field-group" style={{ marginBottom: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '12px', fontWeight: 600 }}>
+                    <span>Weight</span>
+                    <span style={{ color: 'var(--muted)', textTransform: 'capitalize' }}>
+                      {state.headerFontWeight || 'bold'}
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min="1"
+                    max="4"
+                    step="1"
+                    value={
+                      state.headerFontWeight === 'thin' ? '1' :
+                      state.headerFontWeight === 'normal' ? '2' :
+                      state.headerFontWeight === 'semi-bold' ? '3' :
+                      state.headerFontWeight === 'bold' ? '4' : '4'
+                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const weightMap: Record<string, string> = {
+                        '1': 'thin',
+                        '2': 'normal',
+                        '3': 'semi-bold',
+                        '4': 'bold'
+                      };
+                      onChange({ headerFontWeight: weightMap[val] || 'bold' });
+                    }}
+                    style={{ width: '100%', accentColor: 'var(--primary)', margin: 0, display: 'block' }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                    <span>Thin</span>
+                    <span>Normal</span>
+                    <span>Semi-Bold</span>
+                    <span>Bold</span>
+                  </div>
+                </div>
+              </div>
+
+            </>
           )}
 
           {localTab === "effect" && (

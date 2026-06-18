@@ -25,6 +25,8 @@ export interface ThemeState {
   headerBorderColor: string;
   headerLayout: string;
   headerEffect: string;
+  headerFontSize: string;
+  headerFontWeight: string;
   mobileMenuPosition: string;
   mobileDrawerMode: string;
   mobileHamburgerShape: string;
@@ -291,6 +293,50 @@ export function getTokenStyle(state: ThemeState): string {
     subtitleSpacing = "0.05em";
   }
 
+  // Compute header font size and button paddings based on headerFontSize setting
+  const headerFontSizeSetting = state.headerFontSize || 'medium';
+  let navSize = '14px';
+  let btnSize = '14px';
+  let btnPaddingVal = '13px 19px';
+
+  if (headerFontSizeSetting === 'tiny') {
+    navSize = '11px';
+    btnSize = '11px';
+    btnPaddingVal = '7px 12px';
+  } else if (headerFontSizeSetting === 'small') {
+    navSize = '13px';
+    btnSize = '12px';
+    btnPaddingVal = '10px 15px';
+  } else if (headerFontSizeSetting === 'big') {
+    navSize = '16px';
+    btnSize = '16px';
+    btnPaddingVal = '15px 22px';
+  } else if (headerFontSizeSetting === 'large') {
+    navSize = '18px';
+    btnSize = '18px';
+    btnPaddingVal = '17px 25px';
+  }
+
+  // Compute header font weight based on headerFontWeight setting (thin, normal, semi-bold, bold)
+  const headerFontWeightSetting = state.headerFontWeight || 'bold';
+  let navWeight = '720';
+  let btnWeight = '850';
+
+  if (headerFontWeightSetting === 'thin') {
+    navWeight = '300';
+    btnWeight = '400';
+  } else if (headerFontWeightSetting === 'normal') {
+    navWeight = '500';
+    btnWeight = '600';
+  } else if (headerFontWeightSetting === 'semi-bold') {
+    navWeight = '700';
+    btnWeight = '750';
+  } else if (headerFontWeightSetting === 'bold') {
+    navWeight = '720';
+    btnWeight = '850';
+  }
+
+
   return `
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
@@ -298,6 +344,11 @@ export function getTokenStyle(state: ThemeState): string {
   /* Customizer Variables */
   --primary: ${primary};
   --primary-soft: ${primarySoft};
+  --header-nav-size: ${navSize};
+  --header-btn-size: ${btnSize};
+  --header-btn-padding: ${btnPaddingVal};
+  --header-nav-weight: ${navWeight};
+  --header-btn-weight: ${btnWeight};
   --radius: ${radLg};
   --font-title: ${typo.title};
   --font-body: ${typo.body};
@@ -756,6 +807,16 @@ body.cinema-mode .mobile-tab-rail {
   color: var(--accent) !important;
   border-color: color-mix(in srgb, var(--primary) 22%, transparent) !important;
 }
+/* Header Font Size & Weight customizer settings */
+header .nav a, .header .nav a, header .nav-link-item, .header .nav-link-item, header .nav-more-btn, .header .nav-more-btn {
+  font-size: var(--header-nav-size) !important;
+  font-weight: var(--header-nav-weight) !important;
+}
+header .btn, .header .btn, header .button, .header .button {
+  font-size: var(--header-btn-size) !important;
+  font-weight: var(--header-btn-weight) !important;
+  padding: var(--header-btn-padding) !important;
+}
 
 /* Solid Themed Header Overrides */
 header[data-header-solid-themed="true"], .header[data-header-solid-themed="true"] {
@@ -974,6 +1035,8 @@ export function applyThemeStructure(doc: Document, state: ThemeState): void {
     header.setAttribute("data-header-border-color", state.headerBorderColor);
     header.setAttribute("data-header-layout", state.headerLayout);
     header.setAttribute("data-header-effect", state.headerEffect);
+    header.setAttribute("data-header-font-size", state.headerFontSize || "medium");
+    header.setAttribute("data-header-font-weight", state.headerFontWeight || "bold");
     header.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
     header.setAttribute("data-mobile-hamburger-shape", state.mobileHamburgerShape);
 

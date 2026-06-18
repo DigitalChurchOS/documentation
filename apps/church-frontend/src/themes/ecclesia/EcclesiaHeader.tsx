@@ -1,7 +1,7 @@
 /* ── Ecclesia Header ────────────────────────────────── */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Church, PlayCircle, Menu, UserCircle } from 'lucide-react';
+import { Church, PlayCircle, Menu, UserCircle, ChevronDown } from 'lucide-react';
 import { useEcclesia } from './EcclesiaContext';
 import { isUrlEntitled } from '../../entitlements';
 import { loadMemberSession, MEMBER_AUTH_CHANGE_EVENT, type MemberSession } from '../../memberAccount';
@@ -56,6 +56,60 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
   const items = (navigation?.items || []).filter(item => isUrlEntitled(item.url, moduleEntitlements));
   const churchName = globalContent?.churchIdentity?.churchName || tenant.name;
 
+  // Responsive More Dropdown logic
+  const [visibleCount, setVisibleCount] = useState(items.length);
+  const navRef = useRef<HTMLDivElement>(null);
+  const widthsRef = useRef<number[]>([]);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
+
+  useEffect(() => {
+    setVisibleCount(items.length);
+  }, [items]);
+
+  useEffect(() => {
+    const navEl = navRef.current;
+    if (!navEl) return;
+    
+    const links = navEl.querySelectorAll('.nav-link-item');
+    const widths: number[] = [];
+    links.forEach((link) => {
+      widths.push(link.getBoundingClientRect().width);
+    });
+    widthsRef.current = widths;
+  }, [items]);
+
+  useEffect(() => {
+    const navEl = navRef.current;
+    if (!navEl || widthsRef.current.length === 0) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const containerWidth = entry.contentRect.width;
+        const availableWidth = containerWidth - 80;
+        
+        let currentWidth = 0;
+        let fitCount = 0;
+        for (let i = 0; i < widthsRef.current.length; i++) {
+          currentWidth += widthsRef.current[i];
+          if (currentWidth <= availableWidth) {
+            fitCount++;
+          } else {
+            break;
+          }
+        }
+        
+        if (fitCount === items.length) {
+          setVisibleCount(items.length);
+        } else {
+          setVisibleCount(Math.max(1, fitCount));
+        }
+      }
+    });
+
+    resizeObserver.observe(navEl);
+    return () => resizeObserver.disconnect();
+  }, [items.length]);
+
   // Header style configuration from theme settings
   const headerStyle = themeSettings.headerStyle || themeSettings.header?.style || 'sticky';
   const isGlass = themeSettings.headerGlass ?? themeSettings.header?.glass ?? true;
@@ -72,6 +126,8 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
     'data-header-border-color': themeSettings.headerBorderColor || 'accent',
     'data-header-layout': themeSettings.headerLayout || 'logo-left',
     'data-header-effect': themeSettings.headerEffect || 'static',
+    'data-header-font-size': themeSettings.headerFontSize || 'medium',
+    'data-header-font-weight': themeSettings.headerFontWeight || 'bold',
     'data-mobile-menu-position': themeSettings.mobileMenuPosition || 'right',
     'data-mobile-hamburger-shape': themeSettings.mobileHamburgerShape || 'circle',
   };
@@ -159,27 +215,62 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
           <span>{churchName}</span>
         </Link>
  
-        <nav className="nav">
-          {items.map((item) => {
+        <nav className="nav" ref={navRef}>
+          {items.map((item, index) => {
             const itemUrl = item.url === '/home' ? '/' : item.url;
+            const isVisible = index < visibleCount;
             return (
-            <Link
-              key={item.url}
-              to={withLocalChurchBase(itemUrl)}
-              className={isActive(item.url) ? 'active' : ''}
-            >
-              {item.label}
-            </Link>
-          );
+              <Link
+                key={item.url}
+                to={withLocalChurchBase(itemUrl)}
+                className={`nav-link-item ${isActive(item.url) ? 'active' : ''}`}
+                style={{ display: isVisible ? 'inline-block' : 'none' }}
+              >
+                {item.label}
+              </Link>
+            );
           })}
+
+          {visibleCount < items.length && (
+            <div 
+              className="nav-more-dropdown"
+              tabIndex={0}
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                  setIsMoreOpen(false);
+                }
+              }}
+            >
+              <button 
+                className="nav-more-btn"
+                onClick={() => setIsMoreOpen(!isMoreOpen)}
+                aria-expanded={isMoreOpen}
+              >
+                <span>More</span>
+                <ChevronDown size={14} />
+              </button>
+              {isMoreOpen && (
+                <div className="nav-more-menu">
+                  {items.slice(visibleCount).map((item) => {
+                    const itemUrl = item.url === '/home' ? '/' : item.url;
+                    return (
+                      <Link
+                        key={item.url}
+                        to={withLocalChurchBase(itemUrl)}
+                        className={`nav-more-item ${isActive(item.url) ? 'active' : ''}`}
+                        onClick={() => setIsMoreOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </nav>
  
         <div className="header-actions">
-          {showMemberPortal && (
-            <Link className="btn btn-soft member-account-link" to={withLocalChurchBase(activeMemberSession ? '/account' : '/login')}>
-              <UserCircle size={16} /> {activeMemberSession ? 'My Account' : 'Log In'}
-            </Link>
-          )}
           {activeCtaConfig ? (
             <>
               {activeCtaConfig.secondary && activeCtaConfig.secondaryUrl && isUrlEntitled(activeCtaConfig.secondaryUrl, moduleEntitlements) && (
@@ -205,6 +296,17 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
               <Link className="btn btn-primary" to={withLocalChurchBase('/contact')}>Plan Visit</Link>
             </>
           )}
+
+          {showMemberPortal && (
+            <Link 
+              className="member-account-icon-only-link" 
+              to={withLocalChurchBase(activeMemberSession ? '/account' : '/login')}
+              title={activeMemberSession ? 'My Account' : 'Log In'}
+            >
+              <UserCircle size={22} />
+            </Link>
+          )}
+
           <button className="mobile-menu-btn" onClick={onOpenDrawer} aria-label="Open menu">
             <Menu size={20} />
           </button>

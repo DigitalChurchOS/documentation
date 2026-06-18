@@ -73,6 +73,8 @@ export interface ThemeSettings {
   headerShadow?: boolean;
   headerLayout?: string;
   headerEffect?: string;
+  headerFontSize?: string;
+  headerFontWeight?: string;
   footerStyle?: string;
   footerWidgets?: string;
   footerBottom?: string;
