@@ -800,6 +800,97 @@
       color: var(--accent);
     }
 
+    /* Accordion Sidebar styles */
+    .sidebar-b-accordion-group {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-b-sub-items {
+      display: flex;
+      flex-direction: column;
+      margin-left: 20px;
+      padding-left: 10px;
+      border-left: 1px solid var(--line);
+      margin-bottom: 8px;
+      gap: 2px;
+    }
+
+    .sidebar-b-sub-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 12.5px;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-b-sub-item:hover {
+      color: var(--text);
+      background: var(--panel-2);
+    }
+
+    .sidebar-b-sub-item.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: color-mix(in srgb, var(--accent) 15%, transparent);
+      font-weight: 500;
+    }
+
+    .sidebar-b-sub-item svg,
+    .sidebar-b-sub-item i {
+      width: 13.5px !important;
+      height: 13.5px !important;
+      stroke-width: 2 !important;
+      color: currentColor;
+      opacity: 0.7;
+    }
+    
+    .sidebar-b-sub-item.active svg,
+    .sidebar-b-sub-item.active i {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    .sidebar-b-item .chevron-down {
+      margin-left: auto;
+      width: 12px !important;
+      height: 12px !important;
+      opacity: 0.5;
+      transition: transform 0.2s ease;
+    }
+
+    .sidebar-b-item.active .chevron-down {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    .sidebar-b-item .chevron-down.open {
+      transform: rotate(180deg);
+    }
+
+    /* Hide 3rd-level menu sidebars to achieve wider view */
+    .cms-view-layout > aside.cms-nav-panel:first-of-type {
+      display: none !important;
+    }
+
+    .cms-view-layout {
+      grid-template-columns: 1fr !important;
+    }
+
+    #domainTenantConsoleContainer .cms-view-layout {
+      grid-template-columns: 1fr 300px !important;
+    }
+
     .no-results-msg {
       padding: 16px;
       text-align: center;
@@ -4999,6 +5090,34 @@ body.customizer-open { overflow: hidden; }
 
           <!-- 3. Ministry Snapshot Cards -->
           <section class="grid snapshot-grid" aria-label="Ministry snapshot cards" id="snapshotGrid" style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px;"></section>
+
+          <!-- Workspace Reports Hub -->
+          <section class="panel" style="margin-bottom: 24px;">
+            <div class="section-head" style="display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+              <div>
+                <span class="eyebrow"><i data-lucide="line-chart"></i> Workspace Intelligence</span>
+                <h2>Workspace Reports Hub</h2>
+                <p>Select an entity to view real-time data insights, performance metrics, and analytics.</p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label for="reportEntitySelect" style="font-size: 12px; font-weight: 600; color: var(--muted); white-space: nowrap;">Report Entity:</label>
+                <select id="reportEntitySelect" onchange="window.switchReportEntity(this.value)" style="padding: 6px 12px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--panel-2); color: var(--text); font-size: 13px; font-weight: 500; cursor: pointer;">
+                  <option value="members">Members & Families</option>
+                  <option value="services">Services & Attendance</option>
+                  <option value="growth">Growth & Engagement</option>
+                  <option value="platform">Platform & API Health</option>
+                  <option value="media">Media Views & Downloads</option>
+                  <option value="articles">Articles & Publications</option>
+                  <option value="sales">Sales & Store Revenue</option>
+                  <option value="cells">Cell Group Meetings</option>
+                </select>
+              </div>
+            </div>
+            
+            <div id="reportContentContainer" style="margin-top: 20px; min-height: 250px;">
+              <!-- Dynamic Report Content -->
+            </div>
+          </section>
 
           <!-- 4-9. Main two-column layout -->
           <section class="main-layout" style="display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr); gap: 24px; align-items: start;">
@@ -13177,12 +13296,14 @@ body.customizer-open { overflow: hidden; }
                   <i data-lucide="sliders-horizontal"></i>
                   <span>General Settings</span>
                 </button>
-              </div>
-              <div class="settings-nav-group">
-                <div class="settings-nav-header">Modules</div>
-                <div id="settingsModulesList" class="settings-nav-group" style="gap: 5px;">
-                  <!-- Dynamic module buttons -->
-                </div>
+                <button class="settings-nav-item" data-settings-tab="api">
+                  <i data-lucide="key-round"></i>
+                  <span>API & Webhooks</span>
+                </button>
+                <button class="settings-nav-item" data-settings-tab="integrations">
+                  <i data-lucide="cpu"></i>
+                  <span>Integrations</span>
+                </button>
               </div>
             </aside>
 
@@ -13226,14 +13347,92 @@ body.customizer-open { overflow: hidden; }
                     <button id="previewToggle" class="toggle" aria-label="Toggle previews"></button>
                   </div>
                 </div>
+              </div>
 
-                <div class="section-head" style="margin-top: 24px;">
+              <!-- API & Webhooks Settings Content -->
+              <div id="apiSettingsContent" class="settings-tab-content hidden">
+                <div class="section-head">
                   <div>
-                    <h2>Workspace Overview</h2>
-                    <p>Central overview of active settings and entitlements.</p>
+                    <h2>API & Webhooks</h2>
+                    <p>Manage API keys and configure webhooks for custom data syncing.</p>
                   </div>
                 </div>
-                <div id="settingsSummary" class="settings-list"></div>
+                <div class="settings-list">
+                  <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                    <div style="width: 100%;">
+                      <strong>Platform API Key</strong>
+                      <span class="muted">Use this key to authorize external requests to ChurchOS endpoints.</span>
+                    </div>
+                    <div style="display: flex; gap: 8px; width: 100%; max-width: 500px; margin-top: 4px;">
+                      <input type="text" id="platformApiKey" class="input" style="flex: 1; font-family: monospace; font-size: 13px;" value="pk_live_51Nv928JkHw2..." readonly>
+                      <button class="btn secondary" onclick="copyApiKey()"><i data-lucide="copy"></i>Copy</button>
+                      <button class="btn secondary" onclick="regenerateApiKey()"><i data-lucide="refresh-cw"></i>Regenerate</button>
+                    </div>
+                  </div>
+                  <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                    <div style="width: 100%;">
+                      <strong>Webhook URL Endpoint</strong>
+                      <span class="muted">Enter a URL to receive real-time payload alerts for subscribed events.</span>
+                    </div>
+                    <input type="text" id="webhookEndpoint" class="input" style="width: 100%; max-width: 500px;" placeholder="https://your-server.com/webhooks" value="" onchange="saveWebhookSettings()">
+                  </div>
+                  <div class="setting-row">
+                    <div>
+                      <strong>Event Subscriptions</strong>
+                      <span class="muted">Select which events trigger webhook alerts.</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start; margin-top: 8px;">
+                      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="subMemberCreated" checked onchange="saveWebhookSettings()"> Member Profiles Created
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="subGivingReceived" checked onchange="saveWebhookSettings()"> Tithes & Donations Received
+                      </label>
+                      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                        <input type="checkbox" id="subEventRegistered" onchange="saveWebhookSettings()"> Event Registrations Created
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Integrations Settings Content -->
+              <div id="integrationsSettingsContent" class="settings-tab-content hidden">
+                <div class="section-head">
+                  <div>
+                    <h2>Third-Party Integrations</h2>
+                    <p>Link your church workspace to generic platform providers and analytics platforms.</p>
+                  </div>
+                </div>
+                <div class="settings-list">
+                  <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                    <div style="width: 100%;">
+                      <strong>Google Analytics Measurement ID</strong>
+                      <span class="muted">Inject global traffic tracking onto the public website.</span>
+                    </div>
+                    <input type="text" id="gaMeasurementId" class="input" style="width: 100%; max-width: 500px;" placeholder="e.g. G-XXXXXXX" value="" onchange="saveIntegrationSettings()">
+                  </div>
+                  <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                    <div style="width: 100%;">
+                      <strong>Stripe Payment Gateway</strong>
+                      <span class="muted">Authorize secure public giving and store transaction processing.</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px;">
+                      <input type="text" id="stripePublishableKey" class="input" placeholder="Publishable Key (pk_live_...)" value="" onchange="saveIntegrationSettings()">
+                      <input type="password" id="stripeSecretKey" class="input" placeholder="Secret Key (sk_live_...)" value="" onchange="saveIntegrationSettings()">
+                    </div>
+                  </div>
+                  <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                    <div style="width: 100%;">
+                      <strong>Mailchimp Email Sync</strong>
+                      <span class="muted">Sync local members data automatically to marketing newsletter lists.</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 500px;">
+                      <input type="text" id="mailchimpApiKey" class="input" placeholder="Mailchimp API Key" value="" onchange="saveIntegrationSettings()">
+                      <input type="text" id="mailchimpListId" class="input" placeholder="Audience List ID" value="" onchange="saveIntegrationSettings()">
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- Module Settings Content -->
@@ -14235,6 +14434,30 @@ body.customizer-open { overflow: hidden; }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
+      // Setup MutationObserver to watch for active class changes on sub-tabs
+      const subTabObserver = new MutationObserver((mutations) => {
+        let shouldRefresh = false;
+        for (const mutation of mutations) {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+            if (mutation.target.classList.contains('cms-nav-item')) {
+              shouldRefresh = true;
+              break;
+            }
+          }
+        }
+        if (shouldRefresh) {
+          renderSidebarModules();
+        }
+      });
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent) {
+        subTabObserver.observe(mainContent, {
+          attributes: true,
+          subtree: true,
+          attributeFilter: ['class']
+        });
+      }
+
       enhanceDashboardForms();
       requestAnimationFrame(() => enhanceDashboardSelects(document));
       document.addEventListener('pointerdown', (event) => {
@@ -14498,7 +14721,7 @@ body.customizer-open { overflow: hidden; }
       if (accentParam) {
         state.theme.accent = accentParam.startsWith('#') ? accentParam : '#' + accentParam;
       }
-      if (urlParams.get('autologin') === '1' && isLocalTestingHost()) {
+      if (isLocalTestingHost()) {
         localStorage.setItem(SESSION_KEY, 'active');
         localStorage.setItem('churchos.tenantId', localStorage.getItem('churchos.tenantId') || 'demo-church-local');
         localStorage.setItem('churchos.token', localStorage.getItem('churchos.token') || 'local-preview-token');
@@ -14711,6 +14934,14 @@ body.customizer-open { overflow: hidden; }
       renderProfile();
 
       renderPreview();
+      if (currentView === 'overview') {
+        window.activeReportEntity = window.activeReportEntity || 'members';
+        const selectEl = document.getElementById('reportEntitySelect');
+        if (selectEl) {
+          selectEl.value = window.activeReportEntity;
+        }
+        window.switchReportEntity(window.activeReportEntity);
+      }
       refreshIcons();
     }
 
@@ -14753,11 +14984,7 @@ body.customizer-open { overflow: hidden; }
 
     window.selectSettingsTab = function(tabKey) {
       activeSettingsTab = tabKey;
-      if (tabKey !== 'general') {
-        selectedModule = tabKey;
-      } else {
-        selectedModule = null;
-      }
+      selectedModule = null;
       switchView('settings');
       renderSidebarModules();
     };
@@ -14862,6 +15089,554 @@ body.customizer-open { overflow: hidden; }
       }
     };
 
+    window.switchReportEntity = function(entity) {
+      const container = document.getElementById('reportContentContainer');
+      if (!container) return;
+      
+      let html = '';
+      
+      if (entity === 'members') {
+        html = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Total Members</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">1,420</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="trending-up"></i> +12% this month</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">New Believers</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">84</h3>
+              <span class="status info" style="font-size: 11px;"><i data-lucide="heart"></i> Assimilated</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Active Families</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">412</h3>
+              <span class="muted" style="font-size: 11px;">Across 3 campuses</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Retention Rate</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">94.2%</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="check"></i> Industry leading</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: center;">
+            <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, var(--soft-surface), transparent); overflow: hidden;">
+              <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Monthly Membership Growth (Last 6 Months)</h4>
+              <div style="height: 150px; display: flex; align-items: end; justify-content: space-around; gap: 16px; padding-top: 10px;">
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                  <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 50%; display: flex; align-items: flex-end; justify-content: center;"><span style="font-size:9px; font-weight:bold; color:var(--accent); margin-bottom:4px;">1.1k</span></div>
+                  <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Jan</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                  <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 62%; display: flex; align-items: flex-end; justify-content: center;"><span style="font-size:9px; font-weight:bold; color:var(--accent); margin-bottom:4px;">1.18k</span></div>
+                  <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Feb</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                  <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 70%; display: flex; align-items: flex-end; justify-content: center;"><span style="font-size:9px; font-weight:bold; color:var(--accent); margin-bottom:4px;">1.25k</span></div>
+                  <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Mar</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                  <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 78%; display: flex; align-items: flex-end; justify-content: center;"><span style="font-size:9px; font-weight:bold; color:var(--accent); margin-bottom:4px;">1.3k</span></div>
+                  <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Apr</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                  <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 85%; display: flex; align-items: flex-end; justify-content: center;"><span style="font-size:9px; font-weight:bold; color:var(--accent); margin-bottom:4px;">1.35k</span></div>
+                  <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">May</span>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                  <div style="background: var(--accent); width: 100%; border-radius: 4px; height: 95%; display: flex; align-items: flex-end; justify-content: center;"><span style="font-size:9px; font-weight:bold; color:#fff; margin-bottom:4px;">1.42k</span></div>
+                  <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Jun</span>
+                </div>
+              </div>
+            </div>
+            <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-2);">
+              <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Demographics</h4>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Adults (25-50)</span><strong>58%</strong></div>
+                  <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:58%; height:100%;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Youth (13-24)</span><strong>24%</strong></div>
+                  <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:24%; height:100%;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Seniors (50+)</span><strong>18%</strong></div>
+                  <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:18%; height:100%;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (entity === 'services') {
+        html = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Sunday Attendance</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">980</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="trending-up"></i> +8% vs last week</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Midweek Service</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">310</h3>
+              <span class="muted" style="font-size: 11px;">Average Wednesday</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Kiosk Check-ins</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">450</h3>
+              <span class="status info" style="font-size: 11px;"><i data-lucide="qr-code"></i> Touchless</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Kids Check-ins</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">185</h3>
+              <span class="muted" style="font-size: 11px;">Secure check matching</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, var(--soft-surface), transparent);">
+              <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Attendance Breakdown by Service</h4>
+              <div style="display:flex; flex-direction:column; gap:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:8px;">
+                  <span>08:00 AM First Service</span>
+                  <strong>240 attendees</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:8px;">
+                  <span>10:00 AM Main Service</span>
+                  <strong>580 attendees</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:4px;">
+                  <span>12:00 PM Youth & Tech Service</span>
+                  <strong>160 attendees</strong>
+                </div>
+              </div>
+            </div>
+            <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-2);">
+              <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Serving Volunteers Rate</h4>
+              <div style="text-align:center; padding: 10px 0;">
+                <div style="font-size: 32px; font-weight: 800; color: var(--accent);">92%</div>
+                <p class="muted" style="font-size:12px; margin: 4px 0 12px 0;">Schedules filled for Sunday services</p>
+                <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:92%; height:100%;"></div></div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (entity === 'growth') {
+        html = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">First-time Visitors</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">124</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="trending-up"></i> +18% YoY</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Graduated Courses</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">48</h3>
+              <span class="muted" style="font-size: 11px;">Discipleship classes</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Water Baptisms</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">32</h3>
+              <span class="status info" style="font-size: 11px;"><i data-lucide="droplet"></i> Public testimony</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Cell Group Joins</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">115</h3>
+              <span class="muted" style="font-size: 11px;">Assimilated newcomers</span>
+            </div>
+          </div>
+          <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, var(--soft-surface), transparent);">
+            <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Assimilation Funnel Pipeline</h4>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:120px; font-size:12px; text-align:right; font-weight:600;">1. Visitor Check-in</div>
+                <div style="flex:1; background:var(--line); height:24px; border-radius:4px; overflow:hidden;"><div style="background:var(--accent); width:100%; height:100%; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:bold;">124 visitors</div></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:120px; font-size:12px; text-align:right; font-weight:600;">2. Follow-up Call</div>
+                <div style="flex:1; background:var(--line); height:24px; border-radius:4px; overflow:hidden;"><div style="background:var(--accent); opacity:0.85; width:78%; height:100%; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:bold;">97 calls (78%)</div></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:120px; font-size:12px; text-align:right; font-weight:600;">3. Cell Group Join</div>
+                <div style="flex:1; background:var(--line); height:24px; border-radius:4px; overflow:hidden;"><div style="background:var(--accent); opacity:0.75; width:52%; height:100%; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:bold;">64 joined (52%)</div></div>
+              </div>
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div style="width:120px; font-size:12px; text-align:right; font-weight:600;">4. Baptism/Members</div>
+                <div style="flex:1; background:var(--line); height:24px; border-radius:4px; overflow:hidden;"><div style="background:var(--accent); opacity:0.6; width:26%; height:100%; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:bold;">32 baptized (26%)</div></div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (entity === 'platform') {
+        html = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">API Requests (24h)</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">125,400</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="check"></i> 100% success</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Database Storage</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">2.1 GB</h3>
+              <span class="muted" style="font-size: 11px;">of 10 GB limit</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Webhook Deliveries</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">1,200</h3>
+              <span class="status live" style="font-size: 11px;">Active subscriptions</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">API Avg Latency</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">42ms</h3>
+              <span class="muted" style="font-size: 11px;">Global Edge network</span>
+            </div>
+          </div>
+          <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, var(--soft-surface), transparent);">
+            <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">System Services Health</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+              <div style="padding:12px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); display:flex; align-items:center; gap:8px;">
+                <div style="width:8px; height:8px; border-radius:50%; background:#10b981;"></div>
+                <div style="flex:1;">
+                  <strong style="font-size:12px; display:block;">Cloudflare V8 Isolates</strong>
+                  <span class="muted" style="font-size:10px;">Operational</span>
+                </div>
+              </div>
+              <div style="padding:12px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); display:flex; align-items:center; gap:8px;">
+                <div style="width:8px; height:8px; border-radius:50%; background:#10b981;"></div>
+                <div style="flex:1;">
+                  <strong style="font-size:12px; display:block;">D1 SQLite Database</strong>
+                  <span class="muted" style="font-size:10px;">Operational</span>
+                </div>
+              </div>
+              <div style="padding:12px; border:1px solid var(--line); border-radius:8px; background:var(--panel-2); display:flex; align-items:center; gap:8px;">
+                <div style="width:8px; height:8px; border-radius:50%; background:#10b981;"></div>
+                <div style="flex:1;">
+                  <strong style="font-size:12px; display:block;">Media CDN Bucket</strong>
+                  <span class="muted" style="font-size:10px;">Operational</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (entity === 'media') {
+        html = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Video Streams</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">12,450</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="trending-up"></i> +15% vs last week</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Podcast Downloads</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">4,120</h3>
+              <span class="muted" style="font-size: 11px;">RSS Apple/Spotify feeds</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Sermon Notes Views</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">1,890</h3>
+              <span class="muted" style="font-size: 11px;">Digital engagements</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Active Live Viewers</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">340</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="radio"></i> Streaming Sunday</span>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: center;">
+            <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, var(--soft-surface), transparent); overflow: hidden;">
+              <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Media Views by Platform</h4>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Mobile Application</span><strong>64%</strong></div>
+                  <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:64%; height:100%;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Public Website</span><strong>22%</strong></div>
+                  <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:22%; height:100%;"></div></div>
+                </div>
+                <div>
+                  <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Smart TV Devices</span><strong>14%</strong></div>
+                  <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:14%; height:100%;"></div></div>
+                </div>
+              </div>
+            </div>
+            <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-2);">
+              <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Top Sermon Series</h4>
+              <ol style="margin:0; padding-left:20px; font-size:12px; line-height:1.6; display:flex; flex-direction:column; gap:6px;">
+                <li><strong>"Grace Overload"</strong> (4,200 views)</li>
+                <li><strong>"Faith in Storms"</strong> (3,120 views)</li>
+                <li><strong>"Kingdom Stewardship"</strong> (1,840 views)</li>
+              </ol>
+            </div>
+          </div>
+        `;
+      } else if (entity === 'articles') {
+        html = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Devotional Views</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">8,400</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="trending-up"></i> +22% this week</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Blog Posts Published</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">24</h3>
+              <span class="muted" style="font-size: 11px;">Across 4 channels</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Newsletter Opens</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">3,450</h3>
+              <span class="muted" style="font-size: 11px;">68% open rate</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">eBook Downloads</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">580</h3>
+              <span class="status info" style="font-size: 11px;">Study resources</span>
+            </div>
+          </div>
+          <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, var(--soft-surface), transparent);">
+            <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Articles Popularity & Tag Indexing</h4>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:8px;">
+                <span>Daily Devotionals Tag</span>
+                <strong>4,800 views</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--line); padding-bottom:8px;">
+                <span>Church Announcements Tag</span>
+                <strong>2,400 views</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:4px;">
+                <span>Theology Study Guides Tag</span>
+                <strong>1,200 views</strong>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (entity === 'sales') {
+        html = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Store Gross Revenue</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">$8,420</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="trending-up"></i> +15% vs last month</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Coupon Redemptions</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">48</h3>
+              <span class="muted" style="font-size: 11px;">Promo marketing</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Average Order Value</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">$42.50</h3>
+              <span class="muted" style="font-size: 11px;">Physical & digital</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Fulfillment Queue</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">3 pending</h3>
+              <span class="status warning" style="font-size: 11px;">Shipment actions required</span>
+            </div>
+          </div>
+          <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, var(--soft-surface), transparent); overflow: hidden;">
+            <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Daily Revenue Sales (Last 6 Days)</h4>
+            <div style="height: 120px; display: flex; align-items: end; justify-content: space-around; gap: 16px; padding-top: 10px;">
+              <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 30%;"></div>
+                <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Mon</span>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 45%;"></div>
+                <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Tue</span>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 60%;"></div>
+                <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Wed</span>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 50%;"></div>
+                <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Thu</span>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                <div style="background: var(--accent-soft); width: 100%; border-radius: 4px; height: 80%;"></div>
+                <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Fri</span>
+              </div>
+              <div style="display:flex; flex-direction:column; align-items:center; flex:1; height: 100%;">
+                <div style="background: var(--accent); width: 100%; border-radius: 4px; height: 95%;"></div>
+                <span style="font-size: 10px; color: var(--muted); margin-top: 6px;">Sat</span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (entity === 'cells') {
+        html = `
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Active Cell Groups</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">42</h3>
+              <span class="status live" style="font-size: 11px;"><i data-lucide="check"></i> 100% active</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Weekly Cell Attendance</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">540</h3>
+              <span class="muted" style="font-size: 11px;">Across all locations</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Cell Reports Submitted</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">100%</h3>
+              <span class="status info" style="font-size: 11px;"><i data-lucide="check-check"></i> Clean records</span>
+            </div>
+            <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
+              <span class="muted" style="font-size: 11px;">Active Cell Leaders</span>
+              <h3 style="font-size: 20px; margin: 4px 0;">42</h3>
+              <span class="muted" style="font-size: 11px;">10 in training queue</span>
+            </div>
+          </div>
+          <div style="padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(180deg, var(--soft-surface), transparent);">
+            <h4 style="margin: 0 0 12px; font-size: 13px; font-weight: 600;">Cell Attendance by Zone Region</h4>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Zone A (North Campus)</span><strong>210 attendees</strong></div>
+                <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:38%; height:100%;"></div></div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Zone B (East Campus)</span><strong>180 attendees</strong></div>
+                <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:33%; height:100%;"></div></div>
+              </div>
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;"><span>Zone C (Main Campus Hub)</span><strong>150 attendees</strong></div>
+                <div style="height:6px; background:var(--line); border-radius:3px; overflow:hidden;"><div style="background:var(--accent); width:27%; height:100%;"></div></div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      container.innerHTML = html;
+      if (window.lucide) window.lucide.createIcons();
+    };
+
+    window.switchHomeAnalyticsTab = function(tabKey) {
+      if (tabKey === 'general-overview') {
+        selectedModule = null;
+        currentView = 'overview';
+        switchView('overview');
+      } else if (tabKey === 'profile') {
+        selectedModule = null;
+        currentView = 'profile';
+        switchView('profile');
+      } else {
+        selectedModule = 'analytics';
+        currentView = 'modules';
+        switchView('modules');
+        if (window.switchAnalyticsTab) {
+          window.switchAnalyticsTab(tabKey);
+        }
+      }
+      renderSidebarModules();
+    };
+
+    window.copyApiKey = function() {
+      const input = document.getElementById('platformApiKey');
+      if (input) {
+        navigator.clipboard.writeText(input.value);
+        showToast('API Key copied to clipboard.');
+      }
+    };
+
+    window.regenerateApiKey = function() {
+      if (confirm('Are you sure you want to regenerate the API key? External apps using the old key will lose access.')) {
+        state.settings.api = state.settings.api || {};
+        state.settings.api.apiKey = 'pk_live_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        document.getElementById('platformApiKey').value = state.settings.api.apiKey;
+        saveState('Regenerated platform API key');
+      }
+    };
+
+    window.saveWebhookSettings = function() {
+      state.settings.api = state.settings.api || {};
+      state.settings.api.webhookUrl = document.getElementById('webhookEndpoint').value;
+      state.settings.api.subMemberCreated = document.getElementById('subMemberCreated').checked;
+      state.settings.api.subGivingReceived = document.getElementById('subGivingReceived').checked;
+      state.settings.api.subEventRegistered = document.getElementById('subEventRegistered').checked;
+      saveState('Webhook integration settings saved');
+      showToast('Webhook settings saved successfully.');
+    };
+
+    window.saveIntegrationSettings = function() {
+      state.settings.integrations = state.settings.integrations || {};
+      state.settings.integrations.gaMeasurementId = document.getElementById('gaMeasurementId').value;
+      state.settings.integrations.stripePublishableKey = document.getElementById('stripePublishableKey').value;
+      state.settings.integrations.stripeSecretKey = document.getElementById('stripeSecretKey').value;
+      state.settings.integrations.mailchimpApiKey = document.getElementById('mailchimpApiKey').value;
+      state.settings.integrations.mailchimpListId = document.getElementById('mailchimpListId').value;
+      saveState('Third-party integrations updated');
+      showToast('Third-party integration settings saved successfully.');
+    };
+
+    function getConsoleContainerId(moduleKey) {
+      if (moduleKey === 'volunteers') return 'volunteerConsoleContainer';
+      if (moduleKey === 'localization-multilingual-engine') return 'localizationConsoleContainer';
+      if (moduleKey === 'billing-subscription-management') return 'billingSubscriptionConsoleContainer';
+      if (moduleKey === 'user-role-management') return 'userRoleConsoleContainer';
+      if (moduleKey === 'domain-tenant-management') return 'domainTenantConsoleContainer';
+      if (moduleKey === 'centralized-settings-engine') return 'centralizedSettingsEngineConsoleContainer';
+      return moduleKey + 'ConsoleContainer';
+    }
+
+    window.handleSubItemClick = function(event, moduleKey, subIndex) {
+      if (event) event.stopPropagation();
+      
+      const containerId = getConsoleContainerId(moduleKey);
+      const container = document.getElementById(containerId);
+      const navPanel = container ? container.querySelector('.cms-nav-panel') : null;
+      const navItems = navPanel ? Array.from(navPanel.querySelectorAll('.cms-nav-item')) : [];
+      
+      const existingSettingsIndex = navItems.findIndex(item => {
+        const label = (item.querySelector('span')?.textContent || item.textContent).trim().toLowerCase();
+        return label === 'settings';
+      });
+
+      if (subIndex === 'settings') {
+        window.activeModuleSubTab = 'settings';
+        if (selectedModule !== moduleKey) {
+          selectedModule = moduleKey;
+          switchView('modules');
+        }
+        
+        const settingsTab = document.getElementById(`${moduleKey}SettingsTab`);
+        if (settingsTab) {
+          settingsTab.classList.add('hidden');
+        }
+        
+        if (existingSettingsIndex !== -1) {
+          const targetNavItem = navItems[existingSettingsIndex];
+          if (targetNavItem) {
+            targetNavItem.click();
+          }
+        } else {
+          window.showModuleSettingsInConsole(moduleKey);
+        }
+        
+        renderSidebarModules();
+        return;
+      }
+      
+      window.activeModuleSubTab = null;
+      
+      const settingsTab = document.getElementById(`${moduleKey}SettingsTab`);
+      if (settingsTab) {
+        settingsTab.classList.add('hidden');
+      }
+
+      if (selectedModule !== moduleKey) {
+        selectedModule = moduleKey;
+        switchView('modules');
+      }
+      
+      const targetNavItem = navItems[subIndex];
+      if (targetNavItem) {
+        targetNavItem.click();
+      }
+    };
+
     window.handleSidebarSearch = function(query) {
       window.sidebarSearchQuery = query.toLowerCase().trim();
       renderSidebarModules();
@@ -14910,19 +15685,25 @@ body.customizer-open { overflow: hidden; }
       } else if (currentView === 'profile') {
         window.activeSidebarCategory = 'profile';
       } else if (currentView === 'modules' && activeModule) {
-        const catNameMap = {
-          'Churchfront': 'churchfront',
-          'Connect': 'connect',
-          'Outreach': 'outreach',
-          'Discipleship': 'discipleship',
-          'Media': 'media',
-          'Giving': 'giving',
-          'Sales': 'sales',
-          'Church Admin': 'admin',
-          'Admin': 'admin',
-          'Settings': 'settings'
-        };
-        window.activeSidebarCategory = catNameMap[activeModule.category] || 'churchfront';
+        if (selectedModule === 'analytics') {
+          if (window.activeSidebarCategory !== 'home' && window.activeSidebarCategory !== 'admin') {
+            window.activeSidebarCategory = 'home';
+          }
+        } else {
+          const catNameMap = {
+            'Churchfront': 'churchfront',
+            'Connect': 'connect',
+            'Outreach': 'outreach',
+            'Discipleship': 'discipleship',
+            'Media': 'media',
+            'Giving': 'giving',
+            'Sales': 'sales',
+            'Church Admin': 'admin',
+            'Admin': 'admin',
+            'Settings': 'settings'
+          };
+          window.activeSidebarCategory = catNameMap[activeModule.category] || 'churchfront';
+        }
       }
 
       // 1. Render Column A Categories
@@ -14981,30 +15762,58 @@ body.customizer-open { overflow: hidden; }
         let contentHtml = '';
 
         if (window.activeSidebarCategory === 'home') {
-          const overviewActive = currentView === 'overview' ? 'active' : '';
-          contentHtml = `
-            <button class="sidebar-b-item ${overviewActive}" onclick="switchView('overview')">
-              <i data-lucide="layout-dashboard"></i>
-              <span>Dashboard Overview</span>
-              <i data-lucide="chevron-right" class="chevron-right"></i>
-            </button>
-            <button class="sidebar-b-item" onclick="switchView('settings')">
-              <i data-lucide="sliders-horizontal"></i>
-              <span>Global Settings</span>
-              <i data-lucide="chevron-right" class="chevron-right"></i>
-            </button>
-            <button class="sidebar-b-item" onclick="switchView('profile')">
-              <i data-lucide="user"></i>
-              <span>Admin Profile</span>
-              <i data-lucide="chevron-right" class="chevron-right"></i>
-            </button>
-          `;
+          let activeTab = 'general-overview';
+          if (currentView === 'profile') {
+            activeTab = 'profile';
+          } else if (currentView === 'modules' && selectedModule === 'analytics') {
+            activeTab = analyticsState.activeTab || 'overview';
+          } else if (currentView === 'overview') {
+            activeTab = 'general-overview';
+          }
+          
+          const entities = [
+            { key: 'general-overview', name: 'General Overview', icon: 'home' },
+            { key: 'overview', name: 'Leadership Overview', icon: 'layout-dashboard' },
+            { key: 'content', name: 'Content & Media', icon: 'monitor-play' },
+            { key: 'giving', name: 'Giving & Events', icon: 'hand-coins' },
+            { key: 'people', name: 'People & Formation', icon: 'users-round' },
+            { key: 'funnels', name: 'Funnel Conversions', icon: 'filter' },
+            { key: 'exports', name: 'Exports & Board Packs', icon: 'download' },
+            { key: 'settings', name: 'Settings', icon: 'sliders-horizontal' },
+            { key: 'profile', name: 'Admin Profile', icon: 'user' }
+          ];
+          
+          const reportsHtml = entities.map(entity => {
+            const isTabActive = activeTab === entity.key ? 'active' : '';
+            return `
+              <button class="sidebar-b-item ${isTabActive}" onclick="window.switchHomeAnalyticsTab('${entity.key}')">
+                <i data-lucide="${entity.icon}"></i>
+                <span>${entity.name}</span>
+                <i data-lucide="chevron-right" class="chevron-right"></i>
+              </button>
+            `;
+          }).join('');
+
+          contentHtml = reportsHtml;
         } else if (window.activeSidebarCategory === 'settings') {
           const generalActive = currentView === 'settings' && activeSettingsTab === 'general' ? 'active' : '';
+          const apiActive = currentView === 'settings' && activeSettingsTab === 'api' ? 'active' : '';
+          const integrationsActive = currentView === 'settings' && activeSettingsTab === 'integrations' ? 'active' : '';
+
           contentHtml = `
             <button class="sidebar-b-item ${generalActive}" onclick="selectSettingsTab('general')">
               <i data-lucide="sliders-horizontal"></i>
               <span>General Settings</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item ${apiActive}" onclick="selectSettingsTab('api')">
+              <i data-lucide="key-round"></i>
+              <span>API & Webhooks</span>
+              <i data-lucide="chevron-right" class="chevron-right"></i>
+            </button>
+            <button class="sidebar-b-item ${integrationsActive}" onclick="selectSettingsTab('integrations')">
+              <i data-lucide="cpu"></i>
+              <span>Third-Party Integrations</span>
               <i data-lucide="chevron-right" class="chevron-right"></i>
             </button>
           `;
@@ -15031,17 +15840,6 @@ body.customizer-open { overflow: hidden; }
               <i data-lucide="chevron-right" class="chevron-right"></i>
             </button>
           `;
-
-          contentHtml += modules.filter(m => m.settings && m.settings.length > 0).map(module => {
-            const isActive = currentView === 'settings' && activeSettingsTab === module.key ? 'active' : '';
-            return `
-              <button class="sidebar-b-item ${isActive}" onclick="selectSettingsTab('${module.key}')">
-                <i data-lucide="${module.icon}"></i>
-                <span>${module.name} Settings</span>
-                <i data-lucide="chevron-right" class="chevron-right"></i>
-              </button>
-            `;
-          }).join('');
         } else if (window.activeSidebarCategory === 'giving') {
           const donationsActive = currentView === 'modules' && selectedModule === 'giving' && (givingState.activeTab === 'donations') ? 'active' : '';
           const recurringActive = currentView === 'modules' && selectedModule === 'giving' && (givingState.activeTab === 'recurring') ? 'active' : '';
@@ -15127,13 +15925,78 @@ body.customizer-open { overflow: hidden; }
           } else {
             contentHtml = catModules.map(module => {
               const isActive = currentView === 'modules' && selectedModule === module.key ? 'active' : '';
-              return `
-                <button class="sidebar-b-item ${isActive}" data-module-nav="${module.key}">
-                  <i data-lucide="${module.icon}"></i>
-                  <span>${module.name}</span>
-                  <i data-lucide="chevron-right" class="chevron-right"></i>
-                </button>
-              `;
+              
+              const containerId = getConsoleContainerId(module.key);
+              const container = document.getElementById(containerId);
+              const navPanel = container ? container.querySelector('.cms-nav-panel') : null;
+              const navItems = navPanel ? Array.from(navPanel.querySelectorAll('.cms-nav-item')) : [];
+              
+              const existingSettingsIndex = navItems.findIndex(item => {
+                const label = (item.querySelector('span')?.textContent || item.textContent).trim().toLowerCase();
+                return label === 'settings';
+              });
+              
+              const hasSettings = module.settings && module.settings.length > 0;
+              const shouldAppendVirtual = hasSettings && (existingSettingsIndex === -1);
+              
+              if (navItems.length > 0 || shouldAppendVirtual) {
+                const isExpanded = selectedModule === module.key;
+                const chevronClass = isExpanded ? 'chevron-down open' : 'chevron-down';
+                
+                const totalSubCount = navItems.length + (shouldAppendVirtual ? 1 : 0);
+                const subItemsHtml = Array.from({ length: totalSubCount }).map((_, index) => {
+                  if (index === navItems.length) {
+                    const isItemActive = (currentView === 'modules' && selectedModule === module.key && window.activeModuleSubTab === 'settings');
+                    return `
+                      <button class="sidebar-b-sub-item ${isItemActive ? 'active' : ''}" 
+                              onclick="handleSubItemClick(event, '${module.key}', 'settings')">
+                        <i data-lucide="settings"></i>
+                        <span>Settings</span>
+                      </button>
+                    `;
+                  }
+                  
+                  const item = navItems[index];
+                  const isSettingsIndex = (index === existingSettingsIndex);
+                  const isItemActive = isSettingsIndex
+                    ? (currentView === 'modules' && selectedModule === module.key && (window.activeModuleSubTab === 'settings' || item.classList.contains('active')))
+                    : (item.classList.contains('active') && (window.activeModuleSubTab !== 'settings' || selectedModule !== module.key));
+                    
+                  const label = item.querySelector('span')?.textContent || item.textContent.trim();
+                  const iconHtml = item.querySelector('i, svg')?.outerHTML || '';
+                  
+                  const clickParam = isSettingsIndex ? "'settings'" : index;
+                  
+                  return `
+                    <button class="sidebar-b-sub-item ${isItemActive ? 'active' : ''}" 
+                            onclick="handleSubItemClick(event, '${module.key}', ${clickParam})">
+                      ${iconHtml}
+                      <span>${label}</span>
+                    </button>
+                  `;
+                }).join('');
+                
+                return `
+                  <div class="sidebar-b-accordion-group">
+                    <button class="sidebar-b-item ${isActive}" data-module-nav="${module.key}">
+                      <i data-lucide="${module.icon}"></i>
+                      <span>${module.name}</span>
+                      <i data-lucide="chevron-down" class="${chevronClass}"></i>
+                    </button>
+                    <div class="sidebar-b-sub-items ${isExpanded ? '' : 'hidden'}">
+                      ${subItemsHtml}
+                    </div>
+                  </div>
+                `;
+              } else {
+                return `
+                  <button class="sidebar-b-item ${isActive}" data-module-nav="${module.key}">
+                    <i data-lucide="${module.icon}"></i>
+                    <span>${module.name}</span>
+                    <i data-lucide="chevron-right" class="chevron-right"></i>
+                  </button>
+                `;
+              }
             }).join('');
 
             // Inject Marketplace end-user link for Churchfront / Site category
@@ -15511,12 +16374,46 @@ body.customizer-open { overflow: hidden; }
       // All other cases (undeveloped modules or non-modules view) already hidden by hideAllConsoles()
     }
 
-    function renderModuleSettingsForm(moduleKey) {
+    window.showModuleSettingsInConsole = function(moduleKey) {
+      const containerId = getConsoleContainerId(moduleKey);
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      // Remove active class from all original cms-nav-item buttons
+      container.querySelectorAll('.cms-nav-item').forEach(btn => btn.classList.remove('active'));
+
+      // Hide all normal tab content containers in this console
+      container.querySelectorAll('.cms-tab-content, .user-role-tab-content, .domain-tenant-tab-content, .billing-tab-content, .tab-content, [id*="Tab"]').forEach(tab => {
+        if (tab.id !== `${moduleKey}SettingsTab`) {
+          tab.classList.add('hidden');
+        }
+      });
+      
+      // Find or create the dynamic settings tab container
+      let settingsTab = document.getElementById(`${moduleKey}SettingsTab`);
+      if (!settingsTab) {
+        const layoutWrapper = container.querySelector('.cms-view-layout') || container;
+        const contentPanel = layoutWrapper.querySelector('.cms-content-panel') || layoutWrapper;
+        
+        settingsTab = document.createElement('div');
+        settingsTab.id = `${moduleKey}SettingsTab`;
+        settingsTab.className = 'cms-tab-content user-role-tab-content domain-tenant-tab-content billing-tab-content tab-content settings-tab-content';
+        contentPanel.appendChild(settingsTab);
+      }
+      
+      settingsTab.classList.remove('hidden');
+      
+      // Render the settings form inside this container
+      renderModuleSettingsForm(moduleKey, settingsTab);
+    };
+
+    function renderModuleSettingsForm(moduleKey, targetElement) {
       const module = modules.find(m => m.key === moduleKey);
       if (!module) return;
 
       const saved = state.settings[module.key] || {};
-      const container = document.getElementById('activeModuleSettingsForm');
+      const container = targetElement || document.getElementById('activeModuleSettingsForm');
+      if (!container) return;
       
       container.innerHTML = `
         <article class="settings-card">
@@ -15567,7 +16464,7 @@ body.customizer-open { overflow: hidden; }
           state.settings[mKey] = state.settings[mKey] || {};
           state.settings[mKey][sKey] = !(state.settings[mKey][sKey] ?? true);
           saveState(`${mKey} settings updated`);
-          renderModuleSettingsForm(moduleKey);
+          renderModuleSettingsForm(moduleKey, container);
         });
       });
 
@@ -15582,6 +16479,8 @@ body.customizer-open { overflow: hidden; }
           saveState(`${mKey} settings updated`);
         });
       });
+
+      if (window.lucide) window.lucide.createIcons();
     }
 
     function renderSettings() {
@@ -15600,47 +16499,74 @@ body.customizer-open { overflow: hidden; }
         });
       });
 
-      const liveCount = liveModules().length;
-      document.getElementById('settingsSummary').innerHTML = `
-        <div class="setting-row"><div><strong>Theme mode</strong><span class="muted">${state.theme.mode}</span></div><span class="status"><i data-lucide="palette"></i>${state.theme.accent}</span></div>
-        <div class="setting-row"><div><strong>Public modules</strong><span class="muted">${liveCount} modules visible on the site</span></div><span class="status live"><i data-lucide="radio-tower"></i>${liveCount} live</span></div>
-        <div class="setting-row"><div><strong>Module settings</strong><span class="muted">${modules.length} module schemas centralized</span></div><span class="status"><i data-lucide="sliders-horizontal"></i>Unified</span></div>
-      `;
 
-      // Render settings sidebar modules list
-      document.getElementById('settingsModulesList').innerHTML = modules.map((module) => {
-        const isActive = activeSettingsTab === module.key;
-        return `
-          <button class="settings-nav-item ${isActive ? 'active' : ''}" data-settings-tab="${module.key}">
-            <i data-lucide="${module.icon}"></i>
-            <span>${module.name}</span>
-          </button>
-        `;
-      }).join('');
+
+      // Initialize/sync API state
+      state.settings.api = state.settings.api || {};
+      if (!state.settings.api.apiKey) {
+        state.settings.api.apiKey = 'pk_live_51Nv928JkHw2t7XzR90PqLm62kX7B8n9';
+      }
+      const platformApiKeyEl = document.getElementById('platformApiKey');
+      if (platformApiKeyEl) platformApiKeyEl.value = state.settings.api.apiKey;
+      
+      const webhookEndpointEl = document.getElementById('webhookEndpoint');
+      if (webhookEndpointEl) webhookEndpointEl.value = state.settings.api.webhookUrl || '';
+      
+      const subMemberCreatedEl = document.getElementById('subMemberCreated');
+      if (subMemberCreatedEl) subMemberCreatedEl.checked = state.settings.api.subMemberCreated ?? true;
+      
+      const subGivingReceivedEl = document.getElementById('subGivingReceived');
+      if (subGivingReceivedEl) subGivingReceivedEl.checked = state.settings.api.subGivingReceived ?? true;
+      
+      const subEventRegisteredEl = document.getElementById('subEventRegistered');
+      if (subEventRegisteredEl) subEventRegisteredEl.checked = state.settings.api.subEventRegistered ?? false;
+
+      // Initialize/sync Integrations state
+      state.settings.integrations = state.settings.integrations || {};
+      
+      const gaMeasurementIdEl = document.getElementById('gaMeasurementId');
+      if (gaMeasurementIdEl) gaMeasurementIdEl.value = state.settings.integrations.gaMeasurementId || '';
+      
+      const stripePublishableKeyEl = document.getElementById('stripePublishableKey');
+      if (stripePublishableKeyEl) stripePublishableKeyEl.value = state.settings.integrations.stripePublishableKey || '';
+      
+      const stripeSecretKeyEl = document.getElementById('stripeSecretKey');
+      if (stripeSecretKeyEl) stripeSecretKeyEl.value = state.settings.integrations.stripeSecretKey || '';
+      
+      const mailchimpApiKeyEl = document.getElementById('mailchimpApiKey');
+      if (mailchimpApiKeyEl) mailchimpApiKeyEl.value = state.settings.integrations.mailchimpApiKey || '';
+      
+      const mailchimpListIdEl = document.getElementById('mailchimpListId');
+      if (mailchimpListIdEl) mailchimpListIdEl.value = state.settings.integrations.mailchimpListId || '';
 
       // Add click events to settings navigation tabs
       document.querySelectorAll('[data-settings-tab]').forEach((button) => {
-        button.addEventListener('click', () => {
+        button.onclick = () => {
           activeSettingsTab = button.dataset.settingsTab;
-          
-          if (activeSettingsTab !== 'general') {
-            selectedModule = activeSettingsTab;
-          }
-          
+          selectedModule = null;
           render();
-        });
+        };
       });
 
-      const generalBtn = document.querySelector('[data-settings-tab="general"]');
-      if (generalBtn) {
-        generalBtn.classList.toggle('active', activeSettingsTab === 'general');
-      }
+      // Hide all settings tabs
+      document.getElementById('generalSettingsContent').classList.add('hidden');
+      document.getElementById('apiSettingsContent').classList.add('hidden');
+      document.getElementById('integrationsSettingsContent').classList.add('hidden');
+      document.getElementById('moduleSettingsContent').classList.add('hidden');
 
+      // Remove active from all settings-nav-item
+      document.querySelectorAll('.settings-nav-item').forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.settingsTab === activeSettingsTab);
+      });
+
+      // Show the selected settings tab
       if (activeSettingsTab === 'general') {
         document.getElementById('generalSettingsContent').classList.remove('hidden');
-        document.getElementById('moduleSettingsContent').classList.add('hidden');
+      } else if (activeSettingsTab === 'api') {
+        document.getElementById('apiSettingsContent').classList.remove('hidden');
+      } else if (activeSettingsTab === 'integrations') {
+        document.getElementById('integrationsSettingsContent').classList.remove('hidden');
       } else {
-        document.getElementById('generalSettingsContent').classList.add('hidden');
         document.getElementById('moduleSettingsContent').classList.remove('hidden');
         renderModuleSettingsForm(activeSettingsTab);
       }
