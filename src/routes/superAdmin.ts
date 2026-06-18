@@ -836,6 +836,96 @@ router.patch('/settings', async (req: Request, res: Response) => {
   res.json({ data: { ...req.body, updatedAt: new Date().toISOString() } });
 });
 
+// ── entitlements management ──────────────────────────────────
+router.post('/entitlements', async (req: Request, res: Response) => {
+  try {
+    const { tenantId, moduleKey, status, billingRule, usageLimits } = req.body;
+
+    if (!tenantId || !moduleKey) {
+      res.status(400).json({ error: 'tenantId and moduleKey are required' });
+      return;
+    }
+
+    // Verify tenant and module definition exist
+    const [tenantExists, modDefExists] = await Promise.all([
+      prisma.tenant.findUnique({ where: { id: tenantId } }),
+      prisma.moduleDefinition.findUnique({ where: { key: moduleKey } }),
+    ]);
+
+    if (!tenantExists) {
+      res.status(404).json({ error: 'Tenant not found' });
+      return;
+    }
+    if (!modDefExists) {
+      res.status(404).json({ error: 'Module definition not found' });
+      return;
+    }
+
+    const entitlement = await prisma.tenantModule.upsert({
+      where: {
+        tenantId_moduleKey: { tenantId, moduleKey },
+      },
+      update: {
+        ...(status !== undefined && { status }),
+        ...(billingRule !== undefined && { billingRule }),
+        ...(usageLimits !== undefined && { usageLimits: JSON.stringify(usageLimits) }),
+      },
+      create: {
+        tenantId,
+        moduleKey,
+        status: status || 'active',
+        billingRule: billingRule || 'free',
+        usageLimits: usageLimits ? JSON.stringify(usageLimits) : '{}',
+      },
+    });
+
+    res.json({ data: entitlement });
+  } catch (err: any) {
+    console.error('Super Admin entitlement error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// ── GET /api/super-admin/logs ──────────────────────────────────
+router.get('/logs', async (req: Request, res: Response) => {
+  try {
+    const level = req.query.level as string | undefined;
+    const scope = req.query.scope as string | undefined;
+    const limit = parseInt(req.query.limit as string || '50', 10);
+    const offset = parseInt(req.query.offset as string || '0', 10);
+
+    const logs = await prisma.observabilityLog.findMany({
+      where: {
+        ...(level && { logLevel: level }),
+        ...(scope && { scope: { contains: scope } }),
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+      skip: offset,
+    });
+
+    const total = await prisma.observabilityLog.count({
+      where: {
+        ...(level && { logLevel: level }),
+        ...(scope && { scope: { contains: scope } }),
+      },
+    });
+
+    res.json({
+      data: logs,
+      meta: {
+        total,
+        limit,
+        offset,
+      },
+    });
+  } catch (err: any) {
+    console.error('Super Admin get logs error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
 router.use((_req, res) => {
   res.json({ data: [] });
 });
