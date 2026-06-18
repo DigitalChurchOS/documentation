@@ -64,6 +64,16 @@ const EcclesiaLayout: React.FC<Props> = ({ children, useStaticLayout = false }) 
     );
   }
 
+  if (isLivestream) {
+    return (
+      <div className="ecclesia-theme-root">
+        <main className="content-wrap content-wrap--livestream" id="content-outlet" style={{ padding: 0, height: '100vh', width: '100vw', maxWidth: '100vw', overflow: 'hidden' }}>
+          {children}
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="ecclesia-theme-root">
       <div className="shell-wrapper">

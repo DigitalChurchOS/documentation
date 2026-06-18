@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
+  ArrowLeft,
   BookOpen,
   CalendarDays,
+  Church,
   Clock3,
   Copy,
   Flame,
@@ -356,6 +358,23 @@ const LivestreamPage: React.FC<{ streamId?: string | null }> = ({ streamId }) =>
   const settings = context.settings || {};
   const storageKey = noteKey(tenant?.id, stream?.id);
   const serviceMomentCtas = useMemo(() => normalizeServiceMomentCtas(settings), [settings]);
+  const countdownText = useMemo(() => {
+    if (!stream?.scheduledAt) return null;
+    const diff = new Date(stream.scheduledAt).getTime() - currentTime.getTime();
+    if (diff <= 0) return null;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    const pad = (num: number) => String(num).padStart(2, '0');
+
+    if (days > 0) {
+      return `${days}d ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+    }
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  }, [stream?.scheduledAt, currentTime]);
   const activeMoment = serviceMomentCtas[momentIndex % Math.max(serviceMomentCtas.length, 1)] || DEFAULT_SERVICE_MOMENTS[0];
   const momentHeading = serviceMomentHeading(stream);
   const statusLabel = stream?.status === 'live' ? 'Live' : stream?.status === 'ended' ? 'Replay' : 'Scheduled';
@@ -681,7 +700,6 @@ const LivestreamPage: React.FC<{ streamId?: string | null }> = ({ streamId }) =>
     { panel: 'new' as const, label: "I'm New", icon: UserPlus, enabled: true },
     { panel: 'prayer' as const, label: 'Prayer', icon: HandHeart, enabled: featureEnabled.prayer },
     { panel: 'bible' as const, label: 'Bible', icon: BookOpen, enabled: featureEnabled.bible },
-    { panel: 'chat' as const, label: 'Chat', icon: MessageCircle, enabled: featureEnabled.chat },
     { panel: 'notes' as const, label: 'Notes', icon: NotebookPen, enabled: featureEnabled.notes },
     { panel: 'give' as const, label: 'Give', icon: HandCoins, enabled: featureEnabled.give },
   ].filter((item) => item.enabled);
@@ -714,112 +732,134 @@ const LivestreamPage: React.FC<{ streamId?: string | null }> = ({ streamId }) =>
         </div>
       </aside>
 
-      <section className="live-sliding-shell">
-        <header className="live-topline">
-          <div>
-            <span className={`live-status-pill live-status-pill--${stream?.status || 'scheduled'}`}><Radio size={14} /> {statusLabel}</span>
-            <h1>{stream?.title || `${tenant?.name || 'Church'} Livestream`}</h1>
-            <p>{stream?.relatedService?.title || stream?.description || 'Worship with us online.'}</p>
-          </div>
-          <time>
-            <span>{currentTime.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
-            <strong>{currentTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' })}</strong>
-          </time>
-        </header>
+      <div className="live-main-panel">
+        <section className="live-sliding-shell">
+          <header className="live-app-header">
+            <div className="live-app-header__brand">
+              <Church size={22} className="live-app-header__logo-icon" />
+              <span className="live-app-header__church-name">{tenant?.name || 'Church'}</span>
+            </div>
+            <Link to={withLocalChurchBase('/')} className="live-app-header__back-btn">
+              <ArrowLeft size={16} />
+              <span>Back to Website</span>
+            </Link>
+          </header>
 
-        <section className={`live-stage ${activePanel ? 'side-visible' : ''}`}>
-          <div className="live-video-column">
-            <div className="live-video-wrapper">
-              <div className="live-video-frame">
-                <div className="live-overlay-badge"><span /> {statusLabel}</div>
-                {videoUrl ? (
-                  <video controls poster={playerPoster} className="live-player__video" src={videoUrl}>
-                    <track kind="captions" />
-                  </video>
-                ) : playerStarted && embedUrl ? (
-                  <iframe
-                    title={stream?.title || 'Livestream'}
-                    src={embedUrl}
-                    allow="autoplay; encrypted-media; picture-in-picture"
-                    allowFullScreen
-                  />
-                ) : (
-                  <div className="live-player__placeholder" style={playerPoster ? { backgroundImage: `linear-gradient(rgba(16, 4, 28, 0.32), rgba(13, 0, 22, 0.82)), url(${playerPoster})` } : undefined}>
-                    <button type="button" className="live-play-button" onClick={() => setPlayerStarted(true)} aria-label="Play livestream">
-                      <Play size={34} fill="currentColor" />
+          <section className={`live-stage ${activePanel ? 'side-visible' : ''}`}>
+            <div className="live-video-column">
+              <div className="live-video-wrapper">
+                <div className="live-video-frame">
+                  {stream?.status === 'live' ? (
+                    <div className="live-overlay-badge"><span /> Live</div>
+                  ) : (
+                    <button type="button" className="live-overlay-badge-btn" onClick={() => setPastServicesOpen(true)}>
+                      Watch Past Services
                     </button>
-                    <div>
-                      <Video size={38} />
-                      <p>{stream?.status === 'live' ? 'The broadcast signal is active.' : stream?.status === 'ended' ? 'Replay processing will appear here when ready.' : 'The next broadcast will open here at the scheduled time.'}</p>
-                      {primaryExternal && (
-                        <a className="live-external-link" href={primaryExternal.url} target="_blank" rel="noreferrer">
-                          <PlayCircle size={16} /> Open {primaryExternal.platform}
-                        </a>
+                  )}
+                  {videoUrl ? (
+                    <video controls poster={playerPoster} className="live-player__video" src={videoUrl}>
+                      <track kind="captions" />
+                    </video>
+                  ) : playerStarted && embedUrl ? (
+                    <iframe
+                      title={stream?.title || 'Livestream'}
+                      src={embedUrl}
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="live-player__placeholder" style={playerPoster ? { backgroundImage: `linear-gradient(rgba(16, 4, 28, 0.32), rgba(13, 0, 22, 0.82)), url(${playerPoster})` } : undefined}>
+                      {stream?.status === 'live' ? (
+                        <button type="button" className="live-play-button" onClick={() => setPlayerStarted(true)} aria-label="Play livestream">
+                          <Play size={34} fill="currentColor" />
+                        </button>
+                      ) : stream?.status === 'scheduled' ? (
+                        <div className="live-countdown-timer">
+                          <div className="countdown-label">Next Live Service Starts In</div>
+                          <div className="countdown-value">{countdownText || '00:00:00'}</div>
+                        </div>
+                      ) : (
+                        <div className="no-active-livestream">
+                          No active livestream
+                        </div>
                       )}
                     </div>
-                  </div>
-                )}
-              </div>
-              <nav className="live-action-bar" aria-label="Livestream actions">
-                {actionButtons.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.panel}
-                      type="button"
-                      className={activePanel === item.panel ? 'active' : ''}
-                      onClick={() => togglePanel(item.panel)}
-                    >
-                      <Icon size={18} />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
-          </div>
-
-          <aside className="live-side-panel" aria-hidden={!activePanel}>
-            {activePanel && (
-              <div className="live-tool">
-                <div className="live-tool__head">
-                  <h2>
-                    {activePanel === 'new' && 'First Timers'}
-                    {activePanel === 'prayer' && 'Need Prayer?'}
-                    {activePanel === 'bible' && 'Bible Reader'}
-                    {activePanel === 'chat' && 'Live Chat'}
-                    {activePanel === 'notes' && 'Personal Notes'}
-                    {activePanel === 'give' && 'Giving'}
-                  </h2>
-                  <button type="button" onClick={() => setActivePanel(null)} aria-label="Close panel"><X size={26} /></button>
+                  )}
                 </div>
+                <nav className="live-action-bar" aria-label="Livestream actions">
+                  {actionButtons.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <button
+                        key={item.panel}
+                        type="button"
+                        className={activePanel === item.panel ? 'active' : ''}
+                        onClick={() => togglePanel(item.panel)}
+                      >
+                        <Icon size={18} />
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
 
-                {activePanel === 'new' && (
-                  <form className="stack-form" onSubmit={submitNewVisitor}>
-                    <p>We are glad you joined us. Share your details so the church can welcome you.</p>
-                    <input name="name" placeholder="Full name" />
-                    <input name="email" type="email" placeholder="Email address" />
-                    <button type="submit">Submit</button>
-                    {newVisitorNotice && <div className="live-inline-note">{newVisitorNotice}</div>}
-                  </form>
-                )}
+              <div className="live-below-player">
+                <div className="live-stream-info">
+                  <h1>{stream?.title || `${tenant?.name || 'Church'} Livestream`}</h1>
+                  <p>{stream?.relatedService?.title || stream?.description || 'Worship with us online.'}</p>
+                </div>
+                <div className="live-widgets-row">
+                  <div className="today-service">
+                    <h2>{momentHeading}</h2>
+                    <button className="today-card" type="button" onClick={() => setSelectedMoment(activeMoment)}>
+                      <span className={`today-card__thumb today-card__thumb--${activeMoment.theme || 'sunrise'}`} />
+                      <span>
+                        <strong>{activeMoment.title}</strong>
+                        <small>{activeMoment.summary}</small>
+                      </span>
+                    </button>
+                    <div className="today-dots" aria-label="Service moment slides">
+                      {serviceMomentCtas.map((item, index) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className={index === momentIndex % serviceMomentCtas.length ? 'active' : ''}
+                          onClick={() => setMomentIndex(index)}
+                          aria-label={`Show ${item.title}`}
+                        />
+                      ))}
+                    </div>
+                  </div>
 
-                {activePanel === 'prayer' && (
-                  <form className="stack-form" onSubmit={submitPrayer}>
-                    <p>Our prayer team is ready to stand with you.</p>
-                    <textarea value={prayerDraft} onChange={(event) => setPrayerDraft(event.target.value)} placeholder="Write your prayer request" />
-                    <button type="submit">Submit Prayer Request</button>
-                    {prayerNotice && <div className="live-inline-note">{prayerNotice}</div>}
-                  </form>
-                )}
+                  <div className="invite-service">
+                    <h2>Invite Someone</h2>
+                    <div className="share-row">
+                      <a href={`https://wa.me/?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noreferrer" aria-label="Share on WhatsApp"><Share2 size={24} /></a>
+                      <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noreferrer" aria-label="Share on Facebook"><Share2 size={24} /></a>
+                      <a href={`https://t.me/share/url?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noreferrer" aria-label="Share on Telegram"><Share2 size={24} /></a>
+                      <a href={`mailto:?subject=${shareText}&body=${encodedUrl}`} aria-label="Share by email"><Mail size={24} /></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                {activePanel === 'chat' && (
-                  <>
-                    <p>{featureEnabled.chat ? 'Comments and reactions are connected to this broadcast.' : 'Chat is disabled for this stream.'}</p>
+            <div className="live-right-container">
+              <aside className="live-right-sidebar" aria-hidden={!!activePanel}>
+                <div className="live-chat-sidebar-wrapper">
+                  <div className="live-chat-header">
+                    <h2>Live Chat</h2>
+                    {stream?.status === 'live' && (
+                      <span className="live-chat-status"><Radio size={12} /> Live</span>
+                    )}
+                  </div>
+                  <div className="live-chat-content">
+                    <p className="live-chat-desc">{featureEnabled.chat ? 'Comments and reactions are connected to this broadcast.' : 'Chat is disabled for this stream.'}</p>
                     <div className="reaction-row">
                       {REACTIONS.map((reaction) => {
                         const Icon = reaction.icon;
-                        return <button key={reaction.label} type="button" onClick={() => submitReaction(reaction.label)}><Icon size={15} /> {reaction.label}</button>;
+                        return <button key={reaction.label} type="button" onClick={() => submitReaction(reaction.label)}><Icon size={14} /> {reaction.label}</button>;
                       })}
                     </div>
                     {reactionNotice && <div className="live-inline-note">{reactionNotice}</div>}
@@ -838,113 +878,112 @@ const LivestreamPage: React.FC<{ streamId?: string | null }> = ({ streamId }) =>
                       <button type="submit" disabled={stream?.status !== 'live' || !featureEnabled.chat}><Send size={16} /></button>
                     </form>
                     {chatNotice && <div className="live-inline-note">{chatNotice}</div>}
-                  </>
-                )}
+                  </div>
+                </div>
+              </aside>
 
-                {activePanel === 'bible' && (
-                  <>
-                    <p>Search, locate passages, select verse text, and send it into your notes.</p>
-                    <button className="live-mini-btn" type="button" onClick={addSelectionToNotes}><Copy size={15} /> Add Selected</button>
-                    <div className="bible-controls">
-                      <select value={selectedBook} onChange={(event) => selectBook(event.target.value)}>
-                        {BOOKS.map(([book]) => <option key={book} value={book}>{book}</option>)}
-                      </select>
-                      <select value={selectedChapter} onChange={(event) => selectChapter(Number(event.target.value))}>
-                        {Array.from({ length: bookMaxChapters(selectedBook) }, (_, index) => index + 1).map((chapter) => (
-                          <option key={chapter} value={chapter}>Chapter {chapter}</option>
-                        ))}
-                      </select>
-                      <input value={referenceInput} onChange={(event) => setReferenceInput(event.target.value)} placeholder="John 3:16" />
-                      <button type="button" onClick={resolveReference}>Go</button>
+              <aside className="live-side-panel" aria-hidden={!activePanel}>
+                {activePanel && (
+                  <div className="live-tool">
+                    <div className="live-tool__head">
+                      <h2>
+                        {activePanel === 'new' && 'First Timers'}
+                        {activePanel === 'prayer' && 'Need Prayer?'}
+                        {activePanel === 'bible' && 'Bible Reader'}
+                        {activePanel === 'notes' && 'Personal Notes'}
+                        {activePanel === 'give' && 'Giving'}
+                      </h2>
+                      <button type="button" onClick={() => setActivePanel(null)} aria-label="Close panel"><X size={26} /></button>
                     </div>
-                    <div className="bible-search">
-                      <Search size={16} />
-                      <input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') searchBible(); }} placeholder="Search KJV text or reference" />
-                      <button type="button" onClick={searchBible}>Search</button>
-                    </div>
-                    {bibleNotice && <div className="live-inline-note">{bibleNotice}</div>}
-                    <div className="bible-results" aria-busy={bibleLoading}>
-                      {bibleLoading ? <div className="live-empty">Loading KJV passage...</div> : bibleVerses.length ? bibleVerses.map((verse) => (
-                        <article key={verse.id}>
-                          <button type="button" onClick={() => appendToNotes(`${verse.reference} ${verse.text}`)}><NotebookPen size={14} /></button>
-                          <p><sup>{verse.verse}</sup>{verse.text}</p>
-                          <span>{verse.reference}</span>
-                        </article>
-                      )) : <div className="live-empty">Choose a chapter or search for a passage.</div>}
-                    </div>
-                  </>
-                )}
 
-                {activePanel === 'notes' && (
-                  <>
-                    <p>Notes are kept locally in this browser and can also be captured as livestream interactions.</p>
-                    <button className="live-mini-btn" type="button" onClick={saveNote}><NotebookPen size={15} /> Save Note</button>
-                    <textarea className="notes-editor" value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} placeholder="Write sermon notes, prayer points, and copied verses here." />
-                    <div className="notes-list">
-                      {notes.length ? notes.map((note) => (
-                        <article key={note.id}>
-                          <strong>{note.title}</strong>
-                          <time>{formatDate(note.createdAt)}</time>
-                          <p>{note.body}</p>
-                        </article>
-                      )) : <div className="live-empty">No saved notes yet.</div>}
-                    </div>
-                  </>
-                )}
+                    {activePanel === 'new' && (
+                      <form className="stack-form" onSubmit={submitNewVisitor}>
+                        <p>We are glad you joined us. Share your details so the church can welcome you.</p>
+                        <input name="name" placeholder="Full name" />
+                        <input name="email" type="email" placeholder="Email address" />
+                        <button type="submit">Submit</button>
+                        {newVisitorNotice && <div className="live-inline-note">{newVisitorNotice}</div>}
+                      </form>
+                    )}
 
-                {activePanel === 'give' && (
-                  <div className="give-panel">
-                    <HandCoins size={44} />
-                    <p>Your faithful giving helps the church serve people and spread the Gospel.</p>
-                    <Link to={withLocalChurchBase('/giving')} onClick={() => submitInteraction('giving_click', 'Clicked livestream giving link').catch(() => undefined)}>
-                      Give Now
-                    </Link>
+                    {activePanel === 'prayer' && (
+                      <form className="stack-form" onSubmit={submitPrayer}>
+                        <p>Our prayer team is ready to stand with you.</p>
+                        <textarea value={prayerDraft} onChange={(event) => setPrayerDraft(event.target.value)} placeholder="Write your prayer request" />
+                        <button type="submit">Submit Prayer Request</button>
+                        {prayerNotice && <div className="live-inline-note">{prayerNotice}</div>}
+                      </form>
+                    )}
+
+                    {activePanel === 'bible' && (
+                      <>
+                        <p>Search, locate passages, select verse text, and send it into your notes.</p>
+                        <button className="live-mini-btn" type="button" onClick={addSelectionToNotes}><Copy size={15} /> Add Selected</button>
+                        <div className="bible-controls">
+                          <select value={selectedBook} onChange={(event) => selectBook(event.target.value)}>
+                            {BOOKS.map(([book]) => <option key={book} value={book}>{book}</option>)}
+                          </select>
+                          <select value={selectedChapter} onChange={(event) => selectChapter(Number(event.target.value))}>
+                            {Array.from({ length: bookMaxChapters(selectedBook) }, (_, index) => index + 1).map((chapter) => (
+                              <option key={chapter} value={chapter}>Chapter {chapter}</option>
+                            ))}
+                          </select>
+                          <input value={referenceInput} onChange={(event) => setReferenceInput(event.target.value)} placeholder="John 3:16" />
+                          <button type="button" onClick={resolveReference}>Go</button>
+                        </div>
+                        <div className="bible-search">
+                          <Search size={16} />
+                          <input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') searchBible(); }} placeholder="Search KJV text or reference" />
+                          <button type="button" onClick={searchBible}>Search</button>
+                        </div>
+                        {bibleNotice && <div className="live-inline-note">{bibleNotice}</div>}
+                        <div className="bible-results" aria-busy={bibleLoading}>
+                          {bibleLoading ? <div className="live-empty">Loading KJV passage...</div> : bibleVerses.length ? bibleVerses.map((verse) => (
+                            <article key={verse.id}>
+                              <button type="button" onClick={() => appendToNotes(`${verse.reference} ${verse.text}`)}><NotebookPen size={14} /></button>
+                              <p><sup>{verse.verse}</sup>{verse.text}</p>
+                              <span>{verse.reference}</span>
+                            </article>
+                          )) : <div className="live-empty">Choose a chapter or search for a passage.</div>}
+                        </div>
+                      </>
+                    )}
+
+                    {activePanel === 'notes' && (
+                      <>
+                        <p>Notes are kept locally in this browser and can also be captured as livestream interactions.</p>
+                        <button className="live-mini-btn" type="button" onClick={saveNote}><NotebookPen size={15} /> Save Note</button>
+                        <textarea className="notes-editor" value={noteDraft} onChange={(event) => setNoteDraft(event.target.value)} placeholder="Write sermon notes, prayer points, and copied verses here." />
+                        <div className="notes-list">
+                          {notes.length ? notes.map((note) => (
+                            <article key={note.id}>
+                              <strong>{note.title}</strong>
+                              <time>{formatDate(note.createdAt)}</time>
+                              <p>{note.body}</p>
+                            </article>
+                          )) : <div className="live-empty">No saved notes yet.</div>}
+                        </div>
+                      </>
+                    )}
+
+                    {activePanel === 'give' && (
+                      <div className="give-panel">
+                        <HandCoins size={44} />
+                        <p>Your faithful giving helps the church serve people and spread the Gospel.</p>
+                        <Link to={withLocalChurchBase('/giving')} onClick={() => submitInteraction('giving_click', 'Clicked livestream giving link').catch(() => undefined)}>
+                          Give Now
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
-          </aside>
-        </section>
-
-        {error && !loading && <div className="live-alert">{error}</div>}
-
-        <section className="live-service-grid">
-          <div className="today-service">
-            <h2>{momentHeading}</h2>
-            <button className="today-card" type="button" onClick={() => setSelectedMoment(activeMoment)}>
-              <span className={`today-card__thumb today-card__thumb--${activeMoment.theme || 'sunrise'}`} />
-              <span>
-                <strong>{activeMoment.title}</strong>
-                <small>{activeMoment.summary}</small>
-              </span>
-            </button>
-            <div className="today-dots" aria-label="Service moment slides">
-              {serviceMomentCtas.map((item, index) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={index === momentIndex % serviceMomentCtas.length ? 'active' : ''}
-                  onClick={() => setMomentIndex(index)}
-                  aria-label={`Show ${item.title}`}
-                />
-              ))}
+              </aside>
             </div>
-          </div>
+          </section>
 
-          <div className="invite-service">
-            <h2>Invite Someone</h2>
-            <div className="share-row">
-              <a href={`https://wa.me/?text=${shareText}%20${encodedUrl}`} target="_blank" rel="noreferrer" aria-label="Share on WhatsApp"><Share2 size={24} /></a>
-              <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`} target="_blank" rel="noreferrer" aria-label="Share on Facebook"><Share2 size={24} /></a>
-              <a href={`https://t.me/share/url?url=${encodedUrl}&text=${shareText}`} target="_blank" rel="noreferrer" aria-label="Share on Telegram"><Share2 size={24} /></a>
-              <a href={`mailto:?subject=${shareText}&body=${encodedUrl}`} aria-label="Share by email"><Mail size={24} /></a>
-            </div>
-            <button type="button" className="past-services-button" onClick={() => setPastServicesOpen(true)}>
-              Watch Past Services
-            </button>
-          </div>
+          {error && !loading && <div className="live-alert">{error}</div>}
         </section>
-      </section>
+      </div>
 
       {selectedMoment && (
         <div className="service-moment-modal" role="dialog" aria-modal="true" aria-labelledby="service-moment-title">

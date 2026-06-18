@@ -400,9 +400,14 @@ export function App() {
           if (matched) {
             finalWebsiteId = matched.id;
             resolvedWebsite = matched;
-          } else if (websitesRes.data.length > 0) {
-            finalWebsiteId = websitesRes.data[0].id;
-            resolvedWebsite = websitesRes.data[0];
+          } else {
+            if (queryWebsiteId) {
+              throw new Error("404 Website not found under current tenant context");
+            }
+            if (websitesRes.data.length > 0) {
+              finalWebsiteId = websitesRes.data[0].id;
+              resolvedWebsite = websitesRes.data[0];
+            }
           }
         }
         setWebsiteId(finalWebsiteId);
@@ -424,9 +429,14 @@ export function App() {
         }
         setThemeId(finalThemeId);
 
-        // 3. Resolve pageId if empty
+        // 3. Resolve pageId
         let finalPageId = pageId;
-        if (!finalPageId && pagesRes && pagesRes.data) {
+        if (finalPageId) {
+          const matchedPage = pagesRes?.data?.find((p: any) => p.id === finalPageId);
+          if (!matchedPage) {
+            throw new Error("404 Page not found under current tenant context");
+          }
+        } else if (pagesRes && pagesRes.data) {
           const homePage = pagesRes.data.find((p: any) => p.slug === "" || p.isHome);
           if (homePage) {
             finalPageId = homePage.id;

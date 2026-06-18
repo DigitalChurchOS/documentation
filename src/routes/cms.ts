@@ -1706,10 +1706,13 @@ router.patch('/pages/:id/draft', requireCmsPermission('core-website-cms.update')
     const tenantId = req.tenantId!;
     const { draftContent } = req.body;
 
+    console.log(`[DEBUG] PATCH /pages/:id/draft - id: ${id}, tenantId: ${tenantId}`);
+
     const page = await prisma.page.findFirst({
       where: { id, tenantId },
     });
     if (!page) {
+      console.log(`[DEBUG] Page not found for id: ${id}, tenantId: ${tenantId}`);
       res.status(404).json({ error: 'Page not found' });
       return;
     }
@@ -1736,10 +1739,13 @@ router.post('/pages/:id/publish', requireCmsPermission('core-website-cms.update'
     const tenantId = req.tenantId!;
     const userId = req.user?.userId;
 
+    console.log(`[DEBUG] POST /pages/:id/publish - id: ${id}, tenantId: ${tenantId}`);
+
     const page = await prisma.page.findFirst({
       where: { id, tenantId },
     });
     if (!page) {
+      console.log(`[DEBUG] Page not found for id: ${id}, tenantId: ${tenantId}`);
       res.status(404).json({ error: 'Page not found' });
       return;
     }
