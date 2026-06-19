@@ -7,10 +7,64 @@ type Env = {
   };
 };
 
+const PLATFORM_HOSTS = new Set([
+  'churched.online',
+  'www.churched.online',
+  'churchos.com',
+  'www.churchos.com',
+  'churchos.local',
+  'localhost',
+]);
+const TENANT_BASE_DOMAINS = ['churched.online'];
+const WORKER_HOST_SUFFIXES = ['workers.dev'];
+
+function getHostContext(hostname: string) {
+  const host = hostname.toLowerCase();
+  let tenantSubdomain = '';
+  for (const base of TENANT_BASE_DOMAINS) {
+    if (host !== base && host !== `www.${base}` && host.endsWith(`.${base}`)) {
+      tenantSubdomain = host.slice(0, -(base.length + 1));
+      break;
+    }
+  }
+  const isWorkerHost = WORKER_HOST_SUFFIXES.some((suffix) => host === suffix || host.endsWith(`.${suffix}`));
+  const isLocalHost = host === 'localhost' || host.endsWith('.localhost');
+  const isPlatformHost = PLATFORM_HOSTS.has(host) || isWorkerHost || isLocalHost;
+  return {
+    tenantSubdomain,
+    isTenantPlatformSubdomain: Boolean(tenantSubdomain),
+    isTenantCustomDomain: !isPlatformHost && !tenantSubdomain,
+  };
+}
+
+async function resolveTenantSubdomain(request: Request, env: Env, subdomain: string) {
+  if (!env.API || !subdomain) return false;
+  const resolveUrl = new URL('/api/public/resolve-subdomain', request.url);
+  resolveUrl.searchParams.set('subdomain', subdomain);
+  const response = await env.API.fetch(new Request(resolveUrl.toString(), {
+    headers: {
+      accept: 'application/json',
+    },
+  }));
+  return response.ok;
+}
+
+function tenantNotFoundResponse() {
+  return new Response('Church website not found.', {
+    status: 404,
+    headers: {
+      'content-type': 'text/plain; charset=utf-8',
+      'cache-control': 'no-store',
+    },
+  });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     const pathname = url.pathname;
+    const hostContext = getHostContext(url.hostname);
+    const isTenantPublicHost = hostContext.isTenantPlatformSubdomain || hostContext.isTenantCustomDomain;
 
     // 1. Health check route
     if (pathname === '/health') {
@@ -36,6 +90,10 @@ export default {
 
     // 2. API requests proxy to service binding
     if (pathname.startsWith('/api/')) {
+      if (hostContext.isTenantPlatformSubdomain) {
+        const resolved = await resolveTenantSubdomain(request, env, hostContext.tenantSubdomain);
+        if (!resolved) return tenantNotFoundResponse();
+      }
       if (env.API) {
         return env.API.fetch(request);
       }
@@ -47,29 +105,10 @@ export default {
 
     // 3. Public church website routing
     // Tenant sites are available only on [churchname].churched.online or a connected custom domain.
-    const PLATFORM_HOSTS = new Set([
-      'churched.online',
-      'www.churched.online',
-      'churchos.com',
-      'www.churchos.com',
-      'churchos.local',
-      'localhost',
-    ]);
-    const TENANT_BASE_DOMAINS = ['churched.online'];
-    const WORKER_HOST_SUFFIXES = ['workers.dev'];
-    const hostname = url.hostname.toLowerCase();
-    let isTenantPlatformSubdomain = false;
-    for (const base of TENANT_BASE_DOMAINS) {
-      if (hostname !== base && hostname.endsWith(`.${base}`)) {
-        isTenantPlatformSubdomain = hostname !== `www.${base}`;
-        break;
-      }
+    if (hostContext.isTenantPlatformSubdomain) {
+      const resolved = await resolveTenantSubdomain(request, env, hostContext.tenantSubdomain);
+      if (!resolved) return tenantNotFoundResponse();
     }
-    const isWorkerHost = WORKER_HOST_SUFFIXES.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`));
-    const isLocalHost = hostname === 'localhost' || hostname.endsWith('.localhost');
-    const isPlatformHost = PLATFORM_HOSTS.has(hostname) || isWorkerHost || isLocalHost;
-    const isTenantCustomDomain = !isPlatformHost && !isTenantPlatformSubdomain;
-    const isTenantPublicHost = isTenantPlatformSubdomain || isTenantCustomDomain;
 
     if (
       !isTenantPublicHost &&

@@ -4,3 +4,7 @@ compatibility_date = "2026-05-28"
 compatibility_flags = [
   "nodejs_compat"
 ]
+
+[[kv_namespaces]]
+binding = "CHURCHOS_TENANTS"
+id = "3e66e662c86d4ab5b2eb1a0b86574d90"

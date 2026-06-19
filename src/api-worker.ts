@@ -28,6 +28,15 @@ type ApiResponse = {
   meta?: JsonValue;
 };
 
+type TenantRegistry = {
+  get(key: string): Promise<string | null>;
+  put(key: string, value: string): Promise<void>;
+};
+
+type Env = {
+  CHURCHOS_TENANTS?: TenantRegistry;
+};
+
 const jsonHeaders = {
   'content-type': 'application/json; charset=utf-8',
   'access-control-allow-origin': '*',
@@ -55,6 +64,26 @@ const onboardingSteps = [
 }));
 
 const platformDomain = 'churched.online';
+const reservedSubdomains = new Set([
+  'admin',
+  'api',
+  'app',
+  'assets',
+  'central',
+  'church',
+  'developer',
+  'docs',
+  'help',
+  'live',
+  'mail',
+  'marketplace',
+  'onboarding',
+  'start',
+  'status',
+  'support',
+  'super-admin',
+  'www',
+]);
 
 function makeSubdomainHost(subdomain: string) {
   return `${subdomain}.${platformDomain}`;
@@ -264,6 +293,64 @@ function cleanSubdomain(value: unknown) {
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-');
   return cleaned || demoTenant.subdomain;
+}
+
+function tenantRegistryKey(subdomain: string) {
+  return `tenant:${cleanSubdomain(subdomain)}`;
+}
+
+function isReservedSubdomain(subdomain: string) {
+  return reservedSubdomains.has(cleanSubdomain(subdomain));
+}
+
+function serializeTenantForRegistry(tenant: Record<string, any>) {
+  const subdomain = cleanSubdomain(tenant.subdomain);
+  return {
+    ...demoTenant,
+    ...tenant,
+    id: String(tenant.id || `tenant-${subdomain}`),
+    name: String(tenant.name || `${titleFromSubdomain(subdomain)} Church`),
+    subdomain,
+    subdomainHost: makeSubdomainHost(subdomain),
+    customDomain: tenant.customDomain || null,
+    status: tenant.status || 'active',
+  };
+}
+
+async function readRegisteredTenant(env: Env, subdomain: string) {
+  const clean = cleanSubdomain(subdomain);
+  if (isReservedSubdomain(clean)) return null;
+  if (clean === demoTenant.subdomain) return serializeTenantForRegistry(demoTenant);
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantRegistryKey(clean));
+  if (!raw) return null;
+  try {
+    return serializeTenantForRegistry(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
+
+async function writeRegisteredTenant(env: Env, tenant: Record<string, any>) {
+  const record = serializeTenantForRegistry(tenant);
+  if (isReservedSubdomain(record.subdomain)) return record;
+  await env.CHURCHOS_TENANTS?.put(tenantRegistryKey(record.subdomain), JSON.stringify(record));
+  return record;
+}
+
+async function getSubdomainAvailability(env: Env, input: unknown) {
+  const subdomain = cleanSubdomain(input);
+  const reserved = isReservedSubdomain(subdomain);
+  const existing = reserved ? null : await readRegisteredTenant(env, subdomain);
+  return {
+    subdomain,
+    host: makeSubdomainHost(subdomain),
+    available: !reserved && !existing,
+    reason: reserved ? 'reserved' : existing ? 'taken' : null,
+    suggestions: !reserved && !existing ? [] : [`${subdomain}-church`, `${subdomain}-online`, `${subdomain}-${new Date().getFullYear()}`]
+      .map(cleanSubdomain)
+      .filter((candidate) => !isReservedSubdomain(candidate) && candidate !== subdomain)
+      .slice(0, 3),
+  };
 }
 
 function decodeHeaderValue(value: string | null) {
@@ -634,8 +721,10 @@ function collectionResponse(pathname: string): JsonValue {
   };
 }
 
-function routeGet(request: Request, pathname: string, url: URL) {
-  const context = getRequestContext(request, url);
+async function routeGet(request: Request, pathname: string, url: URL, env: Env) {
+  const hostSubdomain = subdomainFromHost(url.hostname);
+  const resolvedHostTenant = hostSubdomain ? await readRegisteredTenant(env, hostSubdomain) : null;
+  const context = getRequestContext(request, url, resolvedHostTenant || {});
   const tenant = context.tenant;
   const theme = makeThemeForContext(context);
   const website = makeWebsiteForContext(context);
@@ -649,6 +738,27 @@ function routeGet(request: Request, pathname: string, url: URL) {
         timestamp: new Date().toISOString(),
       },
     });
+  }
+
+  if (pathname === '/api/public/check-subdomain') {
+    return withJson({ data: await getSubdomainAvailability(env, url.searchParams.get('subdomain') || url.searchParams.get('host')) });
+  }
+
+  if (pathname === '/api/public/resolve-subdomain') {
+    const subdomain = cleanSubdomain(url.searchParams.get('subdomain') || hostSubdomain);
+    const resolvedTenant = await readRegisteredTenant(env, subdomain);
+    if (!resolvedTenant) {
+      return withJson({ error: 'Church workspace not found' }, { status: 404 });
+    }
+    return withJson({
+      tenantId: resolvedTenant.id,
+      tenant: resolvedTenant as unknown as JsonValue,
+      data: resolvedTenant as unknown as JsonValue,
+    });
+  }
+
+  if (hostSubdomain && !resolvedHostTenant) {
+    return withJson({ error: 'Church website not found' }, { status: 404 });
   }
 
   if (pathname === '/api/cms/websites') {
@@ -825,24 +935,13 @@ function routeGet(request: Request, pathname: string, url: URL) {
     });
   }
 
-  if (pathname === '/api/public/resolve-subdomain') {
-    const subdomain = cleanSubdomain(url.searchParams.get('subdomain'));
-    const resolvedContext = getRequestContext(request, url, { subdomain });
-    const resolvedTenant = resolvedContext.tenant;
-    return withJson({
-      tenantId: resolvedTenant.id,
-      tenant: resolvedTenant,
-      data: resolvedTenant,
-    });
-  }
-
   return withJson({
     data: collectionResponse(pathname),
     meta: { source: 'churchos-api-worker', demo: true },
   });
 }
 
-async function routeMutation(request: Request, pathname: string) {
+async function routeMutation(request: Request, pathname: string, env: Env) {
   const body = await readBody(request);
   const url = new URL(request.url);
   const context = getRequestContext(request, url, body);
@@ -984,7 +1083,8 @@ async function routeMutation(request: Request, pathname: string) {
   }
 
   if (pathname === '/api/public/check-subdomain') {
-    return withJson({ available: true, data: { available: true } });
+    const availability = await getSubdomainAvailability(env, body.subdomain || body.host);
+    return withJson({ available: availability.available, data: availability as unknown as JsonValue });
   }
 
   if (pathname === '/api/tenant/branding') {
@@ -1004,6 +1104,7 @@ async function routeMutation(request: Request, pathname: string) {
 
   if (pathname === '/api/tenant/domain') {
     const customDomain = String(body.customDomain || '').trim().toLowerCase();
+    await writeRegisteredTenant(env, { ...tenant, customDomain });
     return withJson({
       data: {
         subdomain: tenant.subdomain,
@@ -1022,17 +1123,19 @@ async function routeMutation(request: Request, pathname: string) {
 
   if (pathname === '/api/public/resolve-subdomain') {
     const subdomain = cleanSubdomain(body.subdomain);
-    const resolvedContext = getRequestContext(request, url, { ...body, subdomain });
-    const resolvedTenant = resolvedContext.tenant;
+    const resolvedTenant = await readRegisteredTenant(env, subdomain);
+    if (!resolvedTenant) {
+      return withJson({ error: 'Church workspace not found' }, { status: 404 });
+    }
     return withJson({
       tenantId: resolvedTenant.id,
-      tenant: resolvedTenant,
-      data: resolvedTenant,
+      tenant: resolvedTenant as unknown as JsonValue,
+      data: resolvedTenant as unknown as JsonValue,
     });
   }
 
   if (pathname === '/api/auth/register-tenant') {
-    const tenant = makeTenantFromBody(body);
+    const tenant = await writeRegisteredTenant(env, makeTenantFromBody(body));
     const ownerName = String(body.ownerName || demoUser.name);
     const ownerEmail = String(body.ownerEmail || demoUser.email);
     const user = {
@@ -1126,7 +1229,7 @@ async function routeMutation(request: Request, pathname: string) {
 }
 
 export default {
-  async fetch(request: Request): Promise<Response> {
+  async fetch(request: Request, env: Env = {}): Promise<Response> {
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: jsonHeaders });
     }
@@ -1136,9 +1239,9 @@ export default {
 
     try {
       if (request.method === 'GET' || request.method === 'HEAD') {
-        return routeGet(request, pathname, url);
+        return routeGet(request, pathname, url, env);
       }
-      return routeMutation(request, pathname);
+      return routeMutation(request, pathname, env);
     } catch (err) {
       return withJson(
         { error: err instanceof Error ? err.message : 'API request failed' },
