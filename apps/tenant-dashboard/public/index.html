@@ -5019,6 +5019,10 @@ body.customizer-open { overflow: hidden; }
         </div>
         <div class="top-actions" style="display: flex; align-items: center; gap: 8px;">
           <button id="modeBtn" class="btn icon" title="Switch theme" style="margin-right: 4px;"><i data-lucide="sun-moon"></i></button>
+          <button id="previewWebsiteBtn" class="btn" type="button" onclick="openTenantWebsitePreview()" title="Preview church website" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--radius);">
+            <i data-lucide="external-link" style="width:14px; height:14px;"></i>
+            <span>Preview</span>
+          </button>
           <!-- Profile Dropdown Container -->
           <div class="profile-dropdown-container" id="profileDropdownContainer" style="position: relative; display: inline-block;">
             <button class="btn profile-dropdown-btn" id="profileDropdownBtn" onclick="toggleProfileDropdown()" style="display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--radius); background: var(--accent-soft); border: 1px solid var(--line); font-weight: 500; cursor: pointer;">
@@ -14644,6 +14648,115 @@ body.customizer-open { overflow: hidden; }
     let currentView = 'overview';
     let selectedModule = modules[0].key;
     let activeSettingsTab = 'general';
+
+    function readOnboardingContext() {
+      try {
+        return JSON.parse(localStorage.getItem('churchos.onboardingContext.v1') || '{}');
+      } catch {
+        return {};
+      }
+    }
+
+    function getTenantSubdomain(sourceState = state) {
+      return sourceState.tenant?.subdomain || localStorage.getItem('churchos.subdomain') || readOnboardingContext().tenant?.subdomain || 'demo';
+    }
+
+    function getTenantHost(sourceState = state) {
+      const contextTenant = readOnboardingContext().tenant || {};
+      const explicitHost = contextTenant.subdomainHost || localStorage.getItem('churchos.tenantHost') || sourceState.tenant?.subdomainHost;
+      if (explicitHost) return explicitHost.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+      return `${getTenantSubdomain(sourceState)}.churched.online`;
+    }
+
+    function getTenantWebsiteUrl(sourceState = state) {
+      const host = getTenantHost(sourceState);
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname.endsWith('.localhost');
+      const isWorkersPreview = window.location.hostname.endsWith('.workers.dev');
+      const isPlatformApex = window.location.hostname === 'churched.online' || window.location.hostname === 'www.churched.online';
+      if (isWorkersPreview || isPlatformApex) {
+        const previewUrl = new URL('/church/', window.location.origin);
+        previewUrl.searchParams.set('subdomain', getTenantSubdomain(sourceState));
+        if (sourceState.tenant?.name) previewUrl.searchParams.set('tenantName', sourceState.tenant.name);
+        return previewUrl.toString();
+      }
+      const protocol = isLocal ? window.location.protocol : 'https:';
+      const url = new URL(`${protocol}//${host}/`);
+      if (sourceState.tenant?.name) url.searchParams.set('tenantName', sourceState.tenant.name);
+      return url.toString();
+    }
+
+    function mergeOnboardingContextIntoState(targetState) {
+      const context = readOnboardingContext();
+      const tenant = context.tenant || {};
+      const owner = context.owner || {};
+      const profile = context.steps?.profile || {};
+      const website = context.steps?.website || {};
+      const domain = context.steps?.domain || {};
+
+      targetState.tenant = {
+        ...targetState.tenant,
+        id: tenant.id || targetState.tenant.id,
+        name: tenant.name || targetState.tenant.name,
+        subdomain: tenant.subdomain || targetState.tenant.subdomain,
+        subdomainHost: tenant.subdomainHost || targetState.tenant.subdomainHost,
+        customDomain: domain.customDomain || tenant.customDomain || targetState.tenant.customDomain,
+      };
+
+      targetState.user = {
+        ...targetState.user,
+        name: owner.name || localStorage.getItem('churchos.ownerName') || targetState.user.name,
+        email: owner.email || localStorage.getItem('churchos.ownerEmail') || profile.email || targetState.user.email,
+      };
+
+      targetState.settings = {
+        ...targetState.settings,
+        onboarding: context,
+        websitePreviewUrl: getTenantWebsiteUrl(targetState),
+        websiteBasics: website,
+      };
+
+      return targetState;
+    }
+
+    function getOnboardingBrandingPatch() {
+      const context = readOnboardingContext();
+      const profile = context.steps?.profile || {};
+      const logo = context.steps?.logo || {};
+      const website = context.steps?.website || {};
+      const phone = [profile.phoneCode, profile.phone].filter(Boolean).join(' ').trim();
+      const patch = {};
+      if (context.tenant?.name || state.tenant?.name) patch.churchName = context.tenant?.name || state.tenant?.name;
+      if (website.homepageSubtitle) patch.description = website.homepageSubtitle;
+      if (profile.address) patch.address = profile.address;
+      if (profile.venueAddress) patch.venueAddress = profile.venueAddress;
+      if (profile.isVenueDifferent !== undefined) patch.isVenueDifferent = Boolean(profile.isVenueDifferent);
+      if (phone) patch.phone = phone;
+      if (profile.phoneCode) patch.phoneCode = profile.phoneCode;
+      if (profile.email) {
+        patch.email = profile.email;
+        patch.publicEmail = profile.email;
+      }
+      if (profile.timezone) patch.timezone = profile.timezone;
+      if (Array.isArray(profile.serviceTimes) && profile.serviceTimes.length) patch.serviceTimes = profile.serviceTimes;
+      if (logo.logoUrl) patch.logo = logo.logoUrl;
+      if (logo.darkLogoUrl) patch.darkLogo = logo.darkLogoUrl;
+      if (logo.faviconUrl) patch.favicon = logo.faviconUrl;
+      return patch;
+    }
+
+    function refreshPreviewWebsiteButton() {
+      const button = document.getElementById('previewWebsiteBtn');
+      if (!button) return;
+      const host = getTenantHost();
+      button.title = `Preview ${host}`;
+      button.setAttribute('aria-label', `Preview ${host}`);
+    }
+
+    window.openTenantWebsitePreview = function() {
+      const previewUrl = getTenantWebsiteUrl();
+      window.open(previewUrl, '_blank', 'noopener');
+    };
+
     function loadState() {
       const saved = localStorage.getItem(STORAGE_KEY);
       const parsed = saved ? JSON.parse(saved) : {};
@@ -14663,6 +14776,7 @@ body.customizer-open { overflow: hidden; }
       if (sessionTenantId) merged.tenant.id = sessionTenantId;
       if (sessionTenantName) merged.tenant.name = sessionTenantName;
       if (sessionSubdomain) merged.tenant.subdomain = sessionSubdomain;
+      mergeOnboardingContextIntoState(merged);
       for (const tenant of merged.tenants) {
         if (!merged.tenantEntitlements[tenant.id]) {
           merged.tenantEntitlements[tenant.id] = JSON.parse(JSON.stringify(merged.entitlements));
@@ -14926,6 +15040,7 @@ body.customizer-open { overflow: hidden; }
       document.getElementById('tenantName').textContent = state.tenant.name;
       const topbarUserEl = document.getElementById('topbarUserName');
       if (topbarUserEl) topbarUserEl.textContent = state.user.name;
+      refreshPreviewWebsiteButton();
       renderMetrics();
       renderCommandCenter();
       renderSidebarModules();
@@ -16752,6 +16867,9 @@ body.customizer-open { overflow: hidden; }
       const headers = {
         'Content-Type': 'application/json',
         'x-tenant-id': tenantId,
+        'x-tenant-name': encodeURIComponent(state.tenant?.name || localStorage.getItem('churchos.tenantName') || ''),
+        'x-tenant-subdomain': encodeURIComponent(getTenantSubdomain()),
+        'x-churchos-onboarding-context': encodeURIComponent(JSON.stringify(readOnboardingContext())),
         'Authorization': `Bearer ${token}`
       };
 
@@ -17228,6 +17346,33 @@ body.customizer-open { overflow: hidden; }
       if (checklistRes && checklistRes.ok && checklistRes.data) {
         dtState.checklist = checklistRes.data;
       }
+
+      const onboardingContext = readOnboardingContext();
+      if (onboardingContext.tenant) {
+        dtState.tenantInfo = {
+          ...(dtState.tenantInfo || {}),
+          ...onboardingContext.tenant,
+          customDomain: onboardingContext.steps?.domain?.customDomain || onboardingContext.tenant.customDomain || dtState.tenantInfo?.customDomain || ''
+        };
+      }
+      dtState.branding = {
+        ...dtState.branding,
+        ...getOnboardingBrandingPatch()
+      };
+      if (dtState.tenantInfo) {
+        state.tenant = {
+          ...state.tenant,
+          id: dtState.tenantInfo.id || state.tenant.id,
+          name: dtState.tenantInfo.name || state.tenant.name,
+          subdomain: dtState.tenantInfo.subdomain || state.tenant.subdomain,
+          subdomainHost: dtState.tenantInfo.subdomainHost || state.tenant.subdomainHost,
+          customDomain: dtState.tenantInfo.customDomain || state.tenant.customDomain
+        };
+        localStorage.setItem('churchos.tenantName', state.tenant.name || '');
+        localStorage.setItem('churchos.subdomain', state.tenant.subdomain || '');
+        localStorage.setItem('churchos.tenantHost', state.tenant.subdomainHost || (state.tenant.subdomain ? `${state.tenant.subdomain}.churched.online` : ''));
+      }
+      refreshPreviewWebsiteButton();
 
       // Populate Inputs in UI
       const subdomainInput = document.getElementById('dtSubdomainInput');

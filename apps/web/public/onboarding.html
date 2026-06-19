@@ -898,6 +898,7 @@
     // Secure authentication check
     const token = localStorage.getItem("churchos.token");
     const tenantId = localStorage.getItem("churchos.tenantId");
+    const ONBOARDING_CONTEXT_KEY = "churchos.onboardingContext.v1";
 
     if (!token || !tenantId) {
       window.location.href = "/start";
@@ -1009,6 +1010,69 @@
       plan: 'growth' // default plan, will be loaded from billing
     };
 
+    function readOnboardingContext() {
+      try {
+        return JSON.parse(localStorage.getItem(ONBOARDING_CONTEXT_KEY) || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function writeOnboardingContext(nextContext) {
+      localStorage.setItem(ONBOARDING_CONTEXT_KEY, JSON.stringify(nextContext));
+    }
+
+    function mergeOnboardingContext(patch) {
+      const current = readOnboardingContext();
+      const next = {
+        ...current,
+        ...patch,
+        tenant: {
+          ...(current.tenant || {}),
+          ...(patch.tenant || {})
+        },
+        steps: {
+          ...(current.steps || {}),
+          ...(patch.steps || {})
+        }
+      };
+      writeOnboardingContext(next);
+      return next;
+    }
+
+    function rememberOnboardingStep(stepKey, metadata) {
+      const normalizedStepKey = stepKey === "website-basics" ? "website" : stepKey;
+      return mergeOnboardingContext({
+        tenant: {
+          id: tenantId,
+          name: state.tenant.name || localStorage.getItem("churchos.tenantName") || "",
+          subdomain: state.tenant.subdomain || localStorage.getItem("churchos.subdomain") || "",
+          subdomainHost: state.tenant.subdomainHost || localStorage.getItem("churchos.tenantHost") || "",
+          customDomain: metadata.customDomain || state.tenant.customDomain || "",
+          country: state.tenant.country || "",
+          city: state.tenant.city || "",
+          plan: state.plan || "growth"
+        },
+        steps: {
+          [normalizedStepKey]: {
+            ...metadata,
+            updatedAt: new Date().toISOString()
+          }
+        }
+      });
+    }
+
+    function tenantHeaders() {
+      const context = readOnboardingContext();
+      return {
+        'x-tenant-id': tenantId,
+        'x-tenant-name': encodeURIComponent(context.tenant?.name || localStorage.getItem("churchos.tenantName") || ""),
+        'x-tenant-subdomain': encodeURIComponent(context.tenant?.subdomain || localStorage.getItem("churchos.subdomain") || ""),
+        'x-churchos-onboarding-context': encodeURIComponent(JSON.stringify(context)),
+        'Authorization': `Bearer ${token}`
+      };
+    }
+
     // Toast utility
     const toastEl = document.getElementById("toast");
     const toastMsg = document.getElementById("toastMessage");
@@ -1029,10 +1093,7 @@
     async function apiGet(endpoint) {
       const res = await fetch(endpoint, {
         method: 'GET',
-        headers: {
-          'x-tenant-id': tenantId,
-          'Authorization': `Bearer ${token}`
-        }
+        headers: tenantHeaders()
       });
       if (!res.ok) {
         const err = await res.json();
@@ -1046,8 +1107,7 @@
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'x-tenant-id': tenantId,
-          'Authorization': `Bearer ${token}`
+          ...tenantHeaders()
         },
         body: JSON.stringify(bodyData)
       });
@@ -1063,8 +1123,7 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-tenant-id': tenantId,
-          'Authorization': `Bearer ${token}`
+          ...tenantHeaders()
         },
         body: JSON.stringify(bodyData)
       });
@@ -1081,8 +1140,12 @@
         const resData = await apiGet('/api/onboarding');
         const data = resData.data;
         
+        const cachedContext = readOnboardingContext();
         state.steps = data.steps;
-        state.tenant = data.tenant;
+        state.tenant = {
+          ...(data.tenant || {}),
+          ...(cachedContext.tenant || {})
+        };
         state.progressPercent = data.progressPercent;
         
         state.progressPercent = data.progressPercent;
@@ -1097,6 +1160,22 @@
         } catch (subErr) {
           console.warn('Subscription fetch warning (defaulting to Growth plan):', subErr.message);
         }
+
+        mergeOnboardingContext({
+          tenant: {
+            id: tenantId,
+            name: state.tenant.name || localStorage.getItem("churchos.tenantName") || "",
+            subdomain: state.tenant.subdomain || localStorage.getItem("churchos.subdomain") || "",
+            subdomainHost: state.tenant.subdomainHost || localStorage.getItem("churchos.tenantHost") || "",
+            customDomain: state.tenant.customDomain || "",
+            country: state.tenant.country || "",
+            city: state.tenant.city || "",
+            plan: state.plan || "growth"
+          }
+        });
+        localStorage.setItem("churchos.tenantName", state.tenant.name || "");
+        localStorage.setItem("churchos.subdomain", state.tenant.subdomain || "");
+        localStorage.setItem("churchos.tenantHost", state.tenant.subdomainHost || (state.tenant.subdomain ? `${state.tenant.subdomain}.churched.online` : ""));
 
         renderSidebar();
         renderActiveStep();
@@ -1148,6 +1227,10 @@
           metadata = JSON.parse(apiStep.metadataJson);
         } catch {}
       }
+      metadata = {
+        ...(readOnboardingContext().steps?.[step.stepKey] || {}),
+        ...metadata
+      };
 
       let formHtml = '';
 
@@ -1638,6 +1721,7 @@
         }
 
         showToast('Saving step...', false);
+        rememberOnboardingStep(step.stepKey, bodyData);
         await apiPatch(url, bodyData);
         showToast('Saved successfully!', false);
         
@@ -1682,6 +1766,7 @@
       try {
         showToast('Completing onboarding...', false);
         await apiPost('/api/onboarding/complete');
+        mergeOnboardingContext({ completedAt: new Date().toISOString() });
         showToast('Launch success! Entering dashboard...', false);
         
         setTimeout(() => {

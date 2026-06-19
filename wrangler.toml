@@ -1,8 +1,13 @@
 name = "thechurch"
 main = "src/worker.ts"
 compatibility_date = "2026-05-28"
+workers_dev = true
 compatibility_flags = [
   "nodejs_compat"
+]
+routes = [
+  { pattern = "churched.online/*", zone_name = "churched.online" },
+  { pattern = "*.churched.online/*", zone_name = "churched.online" }
 ]
 
 [assets]

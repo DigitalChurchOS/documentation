@@ -1848,6 +1848,34 @@
       localStorage.setItem("churchos.tenantId", tenantId);
       localStorage.setItem("churchos.subdomain", tenant.subdomain || "");
       localStorage.setItem("churchos.tenantName", tenant.name || "");
+      localStorage.setItem("churchos.tenantHost", tenant.subdomainHost || (tenant.subdomain ? `${tenant.subdomain}.churched.online` : ""));
+      const memberName = `${payload?.user?.member?.firstName || ""} ${payload?.user?.member?.lastName || ""}`.trim();
+      localStorage.setItem("churchos.ownerName", payload?.user?.name || memberName || "");
+      localStorage.setItem("churchos.ownerEmail", payload?.user?.email || "");
+      let existingContext = {};
+      try {
+        existingContext = JSON.parse(localStorage.getItem("churchos.onboardingContext.v1") || "{}");
+      } catch {}
+      localStorage.setItem("churchos.onboardingContext.v1", JSON.stringify({
+        ...existingContext,
+        tenant: {
+          ...(existingContext.tenant || {}),
+          id: tenantId,
+          name: tenant.name || "",
+          subdomain: tenant.subdomain || "",
+          subdomainHost: tenant.subdomainHost || (tenant.subdomain ? `${tenant.subdomain}.churched.online` : ""),
+          country: tenant.country || document.getElementById("country").value,
+          city: tenant.city || document.getElementById("city").value.trim(),
+          plan: planSelect?.value || selectedPlan
+        },
+        owner: {
+          ...(existingContext.owner || {}),
+          name: document.getElementById("ownerName").value.trim() || payload?.user?.name || memberName || "",
+          email: document.getElementById("ownerEmail").value.trim() || payload?.user?.email || ""
+        },
+        steps: existingContext.steps || {},
+        completedAt: existingContext.completedAt || null
+      }));
       localStorage.setItem("churchos.unifiedDashboard.session.v2", "active");
     }
 

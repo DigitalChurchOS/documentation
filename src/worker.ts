@@ -48,6 +48,7 @@ export default {
     // 3. Subdomain-aware church website routing
     // Production: [churchname].churched.online → serve church-frontend SPA
     const WORKER_BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
+    const WORKER_HOST_SUFFIXES = ['workers.dev'];
     const hostname = url.hostname.toLowerCase();
     let isSubdomain = false;
     for (const base of WORKER_BASE_DOMAINS) {
@@ -56,7 +57,8 @@ export default {
         break;
       }
     }
-    if (!isSubdomain && hostname.split('.').length > 2) {
+    const isWorkerHost = WORKER_HOST_SUFFIXES.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`));
+    if (!isSubdomain && !isWorkerHost && hostname.split('.').length > 2) {
       isSubdomain = true;
     }
 

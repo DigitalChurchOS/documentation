@@ -32,7 +32,8 @@ const jsonHeaders = {
   'content-type': 'application/json; charset=utf-8',
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET,POST,PATCH,PUT,DELETE,OPTIONS',
-  'access-control-allow-headers': 'content-type,authorization,x-tenant-id',
+  'access-control-allow-headers':
+    'content-type,authorization,x-tenant-id,x-tenant-name,x-tenant-subdomain,x-churchos-onboarding-context',
 };
 
 const onboardingSteps = [
@@ -251,8 +252,8 @@ function getThemeEngineOverview() {
   };
 }
 
-function findDemoPage(pageId: string) {
-  return demoPages.find((page) => page.id === pageId) || demoPages[0];
+function findDemoPage(pageId: string, pages = demoPages) {
+  return pages.find((page) => page.id === pageId) || pages[0];
 }
 
 function cleanSubdomain(value: unknown) {
@@ -263,6 +264,299 @@ function cleanSubdomain(value: unknown) {
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-');
   return cleaned || demoTenant.subdomain;
+}
+
+function decodeHeaderValue(value: string | null) {
+  if (!value) return '';
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+function parseContextHeader(request: Request): Record<string, any> {
+  const raw = request.headers.get('x-churchos-onboarding-context');
+  if (!raw) return {};
+  try {
+    return JSON.parse(decodeHeaderValue(raw));
+  } catch {
+    return {};
+  }
+}
+
+function titleFromSubdomain(subdomain: string) {
+  return subdomain
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ') || 'Demo';
+}
+
+function subdomainFromTenantId(value: unknown) {
+  const tenantId = String(value || '');
+  if (tenantId.startsWith('tenant-') && tenantId.length > 'tenant-'.length) {
+    return tenantId.slice('tenant-'.length);
+  }
+  if (tenantId === demoTenant.id) return demoTenant.subdomain;
+  return '';
+}
+
+function subdomainFromHost(hostname: string) {
+  const host = hostname.toLowerCase().split(':')[0];
+  if (host === platformDomain || host.endsWith('.workers.dev')) return '';
+  if (host.endsWith(`.${platformDomain}`)) {
+    return host.slice(0, -(platformDomain.length + 1));
+  }
+  if (host.endsWith('.localhost')) {
+    return host.slice(0, -'.localhost'.length);
+  }
+  return '';
+}
+
+function getRequestContext(request: Request, url: URL, body: Record<string, unknown> = {}) {
+  const stored = parseContextHeader(request);
+  const storedTenant = stored.tenant || {};
+  const storedSteps = stored.steps || {};
+  const headerTenantId = request.headers.get('x-tenant-id') || '';
+  const headerName = decodeHeaderValue(request.headers.get('x-tenant-name'));
+  const headerSubdomain = decodeHeaderValue(request.headers.get('x-tenant-subdomain'));
+  const hostSubdomain = subdomainFromHost(url.hostname);
+
+  const subdomain = cleanSubdomain(
+    body.subdomain ||
+    url.searchParams.get('subdomain') ||
+    headerSubdomain ||
+    storedTenant.subdomain ||
+    hostSubdomain ||
+    subdomainFromTenantId(headerTenantId) ||
+    demoTenant.subdomain,
+  );
+
+  const name = String(
+    body.name ||
+    body.churchName ||
+    url.searchParams.get('tenantName') ||
+    headerName ||
+    storedTenant.name ||
+    (subdomain === demoTenant.subdomain ? demoTenant.name : `${titleFromSubdomain(subdomain)} Church`),
+  ).trim();
+
+  const tenant = {
+    ...demoTenant,
+    ...storedTenant,
+    id: headerTenantId || storedTenant.id || (subdomain === demoTenant.subdomain ? demoTenant.id : `tenant-${subdomain}`),
+    name,
+    subdomain,
+    subdomainHost: makeSubdomainHost(subdomain),
+    customDomain: String(body.customDomain || storedTenant.customDomain || '').trim() || null,
+    country: String(body.country || storedTenant.country || demoTenant.country),
+    city: String(body.city || storedTenant.city || demoTenant.city),
+    status: 'active',
+    onboardingStatus: stored.completedAt ? 'completed' : 'in_progress',
+  };
+
+  return {
+    tenant,
+    steps: storedSteps,
+    completedAt: stored.completedAt || null,
+  };
+}
+
+function getStep(context: ReturnType<typeof getRequestContext>, key: string) {
+  const step = context.steps?.[key];
+  return step && typeof step === 'object' ? step : {};
+}
+
+function makeThemeForContext(context: ReturnType<typeof getRequestContext>) {
+  const settings = createEcclesiaThemeSettings({
+    installation: {
+      installedForTenantId: context.tenant.id,
+      installedAt: '2026-06-18T00:00:00.000Z',
+      autoProvisioned: true,
+      runtime: 'cloudflare-api-worker',
+    },
+    marketplace: {
+      version: '1.0.0',
+      author: 'Church OS',
+    },
+  });
+
+  return {
+    ...demoEcclesiaTheme,
+    tenantId: context.tenant.id,
+    settings: JSON.stringify(settings),
+  };
+}
+
+function makeBrandingForContext(context: ReturnType<typeof getRequestContext>) {
+  const profile = getStep(context, 'profile');
+  const logo = getStep(context, 'logo');
+  const website = getStep(context, 'website');
+  const phone = [profile.phoneCode, profile.phone].filter(Boolean).join(' ').trim();
+
+  return {
+    churchName: context.tenant.name,
+    description: website.homepageSubtitle || `${context.tenant.name} church website`,
+    address: profile.address || '',
+    venueAddress: profile.venueAddress || '',
+    isVenueDifferent: Boolean(profile.isVenueDifferent),
+    phone,
+    phoneCode: profile.phoneCode || '',
+    publicEmail: profile.email || '',
+    email: profile.email || '',
+    timezone: profile.timezone || 'UTC',
+    serviceTimes: Array.isArray(profile.serviceTimes) ? profile.serviceTimes : [],
+    logo: logo.logoUrl || '',
+    darkLogo: logo.darkLogoUrl || '',
+    favicon: logo.faviconUrl || '',
+    accent: '#4f46e5',
+    language: 'en',
+    city: context.tenant.city,
+    country: context.tenant.country,
+    subdomainHost: context.tenant.subdomainHost,
+    plan: context.tenant.plan,
+  };
+}
+
+function makeWebsiteForContext(context: ReturnType<typeof getRequestContext>) {
+  const website = getStep(context, 'website');
+  const theme = makeThemeForContext(context);
+  return {
+    ...demoWebsite,
+    id: `website-${context.tenant.subdomain}`,
+    tenantId: context.tenant.id,
+    themeId: theme.id,
+    title: context.tenant.name,
+    description: website.homepageSubtitle || `${context.tenant.name} church website`,
+    domain: context.tenant.customDomain || context.tenant.subdomainHost,
+    theme,
+  };
+}
+
+function makePagesForContext(context: ReturnType<typeof getRequestContext>) {
+  const website = makeWebsiteForContext(context);
+  const websiteStep = getStep(context, 'website');
+  return [
+    {
+      ...demoPages[0],
+      id: `page-home-${context.tenant.subdomain}`,
+      tenantId: context.tenant.id,
+      websiteId: website.id,
+      title: 'Home',
+      content: JSON.stringify([
+        {
+          type: 'hero',
+          title: websiteStep.homepageTitle || context.tenant.name,
+          subtitle: websiteStep.homepageSubtitle || 'Welcome to our church community.',
+          aboutText: websiteStep.aboutText || '',
+          buttonText: websiteStep.primaryCtaText || 'Plan a Visit',
+          buttonUrl: websiteStep.primaryCtaUrl || '/visit',
+        },
+      ]),
+    },
+  ];
+}
+
+function makeGlobalContentForContext(context: ReturnType<typeof getRequestContext>) {
+  const profile = getStep(context, 'profile');
+  const logo = getStep(context, 'logo');
+  const website = getStep(context, 'website');
+  const globalContent = createEcclesiaGlobalContent(context.tenant.name);
+  return {
+    ...globalContent,
+    churchIdentity: {
+      ...globalContent.churchIdentity,
+      churchName: context.tenant.name,
+      logoUrl: logo.logoUrl || globalContent.churchIdentity.logoUrl,
+      faviconUrl: logo.faviconUrl || globalContent.churchIdentity.faviconUrl,
+      tagline: website.homepageTitle || globalContent.churchIdentity.tagline,
+      description: website.homepageSubtitle || globalContent.churchIdentity.description,
+    },
+    contact: {
+      ...globalContent.contact,
+      phone: [profile.phoneCode, profile.phone].filter(Boolean).join(' ').trim() || globalContent.contact.phone,
+      email: profile.email || globalContent.contact.email,
+      address: profile.venueAddress || profile.address || globalContent.contact.address,
+    },
+    services: {
+      ...globalContent.services,
+      serviceTimes: Array.isArray(profile.serviceTimes) && profile.serviceTimes.length
+        ? profile.serviceTimes.map((item: any) => ({
+            label: item.day || 'Service',
+            time: item.time || '',
+            location: profile.venueAddress || profile.address || undefined,
+          }))
+        : globalContent.services.serviceTimes,
+    },
+  };
+}
+
+function makeSiteContextForContext(context: ReturnType<typeof getRequestContext>) {
+  const theme = makeThemeForContext(context);
+  return {
+    tenant: {
+      id: context.tenant.id,
+      name: context.tenant.name,
+      subdomain: context.tenant.subdomain,
+      status: 'active',
+    },
+    theme: {
+      id: theme.id,
+      name: theme.name,
+      settings: JSON.parse(theme.settings),
+      draftSettings: null,
+    },
+    moduleEntitlements: [
+      'website-cms',
+      'theme-engine',
+      'domain-tenant-management',
+      'livestream',
+      'giving',
+      'member-crm',
+      'church-services',
+    ].map((moduleKey) => ({ moduleKey, enabled: true })),
+    navigation: {
+      id: `nav-${context.tenant.subdomain}`,
+      items: createEcclesiaNavigationItems(),
+    },
+    footer: {
+      id: `footer-${context.tenant.subdomain}`,
+      copyrightText: `Copyright ${new Date().getFullYear()} ${context.tenant.name}`,
+      socialLinks: [],
+      secondaryLinks: createEcclesiaFooterLinks(),
+    },
+    announcement: {
+      id: `announcement-${context.tenant.subdomain}`,
+      isActive: false,
+      text: '',
+    },
+    enabledPlugins: [],
+    pluginSettings: {},
+  };
+}
+
+function makeRenderForContext(context: ReturnType<typeof getRequestContext>, slug = '') {
+  const page = makePagesForContext(context)[0];
+  const siteContext = makeSiteContextForContext(context);
+  return {
+    pageId: page.id,
+    title: page.title,
+    slug,
+    isHome: slug === '',
+    contentBlocks: [],
+    isPreview: false,
+    seoTitle: `${context.tenant.name} | Home`,
+    seoDescription: makeWebsiteForContext(context).description,
+    seoKeywords: null,
+    globalContent: makeGlobalContentForContext(context),
+    navigation: siteContext.navigation,
+    footer: siteContext.footer,
+    theme: {
+      name: siteContext.theme.name,
+      settings: siteContext.theme.settings,
+    },
+  };
 }
 
 function makeTenantFromBody(body: Record<string, unknown>) {
@@ -330,7 +624,13 @@ function collectionResponse(pathname: string): JsonValue {
   };
 }
 
-function routeGet(pathname: string, url: URL) {
+function routeGet(request: Request, pathname: string, url: URL) {
+  const context = getRequestContext(request, url);
+  const tenant = context.tenant;
+  const theme = makeThemeForContext(context);
+  const website = makeWebsiteForContext(context);
+  const pages = makePagesForContext(context);
+
   if (pathname === '/health' || pathname === '/api/health') {
     return withJson({
       status: 'ok',
@@ -342,24 +642,32 @@ function routeGet(pathname: string, url: URL) {
   }
 
   if (pathname === '/api/cms/websites') {
-    return withJson({ data: [demoWebsite] as JsonValue });
+    return withJson({ data: [website] as unknown as JsonValue });
   }
 
   if (pathname === '/api/cms/pages') {
-    return withJson({ data: demoPages as JsonValue });
+    return withJson({ data: pages as unknown as JsonValue });
   }
 
   if (pathname.startsWith('/api/cms/pages/')) {
     const pageId = pathname.split('/').filter(Boolean).pop() || '';
-    return withJson({ data: findDemoPage(pageId) as JsonValue });
+    return withJson({ data: findDemoPage(pageId, pages) as unknown as JsonValue });
   }
 
   if (pathname === '/api/cms/global-content') {
-    return withJson({ data: createEcclesiaGlobalContent(demoTenant.name) as JsonValue });
+    return withJson({ data: makeGlobalContentForContext(context) as unknown as JsonValue });
+  }
+
+  if (pathname === '/api/cms/site-context') {
+    return withJson({ data: makeSiteContextForContext(context) as unknown as JsonValue });
+  }
+
+  if (pathname === '/api/cms/render') {
+    return withJson({ data: makeRenderForContext(context, url.searchParams.get('slug') || '') as unknown as JsonValue });
   }
 
   if (pathname === '/api/theme-engine/themes') {
-    return withJson({ data: [demoEcclesiaTheme] as JsonValue });
+    return withJson({ data: [theme] as unknown as JsonValue });
   }
 
   if (pathname === '/api/theme-engine/sections') {
@@ -378,8 +686,8 @@ function routeGet(pathname: string, url: URL) {
     return withJson({
       data: {
         themeId: demoEcclesiaTheme.id,
-        name: demoEcclesiaTheme.name,
-        settings: demoThemeSettings,
+        name: theme.name,
+        settings: JSON.parse(theme.settings),
         version: '1.0.0',
         isPreview: true,
         timestamp: new Date().toISOString(),
@@ -390,9 +698,10 @@ function routeGet(pathname: string, url: URL) {
   if (pathname === '/api/onboarding') {
     return withJson({
       data: {
-        tenant: demoTenant,
+        tenant,
         steps: onboardingSteps,
-        progressPercent: 20,
+        progressPercent: context.completedAt ? 100 : 20,
+        completedAt: context.completedAt,
       },
     });
   }
@@ -425,20 +734,26 @@ function routeGet(pathname: string, url: URL) {
   if (pathname === '/api/tenant/branding') {
     return withJson({
       data: {
-        churchName: demoTenant.name,
-        logoUrl: '/logo.png',
-        primaryColor: '#2563eb',
-      },
+        tenant,
+        branding: makeBrandingForContext(context),
+      } as unknown as JsonValue,
     });
   }
 
   if (pathname === '/api/tenant/domain') {
     return withJson({
       data: {
-        subdomain: demoTenant.subdomain,
-        customDomain: 'churched.online',
+        subdomain: tenant.subdomain,
+        subdomainHost: tenant.subdomainHost,
+        customDomain: tenant.customDomain || '',
+        primaryDomain: tenant.customDomain || tenant.subdomainHost,
+        websiteDomain: website.domain,
         status: 'verified',
-      },
+        dnsStatus: {
+          verified: true,
+          sslActive: true,
+        },
+      } as unknown as JsonValue,
     });
   }
 
@@ -453,22 +768,26 @@ function routeGet(pathname: string, url: URL) {
   }
 
   if (pathname === '/api/theme-engine/overview') {
-    return withJson({ data: getThemeEngineOverview() as JsonValue });
+    return withJson({
+      data: {
+        ...getThemeEngineOverview(),
+        settings: {
+          ...getThemeEngineSettings(),
+          tenantId: tenant.id,
+        },
+        activeWebsite: {
+          id: website.id,
+          title: website.title,
+          themeId: theme.id,
+          themeName: ECCLESIA_THEME_NAME,
+        },
+      } as unknown as JsonValue,
+    });
   }
 
   if (pathname === '/api/theme-engine/reports') {
     return withJson({
       data: getThemeEngineOverview().recentActivity as JsonValue,
-    });
-  }
-
-  if (pathname === '/api/cms/render') {
-    return withJson({
-      data: {
-        page: demoPages[0],
-        navigation: [],
-        footer: { columns: [] },
-      },
     });
   }
 
@@ -481,7 +800,7 @@ function routeGet(pathname: string, url: URL) {
       data: {
         columns: [],
         secondaryLinks: createEcclesiaFooterLinks(),
-        copyright: `${demoTenant.name}`,
+        copyright: `${tenant.name}`,
       } as JsonValue,
     });
   }
@@ -489,20 +808,21 @@ function routeGet(pathname: string, url: URL) {
   if (pathname === '/api/public/resolve-website-tenant') {
     return withJson({
       data: {
-        tenantId: demoTenant.id,
-        tenant: demoTenant,
-        website: demoWebsite,
+        tenantId: tenant.id,
+        tenant,
+        website,
       } as JsonValue,
     });
   }
 
   if (pathname === '/api/public/resolve-subdomain') {
     const subdomain = cleanSubdomain(url.searchParams.get('subdomain'));
-    const tenant = { ...demoTenant, id: `tenant-${subdomain}`, subdomain, subdomainHost: makeSubdomainHost(subdomain) };
+    const resolvedContext = getRequestContext(request, url, { subdomain });
+    const resolvedTenant = resolvedContext.tenant;
     return withJson({
-      tenantId: tenant.id,
-      tenant,
-      data: tenant,
+      tenantId: resolvedTenant.id,
+      tenant: resolvedTenant,
+      data: resolvedTenant,
     });
   }
 
@@ -514,9 +834,15 @@ function routeGet(pathname: string, url: URL) {
 
 async function routeMutation(request: Request, pathname: string) {
   const body = await readBody(request);
+  const url = new URL(request.url);
+  const context = getRequestContext(request, url, body);
+  const tenant = context.tenant;
+  const theme = makeThemeForContext(context);
+  const website = makeWebsiteForContext(context);
+  const pages = makePagesForContext(context);
 
   if (pathname === '/api/cms/websites') {
-    return withJson({ data: { ...demoWebsite, ...(body as Record<string, JsonValue>) } as JsonValue }, { status: 201 });
+    return withJson({ data: { ...website, ...(body as Record<string, JsonValue>) } as unknown as JsonValue }, { status: 201 });
   }
 
   if (pathname === '/api/cms/pages') {
@@ -524,8 +850,8 @@ async function routeMutation(request: Request, pathname: string) {
     const slug = String(body.slug || '').replace(/^\/+/, '');
     const page = {
       id: makeId('page'),
-      tenantId: demoTenant.id,
-      websiteId: String(body.websiteId || demoWebsite.id),
+      tenantId: tenant.id,
+      websiteId: String(body.websiteId || website.id),
       title,
       slug,
       status: String(body.status || 'draft'),
@@ -539,8 +865,8 @@ async function routeMutation(request: Request, pathname: string) {
   }
 
   if (/^\/api\/cms\/pages\/[^/]+\/draft$/.test(pathname)) {
-    const pageId = pathname.split('/').filter(Boolean).at(-2) || demoPages[0].id;
-    const page = findDemoPage(pageId);
+    const pageId = pathname.split('/').filter(Boolean).at(-2) || pages[0].id;
+    const page = findDemoPage(pageId, pages);
     return withJson({
       data: {
         ...page,
@@ -551,8 +877,8 @@ async function routeMutation(request: Request, pathname: string) {
   }
 
   if (/^\/api\/cms\/pages\/[^/]+\/publish$/.test(pathname)) {
-    const pageId = pathname.split('/').filter(Boolean).at(-2) || demoPages[0].id;
-    const page = findDemoPage(pageId);
+    const pageId = pathname.split('/').filter(Boolean).at(-2) || pages[0].id;
+    const page = findDemoPage(pageId, pages);
     return withJson({
       data: {
         ...page,
@@ -565,10 +891,10 @@ async function routeMutation(request: Request, pathname: string) {
   }
 
   if (/^\/api\/cms\/pages\/[^/]+$/.test(pathname)) {
-    const pageId = pathname.split('/').filter(Boolean).pop() || demoPages[0].id;
+    const pageId = pathname.split('/').filter(Boolean).pop() || pages[0].id;
     return withJson({
       data: {
-        ...findDemoPage(pageId),
+        ...findDemoPage(pageId, pages),
         ...(body as Record<string, JsonValue>),
         updatedAt: new Date().toISOString(),
       } as JsonValue,
@@ -579,25 +905,26 @@ async function routeMutation(request: Request, pathname: string) {
     return withJson({
       data: {
         ...getThemeEngineSettings(),
+        tenantId: tenant.id,
         ...(body as Record<string, JsonValue>),
       } as JsonValue,
     });
   }
 
   if (pathname === '/api/theme-engine/ecclesia/provision') {
-    return withJson({ data: { theme: demoEcclesiaTheme, website: demoWebsite } as JsonValue });
+    return withJson({ data: { theme, website } as unknown as JsonValue });
   }
 
   if (pathname === '/api/theme-engine/themes/install') {
-    return withJson({ data: demoEcclesiaTheme as JsonValue }, { status: 201 });
+    return withJson({ data: theme as unknown as JsonValue }, { status: 201 });
   }
 
   if (/^\/api\/theme-engine\/themes\/[^/]+\/activate$/.test(pathname)) {
     return withJson({
       data: {
-        ...demoWebsite,
-        id: String(body.websiteId || demoWebsite.id),
-        themeId: pathname.split('/').filter(Boolean).at(-2) || demoEcclesiaTheme.id,
+        ...website,
+        id: String(body.websiteId || website.id),
+        themeId: pathname.split('/').filter(Boolean).at(-2) || theme.id,
       } as JsonValue,
     });
   }
@@ -605,8 +932,8 @@ async function routeMutation(request: Request, pathname: string) {
   if (/^\/api\/theme-engine\/themes\/[^/]+\/customization\/draft$/.test(pathname)) {
     return withJson({
       data: {
-        ...demoEcclesiaTheme,
-        id: pathname.split('/').filter(Boolean).at(-3) || demoEcclesiaTheme.id,
+        ...theme,
+        id: pathname.split('/').filter(Boolean).at(-3) || theme.id,
         draftSettings: JSON.stringify(body),
         updatedAt: new Date().toISOString(),
       } as JsonValue,
@@ -616,8 +943,8 @@ async function routeMutation(request: Request, pathname: string) {
   if (/^\/api\/theme-engine\/themes\/[^/]+\/customization\/(publish|discard|reset)$/.test(pathname)) {
     return withJson({
       data: {
-        ...demoEcclesiaTheme,
-        id: pathname.split('/').filter(Boolean).at(-3) || demoEcclesiaTheme.id,
+        ...theme,
+        id: pathname.split('/').filter(Boolean).at(-3) || theme.id,
         draftSettings: null,
         updatedAt: new Date().toISOString(),
       } as JsonValue,
@@ -627,9 +954,9 @@ async function routeMutation(request: Request, pathname: string) {
   if (/^\/api\/theme-engine\/themes\/[^/]+\/customize$/.test(pathname)) {
     return withJson({
       data: {
-        ...demoEcclesiaTheme,
-        id: pathname.split('/').filter(Boolean).at(-2) || demoEcclesiaTheme.id,
-        settings: JSON.stringify({ ...demoThemeSettings, ...(body as Record<string, JsonValue>) }),
+        ...theme,
+        id: pathname.split('/').filter(Boolean).at(-2) || theme.id,
+        settings: JSON.stringify({ ...JSON.parse(theme.settings), ...(body as Record<string, JsonValue>) }),
         updatedAt: new Date().toISOString(),
       } as JsonValue,
     });
@@ -638,8 +965,8 @@ async function routeMutation(request: Request, pathname: string) {
   if (/^\/api\/theme-engine\/themes\/[^/]+\/preview\/customize$/.test(pathname)) {
     return withJson({
       data: {
-        themeId: pathname.split('/').filter(Boolean).at(-3) || demoEcclesiaTheme.id,
-        settings: { ...demoThemeSettings, ...(body as Record<string, JsonValue>) },
+        themeId: pathname.split('/').filter(Boolean).at(-3) || theme.id,
+        settings: { ...JSON.parse(theme.settings), ...(body as Record<string, JsonValue>) },
         isPreview: true,
         staging: true,
       } as JsonValue,
@@ -650,13 +977,47 @@ async function routeMutation(request: Request, pathname: string) {
     return withJson({ available: true, data: { available: true } });
   }
 
+  if (pathname === '/api/tenant/branding') {
+    return withJson({
+      data: {
+        tenant: {
+          ...tenant,
+          name: String(body.name || tenant.name),
+        },
+        branding: {
+          ...makeBrandingForContext(context),
+          ...(body as Record<string, JsonValue>),
+        },
+      } as unknown as JsonValue,
+    });
+  }
+
+  if (pathname === '/api/tenant/domain') {
+    const customDomain = String(body.customDomain || '').trim().toLowerCase();
+    return withJson({
+      data: {
+        subdomain: tenant.subdomain,
+        subdomainHost: tenant.subdomainHost,
+        customDomain,
+        primaryDomain: customDomain || tenant.subdomainHost,
+        websiteDomain: customDomain || tenant.subdomainHost,
+        status: 'verified',
+        dnsStatus: {
+          verified: true,
+          sslActive: true,
+        },
+      } as unknown as JsonValue,
+    });
+  }
+
   if (pathname === '/api/public/resolve-subdomain') {
     const subdomain = cleanSubdomain(body.subdomain);
-    const tenant = { ...demoTenant, id: `tenant-${subdomain}`, subdomain, subdomainHost: makeSubdomainHost(subdomain) };
+    const resolvedContext = getRequestContext(request, url, { ...body, subdomain });
+    const resolvedTenant = resolvedContext.tenant;
     return withJson({
-      tenantId: tenant.id,
-      tenant,
-      data: tenant,
+      tenantId: resolvedTenant.id,
+      tenant: resolvedTenant,
+      data: resolvedTenant,
     });
   }
 
@@ -678,9 +1039,16 @@ async function routeMutation(request: Request, pathname: string) {
     const website = {
       id: `website-${tenant.subdomain}`,
       tenantId: tenant.id,
+      title: tenant.name,
+      description: `${tenant.name} church website`,
       domain: tenant.subdomainHost,
       status: 'published',
       isPrimary: true,
+      isActive: true,
+      theme: {
+        ...demoEcclesiaTheme,
+        tenantId: tenant.id,
+      },
     };
     const plan = {
       slug: tenant.plan,
@@ -710,11 +1078,23 @@ async function routeMutation(request: Request, pathname: string) {
   }
 
   if (pathname.startsWith('/api/onboarding')) {
+    const stepKey = pathname.split('/').filter(Boolean).pop() || 'profile';
+    const normalizedStepKey = stepKey === 'website-basics' ? 'website' : stepKey;
     return withJson({
       ok: true,
       data: {
         id: makeId('onboarding'),
-        ...body,
+        tenant,
+        steps: onboardingSteps.map((step) => step.stepKey === normalizedStepKey
+          ? { ...step, status: 'completed', metadataJson: JSON.stringify(body) }
+          : step),
+        progressPercent: pathname.endsWith('/complete') ? 100 : 40,
+        completedAt: pathname.endsWith('/complete') ? new Date().toISOString() : null,
+        step: {
+          stepKey: normalizedStepKey,
+          status: 'completed',
+          metadataJson: JSON.stringify(body),
+        },
         status: pathname.endsWith('/complete') ? 'completed' : 'saved',
       } as JsonValue,
     });
@@ -746,7 +1126,7 @@ export default {
 
     try {
       if (request.method === 'GET' || request.method === 'HEAD') {
-        return routeGet(pathname, url);
+        return routeGet(request, pathname, url);
       }
       return routeMutation(request, pathname);
     } catch (err) {

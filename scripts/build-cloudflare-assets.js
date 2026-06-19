@@ -7,7 +7,9 @@ const outputDir = path.join(root, 'dist', 'public');
 const appsRoot = path.join(root, 'apps');
 const superAdminPublic = path.join(appsRoot, 'super-admin', 'public');
 const tenantDashboardPublic = path.join(appsRoot, 'tenant-dashboard', 'public');
+const churchFrontendRoot = path.join(appsRoot, 'church-frontend');
 const churchFrontendPublic = path.join(appsRoot, 'church-frontend', 'public');
+const churchFrontendDist = path.join(appsRoot, 'church-frontend', 'dist');
 const marketplaceFrontend = path.join(appsRoot, 'marketplace', 'frontend');
 const marketplaceDeveloper = path.join(appsRoot, 'marketplace', 'developer');
 const webPublic = path.join(appsRoot, 'web', 'public');
@@ -15,10 +17,11 @@ const ecclesiaFullTheme = path.join(root, 'ecclesia-full-theme');
 const themeCustomizerRoot = path.join(root, 'theme-customizer');
 const themeCustomizerDist = path.join(themeCustomizerRoot, 'dist');
 const buildThemeCustomizer = /^(1|true|yes)$/i.test(process.env.BUILD_THEME_CUSTOMIZER || '');
+const buildChurchFrontend = !/^(0|false|no)$/i.test(process.env.BUILD_CHURCH_FRONTEND || '');
 
-function ensureThemeCustomizerDependencies() {
+function ensureAppDependencies(appRoot, label) {
   const viteBin = path.join(
-    themeCustomizerRoot,
+    appRoot,
     'node_modules',
     '.bin',
     process.platform === 'win32' ? 'vite.cmd' : 'vite'
@@ -26,9 +29,9 @@ function ensureThemeCustomizerDependencies() {
 
   if (fs.existsSync(viteBin)) return;
 
-  console.log('Installing Theme Customizer dependencies...');
+  console.log(`Installing ${label} dependencies...`);
   execSync('npm ci --include=dev --progress=false', {
-    cwd: themeCustomizerRoot,
+    cwd: appRoot,
     stdio: 'inherit',
     env: {
       ...process.env,
@@ -39,10 +42,18 @@ function ensureThemeCustomizerDependencies() {
 
 if (buildThemeCustomizer) {
   console.log('Building Theme Customizer React App...');
-  ensureThemeCustomizerDependencies();
+  ensureAppDependencies(themeCustomizerRoot, 'Theme Customizer');
   execSync('npm run build', { cwd: themeCustomizerRoot, stdio: 'inherit' });
 } else {
   console.log('Skipping Theme Customizer build. Set BUILD_THEME_CUSTOMIZER=true to include /customizer assets.');
+}
+
+if (buildChurchFrontend) {
+  console.log('Building Church Frontend React App...');
+  ensureAppDependencies(churchFrontendRoot, 'Church Frontend');
+  execSync('npm run build', { cwd: churchFrontendRoot, stdio: 'inherit' });
+} else {
+  console.log('Skipping Church Frontend build. Set BUILD_CHURCH_FRONTEND=true or omit BUILD_CHURCH_FRONTEND to include /church assets.');
 }
 
 function copyFile(source, target) {
@@ -104,9 +115,13 @@ if (buildThemeCustomizer) {
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'admin.html'));
 copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 'tenant-dashboard', 'index.html'));
 copyFile(path.join(superAdminPublic, 'index.html'), path.join(outputDir, 'super-admin', 'index.html'));
-copyFile(path.join(churchFrontendPublic, 'index.html'), path.join(outputDir, 'churchos.html'));
-copyFile(path.join(churchFrontendPublic, 'live.html'), path.join(outputDir, 'live.html'));
-copyDirectory(churchFrontendPublic, path.join(outputDir, 'church'));
+if (fs.existsSync(churchFrontendDist)) {
+  copyDirectory(churchFrontendDist, path.join(outputDir, 'church'));
+  copyFile(path.join(churchFrontendDist, 'index.html'), path.join(outputDir, 'churchos.html'));
+  copyFile(path.join(churchFrontendDist, 'index.html'), path.join(outputDir, 'live.html'));
+} else {
+  copyDirectory(churchFrontendPublic, path.join(outputDir, 'church'));
+}
 copyFile(path.join(marketplaceFrontend, 'index.html'), path.join(outputDir, 'marketplace.html'));
 copyDirectory(marketplaceDeveloper, path.join(outputDir, 'marketplace', 'developer'));
 copyFile(path.join(root, 'index.html'), path.join(outputDir, 'legacy-index.html'));
