@@ -1,7 +1,7 @@
 name = "thechurch"
 main = "src/worker.ts"
 compatibility_date = "2026-05-28"
-workers_dev = true
+workers_dev = false
 compatibility_flags = [
   "nodejs_compat"
 ]

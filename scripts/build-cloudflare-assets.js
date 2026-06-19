@@ -117,8 +117,6 @@ copyFile(path.join(tenantDashboardPublic, 'index.html'), path.join(outputDir, 't
 copyFile(path.join(superAdminPublic, 'index.html'), path.join(outputDir, 'super-admin', 'index.html'));
 if (fs.existsSync(churchFrontendDist)) {
   copyDirectory(churchFrontendDist, path.join(outputDir, 'church'));
-  copyFile(path.join(churchFrontendDist, 'index.html'), path.join(outputDir, 'churchos.html'));
-  copyFile(path.join(churchFrontendDist, 'index.html'), path.join(outputDir, 'live.html'));
 } else {
   copyDirectory(churchFrontendPublic, path.join(outputDir, 'church'));
 }

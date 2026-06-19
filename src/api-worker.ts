@@ -304,7 +304,7 @@ function subdomainFromTenantId(value: unknown) {
 
 function subdomainFromHost(hostname: string) {
   const host = hostname.toLowerCase().split(':')[0];
-  if (host === platformDomain || host.endsWith('.workers.dev')) return '';
+  if (host === platformDomain || host === `www.${platformDomain}` || host.endsWith('.workers.dev')) return '';
   if (host.endsWith(`.${platformDomain}`)) {
     return host.slice(0, -(platformDomain.length + 1));
   }
@@ -312,6 +312,13 @@ function subdomainFromHost(hostname: string) {
     return host.slice(0, -'.localhost'.length);
   }
   return '';
+}
+
+function customDomainFromHost(hostname: string) {
+  const host = hostname.toLowerCase().split(':')[0];
+  if (!host || host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.workers.dev')) return '';
+  if (host === platformDomain || host === `www.${platformDomain}` || host.endsWith(`.${platformDomain}`)) return '';
+  return host;
 }
 
 function getRequestContext(request: Request, url: URL, body: Record<string, unknown> = {}) {
@@ -322,6 +329,7 @@ function getRequestContext(request: Request, url: URL, body: Record<string, unkn
   const headerName = decodeHeaderValue(request.headers.get('x-tenant-name'));
   const headerSubdomain = decodeHeaderValue(request.headers.get('x-tenant-subdomain'));
   const hostSubdomain = subdomainFromHost(url.hostname);
+  const hostCustomDomain = customDomainFromHost(url.hostname);
 
   const subdomain = cleanSubdomain(
     body.subdomain ||
@@ -329,6 +337,7 @@ function getRequestContext(request: Request, url: URL, body: Record<string, unkn
     headerSubdomain ||
     storedTenant.subdomain ||
     hostSubdomain ||
+    (hostCustomDomain ? hostCustomDomain.split('.')[0] : '') ||
     subdomainFromTenantId(headerTenantId) ||
     demoTenant.subdomain,
   );
@@ -339,6 +348,7 @@ function getRequestContext(request: Request, url: URL, body: Record<string, unkn
     url.searchParams.get('tenantName') ||
     headerName ||
     storedTenant.name ||
+    (hostCustomDomain ? `${titleFromSubdomain(hostCustomDomain.split('.')[0])} Church` : '') ||
     (subdomain === demoTenant.subdomain ? demoTenant.name : `${titleFromSubdomain(subdomain)} Church`),
   ).trim();
 
@@ -349,7 +359,7 @@ function getRequestContext(request: Request, url: URL, body: Record<string, unkn
     name,
     subdomain,
     subdomainHost: makeSubdomainHost(subdomain),
-    customDomain: String(body.customDomain || storedTenant.customDomain || '').trim() || null,
+    customDomain: String(body.customDomain || storedTenant.customDomain || hostCustomDomain || '').trim() || null,
     country: String(body.country || storedTenant.country || demoTenant.country),
     city: String(body.city || storedTenant.city || demoTenant.city),
     status: 'active',

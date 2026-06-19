@@ -5061,7 +5061,7 @@ body.customizer-open { overflow: hidden; }
               <h2>Welcome back, <span id="welcomeTenantName">Lagos Central Campus</span></h2>
               <p>Here is what needs attention across your church workspace today. Review setup issues, monitor ministry activity, and jump straight into the work that matters.</p>
               <div class="hero-actions">
-                <button class="btn primary" onclick="window.open('/church', '_blank')"><i data-lucide="external-link"></i>View Website</button>
+                <button class="btn primary" onclick="openTenantWebsitePreview()"><i data-lucide="external-link"></i>View Website</button>
                 <button class="btn attention" onclick="scrollToSection('actions')"><i data-lucide="clipboard-check"></i>Continue Setup</button>
                 <button class="btn" onclick="selectedModule = 'events'; switchView('modules');"><i data-lucide="calendar-plus"></i>Create Event</button>
                 <button class="btn" onclick="selectedModule = 'communication'; switchView('modules');"><i data-lucide="send"></i>Send Broadcast</button>
@@ -14663,24 +14663,21 @@ body.customizer-open { overflow: hidden; }
 
     function getTenantHost(sourceState = state) {
       const contextTenant = readOnboardingContext().tenant || {};
-      const explicitHost = contextTenant.subdomainHost || localStorage.getItem('churchos.tenantHost') || sourceState.tenant?.subdomainHost;
+      const domainStep = readOnboardingContext().steps?.domain || {};
+      const explicitHost =
+        domainStep.customDomain ||
+        contextTenant.customDomain ||
+        sourceState.tenant?.customDomain ||
+        contextTenant.subdomainHost ||
+        localStorage.getItem('churchos.tenantHost') ||
+        sourceState.tenant?.subdomainHost;
       if (explicitHost) return explicitHost.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
       return `${getTenantSubdomain(sourceState)}.churched.online`;
     }
 
     function getTenantWebsiteUrl(sourceState = state) {
       const host = getTenantHost(sourceState);
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname.endsWith('.localhost');
-      const isWorkersPreview = window.location.hostname.endsWith('.workers.dev');
-      const isPlatformApex = window.location.hostname === 'churched.online' || window.location.hostname === 'www.churched.online';
-      if (isWorkersPreview || isPlatformApex) {
-        const previewUrl = new URL('/church/', window.location.origin);
-        previewUrl.searchParams.set('subdomain', getTenantSubdomain(sourceState));
-        if (sourceState.tenant?.name) previewUrl.searchParams.set('tenantName', sourceState.tenant.name);
-        return previewUrl.toString();
-      }
-      const protocol = isLocal ? window.location.protocol : 'https:';
-      const url = new URL(`${protocol}//${host}/`);
+      const url = new URL(`https://${host}/`);
       if (sourceState.tenant?.name) url.searchParams.set('tenantName', sourceState.tenant.name);
       return url.toString();
     }

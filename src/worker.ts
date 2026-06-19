@@ -45,24 +45,47 @@ export default {
       );
     }
 
-    // 3. Subdomain-aware church website routing
-    // Production: [churchname].churched.online → serve church-frontend SPA
-    const WORKER_BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
+    // 3. Public church website routing
+    // Tenant sites are available only on [churchname].churched.online or a connected custom domain.
+    const PLATFORM_HOSTS = new Set([
+      'churched.online',
+      'www.churched.online',
+      'churchos.com',
+      'www.churchos.com',
+      'churchos.local',
+      'localhost',
+    ]);
+    const TENANT_BASE_DOMAINS = ['churched.online'];
     const WORKER_HOST_SUFFIXES = ['workers.dev'];
     const hostname = url.hostname.toLowerCase();
-    let isSubdomain = false;
-    for (const base of WORKER_BASE_DOMAINS) {
+    let isTenantPlatformSubdomain = false;
+    for (const base of TENANT_BASE_DOMAINS) {
       if (hostname !== base && hostname.endsWith(`.${base}`)) {
-        isSubdomain = true;
+        isTenantPlatformSubdomain = hostname !== `www.${base}`;
         break;
       }
     }
     const isWorkerHost = WORKER_HOST_SUFFIXES.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`));
-    if (!isSubdomain && !isWorkerHost && hostname.split('.').length > 2) {
-      isSubdomain = true;
+    const isLocalHost = hostname === 'localhost' || hostname.endsWith('.localhost');
+    const isPlatformHost = PLATFORM_HOSTS.has(hostname) || isWorkerHost || isLocalHost;
+    const isTenantCustomDomain = !isPlatformHost && !isTenantPlatformSubdomain;
+    const isTenantPublicHost = isTenantPlatformSubdomain || isTenantCustomDomain;
+
+    if (
+      !isTenantPublicHost &&
+      (pathname === '/church' ||
+        pathname.startsWith('/church/') ||
+        pathname === '/churchos.html' ||
+        pathname === '/live.html' ||
+        pathname.startsWith('/live/'))
+    ) {
+      return new Response('Tenant websites are available on tenant subdomains or connected custom domains only.', {
+        status: 404,
+        headers: { 'content-type': 'text/plain; charset=utf-8' },
+      });
     }
 
-    if (isSubdomain && (pathname === '/sw.js' || pathname === '/manifest.json' || pathname.startsWith('/assets/'))) {
+    if (isTenantPublicHost && (pathname === '/sw.js' || pathname === '/manifest.json' || pathname.startsWith('/assets/'))) {
       const assetUrl = new URL(request.url);
       assetUrl.pathname = `/church${pathname}`;
       return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
@@ -76,7 +99,7 @@ export default {
     }
 
     // 5. SPA path-based routing (rewrites client-side routes to their respective index.html entries)
-    let targetPath = isSubdomain ? '/church/index.html' : '/index.html'; // Subdomain → church frontend
+    let targetPath = isTenantPublicHost ? '/church/index.html' : '/index.html';
 
     if (pathname === '/admin' || pathname.startsWith('/admin/')) {
       targetPath = '/admin/index.html';
