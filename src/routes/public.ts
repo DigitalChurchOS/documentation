@@ -8,6 +8,10 @@ function readSubdomain(req: Request) {
   return req.body?.subdomain || req.query.subdomain || req.body?.host || req.query.host || '';
 }
 
+function readDomain(req: Request) {
+  return req.body?.domain || req.query.domain || req.body?.host || req.query.host || req.body?.customDomain || req.query.customDomain || '';
+}
+
 function sendRouteError(res: Response, err: any) {
   const status = err?.status || 400;
   res.status(status).json({ error: err?.message || 'Request failed', details: err?.details || null });
@@ -47,6 +51,32 @@ router.get('/resolve-subdomain', async (req: Request, res: Response) => {
 router.post('/resolve-subdomain', async (req: Request, res: Response) => {
   try {
     const data = await TenantProvisioningService.resolveSubdomain(readSubdomain(req));
+    if (!data) {
+      res.status(404).json({ error: 'Church workspace not found' });
+      return;
+    }
+    res.json({ data });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.get('/resolve-domain', async (req: Request, res: Response) => {
+  try {
+    const data = await TenantProvisioningService.resolveCustomDomain(readDomain(req));
+    if (!data) {
+      res.status(404).json({ error: 'Church workspace not found' });
+      return;
+    }
+    res.json({ data });
+  } catch (err: any) {
+    sendRouteError(res, err);
+  }
+});
+
+router.post('/resolve-domain', async (req: Request, res: Response) => {
+  try {
+    const data = await TenantProvisioningService.resolveCustomDomain(readDomain(req));
     if (!data) {
       res.status(404).json({ error: 'Church workspace not found' });
       return;

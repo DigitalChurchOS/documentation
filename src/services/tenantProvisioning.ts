@@ -357,6 +357,30 @@ export class TenantProvisioningService {
     return sanitizeTenantPublic(tenant);
   }
 
+  static async resolveCustomDomain(input: unknown) {
+    const domain = String(input || '')
+      .trim()
+      .toLowerCase()
+      .replace(/^https?:\/\//, '')
+      .replace(/\/.*$/, '')
+      .replace(/:\d+$/, '')
+      .replace(/^\.+|\.+$/g, '');
+    if (!domain || domain === PUBLIC_DOMAIN_SUFFIX || domain.endsWith(`.${PUBLIC_DOMAIN_SUFFIX}`)) {
+      return null;
+    }
+    const tenant = await prisma.tenant.findFirst({
+      where: {
+        status: 'active',
+        OR: [
+          { customDomain: domain },
+          { websites: { some: { domain, isActive: true } } },
+        ],
+      },
+    });
+    if (!tenant) return null;
+    return sanitizeTenantPublic(tenant);
+  }
+
   static async registerTenant(input: RegistrationInput) {
     const name = requireString(input.name || input.churchName, 'church name');
     const ownerEmail = requireString(input.ownerEmail, 'owner email').toLowerCase();

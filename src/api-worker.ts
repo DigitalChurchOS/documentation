@@ -31,6 +31,7 @@ type ApiResponse = {
 type TenantRegistry = {
   get(key: string): Promise<string | null>;
   put(key: string, value: string): Promise<void>;
+  delete(key: string): Promise<void>;
 };
 
 type Env = {
@@ -64,6 +65,11 @@ const onboardingSteps = [
 }));
 
 const platformDomain = 'churched.online';
+const defaultTenantValues = {
+  plan: 'growth',
+  country: 'United States',
+  city: 'Online',
+};
 const reservedSubdomains = new Set([
   'admin',
   'api',
@@ -286,33 +292,52 @@ function findDemoPage(pageId: string, pages = demoPages) {
 }
 
 function cleanSubdomain(value: unknown) {
-  const cleaned = String(value || demoTenant.subdomain)
+  const cleaned = String(value || '')
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/^-+|-+$/g, '')
     .replace(/-{2,}/g, '-');
-  return cleaned || demoTenant.subdomain;
+  return cleaned;
 }
 
 function tenantRegistryKey(subdomain: string) {
   return `tenant:${cleanSubdomain(subdomain)}`;
 }
 
+function cleanCustomDomain(value: unknown) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, '')
+    .replace(/\/.*$/, '')
+    .replace(/:\d+$/, '')
+    .replace(/^\.+|\.+$/g, '');
+}
+
+function domainRegistryKey(hostname: string) {
+  return `domain:${cleanCustomDomain(hostname)}`;
+}
+
 function isReservedSubdomain(subdomain: string) {
-  return reservedSubdomains.has(cleanSubdomain(subdomain));
+  const clean = cleanSubdomain(subdomain);
+  return !clean || reservedSubdomains.has(clean);
 }
 
 function serializeTenantForRegistry(tenant: Record<string, any>) {
   const subdomain = cleanSubdomain(tenant.subdomain);
+  if (!subdomain) {
+    throw new Error('Tenant subdomain is required');
+  }
+  const customDomain = cleanCustomDomain(tenant.customDomain);
   return {
-    ...demoTenant,
+    ...defaultTenantValues,
     ...tenant,
     id: String(tenant.id || `tenant-${subdomain}`),
     name: String(tenant.name || `${titleFromSubdomain(subdomain)} Church`),
     subdomain,
     subdomainHost: makeSubdomainHost(subdomain),
-    customDomain: tenant.customDomain || null,
+    customDomain: customDomain || null,
     status: tenant.status || 'active',
   };
 }
@@ -320,8 +345,21 @@ function serializeTenantForRegistry(tenant: Record<string, any>) {
 async function readRegisteredTenant(env: Env, subdomain: string) {
   const clean = cleanSubdomain(subdomain);
   if (isReservedSubdomain(clean)) return null;
-  if (clean === demoTenant.subdomain) return serializeTenantForRegistry(demoTenant);
   const raw = await env.CHURCHOS_TENANTS?.get(tenantRegistryKey(clean));
+  if (!raw) return null;
+  try {
+    return serializeTenantForRegistry(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
+
+async function readRegisteredTenantByDomain(env: Env, hostname: string) {
+  const clean = cleanCustomDomain(hostname);
+  if (!clean || clean === platformDomain || clean === `www.${platformDomain}` || clean.endsWith(`.${platformDomain}`)) {
+    return null;
+  }
+  const raw = await env.CHURCHOS_TENANTS?.get(domainRegistryKey(clean));
   if (!raw) return null;
   try {
     return serializeTenantForRegistry(JSON.parse(raw));
@@ -332,23 +370,35 @@ async function readRegisteredTenant(env: Env, subdomain: string) {
 
 async function writeRegisteredTenant(env: Env, tenant: Record<string, any>) {
   const record = serializeTenantForRegistry(tenant);
-  if (isReservedSubdomain(record.subdomain)) return record;
+  if (isReservedSubdomain(record.subdomain)) {
+    throw new Error('This subdomain is reserved. Please choose another.');
+  }
+  const existing = await readRegisteredTenant(env, record.subdomain);
   await env.CHURCHOS_TENANTS?.put(tenantRegistryKey(record.subdomain), JSON.stringify(record));
+  const oldDomain = cleanCustomDomain(existing?.customDomain);
+  const nextDomain = cleanCustomDomain(record.customDomain);
+  if (oldDomain && oldDomain !== nextDomain) {
+    await env.CHURCHOS_TENANTS?.delete(domainRegistryKey(oldDomain));
+  }
+  if (nextDomain) {
+    await env.CHURCHOS_TENANTS?.put(domainRegistryKey(nextDomain), JSON.stringify(record));
+  }
   return record;
 }
 
 async function getSubdomainAvailability(env: Env, input: unknown) {
   const subdomain = cleanSubdomain(input);
+  const invalid = !subdomain;
   const reserved = isReservedSubdomain(subdomain);
   const existing = reserved ? null : await readRegisteredTenant(env, subdomain);
   return {
     subdomain,
     host: makeSubdomainHost(subdomain),
-    available: !reserved && !existing,
-    reason: reserved ? 'reserved' : existing ? 'taken' : null,
+    available: !invalid && !reserved && !existing,
+    reason: invalid ? 'invalid' : reserved ? 'reserved' : existing ? 'taken' : null,
     suggestions: !reserved && !existing ? [] : [`${subdomain}-church`, `${subdomain}-online`, `${subdomain}-${new Date().getFullYear()}`]
       .map(cleanSubdomain)
-      .filter((candidate) => !isReservedSubdomain(candidate) && candidate !== subdomain)
+      .filter((candidate) => candidate && !isReservedSubdomain(candidate) && candidate !== subdomain)
       .slice(0, 3),
   };
 }
@@ -385,7 +435,6 @@ function subdomainFromTenantId(value: unknown) {
   if (tenantId.startsWith('tenant-') && tenantId.length > 'tenant-'.length) {
     return tenantId.slice('tenant-'.length);
   }
-  if (tenantId === demoTenant.id) return demoTenant.subdomain;
   return '';
 }
 
@@ -420,35 +469,32 @@ function getRequestContext(request: Request, url: URL, body: Record<string, unkn
 
   const subdomain = cleanSubdomain(
     body.subdomain ||
-    url.searchParams.get('subdomain') ||
     headerSubdomain ||
     storedTenant.subdomain ||
     hostSubdomain ||
     (hostCustomDomain ? hostCustomDomain.split('.')[0] : '') ||
-    subdomainFromTenantId(headerTenantId) ||
-    demoTenant.subdomain,
+    subdomainFromTenantId(headerTenantId),
   );
 
   const name = String(
     body.name ||
     body.churchName ||
-    url.searchParams.get('tenantName') ||
     headerName ||
     storedTenant.name ||
     (hostCustomDomain ? `${titleFromSubdomain(hostCustomDomain.split('.')[0])} Church` : '') ||
-    (subdomain === demoTenant.subdomain ? demoTenant.name : `${titleFromSubdomain(subdomain)} Church`),
+    (subdomain ? `${titleFromSubdomain(subdomain)} Church` : 'Church Workspace'),
   ).trim();
 
   const tenant = {
-    ...demoTenant,
+    ...defaultTenantValues,
     ...storedTenant,
-    id: headerTenantId || storedTenant.id || (subdomain === demoTenant.subdomain ? demoTenant.id : `tenant-${subdomain}`),
+    id: headerTenantId || storedTenant.id || (subdomain ? `tenant-${subdomain}` : 'tenant-unresolved'),
     name,
     subdomain,
-    subdomainHost: makeSubdomainHost(subdomain),
-    customDomain: String(body.customDomain || storedTenant.customDomain || hostCustomDomain || '').trim() || null,
-    country: String(body.country || storedTenant.country || demoTenant.country),
-    city: String(body.city || storedTenant.city || demoTenant.city),
+    subdomainHost: subdomain ? makeSubdomainHost(subdomain) : '',
+    customDomain: cleanCustomDomain(body.customDomain || storedTenant.customDomain || hostCustomDomain) || null,
+    country: String(body.country || storedTenant.country || defaultTenantValues.country),
+    city: String(body.city || storedTenant.city || defaultTenantValues.city),
     status: 'active',
     onboardingStatus: stored.completedAt ? 'completed' : 'in_progress',
   };
@@ -658,16 +704,16 @@ function makeRenderForContext(context: ReturnType<typeof getRequestContext>, slu
 
 function makeTenantFromBody(body: Record<string, unknown>) {
   const subdomain = cleanSubdomain(body.subdomain);
-  const plan = String(body.plan || demoTenant.plan);
+  const plan = String(body.plan || defaultTenantValues.plan);
   return {
-    ...demoTenant,
+    ...defaultTenantValues,
     id: `tenant-${subdomain}`,
-    name: String(body.name || demoTenant.name),
+    name: String(body.name || body.churchName || `${titleFromSubdomain(subdomain)} Church`),
     subdomain,
     subdomainHost: makeSubdomainHost(subdomain),
     plan,
-    country: String(body.country || demoTenant.country),
-    city: String(body.city || demoTenant.city),
+    country: String(body.country || defaultTenantValues.country),
+    city: String(body.city || defaultTenantValues.city),
     status: 'active',
     onboardingStatus: 'in_progress',
   };
@@ -675,7 +721,7 @@ function makeTenantFromBody(body: Record<string, unknown>) {
 
 function makeSessionToken(tenantId: string, userId: string) {
   const encoded = btoa(`${tenantId}:${userId}:${Date.now()}`);
-  return `churchos-demo-${encoded.replace(/=+$/g, '')}`;
+  return `churchos-session-${encoded.replace(/=+$/g, '')}`;
 }
 
 function collectionResponse(pathname: string): JsonValue {
@@ -723,7 +769,12 @@ function collectionResponse(pathname: string): JsonValue {
 
 async function routeGet(request: Request, pathname: string, url: URL, env: Env) {
   const hostSubdomain = subdomainFromHost(url.hostname);
-  const resolvedHostTenant = hostSubdomain ? await readRegisteredTenant(env, hostSubdomain) : null;
+  const hostCustomDomain = customDomainFromHost(url.hostname);
+  const resolvedHostTenant = hostSubdomain
+    ? await readRegisteredTenant(env, hostSubdomain)
+    : hostCustomDomain
+      ? await readRegisteredTenantByDomain(env, hostCustomDomain)
+      : null;
   const context = getRequestContext(request, url, resolvedHostTenant || {});
   const tenant = context.tenant;
   const theme = makeThemeForContext(context);
@@ -757,7 +808,20 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
     });
   }
 
-  if (hostSubdomain && !resolvedHostTenant) {
+  if (pathname === '/api/public/resolve-domain') {
+    const hostname = cleanCustomDomain(url.searchParams.get('host') || hostCustomDomain);
+    const resolvedTenant = await readRegisteredTenantByDomain(env, hostname);
+    if (!resolvedTenant) {
+      return withJson({ error: 'Church workspace not found' }, { status: 404 });
+    }
+    return withJson({
+      tenantId: resolvedTenant.id,
+      tenant: resolvedTenant as unknown as JsonValue,
+      data: resolvedTenant as unknown as JsonValue,
+    });
+  }
+
+  if ((hostSubdomain || hostCustomDomain) && !resolvedHostTenant) {
     return withJson({ error: 'Church website not found' }, { status: 404 });
   }
 
@@ -937,7 +1001,7 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
 
   return withJson({
     data: collectionResponse(pathname),
-    meta: { source: 'churchos-api-worker', demo: true },
+    meta: { source: 'churchos-api-worker', mock: true },
   });
 }
 
@@ -1104,6 +1168,13 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
 
   if (pathname === '/api/tenant/domain') {
     const customDomain = String(body.customDomain || '').trim().toLowerCase();
+    if (!tenant.subdomain) {
+      return withJson({ error: 'Tenant subdomain is required before connecting a custom domain' }, { status: 400 });
+    }
+    const existingDomainTenant = customDomain ? await readRegisteredTenantByDomain(env, customDomain) : null;
+    if (existingDomainTenant && existingDomainTenant.subdomain !== tenant.subdomain) {
+      return withJson({ error: 'This custom domain is already connected to another church.' }, { status: 409 });
+    }
     await writeRegisteredTenant(env, { ...tenant, customDomain });
     return withJson({
       data: {
@@ -1134,10 +1205,35 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
     });
   }
 
+  if (pathname === '/api/public/resolve-domain') {
+    const hostname = cleanCustomDomain(body.host || body.domain || body.customDomain);
+    const resolvedTenant = await readRegisteredTenantByDomain(env, hostname);
+    if (!resolvedTenant) {
+      return withJson({ error: 'Church workspace not found' }, { status: 404 });
+    }
+    return withJson({
+      tenantId: resolvedTenant.id,
+      tenant: resolvedTenant as unknown as JsonValue,
+      data: resolvedTenant as unknown as JsonValue,
+    });
+  }
+
   if (pathname === '/api/auth/register-tenant') {
+    const availability = await getSubdomainAvailability(env, body.subdomain || body.name || body.churchName);
+    if (!availability.available) {
+      return withJson({
+        error: availability.reason === 'reserved'
+          ? 'This subdomain is reserved. Please choose another.'
+          : availability.reason === 'taken'
+            ? 'This subdomain is already assigned to another church.'
+            : 'A valid subdomain is required.',
+        data: availability as unknown as JsonValue,
+      }, { status: 409 });
+    }
+    body.subdomain = availability.subdomain;
     const tenant = await writeRegisteredTenant(env, makeTenantFromBody(body));
-    const ownerName = String(body.ownerName || demoUser.name);
-    const ownerEmail = String(body.ownerEmail || demoUser.email);
+    const ownerName = String(body.ownerName || 'Church Owner');
+    const ownerEmail = String(body.ownerEmail || `owner@${tenant.subdomain}.church`);
     const user = {
       ...demoUser,
       id: `user-${tenant.subdomain}`,
@@ -1180,12 +1276,17 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
   }
 
   if (pathname === '/api/auth/login' || pathname === '/api/super-admin/login') {
+    const token = makeSessionToken(tenant.id, demoUser.id);
     return withJson({
-      token: 'churchos-demo-token',
+      token,
       data: {
-        token: 'churchos-demo-token',
-        user: demoUser,
-        tenant: demoTenant,
+        token,
+        user: {
+          ...demoUser,
+          tenantId: tenant.id,
+          email: tenant.subdomain ? `admin@${tenant.subdomain}.${platformDomain}` : 'admin@churched.online',
+        },
+        tenant,
       },
     });
   }

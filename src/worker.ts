@@ -37,10 +37,21 @@ function getHostContext(hostname: string) {
   };
 }
 
-async function resolveTenantSubdomain(request: Request, env: Env, subdomain: string) {
-  if (!env.API || !subdomain) return false;
-  const resolveUrl = new URL('/api/public/resolve-subdomain', request.url);
-  resolveUrl.searchParams.set('subdomain', subdomain);
+async function resolveTenantHost(request: Request, env: Env, hostContext: ReturnType<typeof getHostContext>) {
+  if (!env.API) return false;
+
+  const resolveUrl = new URL(
+    hostContext.isTenantPlatformSubdomain ? '/api/public/resolve-subdomain' : '/api/public/resolve-domain',
+    request.url,
+  );
+  if (hostContext.isTenantPlatformSubdomain) {
+    resolveUrl.searchParams.set('subdomain', hostContext.tenantSubdomain);
+  } else if (hostContext.isTenantCustomDomain) {
+    resolveUrl.searchParams.set('host', new URL(request.url).hostname);
+  } else {
+    return false;
+  }
+
   const response = await env.API.fetch(new Request(resolveUrl.toString(), {
     headers: {
       accept: 'application/json',
@@ -90,8 +101,8 @@ export default {
 
     // 2. API requests proxy to service binding
     if (pathname.startsWith('/api/')) {
-      if (hostContext.isTenantPlatformSubdomain) {
-        const resolved = await resolveTenantSubdomain(request, env, hostContext.tenantSubdomain);
+      if (isTenantPublicHost) {
+        const resolved = await resolveTenantHost(request, env, hostContext);
         if (!resolved) return tenantNotFoundResponse();
       }
       if (env.API) {
@@ -105,8 +116,8 @@ export default {
 
     // 3. Public church website routing
     // Tenant sites are available only on [churchname].churched.online or a connected custom domain.
-    if (hostContext.isTenantPlatformSubdomain) {
-      const resolved = await resolveTenantSubdomain(request, env, hostContext.tenantSubdomain);
+    if (isTenantPublicHost) {
+      const resolved = await resolveTenantHost(request, env, hostContext);
       if (!resolved) return tenantNotFoundResponse();
     }
 
