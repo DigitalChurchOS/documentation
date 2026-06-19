@@ -89,9 +89,11 @@ copyFile(path.join(marketplaceFrontend, 'index.html'), path.join(outputDir, 'mar
 copyDirectory(marketplaceDeveloper, path.join(outputDir, 'developer'));
 copyFile(path.join(marketplaceDeveloper, 'index.html'), path.join(outputDir, 'developer', 'index.html'));
 
-// 6. Ecclesia reference theme package under '/themes/ecclesia'
+// 6. Ecclesia reference theme package under local-compatible theme aliases
 copyDirectory(ecclesiaFullTheme, path.join(outputDir, 'themes', 'ecclesia'));
 copyFile(path.join(ecclesiaFullTheme, 'index.html'), path.join(outputDir, 'themes', 'ecclesia', 'index.html'));
+copyDirectory(ecclesiaFullTheme, path.join(outputDir, 'themes', 'ecclesia-full-theme'));
+copyFile(path.join(ecclesiaFullTheme, 'index.html'), path.join(outputDir, 'themes', 'ecclesia-full-theme', 'index.html'));
 
 // 6.5 Theme Customizer under '/customizer'
 if (buildThemeCustomizer) {

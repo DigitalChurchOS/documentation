@@ -1,5 +1,16 @@
 /// <reference lib="webworker" />
 
+import {
+  ECCLESIA_THEME_KEY,
+  ECCLESIA_THEME_NAME,
+  createEcclesiaFooterLinks,
+  createEcclesiaGlobalContent,
+  createEcclesiaNavigationItems,
+  createEcclesiaThemeSettings,
+  getEcclesiaPageTemplates,
+  getEcclesiaSectionTemplates,
+} from './themes/ecclesia';
+
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
 
 type ApiResponse = {
@@ -81,16 +92,62 @@ const demoRoles = [
   },
 ];
 
+const demoThemeSettings = createEcclesiaThemeSettings({
+  installation: {
+    installedForTenantId: demoTenant.id,
+    installedAt: '2026-06-18T00:00:00.000Z',
+    autoProvisioned: true,
+    runtime: 'cloudflare-api-worker',
+  },
+  marketplace: {
+    version: '1.0.0',
+    author: 'Church OS',
+  },
+});
+
+const demoEcclesiaTheme = {
+  id: 'theme-ecclesia',
+  tenantId: demoTenant.id,
+  name: ECCLESIA_THEME_NAME,
+  slug: ECCLESIA_THEME_KEY,
+  description: 'System default church website theme with full Ecclesia page templates, source assets, and builder-aware styling.',
+  settings: JSON.stringify(demoThemeSettings),
+  draftSettings: null,
+  isCustom: false,
+  status: 'active',
+  previewUrl: '/themes/ecclesia/index.html',
+  createdAt: '2026-06-18T00:00:00.000Z',
+  updatedAt: '2026-06-18T00:00:00.000Z',
+};
+
+const demoWebsite = {
+  id: 'website-main',
+  tenantId: demoTenant.id,
+  themeId: demoEcclesiaTheme.id,
+  title: `${demoTenant.name} Website`,
+  description: createEcclesiaGlobalContent(demoTenant.name).churchIdentity.description,
+  domain: demoTenant.subdomainHost,
+  isActive: true,
+  isPrimary: true,
+  status: 'published',
+  theme: demoEcclesiaTheme,
+  createdAt: '2026-06-18T00:00:00.000Z',
+  updatedAt: '2026-06-18T00:00:00.000Z',
+};
+
 const demoPages = [
   {
     id: 'page-home',
-    websiteId: 'website-main',
+    tenantId: demoTenant.id,
+    websiteId: demoWebsite.id,
     title: 'Home',
     slug: '',
-    content: '<h1>Welcome to Demo Church</h1>',
+    status: 'published',
+    content: '[]',
+    draftContent: null,
     isHome: true,
     isPublished: true,
-    updatedAt: new Date().toISOString(),
+    updatedAt: '2026-06-18T00:00:00.000Z',
   },
 ];
 
@@ -142,6 +199,62 @@ function makeId(prefix: string) {
   return `${prefix}-${Date.now().toString(36)}`;
 }
 
+function getThemeEngineSettings() {
+  return {
+    tenantId: demoTenant.id,
+    moduleKey: 'theme-engine',
+    enabled: true,
+    billingPlan: 'platform',
+    providerMode: 'platform_managed',
+    configJson: JSON.stringify({
+      sections: [],
+      pageTemplates: [],
+      defaults: {
+        systemTheme: ECCLESIA_THEME_KEY,
+        activeThemeId: demoEcclesiaTheme.id,
+      },
+    }),
+  };
+}
+
+function getThemeEngineOverview() {
+  return {
+    moduleKey: 'theme-engine',
+    settings: getThemeEngineSettings(),
+    activeTheme: ECCLESIA_THEME_NAME,
+    installedThemes: 1,
+    draftChanges: 0,
+    counts: {
+      moduleProfiles: 1,
+      installedThemes: 1,
+      globalThemes: 1,
+      websites: 1,
+      sectionTemplates: getEcclesiaSectionTemplates().length,
+      pageTemplates: getEcclesiaPageTemplates().length,
+    },
+    activeWebsite: {
+      id: demoWebsite.id,
+      title: demoWebsite.title,
+      themeId: demoEcclesiaTheme.id,
+      themeName: ECCLESIA_THEME_NAME,
+    },
+    recentActivity: [
+      {
+        id: 'activity-provision-ecclesia',
+        tenantId: demoTenant.id,
+        userId: 'System',
+        actionType: 'provision_ecclesia',
+        metadataJson: JSON.stringify({ themeId: demoEcclesiaTheme.id, websiteId: demoWebsite.id }),
+        createdAt: '2026-06-18T00:00:00.000Z',
+      },
+    ],
+  };
+}
+
+function findDemoPage(pageId: string) {
+  return demoPages.find((page) => page.id === pageId) || demoPages[0];
+}
+
 function cleanSubdomain(value: unknown) {
   const cleaned = String(value || demoTenant.subdomain)
     .trim()
@@ -179,17 +292,8 @@ function collectionResponse(pathname: string): JsonValue {
   if (pathname.includes('/roles')) return demoRoles;
   if (pathname.includes('/invitations')) return [];
   if (pathname.includes('/pages')) return demoPages;
-  if (pathname.includes('/themes')) {
-    return [
-      {
-        id: 'theme-next',
-        name: 'Next Church',
-        status: 'active',
-        previewUrl: '/churchos.html',
-        customizationJson: '{}',
-      },
-    ];
-  }
+  if (pathname.includes('/websites')) return [demoWebsite] as JsonValue;
+  if (pathname.includes('/themes')) return [demoEcclesiaTheme] as JsonValue;
   if (pathname.includes('/assets')) return demoMarketplaceAssets;
   if (pathname.includes('/plans')) {
     return [
@@ -234,6 +338,52 @@ function routeGet(pathname: string, url: URL) {
         runtime: 'cloudflare-api-worker',
         timestamp: new Date().toISOString(),
       },
+    });
+  }
+
+  if (pathname === '/api/cms/websites') {
+    return withJson({ data: [demoWebsite] as JsonValue });
+  }
+
+  if (pathname === '/api/cms/pages') {
+    return withJson({ data: demoPages as JsonValue });
+  }
+
+  if (pathname.startsWith('/api/cms/pages/')) {
+    const pageId = pathname.split('/').filter(Boolean).pop() || '';
+    return withJson({ data: findDemoPage(pageId) as JsonValue });
+  }
+
+  if (pathname === '/api/cms/global-content') {
+    return withJson({ data: createEcclesiaGlobalContent(demoTenant.name) as JsonValue });
+  }
+
+  if (pathname === '/api/theme-engine/themes') {
+    return withJson({ data: [demoEcclesiaTheme] as JsonValue });
+  }
+
+  if (pathname === '/api/theme-engine/sections') {
+    return withJson({ data: getEcclesiaSectionTemplates() as unknown as JsonValue });
+  }
+
+  if (pathname === '/api/theme-engine/page-templates') {
+    return withJson({ data: getEcclesiaPageTemplates() as unknown as JsonValue });
+  }
+
+  if (pathname === '/api/theme-engine/settings' || pathname === '/api/settings/theme-engine') {
+    return withJson({ data: getThemeEngineSettings() as JsonValue });
+  }
+
+  if (/^\/api\/theme-engine\/themes\/[^/]+\/preview$/.test(pathname)) {
+    return withJson({
+      data: {
+        themeId: demoEcclesiaTheme.id,
+        name: demoEcclesiaTheme.name,
+        settings: demoThemeSettings,
+        version: '1.0.0',
+        isPreview: true,
+        timestamp: new Date().toISOString(),
+      } as JsonValue,
     });
   }
 
@@ -303,21 +453,12 @@ function routeGet(pathname: string, url: URL) {
   }
 
   if (pathname === '/api/theme-engine/overview') {
-    return withJson({
-      data: {
-        activeTheme: 'Next Church',
-        installedThemes: 1,
-        draftChanges: 0,
-      },
-    });
+    return withJson({ data: getThemeEngineOverview() as JsonValue });
   }
 
   if (pathname === '/api/theme-engine/reports') {
     return withJson({
-      data: {
-        performanceScore: 96,
-        accessibilityScore: 94,
-      },
+      data: getThemeEngineOverview().recentActivity as JsonValue,
     });
   }
 
@@ -332,11 +473,27 @@ function routeGet(pathname: string, url: URL) {
   }
 
   if (pathname === '/api/cms/navigation') {
-    return withJson({ data: { items: [{ label: 'Home', href: '/' }] } });
+    return withJson({ data: { items: createEcclesiaNavigationItems() } as JsonValue });
   }
 
   if (pathname === '/api/cms/footer') {
-    return withJson({ data: { columns: [], copyright: 'Demo Church' } });
+    return withJson({
+      data: {
+        columns: [],
+        secondaryLinks: createEcclesiaFooterLinks(),
+        copyright: `${demoTenant.name}`,
+      } as JsonValue,
+    });
+  }
+
+  if (pathname === '/api/public/resolve-website-tenant') {
+    return withJson({
+      data: {
+        tenantId: demoTenant.id,
+        tenant: demoTenant,
+        website: demoWebsite,
+      } as JsonValue,
+    });
   }
 
   if (pathname === '/api/public/resolve-subdomain') {
@@ -357,6 +514,137 @@ function routeGet(pathname: string, url: URL) {
 
 async function routeMutation(request: Request, pathname: string) {
   const body = await readBody(request);
+
+  if (pathname === '/api/cms/websites') {
+    return withJson({ data: { ...demoWebsite, ...(body as Record<string, JsonValue>) } as JsonValue }, { status: 201 });
+  }
+
+  if (pathname === '/api/cms/pages') {
+    const title = String(body.title || 'Untitled page');
+    const slug = String(body.slug || '').replace(/^\/+/, '');
+    const page = {
+      id: makeId('page'),
+      tenantId: demoTenant.id,
+      websiteId: String(body.websiteId || demoWebsite.id),
+      title,
+      slug,
+      status: String(body.status || 'draft'),
+      content: JSON.stringify(body.content || []),
+      draftContent: null,
+      isHome: slug === '',
+      isPublished: body.status === 'published',
+      updatedAt: new Date().toISOString(),
+    };
+    return withJson({ data: page as JsonValue }, { status: 201 });
+  }
+
+  if (/^\/api\/cms\/pages\/[^/]+\/draft$/.test(pathname)) {
+    const pageId = pathname.split('/').filter(Boolean).at(-2) || demoPages[0].id;
+    const page = findDemoPage(pageId);
+    return withJson({
+      data: {
+        ...page,
+        draftContent: JSON.stringify(body.draftContent || []),
+        updatedAt: new Date().toISOString(),
+      } as JsonValue,
+    });
+  }
+
+  if (/^\/api\/cms\/pages\/[^/]+\/publish$/.test(pathname)) {
+    const pageId = pathname.split('/').filter(Boolean).at(-2) || demoPages[0].id;
+    const page = findDemoPage(pageId);
+    return withJson({
+      data: {
+        ...page,
+        status: 'published',
+        isPublished: true,
+        draftContent: null,
+        updatedAt: new Date().toISOString(),
+      } as JsonValue,
+    });
+  }
+
+  if (/^\/api\/cms\/pages\/[^/]+$/.test(pathname)) {
+    const pageId = pathname.split('/').filter(Boolean).pop() || demoPages[0].id;
+    return withJson({
+      data: {
+        ...findDemoPage(pageId),
+        ...(body as Record<string, JsonValue>),
+        updatedAt: new Date().toISOString(),
+      } as JsonValue,
+    });
+  }
+
+  if (pathname === '/api/theme-engine/settings') {
+    return withJson({
+      data: {
+        ...getThemeEngineSettings(),
+        ...(body as Record<string, JsonValue>),
+      } as JsonValue,
+    });
+  }
+
+  if (pathname === '/api/theme-engine/ecclesia/provision') {
+    return withJson({ data: { theme: demoEcclesiaTheme, website: demoWebsite } as JsonValue });
+  }
+
+  if (pathname === '/api/theme-engine/themes/install') {
+    return withJson({ data: demoEcclesiaTheme as JsonValue }, { status: 201 });
+  }
+
+  if (/^\/api\/theme-engine\/themes\/[^/]+\/activate$/.test(pathname)) {
+    return withJson({
+      data: {
+        ...demoWebsite,
+        id: String(body.websiteId || demoWebsite.id),
+        themeId: pathname.split('/').filter(Boolean).at(-2) || demoEcclesiaTheme.id,
+      } as JsonValue,
+    });
+  }
+
+  if (/^\/api\/theme-engine\/themes\/[^/]+\/customization\/draft$/.test(pathname)) {
+    return withJson({
+      data: {
+        ...demoEcclesiaTheme,
+        id: pathname.split('/').filter(Boolean).at(-3) || demoEcclesiaTheme.id,
+        draftSettings: JSON.stringify(body),
+        updatedAt: new Date().toISOString(),
+      } as JsonValue,
+    });
+  }
+
+  if (/^\/api\/theme-engine\/themes\/[^/]+\/customization\/(publish|discard|reset)$/.test(pathname)) {
+    return withJson({
+      data: {
+        ...demoEcclesiaTheme,
+        id: pathname.split('/').filter(Boolean).at(-3) || demoEcclesiaTheme.id,
+        draftSettings: null,
+        updatedAt: new Date().toISOString(),
+      } as JsonValue,
+    });
+  }
+
+  if (/^\/api\/theme-engine\/themes\/[^/]+\/customize$/.test(pathname)) {
+    return withJson({
+      data: {
+        ...demoEcclesiaTheme,
+        id: pathname.split('/').filter(Boolean).at(-2) || demoEcclesiaTheme.id,
+        settings: JSON.stringify({ ...demoThemeSettings, ...(body as Record<string, JsonValue>) }),
+        updatedAt: new Date().toISOString(),
+      } as JsonValue,
+    });
+  }
+
+  if (/^\/api\/theme-engine\/themes\/[^/]+\/preview\/customize$/.test(pathname)) {
+    return withJson({
+      data: {
+        themeId: pathname.split('/').filter(Boolean).at(-3) || demoEcclesiaTheme.id,
+        settings: { ...demoThemeSettings, ...(body as Record<string, JsonValue>) },
+        isPreview: true,
+        staging: true,
+      } as JsonValue,
+    });
+  }
 
   if (pathname === '/api/public/check-subdomain') {
     return withJson({ available: true, data: { available: true } });
