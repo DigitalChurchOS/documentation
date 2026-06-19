@@ -154,7 +154,15 @@ const AVAILABLE_THEMES = [
   }
 ];
 
-const CUSTOMIZER_PAGES_LIST = [
+type CustomizerPageOption = {
+  value: string;
+  label: string;
+  slug?: string;
+  pageId?: string;
+  sourceFile?: string;
+};
+
+const CUSTOMIZER_PAGES_LIST: CustomizerPageOption[] = [
   { value: "index.html", label: "Home Page (index.html)" },
   { value: "about.html", label: "About Page (about.html)" },
   { value: "contact.html", label: "Contact Page (contact.html)" },
@@ -231,6 +239,21 @@ const CUSTOMIZER_FILE_SLUGS: Record<string, string> = {
   'testimony-submit.html': 'testimonies/submit',
   'worship.html': 'worship',
 };
+
+function fileForCmsPage(page: any) {
+  if (typeof page.sourceFile === "string" && page.sourceFile) return page.sourceFile;
+  const slug = typeof page.slug === "string" ? page.slug : "";
+  const mappedFile = Object.keys(CUSTOMIZER_FILE_SLUGS).find((file) => CUSTOMIZER_FILE_SLUGS[file] === slug);
+  if (mappedFile) return mappedFile;
+  if (!slug) return "index.html";
+  return `${slug.replace(/[^a-z0-9]+/gi, "-").replace(/^-+|-+$/g, "").toLowerCase() || "page"}.html`;
+}
+
+function labelForCmsPage(page: any, file: string) {
+  const title = String(page.title || page.name || "Untitled page");
+  const slug = String(page.slug || "").replace(/^\/+/, "");
+  return slug ? `${title} (/${slug})` : `${title} (${file})`;
+}
 
 const apiFetch = async (method: string, path: string, body?: any) => {
   const tenantId = localStorage.getItem("churchos.tenantId") || "demo-church-local";
@@ -711,6 +734,22 @@ export function App() {
     return serializeHtml(doc);
   }, [rawHtml, themeState, currentTheme]);
 
+  const pageOptions = useMemo<CustomizerPageOption[]>(() => {
+    const options = new Map<string, CustomizerPageOption>();
+    CUSTOMIZER_PAGES_LIST.forEach((option) => options.set(option.value, option));
+    pagesList.forEach((page) => {
+      const value = fileForCmsPage(page);
+      options.set(value, {
+        value,
+        label: labelForCmsPage(page, value),
+        slug: typeof page.slug === "string" ? page.slug : "",
+        pageId: page.id,
+        sourceFile: page.sourceFile || value,
+      });
+    });
+    return Array.from(options.values());
+  }, [pagesList]);
+
   const fetchPage = async (filename: string, themeFolder = currentTheme, targetPageId = pageId) => {
     try {
       const baseName = filename.split("/").pop() || "index.html";
@@ -749,6 +788,11 @@ export function App() {
         setImportedFilename(baseName);
         setSelectedElement(null);
         setActiveSectionPath(null);
+      } else if (targetPageId) {
+        setRawHtml(defaultPageTemplate);
+        setImportedFilename(baseName);
+        setSelectedElement(null);
+        setActiveSectionPath(null);
       }
     } catch (err) {
       console.warn("Fetch error, keeping current template", err);
@@ -756,20 +800,26 @@ export function App() {
   };
 
   const navigateCustomizerPage = async (filename: string) => {
-    const rawFilename = filename.split(/[?#]/)[0].split("/").filter(Boolean).pop() || "index.html";
+    const pageOption = pageOptions.find((option) => option.value === filename);
+    const sourceFilename = pageOption?.sourceFile || filename;
+    const rawFilename = sourceFilename.split(/[?#]/)[0].split("/").filter(Boolean).pop() || "index.html";
     const urlFilename = rawFilename.includes(".")
       ? rawFilename
       : (Object.keys(CUSTOMIZER_FILE_SLUGS).find((key) => CUSTOMIZER_FILE_SLUGS[key] === rawFilename) || `${rawFilename}.html`);
-    const mappedSlug = CUSTOMIZER_FILE_SLUGS[urlFilename] !== undefined 
+    const mappedSlug = pageOption?.slug !== undefined
+      ? pageOption.slug
+      : CUSTOMIZER_FILE_SLUGS[urlFilename] !== undefined
       ? CUSTOMIZER_FILE_SLUGS[urlFilename] 
       : (urlFilename === "index.html" ? "" : urlFilename.replace(".html", ""));
     
-    let pageRecord = pagesList.find((p) => p.slug === mappedSlug);
+    let pageRecord = pageOption?.pageId
+      ? pagesList.find((p) => p.id === pageOption.pageId)
+      : pagesList.find((p) => p.slug === mappedSlug);
     let resolvedPageId = pageRecord?.id || "";
     
     if (!pageRecord && websiteId) {
       try {
-        const opt = CUSTOMIZER_PAGES_LIST.find(p => p.value === urlFilename);
+        const opt = pageOptions.find(p => p.value === filename || p.value === urlFilename);
         const title = opt ? opt.label.split(" (")[0] : urlFilename.replace(".html", "");
         const newPage = await apiFetch("POST", "/api/cms/pages", {
           websiteId,
@@ -857,7 +907,7 @@ export function App() {
       window.removeEventListener("keydown", handleKey);
       window.removeEventListener("message", handleMessage);
     };
-  }, [pagesList, currentTheme, websiteId]);
+  }, [pagesList, pageOptions, currentTheme, websiteId]);
 
   const handleImport = (content: string, filename: string) => {
     setRawHtml(content);
@@ -997,7 +1047,10 @@ export function App() {
 
   const handlePublish = async () => {
     if (publishStatus === 'preview') {
-      const pageSlug = CUSTOMIZER_FILE_SLUGS[importedFilename] !== undefined 
+      const currentPageRecord = pagesList.find((page) => page.id === pageId);
+      const pageSlug = currentPageRecord?.slug !== undefined
+        ? currentPageRecord.slug
+        : CUSTOMIZER_FILE_SLUGS[importedFilename] !== undefined
         ? CUSTOMIZER_FILE_SLUGS[importedFilename] 
         : (importedFilename === "index.html" ? "" : importedFilename.replace(".html", ""));
       const slugPath = pageSlug ? `/${pageSlug}` : "/";
@@ -1196,13 +1249,13 @@ export function App() {
           >
             <div className="dropdown-selected" onClick={() => setIsPageMenuOpen(!isPageMenuOpen)}>
                <span className="dropdown-label">{
-                 CUSTOMIZER_PAGES_LIST.find(p => p.value === importedFilename)?.label || `${importedFilename} (Custom)`
+                 pageOptions.find(p => p.value === importedFilename)?.label || `${importedFilename} (Custom)`
                }</span>
                <ChevronDown size={14} className={`dropdown-icon ${isPageMenuOpen ? "open" : ""}`} />
              </div>
              {isPageMenuOpen && (
                <div className="dropdown-options">
-                 {CUSTOMIZER_PAGES_LIST.map((opt) => (
+                 {pageOptions.map((opt) => (
 
                   <div
                     key={opt.value}

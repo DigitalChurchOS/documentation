@@ -4,6 +4,7 @@ import {
   ECCLESIA_THEME_KEY,
   ECCLESIA_THEME_NAME,
   createEcclesiaFooterLinks,
+  createEcclesiaDefaultPages,
   createEcclesiaGlobalContent,
   createEcclesiaNavigationItems,
   createEcclesiaThemeSettings,
@@ -187,6 +188,32 @@ const demoPages = [
   },
 ];
 
+type TenantPageRecord = {
+  id: string;
+  tenantId: string;
+  websiteId: string;
+  title: string;
+  slug: string;
+  status: string;
+  content: string;
+  draftContent: string | null;
+  isHome: boolean;
+  isPublished: boolean;
+  updatedAt: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string | null;
+  sourceFile?: string;
+  sourceUrl?: string;
+  module?: string;
+};
+
+type TenantThemeState = {
+  settings: Record<string, any>;
+  draftSettings: Record<string, any> | null;
+  updatedAt: string;
+};
+
 const demoMarketplaceAssets = [
   {
     id: 'asset-next-theme',
@@ -287,8 +314,53 @@ function getThemeEngineOverview() {
   };
 }
 
-function findDemoPage(pageId: string, pages = demoPages) {
-  return pages.find((page) => page.id === pageId) || pages[0];
+function findDemoPage<T extends { id: string; slug: string }>(pageId: string, pages = demoPages as unknown as T[]) {
+  const slug = String(pageId || '').replace(/^\/+/, '');
+  return pages.find((page) => page.id === pageId || page.slug === slug) || pages[0];
+}
+
+function tenantThemeStateKey(tenantId: string) {
+  return `tenant-theme:${tenantId}`;
+}
+
+function tenantPagesStateKey(tenantId: string) {
+  return `tenant-pages:${tenantId}`;
+}
+
+function pageIdFromSlug(context: ReturnType<typeof getRequestContext>, slug: string) {
+  const slugKey = cleanSubdomain(slug || 'home') || 'home';
+  const tenantKey = cleanSubdomain(context.tenant.subdomain || context.tenant.id) || 'tenant';
+  return `page-${tenantKey}-${slugKey}`;
+}
+
+function isRecord(value: unknown): value is Record<string, any> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function parseStoredJson<T>(value: string | null | undefined, fallback: T): T {
+  if (!value) return fallback;
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return fallback;
+  }
+}
+
+function stringifyCmsContent(value: unknown) {
+  if (typeof value === 'string') return value;
+  return JSON.stringify(value || []);
+}
+
+function mergeRecords(base: Record<string, any>, patch: Record<string, any>): Record<string, any> {
+  const next: Record<string, any> = { ...base };
+  Object.entries(patch).forEach(([key, value]) => {
+    if (isRecord(value) && isRecord(next[key])) {
+      next[key] = mergeRecords(next[key], value);
+      return;
+    }
+    next[key] = value;
+  });
+  return next;
 }
 
 function cleanSubdomain(value: unknown) {
@@ -511,8 +583,8 @@ function getStep(context: ReturnType<typeof getRequestContext>, key: string) {
   return step && typeof step === 'object' ? step : {};
 }
 
-function makeThemeForContext(context: ReturnType<typeof getRequestContext>) {
-  const settings = createEcclesiaThemeSettings({
+function makeDefaultThemeSettingsForContext(context: ReturnType<typeof getRequestContext>) {
+  return createEcclesiaThemeSettings({
     installation: {
       installedForTenantId: context.tenant.id,
       installedAt: '2026-06-18T00:00:00.000Z',
@@ -524,11 +596,55 @@ function makeThemeForContext(context: ReturnType<typeof getRequestContext>) {
       author: 'Church OS',
     },
   });
+}
 
+function coerceRecord(value: unknown, fallback: Record<string, any> = {}) {
+  if (typeof value === 'string') {
+    return coerceRecord(parseStoredJson<Record<string, any>>(value, fallback), fallback);
+  }
+  return isRecord(value) ? value : fallback;
+}
+
+async function readTenantThemeState(env: Env, context: ReturnType<typeof getRequestContext>): Promise<TenantThemeState> {
+  const fallback: TenantThemeState = {
+    settings: makeDefaultThemeSettingsForContext(context),
+    draftSettings: null,
+    updatedAt: '2026-06-18T00:00:00.000Z',
+  };
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantThemeStateKey(context.tenant.id));
+  const stored = parseStoredJson<Record<string, any>>(raw, {});
+  const settings = coerceRecord(stored.settings, fallback.settings);
+  const draftSettings = stored.draftSettings == null ? null : coerceRecord(stored.draftSettings, null as unknown as Record<string, any>);
+  return {
+    settings,
+    draftSettings,
+    updatedAt: String(stored.updatedAt || fallback.updatedAt),
+  };
+}
+
+async function writeTenantThemeState(env: Env, context: ReturnType<typeof getRequestContext>, state: TenantThemeState) {
+  await env.CHURCHOS_TENANTS?.put(
+    tenantThemeStateKey(context.tenant.id),
+    JSON.stringify({
+      settings: state.settings,
+      draftSettings: state.draftSettings,
+      updatedAt: state.updatedAt,
+    }),
+  );
+}
+
+function makeThemeForContext(context: ReturnType<typeof getRequestContext>, state?: TenantThemeState) {
+  const themeState = state || {
+    settings: makeDefaultThemeSettingsForContext(context),
+    draftSettings: null,
+    updatedAt: '2026-06-18T00:00:00.000Z',
+  };
   return {
     ...demoEcclesiaTheme,
     tenantId: context.tenant.id,
-    settings: JSON.stringify(settings),
+    settings: JSON.stringify(themeState.settings),
+    draftSettings: themeState.draftSettings ? JSON.stringify(themeState.draftSettings) : null,
+    updatedAt: themeState.updatedAt,
   };
 }
 
@@ -562,9 +678,8 @@ function makeBrandingForContext(context: ReturnType<typeof getRequestContext>) {
   };
 }
 
-function makeWebsiteForContext(context: ReturnType<typeof getRequestContext>) {
+function makeWebsiteForContext(context: ReturnType<typeof getRequestContext>, theme = makeThemeForContext(context)) {
   const website = getStep(context, 'website');
-  const theme = makeThemeForContext(context);
   return {
     ...demoWebsite,
     id: `website-${context.tenant.subdomain}`,
@@ -577,28 +692,88 @@ function makeWebsiteForContext(context: ReturnType<typeof getRequestContext>) {
   };
 }
 
-function makePagesForContext(context: ReturnType<typeof getRequestContext>) {
-  const website = makeWebsiteForContext(context);
+function normalizeTenantPage(
+  context: ReturnType<typeof getRequestContext>,
+  website: ReturnType<typeof makeWebsiteForContext>,
+  page: Record<string, any>,
+): TenantPageRecord {
+  const slug = String(page.slug || '').replace(/^\/+/, '');
+  const template = getEcclesiaPageTemplates().find((item) => item.slug === slug);
+  const isHome = slug === '' || Boolean(page.isHome);
+  return {
+    id: String(page.id || pageIdFromSlug(context, slug)),
+    tenantId: context.tenant.id,
+    websiteId: String(page.websiteId || website.id),
+    title: String(page.title || page.name || template?.title || 'Untitled page'),
+    slug,
+    status: String(page.status || 'draft'),
+    content: stringifyCmsContent(page.content),
+    draftContent: page.draftContent == null ? null : stringifyCmsContent(page.draftContent),
+    isHome,
+    isPublished: page.isPublished == null ? String(page.status || 'draft') === 'published' : Boolean(page.isPublished),
+    updatedAt: String(page.updatedAt || '2026-06-18T00:00:00.000Z'),
+    seoTitle: page.seoTitle || template?.seo?.title?.replace('{{churchName}}', context.tenant.name),
+    seoDescription: page.seoDescription || template?.seo?.description?.replace('{{churchName}}', context.tenant.name),
+    seoKeywords: page.seoKeywords || template?.seo?.keywords || null,
+    sourceFile: page.sourceFile || template?.sourceFile,
+    sourceUrl: page.sourceUrl || template?.sourceUrl,
+    module: page.module || template?.module,
+  };
+}
+
+function makePagesForContext(
+  context: ReturnType<typeof getRequestContext>,
+  website = makeWebsiteForContext(context),
+  storedPages: Record<string, any>[] = [],
+): TenantPageRecord[] {
   const websiteStep = getStep(context, 'website');
-  return [
-    {
-      ...demoPages[0],
-      id: `page-home-${context.tenant.subdomain}`,
-      tenantId: context.tenant.id,
-      websiteId: website.id,
-      title: 'Home',
-      content: JSON.stringify([
-        {
-          type: 'hero',
-          title: websiteStep.homepageTitle || context.tenant.name,
-          subtitle: websiteStep.homepageSubtitle || 'Welcome to our church community.',
-          aboutText: websiteStep.aboutText || '',
-          buttonText: websiteStep.primaryCtaText || 'Plan a Visit',
-          buttonUrl: websiteStep.primaryCtaUrl || '/visit',
-        },
-      ]),
-    },
-  ];
+  const defaults = createEcclesiaDefaultPages(context.tenant.id, website.id, context.tenant.name)
+    .map((page) => normalizeTenantPage(context, website, {
+      ...page,
+      id: pageIdFromSlug(context, page.slug),
+      isHome: page.slug === '' || Boolean(page.isHome),
+      isPublished: page.status === 'published',
+    }));
+
+  const homePage = defaults.find((page) => page.slug === '');
+  if (homePage && (websiteStep.homepageTitle || websiteStep.homepageSubtitle || websiteStep.aboutText)) {
+    homePage.content = JSON.stringify([
+      {
+        type: 'hero',
+        title: websiteStep.homepageTitle || context.tenant.name,
+        subtitle: websiteStep.homepageSubtitle || 'Welcome to our church community.',
+        aboutText: websiteStep.aboutText || '',
+        buttonText: websiteStep.primaryCtaText || 'Plan a Visit',
+        buttonUrl: websiteStep.primaryCtaUrl || '/visit',
+      },
+    ]);
+  }
+
+  const bySlug = new Map(defaults.map((page) => [page.slug, page]));
+  storedPages.forEach((page) => {
+    const normalized = normalizeTenantPage(context, website, page);
+    bySlug.set(normalized.slug, normalized);
+  });
+
+  return Array.from(bySlug.values());
+}
+
+async function readTenantPages(
+  env: Env,
+  context: ReturnType<typeof getRequestContext>,
+  website = makeWebsiteForContext(context),
+) {
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantPagesStateKey(context.tenant.id));
+  const stored = parseStoredJson<Record<string, any>[]>(raw, []);
+  return makePagesForContext(context, website, Array.isArray(stored) ? stored : []);
+}
+
+async function writeTenantPages(
+  env: Env,
+  context: ReturnType<typeof getRequestContext>,
+  pages: TenantPageRecord[],
+) {
+  await env.CHURCHOS_TENANTS?.put(tenantPagesStateKey(context.tenant.id), JSON.stringify(pages));
 }
 
 function makeGlobalContentForContext(context: ReturnType<typeof getRequestContext>) {
@@ -635,8 +810,7 @@ function makeGlobalContentForContext(context: ReturnType<typeof getRequestContex
   };
 }
 
-function makeSiteContextForContext(context: ReturnType<typeof getRequestContext>) {
-  const theme = makeThemeForContext(context);
+function makeSiteContextForContext(context: ReturnType<typeof getRequestContext>, theme = makeThemeForContext(context)) {
   return {
     tenant: {
       id: context.tenant.id,
@@ -679,19 +853,27 @@ function makeSiteContextForContext(context: ReturnType<typeof getRequestContext>
   };
 }
 
-function makeRenderForContext(context: ReturnType<typeof getRequestContext>, slug = '') {
-  const page = makePagesForContext(context)[0];
-  const siteContext = makeSiteContextForContext(context);
+function makeRenderForContext(
+  context: ReturnType<typeof getRequestContext>,
+  slug = '',
+  theme = makeThemeForContext(context),
+  website = makeWebsiteForContext(context, theme),
+  pages = makePagesForContext(context, website),
+) {
+  const normalizedSlug = String(slug || '').replace(/^\/+/, '');
+  const page = findDemoPage(normalizedSlug, pages);
+  const siteContext = makeSiteContextForContext(context, theme);
+  const contentBlocks = parseStoredJson<JsonValue>(page.content, []);
   return {
     pageId: page.id,
     title: page.title,
-    slug,
-    isHome: slug === '',
-    contentBlocks: [],
+    slug: page.slug,
+    isHome: page.isHome,
+    contentBlocks: Array.isArray(contentBlocks) ? contentBlocks : [],
     isPreview: false,
-    seoTitle: `${context.tenant.name} | Home`,
-    seoDescription: makeWebsiteForContext(context).description,
-    seoKeywords: null,
+    seoTitle: page.seoTitle || `${context.tenant.name} | ${page.title}`,
+    seoDescription: page.seoDescription || website.description,
+    seoKeywords: page.seoKeywords || null,
     globalContent: makeGlobalContentForContext(context),
     navigation: siteContext.navigation,
     footer: siteContext.footer,
@@ -777,9 +959,10 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
       : null;
   const context = getRequestContext(request, url, resolvedHostTenant || {});
   const tenant = context.tenant;
-  const theme = makeThemeForContext(context);
-  const website = makeWebsiteForContext(context);
-  const pages = makePagesForContext(context);
+  const themeState = await readTenantThemeState(env, context);
+  const theme = makeThemeForContext(context, themeState);
+  const website = makeWebsiteForContext(context, theme);
+  const pages = await readTenantPages(env, context, website);
 
   if (pathname === '/health' || pathname === '/api/health') {
     return withJson({
@@ -843,11 +1026,11 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
   }
 
   if (pathname === '/api/cms/site-context') {
-    return withJson({ data: makeSiteContextForContext(context) as unknown as JsonValue });
+    return withJson({ data: makeSiteContextForContext(context, theme) as unknown as JsonValue });
   }
 
   if (pathname === '/api/cms/render') {
-    return withJson({ data: makeRenderForContext(context, url.searchParams.get('slug') || '') as unknown as JsonValue });
+    return withJson({ data: makeRenderForContext(context, url.searchParams.get('slug') || '', theme, website, pages) as unknown as JsonValue });
   }
 
   if (pathname === '/api/theme-engine/themes') {
@@ -1010,9 +1193,10 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
   const url = new URL(request.url);
   const context = getRequestContext(request, url, body);
   const tenant = context.tenant;
-  const theme = makeThemeForContext(context);
-  const website = makeWebsiteForContext(context);
-  const pages = makePagesForContext(context);
+  const themeState = await readTenantThemeState(env, context);
+  const theme = makeThemeForContext(context, themeState);
+  const website = makeWebsiteForContext(context, theme);
+  const pages = await readTenantPages(env, context, website);
 
   if (pathname === '/api/cms/websites') {
     return withJson({ data: { ...website, ...(body as Record<string, JsonValue>) } as unknown as JsonValue }, { status: 201 });
@@ -1021,56 +1205,80 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
   if (pathname === '/api/cms/pages') {
     const title = String(body.title || 'Untitled page');
     const slug = String(body.slug || '').replace(/^\/+/, '');
-    const page = {
-      id: makeId('page'),
+    const page = normalizeTenantPage(context, website, {
+      id: pageIdFromSlug(context, slug) || makeId('page'),
       tenantId: tenant.id,
       websiteId: String(body.websiteId || website.id),
       title,
       slug,
       status: String(body.status || 'draft'),
-      content: JSON.stringify(body.content || []),
+      content: body.content || [],
       draftContent: null,
       isHome: slug === '',
       isPublished: body.status === 'published',
       updatedAt: new Date().toISOString(),
-    };
+    });
+    const existingIndex = pages.findIndex((item) => item.id === page.id || item.slug === page.slug);
+    if (existingIndex >= 0) {
+      pages[existingIndex] = { ...pages[existingIndex], ...page };
+    } else {
+      pages.push(page);
+    }
+    await writeTenantPages(env, context, pages);
     return withJson({ data: page as JsonValue }, { status: 201 });
   }
 
   if (/^\/api\/cms\/pages\/[^/]+\/draft$/.test(pathname)) {
     const pageId = pathname.split('/').filter(Boolean).at(-2) || pages[0].id;
-    const page = findDemoPage(pageId, pages);
+    const pageIndex = pages.findIndex((page) => page.id === pageId || page.slug === pageId);
+    const page = pageIndex >= 0 ? pages[pageIndex] : pages[0];
+    const updatedPage = {
+      ...page,
+      draftContent: stringifyCmsContent(body.draftContent || []),
+      updatedAt: new Date().toISOString(),
+    };
+    pages[pageIndex >= 0 ? pageIndex : 0] = updatedPage;
+    await writeTenantPages(env, context, pages);
     return withJson({
-      data: {
-        ...page,
-        draftContent: JSON.stringify(body.draftContent || []),
-        updatedAt: new Date().toISOString(),
-      } as JsonValue,
+      data: updatedPage as unknown as JsonValue,
     });
   }
 
   if (/^\/api\/cms\/pages\/[^/]+\/publish$/.test(pathname)) {
     const pageId = pathname.split('/').filter(Boolean).at(-2) || pages[0].id;
-    const page = findDemoPage(pageId, pages);
+    const pageIndex = pages.findIndex((page) => page.id === pageId || page.slug === pageId);
+    const page = pageIndex >= 0 ? pages[pageIndex] : pages[0];
+    const updatedPage = {
+      ...page,
+      status: 'published',
+      isPublished: true,
+      content: page.draftContent || page.content,
+      draftContent: null,
+      updatedAt: new Date().toISOString(),
+    };
+    pages[pageIndex >= 0 ? pageIndex : 0] = updatedPage;
+    await writeTenantPages(env, context, pages);
     return withJson({
-      data: {
-        ...page,
-        status: 'published',
-        isPublished: true,
-        draftContent: null,
-        updatedAt: new Date().toISOString(),
-      } as JsonValue,
+      data: updatedPage as unknown as JsonValue,
     });
   }
 
   if (/^\/api\/cms\/pages\/[^/]+$/.test(pathname)) {
     const pageId = pathname.split('/').filter(Boolean).pop() || pages[0].id;
+    const pageIndex = pages.findIndex((page) => page.id === pageId || page.slug === pageId);
+    const page = pageIndex >= 0 ? pages[pageIndex] : pages[0];
+    const updatedPage = normalizeTenantPage(context, website, {
+      ...page,
+      ...body,
+      id: page.id,
+      content: body.content == null ? page.content : body.content,
+      draftContent: body.draftContent == null ? page.draftContent : body.draftContent,
+      updatedAt: new Date().toISOString(),
+    });
+    pages[pageIndex >= 0 ? pageIndex : 0] = updatedPage;
+    await writeTenantPages(env, context, pages);
     return withJson({
-      data: {
-        ...findDemoPage(pageId, pages),
-        ...(body as Record<string, JsonValue>),
-        updatedAt: new Date().toISOString(),
-      } as JsonValue,
+      data: updatedPage as unknown as JsonValue,
     });
   }
 
@@ -1103,43 +1311,73 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
   }
 
   if (/^\/api\/theme-engine\/themes\/[^/]+\/customization\/draft$/.test(pathname)) {
+    const incoming = coerceRecord((body as Record<string, unknown>).settings || body, {});
+    const nextState: TenantThemeState = {
+      settings: themeState.settings,
+      draftSettings: mergeRecords(themeState.draftSettings || themeState.settings, incoming),
+      updatedAt: new Date().toISOString(),
+    };
+    await writeTenantThemeState(env, context, nextState);
+    const updatedTheme = makeThemeForContext(context, nextState);
     return withJson({
       data: {
-        ...theme,
+        ...updatedTheme,
         id: pathname.split('/').filter(Boolean).at(-3) || theme.id,
-        draftSettings: JSON.stringify(body),
-        updatedAt: new Date().toISOString(),
       } as JsonValue,
     });
   }
 
   if (/^\/api\/theme-engine\/themes\/[^/]+\/customization\/(publish|discard|reset)$/.test(pathname)) {
+    const action = pathname.split('/').filter(Boolean).pop();
+    const nextState: TenantThemeState = {
+      settings: themeState.settings,
+      draftSettings: themeState.draftSettings,
+      updatedAt: new Date().toISOString(),
+    };
+    if (action === 'publish') {
+      nextState.settings = themeState.draftSettings || themeState.settings;
+      nextState.draftSettings = null;
+    }
+    if (action === 'discard') {
+      nextState.draftSettings = null;
+    }
+    if (action === 'reset') {
+      nextState.settings = makeDefaultThemeSettingsForContext(context);
+      nextState.draftSettings = null;
+    }
+    await writeTenantThemeState(env, context, nextState);
+    const updatedTheme = makeThemeForContext(context, nextState);
     return withJson({
       data: {
-        ...theme,
+        ...updatedTheme,
         id: pathname.split('/').filter(Boolean).at(-3) || theme.id,
-        draftSettings: null,
-        updatedAt: new Date().toISOString(),
       } as JsonValue,
     });
   }
 
   if (/^\/api\/theme-engine\/themes\/[^/]+\/customize$/.test(pathname)) {
+    const incoming = coerceRecord((body as Record<string, unknown>).settings || body, {});
+    const nextState: TenantThemeState = {
+      settings: mergeRecords(themeState.settings, incoming),
+      draftSettings: null,
+      updatedAt: new Date().toISOString(),
+    };
+    await writeTenantThemeState(env, context, nextState);
+    const updatedTheme = makeThemeForContext(context, nextState);
     return withJson({
       data: {
-        ...theme,
+        ...updatedTheme,
         id: pathname.split('/').filter(Boolean).at(-2) || theme.id,
-        settings: JSON.stringify({ ...JSON.parse(theme.settings), ...(body as Record<string, JsonValue>) }),
-        updatedAt: new Date().toISOString(),
       } as JsonValue,
     });
   }
 
   if (/^\/api\/theme-engine\/themes\/[^/]+\/preview\/customize$/.test(pathname)) {
+    const incoming = coerceRecord((body as Record<string, unknown>).settings || body, {});
     return withJson({
       data: {
         themeId: pathname.split('/').filter(Boolean).at(-3) || theme.id,
-        settings: { ...JSON.parse(theme.settings), ...(body as Record<string, JsonValue>) },
+        settings: mergeRecords(themeState.draftSettings || themeState.settings, incoming),
         isPreview: true,
         staging: true,
       } as JsonValue,
