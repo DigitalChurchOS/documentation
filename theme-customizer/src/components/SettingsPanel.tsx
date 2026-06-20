@@ -25,7 +25,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   themes,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [importedName, setImportedName] = useState<string>("default-theme-page.html");
+  const [importedName, setImportedName] = useState<string>("Ecclesia theme package");
   const [report, setReport] = useState<{
     overall: number;
     rows: { name: string; score: number; passed: boolean }[];

@@ -37,119 +37,100 @@ import {
   Eye,
 } from "lucide-react";
 
-const defaultPageTemplate = `<!DOCTYPE html>
+const ECCLESIA_THEME_FOLDER = "ecclesia-full-theme";
+
+function escapeHtml(value: unknown) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function textFromBlock(block: any, fallback: string) {
+  return (
+    block?.title ||
+    block?.headline ||
+    block?.subtitle ||
+    block?.storyText ||
+    block?.description ||
+    block?.text ||
+    block?.data?.title ||
+    block?.data?.content ||
+    fallback
+  );
+}
+
+function createEcclesiaFallbackTemplate(pageTitle = "Ecclesia Page", blocks: any[] = []) {
+  const title = escapeHtml(pageTitle || "Ecclesia Page");
+  const sections = blocks.length
+    ? blocks.map((block, index) => {
+        const blockTitle = escapeHtml(textFromBlock(block, `Section ${index + 1}`));
+        const blockText = escapeHtml(block?.subtitle || block?.description || block?.storyText || block?.data?.content || "Edit this Ecclesia CMS section.");
+        return `<section class="ec-section" data-editor-type="section" data-editor-label="${blockTitle}">
+  <p class="ec-eyebrow" data-editor-type="badge">${escapeHtml(block?.type || "Ecclesia")}</p>
+  <h2 data-editor-type="title">${blockTitle}</h2>
+  <p data-editor-type="description">${blockText}</p>
+</section>`;
+      }).join("\n")
+    : `<section class="ec-section" data-editor-type="section" data-editor-label="Page Content">
+  <p class="ec-eyebrow" data-editor-type="badge">Ecclesia</p>
+  <h2 data-editor-type="title">${title}</h2>
+  <p data-editor-type="description">This tenant page is ready for Ecclesia customization.</p>
+</section>`;
+
+  return `<!DOCTYPE html>
 <html>
 <head>
-<title>GraceHouse Church</title>
+<title>${title}</title>
 <style>
 html{width:100%;max-width:100%;overflow-x:clip;scrollbar-gutter:stable}
 *{box-sizing:border-box}
-body{margin:0;width:100%;max-width:100%;overflow-x:clip;background:var(--site-bg);color:var(--site-text);font-family:var(--font-body);transition:transform var(--duration) var(--ease)}
-img,video,canvas,svg{max-width:100%;height:auto}
-header{width:100%;max-width:100%;min-width:0;height:74px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(24px,4vw,34px);background:var(--site-surface);border-bottom:1px solid var(--site-border)}
-.logo{font-weight:900;min-width:0}
-nav{display:flex;gap:20px;color:var(--site-muted);font-size:14px;min-width:0;flex-wrap:wrap}
-nav a{color:var(--site-muted);text-decoration:none;white-space:nowrap}
-section{width:100%;max-width:100%;padding:var(--section) clamp(28px,5vw,var(--padding))}
-.hero{background:linear-gradient(135deg,var(--site-soft),var(--site-bg));min-height:520px}
-.badge{display:inline-block;background:var(--primary-soft);color:var(--primary);padding:8px 14px;border-radius:999px;font-weight:800;margin-bottom:18px}
-h1{font-family:var(--font-title);font-size:clamp(42px,7vw,var(--title-size));line-height:1;letter-spacing:var(--title-spacing,-.06em);max-width:760px;margin:0 0 18px;overflow-wrap:anywhere;text-wrap:balance}
-p{font-size:clamp(17px,2.4vw,var(--subtitle-size));color:var(--site-muted);line-height:1.45;max-width:670px;overflow-wrap:anywhere}
-button,.btn{display:inline-block;background:var(--primary);color:#fff;border:0;border-radius:var(--radius);padding:13px 20px;font-weight:500!important;transition:all var(--duration) var(--ease);text-decoration:none}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap);padding:clamp(28px,5vw,var(--padding));background:var(--site-bg);max-width:100%}
-.card{display:block;min-width:0;background:var(--site-surface);border:1px solid var(--site-border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-soft);text-decoration:none;color:var(--site-text)}
-.card p{font-size:var(--body-size)}
-footer{width:100%;max-width:100%;padding:42px;background:var(--site-soft);color:var(--site-muted);overflow:hidden}
-.footer-widgets{display:grid;grid-template-columns:1.45fr 1fr 1fr 1fr;gap:24px;margin-bottom:28px}
-.footer-widget{min-width:0}
-.footer-widget h4{color:var(--site-text);margin-bottom:10px}
-.footer-widget p{font-size:14px}
-.footer-widget a{display:block;color:var(--site-muted);text-decoration:none;margin:8px 0;font-size:14px}
-.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid var(--site-border);padding-top:18px}
-.footer-bottom p{font-size:14px;margin:0}
-.footer-legal{display:flex;gap:16px;flex-wrap:wrap}
-.footer-legal a{color:var(--site-muted);text-decoration:none;font-size:14px}
-.ec-mobile-menu-toggle{display:none}
-.ec-mobile-drawer,.ec-mobile-overlay{display:none}
-@media(max-width:900px){
-  .grid{grid-template-columns:1fr}
-  h1{font-size:clamp(38px,8vw,62px)}
-}
+body{margin:0;width:100%;max-width:100%;overflow-x:clip;background:var(--site-bg,#fffaf3);color:var(--site-text,#1d1812);font-family:var(--font-body,Inter,system-ui,sans-serif)}
+header{width:100%;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px clamp(24px,5vw,64px);background:var(--site-surface,#fff);border-bottom:1px solid var(--site-border,rgba(29,24,18,.12))}
+.logo{font-weight:900;font-size:20px;color:var(--primary,#f97316)}
+nav{display:flex;gap:18px;flex-wrap:wrap}
+nav a{color:var(--site-muted,#74685e);text-decoration:none;font-weight:700}
+.hero{padding:clamp(72px,9vw,128px) clamp(28px,6vw,88px);background:linear-gradient(135deg,var(--site-soft,#fff7ed),var(--site-bg,#fffaf3))}
+.ec-eyebrow{color:var(--primary,#f97316);font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+h1,h2{font-family:var(--font-title,Inter,system-ui,sans-serif);line-height:1.02;margin:0 0 18px;max-width:820px}
+h1{font-size:clamp(46px,8vw,96px)}
+h2{font-size:clamp(30px,5vw,58px)}
+p{font-size:clamp(17px,2vw,22px);line-height:1.55;max-width:760px;color:var(--site-muted,#74685e)}
+.btn{display:inline-block;margin-top:18px;background:var(--primary,#f97316);color:#fff;border-radius:var(--radius,18px);padding:14px 22px;text-decoration:none;font-weight:800}
+.ec-section{padding:clamp(48px,7vw,92px) clamp(28px,6vw,88px);border-top:1px solid var(--site-border,rgba(29,24,18,.12));background:var(--site-surface,#fff)}
+footer{padding:36px clamp(28px,6vw,88px);background:var(--site-soft,#fff7ed);color:var(--site-muted,#74685e)}
 </style>
 </head>
 <body>
 <header data-editor-type="header" data-editor-label="Header">
-  <div class="logo" data-editor-type="title">GraceHouse</div>
+  <div class="logo" data-editor-type="title">Ecclesia</div>
   <nav>
-    <a href="#home" data-editor-type="button">Home</a>
-    <a href="#about" data-editor-type="button">About</a>
-    <a href="#events" data-editor-type="button">Events</a>
+    <a href="/" data-editor-type="button">Home</a>
+    <a href="/about" data-editor-type="button">About</a>
+    <a href="/contact" data-editor-type="button">Contact</a>
   </nav>
 </header>
-
-<section id="home" class="hero" data-editor-type="section" data-editor-label="Hero Section">
-  <span class="badge" data-editor-type="badge">Welcome Home</span>
-  <h1 data-editor-type="title">A church website shaped by one simple Theme DNA.</h1>
-  <p data-editor-type="description">This page uses Ecclesia tokens and can be edited intelligently.</p>
-  <a class="btn" href="#about" data-editor-type="button">Visit Us</a>
+<section class="hero" data-editor-type="section" data-editor-label="Hero Section">
+  <p class="ec-eyebrow" data-editor-type="badge">Ecclesia Theme</p>
+  <h1 data-editor-type="title">${title}</h1>
+  <p data-editor-type="description">Customize this tenant page with the active Ecclesia design system.</p>
+  <a class="btn" href="/contact" data-editor-type="button">Get Connected</a>
 </section>
-
-<section id="about" class="grid" data-editor-type="section" data-editor-label="Cards Section">
-  <a href="#one" class="card" data-editor-type="card">
-    <h3 data-editor-type="title">One Visual DNA</h3>
-    <p data-editor-type="description">Every page follows the same design system.</p>
-  </a>
-  <a href="#preview" class="card" data-editor-type="card">
-    <h3 data-editor-type="title">Live Preview</h3>
-    <p data-editor-type="description">Preview across devices.</p>
-  </a>
-  <a href="#publish" class="card" data-editor-type="card">
-    <h3 data-editor-type="title">Simple Publishing</h3>
-    <p data-editor-type="description">Simple and powerful.</p>
-  </a>
-</section>
-
+${sections}
 <footer data-editor-type="footer" data-editor-label="Footer">
-  <div class="footer-widgets">
-    <div class="footer-widget" data-editor-type="card" data-editor-label="Footer Brand">
-      <h4 data-editor-type="title">GraceHouse</h4>
-      <p data-editor-type="description">A welcoming church community shaped by faith, love, and purpose.</p>
-    </div>
-    <div class="footer-widget" data-editor-type="card" data-editor-label="Footer Menu">
-      <h4 data-editor-type="title">Explore</h4>
-      <a href="#home" data-editor-type="button">Home</a>
-      <a href="#about" data-editor-type="button">About</a>
-      <a href="#events" data-editor-type="button">Events</a>
-    </div>
-    <div class="footer-widget" data-editor-type="card" data-editor-label="Footer Ministries">
-      <h4 data-editor-type="title">Ministries</h4>
-      <a href="#kids" data-editor-type="button">Kids</a>
-      <a href="#youth" data-editor-type="button">Youth</a>
-      <a href="#care" data-editor-type="button">Care</a>
-    </div>
-    <div class="footer-widget" data-editor-type="card" data-editor-label="Footer Contact">
-      <h4 data-editor-type="title">Visit</h4>
-      <p data-editor-type="description">Join us this Sunday and experience a warm church family.</p>
-    </div>
-  </div>
-
-  <div class="footer-bottom">
-    <p class="footer-copy" data-editor-type="description">© GraceHouse Church. All rights reserved.</p>
-    <div class="footer-legal">
-      <a class="privacy-link" href="#privacy" data-editor-type="button">Privacy Policy</a>
-      <a class="terms-link" href="#terms" data-editor-type="button">Terms of Use</a>
-    </div>
-  </div>
+  <p data-editor-type="description">Powered by Ecclesia Theme.</p>
 </footer>
 </body>
 </html>`;
+}
 
 const AVAILABLE_THEMES = [
   {
     id: "ecclesia",
     name: "Ecclesia Theme",
     description: "A beautiful, content-rich design system for modern digital-first churches.",
-    folderName: "ecclesia-full-theme",
+    folderName: ECCLESIA_THEME_FOLDER,
     thumbnail: "/themes/ecclesia-full-theme/thumbnail.png"
   }
 ];
@@ -256,13 +237,16 @@ function labelForCmsPage(page: any, file: string) {
 }
 
 const apiFetch = async (method: string, path: string, body?: any) => {
-  const tenantId = localStorage.getItem("churchos.tenantId") || "demo-church-local";
+  const params = new URLSearchParams(window.location.search);
+  const tenantId = localStorage.getItem("churchos.tenantId") || params.get("tenantId") || "";
+  const tenantSubdomain = localStorage.getItem("churchos.subdomain") || params.get("subdomain") || getSubdomainFromHostname() || "";
   const token = localStorage.getItem("churchos.token") || "local-preview-token";
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "x-tenant-id": tenantId,
     "Authorization": `Bearer ${token}`
   };
+  if (tenantId) headers["x-tenant-id"] = tenantId;
+  if (tenantSubdomain) headers["x-tenant-subdomain"] = tenantSubdomain;
   const options: RequestInit = {
     method,
     headers
@@ -334,7 +318,7 @@ export function App() {
   const previewWindowRef = useRef<Window | null>(null);
 
   const [currentTheme, setCurrentTheme] = useState<string>(() => {
-    return localStorage.getItem("ec_autosave_theme_folder") || "ecclesia-full-theme";
+    return ECCLESIA_THEME_FOLDER;
   });
 
   useEffect(() => {
@@ -394,14 +378,14 @@ export function App() {
           }
         } else {
           const existing = localStorage.getItem("churchos.tenantId");
-          if (!existing || existing === "demo-church-local") {
-            localStorage.setItem("churchos.tenantId", "de4498dc-069d-45b6-bc56-1a90ade1fb34");
+          if (existing === "demo-church-local") {
+            localStorage.removeItem("churchos.tenantId");
           }
         }
 
         const existingToken = localStorage.getItem("churchos.token");
-        if (!existingToken || existingToken === "local-preview-token") {
-          localStorage.setItem("churchos.token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmZTdlMjhlYS05ZmJhLTQ1MjEtYjUzZS1mMDBhMTcyZDk0ZWQiLCJ0ZW5hbnRJZCI6ImRlNDQ5OGRjLTA2OWQtNDViNi1iYzU2LTFhOTBhZGUxZmIzNCIsImVtYWlsIjoiYWRtaW5AdGhlbWUtdGVzdC5jb20iLCJpYXQiOjE3ODE2NDk3NjV9.NQITrY91wCtviuWIc27bYk3BbnqHPkwjqqNPodaPlG0");
+        if (!existingToken) {
+          localStorage.setItem("churchos.token", "local-preview-token");
         }
 
         // Fetch themes, websites and pages
@@ -469,7 +453,9 @@ export function App() {
         if (finalPageId) {
           const matchedPage = pagesRes?.data?.find((p: any) => p.id === finalPageId);
           if (!matchedPage) {
-            throw new Error("404 Page not found under current tenant context");
+            const homePage = pagesRes?.data?.find((p: any) => p.slug === "" || p.isHome);
+            finalPageId = homePage?.id || "";
+            setPageId(finalPageId);
           }
         } else if (pagesRes && pagesRes.data) {
           const homePage = pagesRes.data.find((p: any) => p.slug === "" || p.isHome);
@@ -501,28 +487,6 @@ export function App() {
 
       } catch (err: any) {
         console.error("Initialization error:", err);
-        const errMsg = (err.message || "").toLowerCase();
-        if (
-          errMsg.includes("tenant not found") ||
-          errMsg.includes("404") ||
-          errMsg.includes("401") ||
-          errMsg.includes("403") ||
-          errMsg.includes("token") ||
-          errMsg.includes("mismatch")
-        ) {
-          const defaultTenantId = "de4498dc-069d-45b6-bc56-1a90ade1fb34";
-          const defaultToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJmZTdlMjhlYS05ZmJhLTQ1MjEtYjUzZS1mMDBhMTcyZDk0ZWQiLCJ0ZW5hbnRJZCI6ImRlNDQ5OGRjLTA2OWQtNDViNi1iYzU2LTFhOTBhZGUxZmIzNCIsImVtYWlsIjoiYWRtaW5AdGhlbWUtdGVzdC5jb20iLCJpYXQiOjE3ODE2NDk3NjV9.NQITrY91wCtviuWIc27bYk3BbnqHPkwjqqNPodaPlG0";
-          const currentTenantId = localStorage.getItem("churchos.tenantId");
-          const currentToken = localStorage.getItem("churchos.token");
-          
-          if (currentTenantId !== defaultTenantId || currentToken !== defaultToken) {
-            console.warn("Detected invalid/stale session. Auto-recovering tenant and token...");
-            localStorage.setItem("churchos.tenantId", defaultTenantId);
-            localStorage.setItem("churchos.token", defaultToken);
-            window.location.reload();
-            return;
-          }
-        }
         setTenantError(err.message || "Failed to initialize customizer workspace settings.");
       } finally {
         setResolvingTenant(false);
@@ -576,7 +540,7 @@ export function App() {
       footerBottom: "split",
       footerLegal: "show",
       footerManual: false,
-      copyrightText: "© GraceHouse Church. All rights reserved.",
+      copyrightText: "Ecclesia Theme. All rights reserved.",
       privacyLabel: "Privacy Policy",
       privacyHref: "#privacy",
       termsLabel: "Terms of Use",
@@ -595,15 +559,11 @@ export function App() {
 
   // HTML Page state
   const [rawHtml, setRawHtml] = useState<string>(() => {
-    const cached = localStorage.getItem("ec_autosave_html");
-    // Only use cached HTML if it has actual page structure
-    if (cached && /<(header|footer|section|nav|main)[\s>]/i.test(cached)) {
-      return cached;
-    }
-    return defaultPageTemplate;
+    return createEcclesiaFallbackTemplate("Loading Ecclesia");
   });
   const [importedFilename, setImportedFilename] = useState<string>(() => {
-    return localStorage.getItem("ec_autosave_filename") || "default-theme-page.html";
+    const saved = localStorage.getItem("ec_autosave_filename") || "";
+    return CUSTOMIZER_FILE_SLUGS[saved] !== undefined ? saved : "index.html";
   });
   
   // Element selection state
@@ -751,8 +711,14 @@ export function App() {
   }, [pagesList]);
 
   const fetchPage = async (filename: string, themeFolder = currentTheme, targetPageId = pageId) => {
+    const baseName = filename.split("/").pop() || "index.html";
+    let fallbackPageTitle = baseName.replace(/\.html$/i, "").replace(/-/g, " ");
+    let fallbackBlocks: any[] = [];
+    let shouldTryThemeTemplate =
+      CUSTOMIZER_FILE_SLUGS[baseName] !== undefined ||
+      CUSTOMIZER_PAGES_LIST.some((page) => page.value === baseName);
+
     try {
-      const baseName = filename.split("/").pop() || "index.html";
       const timestamp = new Date().getTime();
 
       if (targetPageId) {
@@ -765,10 +731,22 @@ export function App() {
               : (pageData.draftContent || (typeof pageData.content === 'string'
                 ? JSON.parse(pageData.content || "[]")
                 : (pageData.content || [])));
+            fallbackPageTitle = pageData.title || fallbackPageTitle;
+            fallbackBlocks = Array.isArray(blocks) ? blocks : [];
+            shouldTryThemeTemplate = Boolean(pageData.sourceFile) || shouldTryThemeTemplate;
             
             const savedHtml = getFullHtml(blocks);
             if (savedHtml) {
               setRawHtml(savedHtml);
+              setImportedFilename(baseName);
+              setSelectedElement(null);
+              setActiveSectionPath(null);
+
+              return;
+            }
+
+            if (!shouldTryThemeTemplate) {
+              setRawHtml(createEcclesiaFallbackTemplate(fallbackPageTitle, fallbackBlocks));
               setImportedFilename(baseName);
               setSelectedElement(null);
               setActiveSectionPath(null);
@@ -789,13 +767,17 @@ export function App() {
         setSelectedElement(null);
         setActiveSectionPath(null);
       } else if (targetPageId) {
-        setRawHtml(defaultPageTemplate);
+        setRawHtml(createEcclesiaFallbackTemplate(fallbackPageTitle, fallbackBlocks));
         setImportedFilename(baseName);
         setSelectedElement(null);
         setActiveSectionPath(null);
       }
     } catch (err) {
-      console.warn("Fetch error, keeping current template", err);
+      console.warn("Fetch error, using generated Ecclesia fallback", err);
+      setRawHtml(createEcclesiaFallbackTemplate(fallbackPageTitle, fallbackBlocks));
+      setImportedFilename(baseName);
+      setSelectedElement(null);
+      setActiveSectionPath(null);
     }
   };
 
@@ -809,7 +791,7 @@ export function App() {
     const mappedSlug = pageOption?.slug !== undefined
       ? pageOption.slug
       : CUSTOMIZER_FILE_SLUGS[urlFilename] !== undefined
-      ? CUSTOMIZER_FILE_SLUGS[urlFilename] 
+      ? CUSTOMIZER_FILE_SLUGS[urlFilename]
       : (urlFilename === "index.html" ? "" : urlFilename.replace(".html", ""));
     
     let pageRecord = pageOption?.pageId
@@ -861,15 +843,16 @@ export function App() {
   // Load correct page template once tenant resolves and pages are loaded
   useEffect(() => {
     if (resolvingTenant) return;
+    if (!pagesList.length) return;
 
     const pageRecord = pagesList.find((p) => p.id === pageId);
     const slug = pageRecord ? pageRecord.slug : "";
-    const filename = Object.keys(CUSTOMIZER_FILE_SLUGS).find(
-      (key) => CUSTOMIZER_FILE_SLUGS[key] === slug
-    ) || "index.html";
+    const filename = pageRecord
+      ? fileForCmsPage(pageRecord)
+      : Object.keys(CUSTOMIZER_FILE_SLUGS).find((key) => CUSTOMIZER_FILE_SLUGS[key] === slug) || "index.html";
 
     fetchPage(filename, currentTheme, pageId);
-  }, [resolvingTenant]);
+  }, [resolvingTenant, pagesList, pageId, currentTheme]);
 
   // Sync scroll lock on escape key and listen for frame navigation
   useEffect(() => {
