@@ -1132,35 +1132,47 @@ button, input, select, textarea {
   position: absolute;
   inset: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .device-frame.desktop .preview-shell {
   width: 100%;
   height: 100%;
   border-radius: 0;
+  border: none;
+  box-shadow: none;
+  margin: 0;
 }
 
 .device-frame.desktop .preview-frame {
-  width: 167.142%;
-  height: 167.142%;
+  width: calc(100% / 0.598);
+  height: calc(100% / 0.598);
   transform: scale(0.598);
   transform-origin: top left;
 }
 
+.device-frame.laptop {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .device-frame.laptop .preview-shell {
-  aspect-ratio: 16/9.5;
-  width: min(1080px, calc(100% - 20px));
-  max-height: calc(100% - 20px);
-  border: 12px solid #1f2937;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
-  margin: 0 auto;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  margin: 0;
 }
 
 .device-frame.laptop .preview-frame {
-  width: 162.5%;
-  height: 162.5%;
-  transform: scale(0.615);
+  width: calc(100% / 0.733);
+  height: calc(100% / 0.733);
+  transform: scale(0.733);
   transform-origin: top left;
 }
 
@@ -1169,10 +1181,18 @@ button, input, select, textarea {
 }
 
 .app.fullscreen .device-frame.desktop .preview-frame {
-  width: 146.25%;
-  height: 146.25%;
+  width: calc(100% / 0.684);
+  height: calc(100% / 0.684);
   transform: scale(0.684);
   transform-origin: top left;
+}
+
+.app.fullscreen .device-frame.laptop {
+  position: relative;
+  inset: auto;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
 }
 
 .app.fullscreen .device-frame.laptop .preview-shell {
@@ -1183,18 +1203,14 @@ button, input, select, textarea {
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   aspect-ratio: 16/9;
-}
-
-.app.fullscreen .device-frame.laptop .preview-shell {
-  aspect-ratio: 16/9 !important;
+  height: auto;
 }
 
 .app.fullscreen .device-frame.laptop .preview-frame {
-  width: 144.444% !important;
-  height: 144.444% !important;
-  transform: scale(0.692) !important;
-  transform-origin: top left !important;
-  aspect-ratio: 16/9 !important;
+  width: calc(100% / 0.692);
+  height: calc(100% / 0.692);
+  transform: scale(0.692);
+  transform-origin: top left;
 }
 
 .device-frame.tablet .preview-shell {
