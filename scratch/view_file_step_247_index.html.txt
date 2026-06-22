@@ -1,0 +1,77 @@
+Created At: 2026-06-06T14:53:01Z
+Completed At: 2026-06-06T14:53:01Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 16250 to 16450
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+16250:         sel.parentNode.replaceChild(clone, sel);
+16251:         clone.addEventListener('change', e => {
+16252:           customizerState[clone.dataset.select] = e.target.value;
+16253:           applyCustomizerTheme();
+16254:         });
+16255:       });
+16256: 
+16257:       // Accordion collapsibles toggles
+16258:       document.querySelectorAll('.group-toggle').forEach(btn => {
+16259:         const clone = btn.cloneNode(true);
+16260:         btn.parentNode.replaceChild(clone, btn);
+16261:         clone.addEventListener('click', () => {
+16262:           const content = clone.nextElementSibling;
+16263:           if (content) {
+16264:             content.classList.toggle('hidden');
+16265:             const icon = clone.querySelector('[data-lucide="chevron-down"], i');
+16266:             if (icon) {
+16267:               const isHidden = content.classList.contains('hidden');
+16268:               icon.style.transform = isHidden ? 'rotate(-90deg)' : 'none';
+16269:               icon.style.transition = 'transform 0.2s';
+16270:             }
+16271:           }
+16272:         });
+16273:       });
+16274: 
+16275:       // Customize Theme button
+16276:       const customizeBtn = document.getElementById('customizeBtn');
+16277:       if (customizeBtn) {
+16278:         customizeBtn.onclick = () => {
+16279:           const activeTheme = themeEngineState.themes.find(t => t.id === themeEngineState.activeThemeId);
+16280:           if (activeTheme) {
+16281:             document.getElementById('customizerThemeName').textCon
+<truncated 6839 bytes>
+415:         colorMode: customizerState.colorMode,
+16416:         accentPreset: customizerState.accentPreset,
+16417:         colorPalette: customizerState.colorPalette,
+16418:         edgeStyle: customizerState.edgeStyle,
+16419:         cardStyle: customizerState.cardStyle,
+16420:         spacingScale: customizerState.spacingScale,
+16421:         backgroundStyle: customizerState.backgroundStyle,
+16422:         iconStyle: customizerState.iconStyle,
+16423:         buttonStyle: customizerState.buttonStyle,
+16424:         colors: {
+16425:           primary: accentColors[0],
+16426:           secondary: '#ffffff',
+16427:           accent: accentColors[0]
+16428:         }
+16429:       };
+16430: 
+16431:       const res = await cmsApiRequest('PATCH', `/api/theme-engine/themes/${themeEngineState.activeThemeId}/customization/draft`, payload);
+16432:       if (res && res.ok) {
+16433:         if (shouldPublish) {
+16434:           const pubRes = await cmsApiRequest('POST', `/api/theme-engine/themes/${themeEngineState.activeThemeId}/customization/publish`);
+16435:           if (pubRes && pubRes.ok) {
+16436:             showToast('Theme published successfully!');
+16437:             const currentWebsiteId = cmsState.activeWebsiteId || (cmsState.websites && cmsState.websites[0]?.id);
+16438:             if (currentWebsiteId) {
+16439:               await cmsApiRequest('POST', `/api/theme-engine/themes/${themeEngineState.activeThemeId}/activate`, { websiteId: currentWebsiteId });
+16440:             }
+16441:           } else {
+16442:             alert('Failed to publish theme customizations');
+16443:             return;
+16444:           }
+16445:         } else {
+16446:           showToast('Theme settings saved as draft!');
+16447:         }
+16448:         
+16449:         await bootstrapTenantThemes();
+16450:         
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

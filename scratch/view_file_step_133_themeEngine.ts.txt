@@ -1,0 +1,70 @@
+Created At: 2026-06-06T14:50:19Z
+Completed At: 2026-06-06T14:50:19Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts`
+Total Lines: 711
+Total Bytes: 22461
+Showing lines 650 to 711
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+650:     };
+651:   }
+652: 
+653:   /**
+654:    * List section templates available.
+655:    */
+656:   static async listSectionTemplates(tenantId: string) {
+657:     const settings = await this.getSettings(tenantId);
+658:     const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);
+659: 
+660:     return [...this.defaultSectionTemplates(), ...(config.sections || [])];
+661:   }
+662: 
+663:   static async registerPageTemplate(tenantId: string, data: ThemeEngineTemplateInput) {
+664:     const template = normalizeTemplate(data, 'page');
+665:     const settings = await this.getSettings(tenantId);
+666:     const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);
+667: 
+668:     if (!config.pageTemplates) {
+669:       config.pageTemplates = [];
+670:     }
+671: 
+672:     const exists = [...this.defaultPageTemplates(), ...config.pageTemplates].some((s: any) => s.key === template.key);
+673:     if (exists) {
+674:       throw new Error(`Page template with key '${template.key}' already registered`);
+675:     }
+676: 
+677:     config.pageTemplates.push(template);
+678:     await this.updateSettings(tenantId, { configJson: config });
+679: 
+680:     return {
+681:       name: template.name,
+682:       key: template.key,
+683:       structure: template.structure,
+684:     };
+685:   }
+686: 
+687:   static async listPageTemplates(tenantId: string) {
+688:     const settings = await this.getSettings(tenantId);
+689:     const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);
+690: 
+691:     return [...this.defaultPageTemplates(), ...(config.pageTemplates || [])];
+692:   }
+693: 
+694:   private static defaultSectionTemplates() {
+695:     return [
+696:       { name: 'Hero Banner', key: 'hero-banner', type: 'section', structure: { title: 'string', subtitle: 'string', bgImage: 'string' } },
+697:       { name: 'Feature Grid', key: 'feature-grid', type: 'section', structure: { items: 'array' } },
+698:       { name: 'Sermon Player Widget', key: 'sermon-player', type: 'section', structure: { recentCount: 'number' } },
+699:       { name: 'Giving Callout', key: 'giving-callout', type: 'section', structure: { title: 'string', campaignId: 'string', buttonLabel: 'string' } },
+700:     ];
+701:   }
+702: 
+703:   private static defaultPageTemplates() {
+704:     return [
+705:       { name: 'Home Page', key: 'home-page', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'sermon-player'] } },
+706:       { name: 'Ministry Landing Page', key: 'ministry-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'giving-callout'] } },
+707:       { name: 'Event Landing Page', key: 'event-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid'] } },
+708:     ];
+709:   }
+710: }
+711: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

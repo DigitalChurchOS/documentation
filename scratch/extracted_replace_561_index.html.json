@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Add deep-link handling for module=customizer&tab=pages so the /page-builder redirect lands correctly in the unified customizer\"",
+  "EndLine": "13869",
+  "Instruction": "\"Add a special case: if module=customizer, auto-open the customizer overlay and optionally switch to the Pages tab\"",
+  "ReplacementContent": "\"      // Check query parameter deep linking\\n      const targetModule = urlParams.get('module');\\n      if (targetModule === 'customizer') {\\n        // Deep link to the Theme Customizer — auto-open it\\n        setTimeout(() => {\\n          const customizeBtn = document.getElementById('customizeBtn');\\n          if (customizeBtn) {\\n            customizeBtn.click();\\n            // If tab=pages specified, auto-switch to Pages tab\\n            const targetTab = urlParams.get('tab');\\n            if (targetTab === 'pages') {\\n              setTimeout(() => {\\n                if (typeof showTab === 'function') showTab('Pages');\\n              }, 400);\\n            }\\n          }\\n        }, 800);\\n      } else if (targetModule) {\\n        selectedModule = normalizeModuleKey(targetModule);\\n        switchView('modules');\\n      }\"",
+  "StartLine": "13864",
+  "TargetContent": "\"      // Check query parameter deep linking\\n      const targetModule = urlParams.get('module');\\n      if (targetModule) {\\n        selectedModule = normalizeModuleKey(targetModule);\\n        switchView('modules');\\n      }\"",
+  "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\apps\\\\tenant-dashboard\\\\public\\\\index.html\"",
+  "toolAction": "\"Adding deep-link handling\"",
+  "toolSummary": "\"Customizer deep link\""
+}

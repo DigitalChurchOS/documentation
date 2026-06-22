@@ -1,0 +1,39 @@
+Created At: 2026-06-06T14:50:30Z
+Completed At: 2026-06-06T14:50:30Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts`
+Total Lines: 711
+Total Bytes: 22461
+Showing lines 555 to 585
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+555:     });
+556:   }
+557: 
+558:   /**
+559:    * Preview a theme config in temporary simulation staging context.
+560:    */
+561:   static async previewTheme(tenantId: string, themeId: string) {
+562:     // Fetch theme
+563:     const theme = await prisma.theme.findFirst({
+564:       where: {
+565:         id: themeId,
+566:         OR: [{ tenantId: null }, { tenantId }],
+567:       },
+568:     });
+569: 
+570:     if (!theme) {
+571:       throw new Error('Theme not found');
+572:     }
+573: 
+574:     const settings = safeParseJson<Record<string, any>>(theme.settings, {});
+575: 
+576:     return {
+577:       themeId: theme.id,
+578:       name: theme.name,
+579:       settings,
+580:       version: settings.marketplace?.version || 'local',
+581:       isPreview: true,
+582:       timestamp: new Date().toISOString(),
+583:     };
+584:   }
+585: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

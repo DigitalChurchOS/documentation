@@ -1,0 +1,90 @@
+Created At: 2026-06-06T14:51:55Z
+Completed At: 2026-06-06T14:51:55Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx`
+Total Lines: 880
+Total Bytes: 33665
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import React, { useState, useEffect } from 'react';
+2: import { SidebarLeft } from './components/SidebarLeft.js';
+3: import { Canvas } from './components/Canvas.js';
+4: import { InspectorRight } from './components/InspectorRight.js';
+5: import { Icon } from './components/Icon.js';
+6: import { ElementSchema, DeviceType, HistoryState } from './types.js';
+7: import {
+8:   generateId,
+9:   findElementById,
+10:   updateElementInTree,
+11:   deleteElementFromTree,
+12:   insertElementInTree,
+13:   moveElementInTree,
+14:   getBreadcrumbPath
+15: } from './utils.js';
+16: 
+17: // Helper to recursively assign new unique IDs on duplication or insertion
+18: const cloneElementWithNewIds = (el: ElementSchema): ElementSchema => {
+19:   const shortType = el.type.substring(0, 3);
+20:   return {
+21:     ...el,
+22:     id: generateId(shortType),
+23:     children: (el.children || []).map(child => cloneElementWithNewIds(child))
+24:   };
+25: };
+26: 
+27: interface InspectorBoundaryProps {
+28:   resetKey: string;
+29:   children: React.ReactNode;
+30: }
+31: 
+32: interface InspectorBoundaryState {
+33:   hasError: boolean;
+34:   message: string;
+35: }
+36: 
+37: class InspectorBoundary extends React.Component<InspectorBoundaryProps, InspectorBoundaryState> {
+38:   state: InspectorBoundaryState = { hasError: false, message: '' };
+39: 
+40:   static getDerivedStateFromError(error: unknown): InspectorBoundaryState {
+41:     return { hasError: true, message: error instanceof Error ? error.message : String(error) };
+42:   }
+43: 
+44:   componentDidUpdate(prevProp
+<truncated 30242 bytes>
+
+765:           onDeleteElement={handleDeleteElement}
+766:           onDuplicateElement={handleDuplicateElement}
+767:           onAddElement={handleAddElement}
+768:           onMoveElement={handleMoveElement}
+769:           canvasBg={canvasBg}
+770:           canvasThemeMode={canvasThemeMode}
+771:         />
+772: 
+773:         {/* Right Side Styles / Properties Inspector panel */}
+774:         <div className={`${inspectorVisibilityClass} h-full shrink-0`}>
+775:           <InspectorBoundary resetKey={selectedElementId || 'empty'}>
+776:             <InspectorRight
+777:               selectedElement={selectedElement}
+778:               activeDevice={activeDevice}
+779:               onUpdateElement={(updater) => {
+780:                 if (selectedElementId) {
+781:                   handleUpdateElement(selectedElementId, updater);
+782:                 }
+783:               }}
+784:             />
+785:           </InspectorBoundary>
+786:         </div>
+787: 
+788:       </div>
+789: 
+790:       {/* -------------------- 3. BOTTOM BREADCRUMB NAVIGATION -------------------- */}
+791:       <footer className="h-10 flex items-center px-5 bg-surface border-t border-border text-xs text-muted select-none z-30 justify-between transition-colors duration-200">
+792:         <div className="flex items-center gap-2 font-medium overflow-x-auto whitespace-nowrap">
+793:           <span className="text-muted font-bold uppercase tracking-normal text-[10px]">Path</span>
+794:           {breadcrumbs && breadcrumbs.length > 0 ? (
+795:             breadcrumbs.map((node, idx) => (
+796:               <React.Fragment key={node.id}>
+797:                 {idx > 0 && <span className="text-muted/40">/</span>}
+798:                 <button
+799:                   onClick={() => handleSelectElement(node.id)}
+800:                   style={{
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

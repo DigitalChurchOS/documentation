@@ -1,0 +1,58 @@
+Created At: 2026-06-06T16:46:18Z
+Completed At: 2026-06-06T16:46:19Z
+File Path: `file:///C:/Users/Administrator/.gemini/antigravity/brain/b6ef7979-b2e0-456b-b57d-251645bf61e7/implementation_plan.md`
+Total Lines: 138
+Total Bytes: 8447
+Showing lines 1 to 138
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Fix Page Builder Canvas Rendering in Theme Customizer
+2: 
+3: ## Problem Diagnosis
+4: 
+5: After thorough research of all three layers (tenant dashboard, page-builder app, server routing), here is the complete picture:
+6: 
+7: ### What ALREADY Works (The Wiring Is Complete)
+8: 
+9: The Theme Customizer **already has** a full page builder integration. The code at [index.html](file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html) lines 12811–13113 (HTML) and 16400–16957 (JavaScript) implements:
+10: 
+11: 1. ✅ **Pages tab** with dynamic page list loaded from `GET /api/cms/pages`
+12: 2. ✅ **Iframe embedding** — `selectCustomizerPage()` (line 16607) loads `/page-builder/?mode=embed&pageId=...&tenantId=...&token=...`
+13: 3. ✅ **Auto-select first page** when Pages tab is opened (line 16592)
+14: 4. ✅ **Inspector panel** for selected elements (line 16732) with field editing for headings, paragraphs, buttons, images, videos, dynamic blocks
+15: 5. ✅ **Section Catalog** — 4 block types that send `sectionAdd` postMessages (line 16678)
+16: 6. ✅ **postMessage bridge** — Dashboard ↔ Page Builder communication for `elementSelected`, `elementsReport`, `themeChange`, `setDevice`, `elementUpdate`, `sectionMove`, `sectionDuplicate`, `sectionDelete` (lines 16941–16957)
+17: 7. ✅ **Save Draft / Publish** coordination — `triggerStudioSave()` (line 16897) saves both theme settings AND page content
+18: 8. ✅ **Device toggle** forwarding desktop/tablet/mobile to iframe (line 16155)
+19:
+<truncated 5514 bytes>
+t rendering switch/logic, add a `default` case that renders a styled placeholder:
+110:   ```
+111:   ⚠️ Unknown block type: "hero"
+112:   This content was created with a legacy editor. Click to convert.
+113:   ```
+114: 
+115: ## Open Questions
+116: 
+117: > [!IMPORTANT]
+118: > **Should we also convert legacy content at the API level?** 
+119: > Currently, the real CMS API (in production) may return pages with legacy `hero`/`service_times` schemas from before the page builder existed. Should we add a migration or conversion layer that transforms legacy content into page builder-compatible elements, or just show the fallback placeholder? The placeholder approach is safer and simpler for now.
+120: 
+121: ## Verification Plan
+122: 
+123: ### Manual Verification
+124: 1. Start the dev dashboard: `Start-Dashboard.cmd`
+125: 2. Open `http://localhost:3000/admin` → Navigate to Theme Management → Click "Customize Theme"
+126: 3. **Theme Design tab** — Verify the static mockup preview still shows correctly
+127: 4. **Click "Pages" tab** — Verify:
+128:    - Page list loads with Home, About, Services, Watch Live pages
+129:    - First page (Home) is auto-selected
+130:    - The Page Builder canvas renders in the iframe with visible sections (hero, services grid, etc.)
+131: 5. **Click on elements in the canvas** — Verify the Inspector panel appears in the sidebar with editable fields
+132: 6. **Use Section Catalog** — Click "Hero Banner" → Verify a new section is added to the canvas
+133: 7. **Edit in Inspector** — Change heading text → Verify the canvas updates in real-time
+134: 8. **Toggle devices** — Click Tablet/Mobile → Verify the canvas resizes and forwards to the iframe
+135: 9. **Save Draft** → Verify toast "Page draft content saved successfully!"
+136: 10. **Publish** → Verify both theme and page content are published
+137: 11. Navigate to `http://localhost:3000/page-builder` → Verify it redirects to the customizer
+138: 
+The above content shows the entire, complete file contents of the requested file.

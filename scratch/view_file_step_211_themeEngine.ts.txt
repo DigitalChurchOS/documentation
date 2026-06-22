@@ -1,0 +1,49 @@
+Created At: 2026-06-06T14:52:12Z
+Completed At: 2026-06-06T14:52:12Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts`
+Total Lines: 842
+Total Bytes: 25606
+Showing lines 440 to 480
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+440:       },
+441:     });
+442:   }
+443: 
+444:   /**
+445:    * Swap out / switch active theme for website pages.
+446:    */
+447:   static async activateThemeForWebsite(tenantId: string, websiteId: string, themeId: string) {
+448:     // 1. Verify website belongs to tenant
+449:     const website = await prisma.website.findFirst({
+450:       where: { id: websiteId, tenantId },
+451:     });
+452:     if (!website) {
+453:       throw new Error('Website not found');
+454:     }
+455: 
+456:     // 2. Verify theme belongs to tenant or is global (tenantId === null)
+457:     const theme = await prisma.theme.findFirst({
+458:       where: {
+459:         id: themeId,
+460:         OR: [{ tenantId: null }, { tenantId }],
+461:       },
+462:     });
+463:     if (!theme) {
+464:       throw new Error('Theme not found');
+465:     }
+466: 
+467:     // 3. Update website active themeId
+468:     return await prisma.website.update({
+469:       where: { id: websiteId },
+470:       data: { themeId },
+471:     });
+472:   }
+473: 
+474:   /**
+475:    * List installed and custom themes in the tenant space (including global themes).
+476:    */
+477:   static async listTenantThemes(tenantId: string) {
+478:     return await prisma.theme.findMany({
+479:       where: {
+480:         OR: [{ tenantId: null }, { tenantId }],
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Login - Grace City Church</title>
+  <link rel="stylesheet" href="assets/styles.css?v=9" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div class="top"><strong>Member Portal:</strong> Sign in or create your church profile.</div>
+<header class="header">
+  <div class="nav-wrap">
+    <a href="index.html" class="brand"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+    <nav class="nav"><a href="index.html">Home</a><a href="about.html">About</a><a href="sermons.html">Sermons</a><a href="events.html">Events</a><a href="ministries.html">Ministries</a><a href="prayer.html">Prayer</a><a class="active" href="login.html">Account</a></nav>
+    <div class="header-actions">
+      <a class="btn btn-soft" href="account.html"><i data-lucide="user-circle"></i> My Account</a>
+      <a class="btn btn-primary" href="contact.html">Plan Visit</a>
+      <button class="mobile-menu-btn" id="menuBtn"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="member-template-hero">
+    <div>
+      <div class="section-kicker">Member access</div>
+      <h1>Welcome to your secure church account.</h1>
+      <p class="lead">Sign in to view giving records, group connections, courses, event registrations, attendance, and profile preferences.</p>
+    </div>
+  </section>
+
+  <section class="member-auth-preview section">
+    <div class="member-auth-card">
+      <div class="member-tabs" role="tablist" aria-label="Member account modes">
+        <button class="active" type="button">Sign In</button>
+        <button type="button">Join</button>
+      </div>
+      <form class="member-form-preview">
+        <label>Email<input type="email" value="member@example.com" /></label>
+        <label>Password<input type="password" value="password123" /></label>
+        <button class="btn btn-primary" type="button"><i data-lucide="log-in"></i> Sign In</button>
+      </form>
+    </div>
+
+    <div class="member-auth-card">
+      <div class="member-card-heading">
+        <span class="section-kicker">Create profile</span>
+        <h2>Join your church online.</h2>
+      </div>
+      <form class="member-form-preview two-col">
+        <label>First name<input value="Ada" /></label>
+        <label>Last name<input value="Stone" /></label>
+        <label>Phone<input value="+1 555 010 2026" /></label>
+        <label>Email<input type="email" value="ada@example.com" /></label>
+        <label class="full">Password<input type="password" value="password123" /></label>
+        <button class="btn btn-primary full" type="button"><i data-lucide="user-plus"></i> Create Account</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><a href="index.html" class="brand" style="color:white;"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a><p style="margin-top:18px;max-width:340px;">A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.</p></div>
+      <div><h4>Explore</h4><a href="about.html">About</a><a href="sermons.html">Sermons</a><a href="events.html">Events</a><a href="ministries.html">Ministries</a></div>
+      <div><h4>Connect</h4><a href="login.html">Member Login</a><a href="account.html">My Account</a><a href="prayer.html">Prayer Request</a><a href="contact.html">Volunteer</a></div>
+      <div><h4>Service Times</h4><p>Sunday Worship<br />9:30 AM</p><p>Midweek Word & Prayer<br />Wednesday 7:00 PM</p></div>
+    </div>
+    <div class="footer-bottom"><span>Grace City Church</span><span>Ecclesia Theme - Digital Church OS</span></div>
+  </div>
+</footer>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-close-row"><button class="drawer-close" id="drawerClose" aria-label="Close menu"><i data-lucide="x"></i></button></div>
+  <nav class="drawer-nav">
+    <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+    <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
+    <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
+    <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
+    <a class="pjax-link" href="login.html"><i data-lucide="user-circle"></i> Account</a>
+  </nav>
+  <div class="drawer-actions"><a href="account.html" class="btn btn-soft btn-full pjax-link"><i data-lucide="user-circle"></i> My Account</a><a href="contact.html" class="btn btn-primary btn-full pjax-link"><i data-lucide="map-pin"></i> Plan Visit</a></div>
+</aside>
+
+<script src="assets/theme.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

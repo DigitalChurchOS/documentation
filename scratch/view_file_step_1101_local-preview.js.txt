@@ -1,0 +1,45 @@
+Created At: 2026-06-06T16:49:49Z
+Completed At: 2026-06-06T16:49:49Z
+File Path: `file:///C:/Users/Administrator/.gemini/antigravity/brain/b6ef7979-b2e0-456b-b57d-251645bf61e7/.system_generated/tasks/task-1079.log`
+Total Lines: 37
+Total Bytes: 2631
+Showing lines 1 to 37
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: ChurchOS Developer Dashboard is running at http://localhost:3002
+2: [SYSTEM] Spawning API Server: npm run dev
+3: (node:7096) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+4: (Use `node --trace-deprecation ...` to show where the warning was created)
+5: [SYSTEM] Spawning Preview Server: node scripts/local-preview.js
+6: [PREVIEW] ChurchOS preview running at http://localhost:3000
+7: [API] > churchos@1.0.0 dev
+8: > npx ts-node --files src/server.ts
+9: [PREVIEW] [PREVIEW] Request: GET /admin -> Serving file: C:\Users\Administrator\Documents\ChurchOS\apps\tenant-dashboard\public\index.html
+10: [PREVIEW] [PREVIEW] Request: GET /api/auth/invitations -> Serving file: C:\Users\Administrator\Documents\ChurchOS\api\auth\invitations
+11: [PREVIEW] [PREVIEW] Request: GET /api/auth/roles -> Serving file: C:\Users\Administrator\Documents\ChurchOS\api\auth\roles
+12: [PREVIEW] [PREVIEW] 404 Read Error: C:\Users\Administrator\Documents\ChurchOS\api\auth\invitations [Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Documents\ChurchOS\api\auth\invitations'] {
+13:   errno: -4058,
+14:   code: 'ENOENT',
+15:   syscall: 'open',
+16:   path: 'C:\\Users\\Administrator\\Documents\\ChurchOS\\api\\auth\\invitations'
+17: }
+18: [PREVIEW] [PREVIEW] 404 Read Error: C:\Users\Administrator\Documents\ChurchOS\api\auth\roles [Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Documents\ChurchOS\api\auth\roles'] {
+19:   errno: -4058,
+20:   code: 'ENOENT',
+21:   syscall: 'open',
+22:   path: 'C:\\Users\\Administrator\\Documents\\ChurchOS\\api\\auth\\roles'
+23: }
+24: [PREVIEW] [PREVIEW] Request: GET /api/auth/users -> Serving file: C:\Users\Administrator\Documents\ChurchOS\api\auth\users
+25: [PREVIEW] [PREVIEW] 404 Read Error: C:\Users\Administrator\Documents\ChurchOS\api\auth\users [Error: ENOENT: no such file or directory, open 'C:\Users\Administrator\Documents\ChurchOS\api\auth\users'] {
+26:   errno: -4058,
+27:   code: 'ENOENT',
+28:   syscall: 'open',
+29:   path: 'C:\\Users\\Administrator\\Documents\\ChurchOS\\api\\auth\\users'
+30: }
+31: [API] ◇ injected env (0) from .env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+32: [API] ╔═══════════════════════════════════════════╗
+33:   ║   ⛪  ChurchOS Kernel — Phase 1           ║
+34:   ║   🚀  Running on http://localhost:3001    ║
+35:   ║   📦  Database: SQLite (dev.db)           ║
+36:   ╚═══════════════════════════════════════════╝
+37: 
+The above content shows the entire, complete file contents of the requested file.

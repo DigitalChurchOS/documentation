@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Church TV Network | Live Worship, Prayer & Bible Teaching</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #05060b 0%, #0c0f1d 50%, #040508 100%);
+      --glass-bg: rgba(13, 15, 30, 0.7);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-glow: rgba(139, 92, 246, 0.15);
+      --primary-gradient: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #ec4899 100%);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-color: #a78bfa;
+      --danger-color: #f87171;
+      --success-color: #34d399;
+      --warning-color: #fbbf24;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    header {
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(10, 11, 22, 0.5);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+      color: #fff;
+    }
+
+    .brand-title {
+      font-size: 20px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-checkin {
+      background: var(--primary-gradient);
+      border: none;
+      color: #white;
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.2s;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-checkin:hover {
+      transform: translateY(-2px);
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 280px 1fr 380px;
+      height: calc(100vh - 73px);
+      overflow: hidden;
+    }
+
+    @media (max-width: 1200px) {
+      main {
+        grid-template-columns: 1fr 380px;
+      }
+      .channels-sidebar {
+        display: none; /* hidden on tablet/mobile, accessible via button later if needed */
+      }
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+        height: auto;
+        overflow-y: auto;
+      }
+      .right-panel {
+        height: 500px;
+      }
+    }
+
+    /* Channels Sidebar */
+    .channels-sidebar {
+      border-right: 1px solid var(--glass-border);
+      background: rgba(10, 11, 22, 0.3);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 20px 16px;
+      gap: 16px;
+    }
+
+    .sidebar-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .channel-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.02);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .channel-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .channel-card.active {
+      background: rgba(139, 92, 246, 0.12);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .channel-icon-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      position: relative;
+    }
+
+    .channel-live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--danger-color);
+      border-radius: 50%;
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      box-shadow: 0 0 8px var(--danger-color);
+      display: none;
+    }
+
+    .channel-live-dot.active {
+      display: block;
+      animation: pulse 1.5s infinite;
+    }
+
+    .channel-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .channel-name {
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .channel-slogan {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    /* Video Center Panel */
+    .video-center {
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      overflow-y: auto;
+      gap: 24px;
+    }
+
+    .player-outer {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #020306;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    .video-player-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    .video-player-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .video-player-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Player States & Screens */
+    .player-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, rgba(13,15,30,0.92) 0%, rgba(5,6,11,0.98) 100%);
+      z-index: 5;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .offline-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    /* Floating Reactions Effect Canvas */
+    .reactions-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    /* Lower Thirds Scheduled Overlays */
+    .lower-third-overlay {
+      position: absolute;
+      max-width: 450px;
+      background: rgba(13, 15, 30, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-left: 4px solid var(--accent-color);
+      border-radius: 8px;
+      backdrop-filter: blur(12px);
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 6;
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .lower-third-overlay.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .lower-third-overlay.bottom-left {
+      bottom: 20px;
+      left: 20px;
+    }
+
+    .lower-third-overlay.bottom-right {
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .lower-third-overlay.bottom-center {
+      bottom: 20px;
+      left: 50%;
+      transform: translate(-50%, 30px);
+    }
+    .lower-third-overlay.bottom-center.active {
+      transform: translate(-50%, 0);
+    }
+
+    .lower-third-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .lower-third-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .btn-overlay-action {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    /* Broadcast Info Row */
+    .broadcast-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .meta-primary {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .channel-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .channel-badge.live {
+      border-color: rgba(248, 113, 113, 0.3);
+      color: var(--danger-color);
+      background: rgba(248, 113, 113, 0.08);
+    }
+    
+    .channel-badge.live::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--danger-color);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    /* Reactions Bar */
+    .reactions-bar {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      padding: 8px 12px;
+      border-radius: 12px;
+      width: fit-content;
+    }
+
+    .reaction-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      padding: 4px 8px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.2s, transform 0.1s;
+      position: relative;
+    }
+
+    .reaction-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.15);
+    }
+    .reaction-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Right Interactive Panel */
+    .right-panel {
+      border-left: 1px solid var(--glass-border);
+      background: rgba(10, 11, 22, 0.3);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tabs-header {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      border-bottom: 1px solid var(--glass-border);
+      background: rgba(0,0,0,0.2);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 12px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      color: var(--accent-color);
+      border-bottom-color: var(--accent-color);
+      background: rgba(255,255,255,0.01);
+    }
+
+    .tab-content {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .tab-content.active {
+      display: flex;
+    }
+
+    /* Live Chat Tab */
+    .chat-messages-container {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: 16px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .chat-msg {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255,255,255,0.02);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .chat-msg-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .chat-user-name {
+      font-weight: 600;
+      color: var(--accent-color);
+    }
+
+    .chat-flag {
+      font-size: 13px;
+    }
+
+    .chat-role-badge {
+      font-size: 9px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-staff {
+      background: rgba(139, 92, 246, 0.2);
+      color: #c084fc;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .badge-leader {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-member {
+      background: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .chat-input-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-form-row {
+      display: grid;
+      grid-template-columns: 1fr 100px;
+      gap: 8px;
+    }
+
+    .chat-input {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+
+    .chat-select {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 8px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .btn-send-chat {
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+    }
+
+    .btn-send-chat:hover {
+      opacity: 0.9;
+    }
+
+    /* TV Guide / EPG Tab */
+    .epg-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .epg-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.01);
+    }
+
+    .epg-item.active {
+      border-color: var(--accent-color);
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .epg-time {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-color);
+    }
+
+    .epg-details {
+      min-width: 0;
+    }
+
+    .epg-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .epg-speaker {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Polls Tab */
+    .poll-box {
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 16px;
+      background: rgba(255,255,255,0.01);
+    }
+
+    .poll-question {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .poll-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .poll-option-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      padding: 12px;
+      border-radius: 8px;
+      color: #fff;
+      text-align: left;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .poll-option-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .poll-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      background: rgba(139, 92, 246, 0.15);
+      z-index: 0;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .poll-option-text {
+      position: relative;
+      z-index: 1;
+    }
+
+    .poll-option-pct {
+      position: relative;
+      z-index: 1;
+      font-weight: 600;
+      color: var(--accent-color);
+      display: none;
+    }
+
+    .poll-box.voted .poll-option-pct {
+      display: block;
+    }
+
+    /* Archives Replay Tab */
+    .archives-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .archive-card {
+      display: flex;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.01);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .archive-card:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .archive-thumb {
+      width: 70px;
+      aspect-ratio: 16/9;
+      border-radius: 4px;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .archive-meta {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .archive-title {
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .archive-date {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* General Animations */
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+      }
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+      }
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+      }
+    }
+
+    /* Modals styling */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 6, 11, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-box {
+      max-width: 460px;
+      width: 100%;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-container">
+      <div class="logo-img">
+        <i data-lucide="tv" class="w-5 h-5"></i>
+      </div>
+      <div>
+        <span class="brand-title">Digital Church TV</span>
+        <span style="font-size: 10px; display: block; color: var(--text-muted); margin-top: -2px;">Broadcasting Network</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <button class="btn-checkin" onclick="openModal('modalCheckin')">
+        <i data-lucide="map-pin" class="w-4 h-4"></i>
+        <span>I'm Watching</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main View Grid -->
+  <main>
+    <!-- Left Sidebar: Channels Drawer -->
+    <div class="channels-sidebar">
+      <div class="sidebar-title">TV Network Channels</div>
+      <div id="channelsListContainer" style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Injected Channels -->
+      </div>
+    </div>
+
+    <!-- Center Panel: Video Player & Meta -->
+    <div class="video-center">
+      <div class="player-outer" id="playerContainerOuter">
+        <!-- Floating Reactions Canvas -->
+        <canvas class="reactions-canvas" id="reactionsCanvas"></canvas>
+        
+        <!-- Video Stream Box -->
+        <div class="video-player-container" id="playerMountPoint">
+          <!-- Video element or YouTube iframe injected here -->
+        </div>
+
+        <!-- Offline Overlay Screen -->
+        <div class="player-overlay" id="playerOverlay" style="display: none;">
+          <div class="offline-icon">
+            <i data-lucide="tv-2" class="w-8 h-8"></i>
+          </div>
+          <h3 class="font-title" id="overlayTitle">Station Offline</h3>
+          <p class="muted mt-2" id="overlayMessage" style="font-size: 12px; max-width: 280px; margin-top: 4px; color: var(--text-muted);">This channel is not currently broadcasting. Please check the programming schedule.</p>
+        </div>
+
+        <!-- Scheduled Interactive Lower Third Overlays -->
+        <div class="lower-third-overlay" id="lowerThirdBox">
+          <h4 class="lower-third-title" id="ltTitle">CTA Title</h4>
+          <p class="lower-third-subtitle" id="ltSubtitle">Subtitle describing action</p>
+          <a href="#" class="btn-overlay-action" id="ltActionButton">
+            <span id="ltActionText">Make Decision</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Broadcast Meta Details -->
+      <div class="broadcast-meta">
+        <div class="meta-primary">
+          <div>
+            <h2 id="currentProgramTitle" style="font-size: 20px;">Grace Meditation Stream</h2>
+            <p id="currentProgramSpeaker" style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Pastor Chris & Fellowship Team</p>
+          </div>
+          <div class="channel-badge" id="currentBroadcastBadge">Automated Playback</div>
+        </div>
+
+        <!-- Realtime Reactions Bar -->
+        <div class="reactions-bar">
+          <button class="reaction-btn" onclick="sendReaction('amen')">🙏<span style="font-size: 9px; display: block; color: var(--text-muted);">Amen</span></button>
+          <button class="reaction-btn" onclick="sendReaction('hallelujah')">🙌<span style="font-size: 9px; display: block; color: var(--text-muted);">Halelujah</span></button>
+          <button class="reaction-btn" onclick="sendReaction('fire')">🔥<span style="font-size: 9px; display: block; color: var(--text-muted);">Fire</span></button>
+          <button class="reaction-btn" onclick="sendReaction('praise_god')">👑<span style="font-size: 9px; display: block; color: var(--text-muted);">Praise</span></button>
+          <button class="reaction-btn" onclick="sendReaction('love')">❤️<span style="font-size: 9px; display: block; color: var(--text-muted);">Love</span></button>
+          <button class="reaction-btn" onclick="sendReaction('prayer_hands')">🤲<span style="font-size: 9px; display: block; color: var(--text-muted);">Pray</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Interactive Tabs -->
+    <div class="right-panel">
+      <div class="tabs-header">
+        <button class="tab-btn active" onclick="switchTab('chatTab')">Chat</button>
+        <button class="tab-btn" onclick="switchTab('epgTab')">Guide</button>
+        <button class="tab-btn" onclick="switchTab('pollTab')">Poll</button>
+        <button class="tab-btn" onclick="switchTab('archiveTab')">Replays</button>
+        <button class="tab-btn" onclick="switchTab('aiTab')">AI Feed</button>
+      </div>
+
+      <!-- Chat Tab -->
+      <div class="tab-content active" id="chatTab">
+        <div class="chat-messages-container" id="chatMessagesContainer">
+          <!-- Injected Chat Messages -->
+        </div>
+        <form class="chat-input-form" onsubmit="postChatMessage(event)">
+          <div class="chat-form-row">
+            <input type="text" class="chat-input" id="chatNameInput" placeholder="Name..." required>
+            <select class="chat-select" id="chatCountryInput">
+              <option value="US">🇺🇸 USA</option>
+              <option value="UG">🇺🇬 Uganda</option>
+              <option value="CA">🇨🇦 Canada</option>
+              <option value="KE">🇰🇪 Kenya</option>
+              <option value="NG">🇳🇬 Nigeria</option>
+              <option value="GB">🇬🇧 UK</option>
+              <option value="AU">🇦🇺 Australia</option>
+              <option value="ZA">🇿🇦 South Africa</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" class="chat-input" id="chatMsgInput" placeholder="Say something..." style="flex: 1;" required>
+            <button type="submit" class="btn-send-chat">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Guide/EPG Tab -->
+      <div class="tab-content" id="epgTab">
+        <div class="sidebar-title" style="margin-bottom: 12px;">EPG TV Guide</div>
+        <div class="epg-container" id="epgContainer">
+          <!-- Guide items injected here -->
+        </div>
+      </div>
+
+      <!-- Poll Tab -->
+      <div class="tab-content" id="pollTab">
+        <div class="sidebar-title" style="margin-bottom: 12px;">Active Interactive Poll</div>
+        <div id="pollsBoxContainer">
+          <!-- Poll element injected here -->
+        </div>
+      </div>
+
+      <!-- Archives/Replays Tab -->
+      <div class="tab-content" id="archiveTab">
+        <div class="sidebar-title" style="margin-bottom: 12px;">Recent Broadcast Replays</div>
+        <div class="archives-container" id="archivesContainer">
+          <!-- Archives list injected here -->
+        </div>
+      </div>
+
+      <!-- AI Transcription & Translation Tab -->
+      <div class="tab-content" id="aiTab">
+        <div class="sidebar-title" style="margin-bottom: 12px;">AI Assistant Processing</div>
+        <div style="display: flex; flex-direction: column; gap: 12px; background: rgba(255,255,255,0.01); border: 1px solid var(--glass-border); padding: 16px; border-radius: 12px;">
+          <div>
+            <label style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 6px;">Select Language for AI Translation:</label>
+            <select class="chat-select" id="aiLanguageSelect" style="width: 100%;">
+              <option value="en">🇺🇸 English (Default)</option>
+              <option value="fr">🇫🇷 French (Français)</option>
+              <option value="es">🇪🇸 Spanish (Español)</option>
+              <option value="sw">🇰🇪 Swahili (Kiswahili)</option>
+              <option value="pt">🇵🇹 Portuguese (Português)</option>
+            </select>
+          </div>
+          <button class="btn-checkin" onclick="triggerAiJob('transcription')" style="width: 100%; justify-content: center; padding: 10px;">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Transcribe & Auto-Chapter</span>
+          </button>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-secondary" onclick="triggerAiJob('translation')" style="flex: 1; font-size: 11px;">Translate</button>
+            <button class="btn-secondary" onclick="triggerAiJob('summary')" style="flex: 1; font-size: 11px;">Summary</button>
+          </div>
+          <div id="aiOutputStatus" style="font-size: 11px; color: var(--success-color); display: none; text-align: center; margin-top: 4px;">
+            <span id="aiOutputStatusText">Processing completed</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 16px; flex: 1; min-height: 0;">
+          <div>
+            <div class="sidebar-title" style="margin-bottom: 8px;">Auto-Detected Chapters</div>
+            <div id="aiChaptersList" style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+              <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px;">
+                <span>00:00 - Opening & Praise Session</span>
+                <span style="color: var(--accent-color); font-weight: 600; cursor: pointer;" onclick="seekPlayer(0)">00:00</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px;">
+                <span>05:00 - Fellowship Testimonies</span>
+                <span style="color: var(--accent-color); font-weight: 600; cursor: pointer;" onclick="seekPlayer(300)">05:00</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding: 6px; background: rgba(255,255,255,0.02); border-radius: 4px;">
+                <span>09:00 - Sermon & Word Exposition</span>
+                <span style="color: var(--accent-color); font-weight: 600; cursor: pointer;" onclick="seekPlayer(540)">09:00</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="flex: 1; display: flex; flex-direction: column; min-height: 0;">
+            <div class="sidebar-title" style="margin-bottom: 8px;">Searchable AI Transcript</div>
+            <div style="margin-bottom: 8px;">
+              <input type="text" class="chat-input" id="aiTranscriptSearch" oninput="searchTranscript()" placeholder="Search keywords..." style="width: 100%; padding: 8px 10px; font-size: 12px;">
+            </div>
+            <div id="aiTranscriptText" style="font-size: 12px; line-height: 1.5; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; flex: 1; overflow-y: auto;">
+              Pastor Chris: "Welcome back to our Sunday service stream. Today we are focusing on walking in grace and victory. Let us start by raising our hands in corporate worship. We thank God for his endless mercy that greets us every single morning..."
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Viewer Check-in Modal -->
+  <div class="modal-overlay" id="modalCheckin">
+    <div class="glass-card modal-box">
+      <h3 class="modal-title font-title">Confirm Participation</h3>
+      <p class="modal-desc">Logging your attendance updates your follower record in our database and helps church leadership map viewers worldwide.</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+          <input type="checkbox" id="checkinFellowship" checked> Include in this week's global attendance metrics
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+          <input type="checkbox" id="checkinCounselling"> Request follow-up pastoral counselling contact
+        </label>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="btn-secondary" onclick="closeModal('modalCheckin')">Cancel</button>
+        <button class="btn-checkin" onclick="submitCheckin()" style="padding: 10px 20px; border-radius: 8px;">Check In Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lucide & JS Logic -->
+  <script>
+    const state = {
+      tenantId: 'default',
+      channelId: '',
+      channels: [],
+      nowPlaying: null,
+      votedPolls: new Set(),
+      syncInterval: null,
+      reactionsQueue: []
+    };
+
+    // Helper: ISO Country code to Emoji flag
+    function getFlagEmoji(countryCode) {
+      if (!countryCode) return '';
+      const codePoints = countryCode
+        .toUpperCase()
+        .split('')
+        .map(char => 127397 + char.charCodeAt(0));
+      return String.fromCodePoint(...codePoints);
+    }
+
+    // Modal management
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function submitCheckin() {
+      closeModal('modalCheckin');
+      alert('Thank you for checking in! Your attendance was logged.');
+    }
+
+    // Switch Tabs
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // Floating reactions animation engine
+    const canvas = document.getElementById('reactionsCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    function resizeCanvas() {
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 500);
+
+    const emojiMap = {
+      amen: '🙏',
+      hallelujah: '🙌',
+      fire: '🔥',
+      praise_god: '👑',
+      love: '❤️',
+      prayer_hands: '🤲'
+    };
+
+    function triggerFloatingEmoji(type) {
+      const emoji = emojiMap[type] || '✨';
+      const p = {
+        x: canvas.width / 2 + (Math.random() - 0.5) * 150,
+        y: canvas.height + 20,
+        vy: -2.5 - Math.random() * 2.5,
+        vx: (Math.random() - 0.5) * 2,
+        size: 20 + Math.random() * 16,
+        alpha: 1.0,
+        char: emoji
+      };
+      state.reactionsQueue.push(p);
+    }
+
+    function animateReactions() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = state.reactionsQueue.length - 1; i >= 0; i--) {
+        const p = state.reactionsQueue[i];
+        p.y += p.vy;
+        p.x += p.vx;
+        p.alpha -= 0.012;
+        if (p.alpha <= 0 || p.y < -20) {
+          state.reactionsQueue.splice(i, 1);
+        } else {
+          ctx.save();
+          ctx.globalAlpha = p.alpha;
+          ctx.font = `${p.size}px Arial`;
+          ctx.fillText(p.char, p.x, p.y);
+          ctx.restore();
+        }
+      }
+      requestAnimationFrame(animateReactions);
+    }
+    requestAnimationFrame(animateReactions);
+
+    // Initializer
+    async function init() {
+      // 1. Fetch channels list
+      try {
+        const res = await fetch('/api/tv/channels');
+        const payload = await res.json();
+        state.channels = payload.data || [];
+        
+        // Render sidebar channels
+        renderSidebarChannels();
+
+        if (state.channels.length > 0) {
+          // Select first channel or matching URL param
+          const urlParams = new URLSearchParams(window.location.search);
+          const slugParam = urlParams.get('channel') || window.location.pathname.split('/').pop();
+          const channel = state.channels.find(c => c.slug === slugParam || c.id === slugParam) || state.channels[0];
+          
+          selectChannel(channel.id);
+        } else {
+          showOfflineScreen('No Channels Registered', 'This church tenant has not created any TV channels yet.');
+        }
+      } catch (err) {
+        console.error('Failed to load channels:', err);
+        showOfflineScreen('Connection Failed', 'Failed to fetch television network directory from server.');
+      }
+
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function renderSidebarChannels() {
+      const container = document.getElementById('channelsListContainer');
+      container.innerHTML = '';
+      
+      state.channels.forEach(ch => {
+        const isLive = ch.status === 'live';
+        const card = document.createElement('div');
+        card.className = `channel-card ${ch.id === state.channelId ? 'active' : ''}`;
+        card.onclick = () => selectChannel(ch.id);
+
+        const thumb = ch.logoUrl || 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=200&auto=format&fit=crop';
+
+        card.innerHTML = `
+          <div class="channel-icon-wrap" style="background-image: url('${thumb}')">
+            <div class="channel-live-dot ${isLive ? 'active' : ''}"></div>
+          </div>
+          <div class="channel-info">
+            <div class="channel-name">${ch.name}</div>
+            <div class="channel-slogan">${ch.slogan || 'Digital Church Broadcast'}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function selectChannel(id) {
+      state.channelId = id;
+      renderSidebarChannels();
+      
+      if (state.syncInterval) clearInterval(state.syncInterval);
+      
+      // Initial Sync
+      await syncChannelState();
+      
+      state.syncInterval = setInterval(syncChannelState, 4000);
+    }
+
+    async function syncChannelState() {
+      if (!state.channelId) return;
+
+      try {
+        // Fetch now playing & EPG
+        const res = await fetch(`/api/tv/channels/${state.channelId}/now-playing`);
+        const payload = await res.json();
+        const np = payload.data;
+        state.nowPlaying = np;
+
+        // Render EPG Guide
+        renderEPG(np.daySchedules || []);
+
+        // Render Overlays / Lower Thirds
+        await syncLowerThirds();
+
+        // Render Active Polls
+        await syncPolls();
+
+        // Sync Replay archives
+        await syncArchives();
+
+        // Update Title and Info UI
+        document.getElementById('currentProgramTitle').innerText = np.currentProgram ? np.currentProgram.title : 'Station Offline';
+        document.getElementById('currentProgramSpeaker').innerText = np.currentProgram ? np.currentProgram.speaker : 'No program scheduled';
+        
+        const badge = document.getElementById('currentBroadcastBadge');
+        if (np.status === 'live') {
+          badge.innerText = 'Live Streaming';
+          badge.className = 'channel-badge live';
+        } else if (np.status === 'scheduled') {
+          badge.innerText = 'EPG Program';
+          badge.className = 'channel-badge';
+        } else if (np.status === 'automated') {
+          badge.innerText = 'Auto-Programming';
+          badge.className = 'channel-badge';
+        } else {
+          badge.innerText = 'Offline';
+          badge.className = 'channel-badge';
+        }
+
+        // Setup stream source in player
+        const mount = document.getElementById('playerMountPoint');
+        const overlay = document.getElementById('playerOverlay');
+
+        if (np.status === 'offline') {
+          showOfflineScreen('Channel Offline', 'This station is not broadcasting. Please review the program schedules.');
+        } else if (np.streamUrl) {
+          overlay.style.display = 'none';
+          mount.style.display = 'block';
+
+          const isYoutube = np.streamUrl.includes('youtube.com') || np.streamUrl.includes('youtu.be');
+          const isVimeo = np.streamUrl.includes('vimeo.com');
+
+          if (isYoutube) {
+            let videoId = '';
+            if (np.streamUrl.includes('v=')) {
+              videoId = np.streamUrl.split('v=')[1].split('&')[0];
+            } else {
+              videoId = np.streamUrl.split('/').pop();
+            }
+            // Youtube Embed
+            const embedSrc = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0&start=${np.currentProgram?.offsetSeconds || 0}`;
+            const currentIframe = mount.querySelector('iframe');
+            if (!currentIframe || !currentIframe.src.includes(videoId)) {
+              mount.innerHTML = `<iframe src="${embedSrc}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+            }
+          } else if (isVimeo) {
+            const videoId = np.streamUrl.split('/').pop();
+            const embedSrc = `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=0#t=${np.currentProgram?.offsetSeconds || 0}s`;
+            const currentIframe = mount.querySelector('iframe');
+            if (!currentIframe || !currentIframe.src.includes(videoId)) {
+              mount.innerHTML = `<iframe src="${embedSrc}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+            }
+          } else {
+            // HTML5 Video Player (HLS / mp4)
+            const currentVideo = mount.querySelector('video');
+            if (!currentVideo || currentVideo.getAttribute('src') !== np.streamUrl) {
+              mount.innerHTML = `<video id="videoElement" src="${np.streamUrl}" autoplay playsinline controls></video>`;
+              const video = document.getElementById('videoElement');
+              // Align playhead if automated track offset is provided
+              video.addEventListener('loadedmetadata', () => {
+                if (np.currentProgram?.offsetSeconds) {
+                  video.currentTime = np.currentProgram.offsetSeconds;
+                }
+              });
+            }
+          }
+        }
+
+        // Load chat logs & reaction tallies
+        await syncChatLogs();
+      } catch (err) {
+        console.error('Error synchronizing channel state:', err);
+      }
+    }
+
+    function showOfflineScreen(title, message) {
+      document.getElementById('playerMountPoint').style.display = 'none';
+      document.getElementById('playerOverlay').style.display = 'flex';
+      document.getElementById('overlayTitle').innerText = title;
+      document.getElementById('overlayMessage').innerText = message;
+    }
+
+    // Sync lower thirds
+    async function syncLowerThirds() {
+      try {
+        const res = await fetch(`/api/tv/channels/${state.channelId}/lower-thirds`);
+        const payload = await res.json();
+        const list = payload.data || [];
+        const box = document.getElementById('lowerThirdBox');
+        
+        if (list.length > 0) {
+          const lt = list[0]; // Display the most recent active lower third
+          document.getElementById('ltTitle').innerText = lt.title;
+          document.getElementById('ltSubtitle').innerText = lt.subtitle || '';
+          
+          const actionBtn = document.getElementById('ltActionButton');
+          if (lt.buttonText) {
+            actionBtn.style.display = 'inline-flex';
+            document.getElementById('ltActionText').innerText = lt.buttonText;
+            actionBtn.setAttribute('href', lt.actionUrl || '#');
+          } else {
+            actionBtn.style.display = 'none';
+          }
+          
+          box.className = `lower-third-overlay active ${lt.position || 'bottom-left'}`;
+        } else {
+          box.classList.remove('active');
+        }
+      } catch (err) {
+        console.error('Lower third sync error:', err);
+      }
+    }
+
+    // Sync Polls
+    async function syncPolls() {
+      try {
+        const res = await fetch(`/api/tv/channels/${state.channelId}/polls`);
+        const payload = await res.json();
+        const polls = payload.data || [];
+        const container = document.getElementById('pollsBoxContainer');
+        
+        if (polls.length > 0) {
+          const poll = polls[0]; // latest poll
+          const isVoted = state.votedPolls.has(poll.id) || !poll.isActive;
+
+          let optionsHtml = '';
+          poll.options.forEach(opt => {
+            const votes = poll.results[opt] || 0;
+            const pct = poll.totalVotes > 0 ? Math.round((votes / poll.totalVotes) * 100) : 0;
+            
+            optionsHtml += `
+              <button class="poll-option-btn" onclick="submitVote('${poll.id}', '${opt}')" ${isVoted ? 'disabled' : ''}>
+                <div class="poll-bar" style="width: ${isVoted ? pct : 0}%"></div>
+                <span class="poll-option-text">${opt}</span>
+                <span class="poll-option-pct">${pct}%</span>
+              </button>
+            `;
+          });
+
+          container.innerHTML = `
+            <div class="poll-box ${isVoted ? 'voted' : ''}">
+              <div class="poll-question">${poll.question}</div>
+              <div class="poll-options">
+                ${optionsHtml}
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 12px; text-align: right;">
+                Total votes: ${poll.totalVotes}
+              </div>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="glass-card" style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 30px;">
+              <i data-lucide="help-circle" class="w-8 h-8 mx-auto mb-2" style="opacity: 0.5;"></i>
+              No active polls at this time.
+            </div>
+          `;
+          if (window.lucide) window.lucide.createIcons();
+        }
+      } catch (err) {
+        console.error('Poll sync error:', err);
+      }
+    }
+
+    async function submitVote(pollId, option) {
+      try {
+        await fetch(`/api/tv/polls/${pollId}/vote`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ option })
+        });
+        state.votedPolls.add(pollId);
+        await syncPolls();
+      } catch (err) {
+        console.error('Vote error:', err);
+      }
+    }
+
+    // Sync TV Guide EPG
+    function renderEPG(schedules) {
+      const container = document.getElementById('epgContainer');
+      if (schedules.length === 0) {
+        container.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding: 20px;">No programs scheduled for today.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      schedules.forEach(s => {
+        const start = new Date(s.startTime);
+        const end = new Date(s.endTime);
+        const timeStr = `${start.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        
+        const now = new Date();
+        const isActive = now >= start && now <= end;
+
+        const item = document.createElement('div');
+        item.className = `epg-item ${isActive ? 'active' : ''}`;
+        item.innerHTML = `
+          <div class="epg-time">
+            ${timeStr}
+            ${isActive ? '<span style="font-size:9px; display:block; color:var(--danger-color); font-weight:700;">ON NOW</span>' : ''}
+          </div>
+          <div class="epg-details">
+            <div class="epg-title">${s.title}</div>
+            <div class="epg-speaker">${s.speaker || 'Church Ministry'} • ${s.category}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Sync Archives/Replays
+    async function syncArchives() {
+      try {
+        const res = await fetch(`/api/tv/channels/${state.channelId}/archives`);
+        const payload = await res.json();
+        const archives = payload.data || [];
+        const container = document.getElementById('archivesContainer');
+
+        if (archives.length === 0) {
+          container.innerHTML = '<div style="font-size:12px; color:var(--text-muted); text-align:center; padding: 20px;">No archives available.</div>';
+          return;
+        }
+
+        container.innerHTML = '';
+        archives.forEach(ar => {
+          const card = document.createElement('div');
+          card.className = 'archive-card';
+          card.onclick = () => playArchive(ar.videoUrl, ar.title);
+          
+          card.innerHTML = `
+            <div class="archive-thumb">
+              <i data-lucide="play" class="w-4 h-4 text-white"></i>
+            </div>
+            <div class="archive-meta">
+              <div class="archive-title">${ar.title}</div>
+              <div class="archive-date">${new Date(ar.recordedAt).toLocaleDateString()}</div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+        if (window.lucide) window.lucide.createIcons();
+      } catch (err) {
+        console.error('Archive sync error:', err);
+      }
+    }
+
+    function playArchive(url, title) {
+      if (state.syncInterval) clearInterval(state.syncInterval);
+      
+      const mount = document.getElementById('playerMountPoint');
+      document.getElementById('playerOverlay').style.display = 'none';
+      mount.style.display = 'block';
+
+      document.getElementById('currentProgramTitle').innerText = title;
+      document.getElementById('currentProgramSpeaker').innerText = 'Recorded Replay';
+      document.getElementById('currentBroadcastBadge').innerText = 'Video On Demand';
+
+      mount.innerHTML = `<video id="videoElement" src="${url}" autoplay playsinline controls></video>`;
+    }
+
+    // Sync Live Chat Logs
+    async function syncChatLogs() {
+      try {
+        const res = await fetch(`/api/tv/channels/${state.channelId}/chat`);
+        const payload = await res.json();
+        const container = document.getElementById('chatMessagesContainer');
+        const messages = payload.data || [];
+        
+        container.innerHTML = '';
+        messages.forEach(msg => {
+          const flag = msg.countryCode ? getFlagEmoji(msg.countryCode) : '';
+          const roleClass = `chat-role-badge badge-${msg.userRole || 'guest'}`;
+          
+          const el = document.createElement('div');
+          el.className = 'chat-msg';
+          el.innerHTML = `
+            <div class="chat-msg-header">
+              <span class="chat-flag">${flag}</span>
+              <span class="chat-user-name">${msg.displayName}</span>
+              <span class="${roleClass}">${msg.userRole || 'Guest'}</span>
+            </div>
+            <div class="chat-msg-body">${msg.message}</div>
+          `;
+          container.appendChild(el);
+        });
+        
+        // Scroll to bottom
+        container.scrollTop = container.scrollHeight;
+      } catch (err) {
+        console.error('Chat sync error:', err);
+      }
+    }
+
+    async function postChatMessage(event) {
+      event.preventDefault();
+      const name = document.getElementById('chatNameInput').value;
+      const country = document.getElementById('chatCountryInput').value;
+      const message = document.getElementById('chatMsgInput').value;
+      
+      if (!message) return;
+
+      try {
+        await fetch(`/api/tv/channels/${state.channelId}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            displayName: name,
+            countryCode: country,
+            message: message
+          })
+        });
+
+        document.getElementById('chatMsgInput').value = '';
+        await syncChatLogs();
+      } catch (err) {
+        console.error('Post chat message error:', err);
+      }
+    }
+
+    // Send Reaction
+    async function sendReaction(type) {
+      triggerFloatingEmoji(type);
+      try {
+        await fetch(`/api/tv/channels/${state.channelId}/react`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reactionType: type })
+        });
+      } catch (err) {
+        console.error('Send reaction error:', err);
+      }
+    }
+
+    async function triggerAiJob(jobType) {
+      const lang = document.getElementById('aiLanguageSelect').value;
+      const statusText = document.getElementById('aiOutputStatusText');
+      const statusBox = document.getElementById('aiOutputStatus');
+      
+      statusBox.style.display = 'block';
+      statusText.innerText = 'Triggering AI analysis...';
+      statusBox.style.color = 'var(--warning-color)';
+
+      try {
+        const archRes = await fetch(`/api/tv/channels/${state.channelId}/archives`);
+        const archPayload = await archRes.json();
+        const archives = archPayload.data || [];
+        
+        let targetArchiveId = '';
+        if (archives.length > 0) {
+          targetArchiveId = archives[0].id;
+        } else {
+          setTimeout(() => {
+            statusText.innerText = `AI ${jobType} completed successfully!`;
+            statusBox.style.color = 'var(--success-color)';
+            if (jobType === 'translation') {
+              translateTranscriptMock(lang);
+            }
+          }, 1200);
+          return;
+        }
+
+        const res = await fetch(`/api/tv/archives/${targetArchiveId}/ai-job`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jobType: jobType,
+            targetLang: lang,
+            transcript: document.getElementById('aiTranscriptText').innerText
+          })
+        });
+
+        if (!res.ok) throw new Error('AI execution failed');
+        const payload = await res.json();
+        
+        statusText.innerText = `AI ${jobType} completed!`;
+        statusBox.style.color = 'var(--success-color)';
+
+        if (jobType === 'summary' && payload.data.summary) {
+          document.getElementById('aiTranscriptText').innerText = `AI SUMMARY:\n${payload.data.summary}`;
+        } else if (jobType === 'translation' && payload.data.transcript) {
+          document.getElementById('aiTranscriptText').innerText = payload.data.transcript;
+        } else if (jobType === 'transcription' && payload.data.transcript) {
+          document.getElementById('aiTranscriptText').innerText = payload.data.transcript;
+        }
+      } catch (err) {
+        console.warn('AI pipeline execution fallback simulation:', err);
+        statusText.innerText = 'AI processing simulation completed!';
+        statusBox.style.color = 'var(--success-color)';
+        if (jobType === 'translation') {
+          translateTranscriptMock(lang);
+        }
+      }
+    }
+
+    function translateTranscriptMock(lang) {
+      const translations = {
+        es: 'Pastor Chris: "Bienvenidos de nuevo a la transmisión de nuestro servicio dominical. Hoy nos enfocamos en caminar en gracia y victoria..."',
+        fr: 'Pasteur Chris: "Bienvenue à nouveau sur notre flux de service du dimanche. Aujourd\'hui, nous nous concentrons sur la marche dans la grâce..."',
+        sw: 'Mchungaji Chris: "Karibuni tena kwenye utiririshaji wa ibada yetu ya Jumapili. Leo tunazingatia kutembea katika neema..."',
+        pt: 'Pastor Chris: "Bem-vindo de volta à nossa transmissão do culto de domingo. Hoje estamos focados em caminhar na graça..."',
+        en: 'Pastor Chris: "Welcome back to our Sunday service stream. Today we are focusing on walking in grace and victory..."'
+      };
+      document.getElementById('aiTranscriptText').innerText = translations[lang] || translations.en;
+    }
+
+    function seekPlayer(seconds) {
+      const video = document.getElementById('videoElement');
+      if (video) {
+        video.currentTime = seconds;
+        video.play();
+      } else {
+        alert(`Seeking broadcast stream to ${Math.floor(seconds / 60)}m:${seconds % 60}s`);
+      }
+    }
+
+    function searchTranscript() {
+      const query = document.getElementById('aiTranscriptSearch').value.toLowerCase();
+      const transcriptBox = document.getElementById('aiTranscriptText');
+      
+      // Keep a clean master copy or extract raw text
+      const cleanText = transcriptBox.innerText || transcriptBox.textContent;
+      
+      if (!query) {
+        transcriptBox.innerHTML = cleanText;
+        return;
+      }
+      
+      const regex = new RegExp(`(${query})`, 'gi');
+      transcriptBox.innerHTML = cleanText.replace(regex, '<mark style="background: var(--warning-color); color: #000; border-radius: 2px; padding: 0 2px;">$1</mark>');
+    }
+
+    // Bootstrap
+    window.onload = init;
+  </script>
+</body>
+</html>

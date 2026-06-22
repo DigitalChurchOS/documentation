@@ -1,0 +1,32 @@
+Created At: 2026-06-06T14:53:52Z
+Completed At: 2026-06-06T14:53:53Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31897
+Total Bytes: 1555827
+Showing lines 12967 to 12990
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12967:             <div class="panel-heading" style="padding: 0 0 16px 0;">
+12968:               <h3 style="margin:0; font-size:14px; font-weight:850; color:#202033;">Pages & Navigation</h3>
+12969:               <p style="margin:4px 0 0; font-size:11px; font-weight:700; color:var(--platform-muted);">Select a page to edit its content visually. Changes are saved as drafts until published.</p>
+12970:             </div>
+12971:             <div class="pages-list" id="customizerPagesList" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px;">
+12972:               <!-- Dynamic Page List -->
+12973:             </div>
+12974:             <button class="primary-btn w-full justify-center" id="customizerAddPageBtn" type="button" style="width:100%; border-radius:10px; height:38px;"><i data-lucide="plus"></i> Add New Page</button>
+12975:             
+12976:             <hr style="margin: 20px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.08);" />
+12977:             
+12978:             <div class="panel-heading" style="padding: 0 0 16px 0;">
+12979:               <h3 style="margin:0; font-size:14px; font-weight:850; color:#202033;">Section Catalog</h3>
+12980:               <p style="margin:4px 0 0; font-size:11px; font-weight:700; color:var(--platform-muted);">Click sections below to add them to your page.</p>
+12981:             </div>
+12982:             <div class="sections-catalog" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+12983:               <div class="catalog-item" data-section-type="hero-banner" style="padding: 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; background: #ffffff; cursor: pointer; text-align: center; font-size: 11px; font-weight: 700; color: #202033; transition: all 0.2s;">
+12984:                 <i data-lucide="layout" style="width: 20px; height: 20px; margin: 0 auto 6px; display: block; color: #7c3aed;"></i>
+12985:                 Hero Banner
+12986:               </div>
+12987:               <div class="catalog-item" data-section-type="feature-grid" style="padding: 12px; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; background: #ffffff; cursor: pointer; text-align: center; font-size: 11px; font-weight: 700; color: #202033; transition: all 0.2s;">
+12988:                 <i data-lucide="grid" style="width: 20px; height: 20px; margin: 0 auto 6px; display: block; color: #7c3aed;"></i>
+12989:                 Feature Grid
+12990:               </div>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,129 @@
+Created At: 2026-06-06T14:51:29Z
+Completed At: 2026-06-06T14:51:29Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts`
+Total Lines: 842
+Total Bytes: 25606
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import prisma from '../lib/prisma';
+2: import { trackEvent } from './analytics';
+3: 
+4: const MODULE_KEY = 'theme-engine';
+5: const VALID_STATUSES = new Set(['active', 'inactive', 'suspended']);
+6: const VALID_VISIBILITIES = new Set(['public', 'private']);
+7: const VALID_BILLING_PLANS = new Set(['free', 'premium', 'platform']);
+8: const VALID_PROVIDER_MODES = new Set(['bring_your_own', 'platform_managed', 'marketplace']);
+9: const CUSTOM_CSS_LIMIT = 20000;
+10: 
+11: const DEFAULT_THEME_ENGINE_CONFIG = {
+12:   allowMarketplaceThemes: true,
+13:   allowCustomCss: true,
+14:   publicPublishingRequiresActiveEntitlement: true,
+15:   defaultHeaderStyle: 'default',
+16:   defaultFooterStyle: 'simple',
+17:   mobileLayout: 'stacked',
+18:   sections: [],
+19:   pageTemplates: [],
+20: };
+21: 
+22: export interface CustomizeThemeInput {
+23:   colors?: {
+24:     primary?: string;
+25:     secondary?: string;
+26:     accent?: string;
+27:   };
+28:   fonts?: {
+29:     heading?: string;
+30:     body?: string;
+31:   };
+32:   logos?: {
+33:     primaryUrl?: string;
+34:     secondaryUrl?: string;
+35:   };
+36:   layout?: {
+37:     headerStyle?: string;
+38:     footerStyle?: string;
+39:     mobileLayout?: string;
+40:   };
+41:   customCss?: string;
+42: }
+43: 
+44: export interface ThemeEngineModuleInput {
+45:   title: string;
+46:   description?: string;
+47:   visibility?: string;
+48:   createdBy?: string | null;
+49: }
+50: 
+51: export interface ThemeEngineSettingsInput {
+52:   enabled?: boolean;
+53:   billingPlan?: string;
+54:   providerMo
+<truncated 24502 bytes>
+ colors: {
+736:         ...(baseSettings.colors || {}),
+737:         ...(customConfig.colors || {}),
+738:       },
+739:       fonts: {
+740:         ...(baseSettings.fonts || {}),
+741:         ...(customConfig.fonts || {}),
+742:       },
+743:       logos: {
+744:         ...(baseSettings.logos || {}),
+745:         ...(customConfig.logos || {}),
+746:       },
+747:       layout: {
+748:         ...(baseSettings.layout || {}),
+749:         ...(customConfig.layout || {}),
+750:       },
+751:     };
+752: 
+753:     return await prisma.theme.update({
+754:       where: { id: theme.id },
+755:       data: {
+756:         draftSettings: JSON.stringify(updatedSettings),
+757:       },
+758:     });
+759:   }
+760: 
+761:   static async publishThemeCustomization(tenantId: string, themeId: string) {
+762:     const theme = await prisma.theme.findFirst({
+763:       where: {
+764:         id: themeId,
+765:         tenantId,
+766:       },
+767:     });
+768: 
+769:     if (!theme) {
+770:       throw new Error('Theme not found');
+771:     }
+772: 
+773:     const nextSettings = theme.draftSettings || theme.settings || '{}';
+774: 
+775:     return await prisma.theme.update({
+776:       where: { id: themeId },
+777:       data: {
+778:         settings: nextSettings,
+779:         draftSettings: null,
+780:       },
+781:     });
+782:   }
+783: 
+784:   static async discardThemeCustomization(tenantId: string, themeId: string) {
+785:     const theme = await prisma.theme.findFirst({
+786:       where: {
+787:         id: themeId,
+788:         tenantId,
+789:       },
+790:     });
+791: 
+792:     if (!theme) {
+793:       throw new Error('Theme not found');
+794:     }
+795: 
+796:     return await prisma.theme.update({
+797:       where: { id: themeId },
+798:       data: {
+799:         draftSettings: null,
+800:       },
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

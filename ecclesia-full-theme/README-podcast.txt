@@ -1,0 +1,1 @@
+Open podcast-archive.html for archive. Open podcast-episode.html for the single episode page with feedback and comments.

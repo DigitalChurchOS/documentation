@@ -1,0 +1,41 @@
+Created At: 2026-06-06T16:48:11Z
+Completed At: 2026-06-06T16:48:11Z
+File Path: `file:///C:/Users/Administrator/.gemini/antigravity/brain/b6ef7979-b2e0-456b-b57d-251645bf61e7/.system_generated/tasks/task-709.log`
+Total Lines: 115
+Total Bytes: 11109
+Showing lines 1 to 115
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: ChurchOS Developer Dashboard is running at http://localhost:3002
+2: [SYSTEM] Spawning API Server: npm run dev
+3: (node:51348) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+4: (Use `node --trace-deprecation ...` to show where the warning was created)
+5: [SYSTEM] Spawning Preview Server: node scripts/local-preview.js
+6: [PREVIEW] ChurchOS preview running at http://localhost:3000
+7: [API] > churchos@1.0.0 dev
+8: > npx ts-node --files src/server.ts
+9: [API] ◇ injected env (0) from .env // tip: ⌁ auth for agents [www.vestauth.com]
+10: [API] ╔═══════════════════════════════════════════╗
+11:   ║   ⛪  ChurchOS Kernel — Phase 1           ║
+12:   ║   🚀  Running on http://localhost:3001    ║
+13:   ║   📦  Database: SQLite (dev.db)           ║
+14:   ╚═══════════════════════════════════════════╝
+15: [SYSTEM] Terminating process tree for PID 32968...
+16: [SYSTEM] Terminating process tree for PID 12524...
+17: [SYSTEM] API Server exited (code: 1, signal: null)
+18: [SYSTEM] Preview Server exited (code: 1, signal: null)
+19: [SYSTEM] Taskkill failed: Command failed: taskkill /pid 32968 /T /F
+20: ERROR: The process with PID 32968 (child process of PID 51348) could not be terminated.
+21: Reason: Th
+<truncated 8076 bytes>
+s -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\utils.js
+106: [PREVIEW] [PREVIEW] Request: GET /page-builder/components/InlineTextEditor.js -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\components\InlineTextEditor.js
+107: [PREVIEW] [PREVIEW] Request: GET /page-builder/?mode=embed&pageId=page-home&tenantId=2e077cf1-9a11-44ae-9db7-afea3e4414b8&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMDUxMzgyYS05OTVhLTQzMTctYjgwYy1kNzU3NDg3Y2EyODIiLCJ0ZW5hbnRJZCI6IjJlMDc3Y2YxLTlhMTEtNDRhZS05ZGI3LWFmZWEzZTQ0MTRiOCIsImVtYWlsIjoiYWRtaW5AZ3JhY2UuY29tIiwiaWF0IjoxNzgwNjI2NjcwLCJleHAiOjE3ODA3MTMwNzB9.uhMpDBwIpp3LhWzqo1DNC6VOoNW-0JebZalglop-1yg&theme=light&accent=%23f97316 -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\index.html
+108: [PREVIEW] [PREVIEW] Request: GET /page-builder/app.js -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\app.js
+109: [PREVIEW] [PREVIEW] Request: GET /page-builder/components/SidebarLeft.js -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\components\SidebarLeft.js
+110: [PREVIEW] [PREVIEW] Request: GET /page-builder/components/Canvas.js -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\components\Canvas.js
+111: [PREVIEW] [PREVIEW] Request: GET /page-builder/components/InspectorRight.js -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\components\InspectorRight.js
+112: [PREVIEW] [PREVIEW] Request: GET /page-builder/components/Icon.js -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\components\Icon.js
+113: [PREVIEW] [PREVIEW] Request: GET /page-builder/utils.js -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\utils.js
+114: [PREVIEW] [PREVIEW] Request: GET /page-builder/components/InlineTextEditor.js -> Serving file: C:\Users\Administrator\Documents\ChurchOS\page-builder\components\InlineTextEditor.js
+115: 
+The above content shows the entire, complete file contents of the requested file.

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Giving & Partnership — Ecclesia</title>
+  <link rel="stylesheet" href="assets/giving.css">
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="topbar"><strong>Grace City Giving:</strong> Tithes, offerings, first fruits, thanksgiving, seeds, and ministry partnership in one simple page.</div>
+
+  <header class="header">
+    <div class="navwrap">
+      <a class="brand" href="#">
+        <span class="brand-mark"><i data-lucide="church"></i></span>
+        <span>Grace City Church</span>
+      </a>
+      <nav class="nav">
+        <a>Home</a><a>Services</a><a class="active">Give</a><a>Partnership</a><a>Prayer</a><a>Contact</a>
+      </nav>
+      <div class="header-actions">
+        <button class="btn btn-soft" data-receipt><i data-lucide="receipt"></i> Receipts</button>
+        <button class="btn btn-primary" data-qr><i data-lucide="qr-code"></i> QR Give</button>
+        <button class="menu-btn" id="menuBtn"><i data-lucide="menu"></i></button>
+      </div>
+    </div>
+    
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow"><i data-lucide="heart-handshake"></i> Giving & Partnership</span>
+        <h1>Give, worship, and partner with the vision.</h1>
+        <p class="lead">One beautiful giving page for standard church giving and ministry partnership. The page feels unified to members, while the platform keeps the workflows, records, receipts, reports, and partner journeys properly separated.</p>
+        <div class="row">
+          <a class="btn btn-primary" href="#give"><i data-lucide="gift"></i> Give Now</a>
+          <a class="btn btn-light" href="#partnerships"><i data-lucide="hand-heart"></i> Become a Partner</a>
+        </div>
+        <div class="row">
+          <span class="pill"><i data-lucide="receipt"></i> Receipts</span>
+          <span class="pill"><i data-lucide="repeat"></i> Recurring</span>
+          <span class="pill"><i data-lucide="shield-check"></i> Secure Checkout</span>
+        </div>
+      </div>
+
+      <div class="give-panel" id="give">
+        <div class="mode-switch">
+          <button class="mode-btn active" data-target="standardPanel">Tithes & Offerings</button>
+          <button class="mode-btn" data-target="partnerPanel">Partnership</button>
+        </div>
+
+        <div class="checkout">
+          <div class="checkout-panel active" id="standardPanel">
+            <span class="eyebrow">Standard Church Giving</span>
+            <div class="field">
+              <label>Giving category</label>
+              <select class="select">
+                <option>Tithe</option><option>Offering</option><option>First Fruits</option><option>Thanksgiving Offering</option><option>Seed</option><option>Special Offering</option>
+              </select>
+            </div>
+            <div class="amount-grid">
+              <button class="amount" data-amount="25">$25</button><button class="amount active" data-amount="50">$50</button><button class="amount" data-amount="100">$100</button>
+              <button class="amount" data-amount="250">$250</button><button class="amount" data-amount="500">$500</button><button class="amount" data-amount="1000">$1000</button>
+            </div>
+            <div class="two-col">
+              <div class="field"><label>Amount</label><input class="input amountInput" value="50"></div>
+              <div class="field"><label>Frequency</label><select class="select"><option>One-time</option><option>Weekly recurring</option><option>Monthly recurring</option></select></div>
+            </div>
+            <label class="checkline"><input type="checkbox"> Give anonymously</label>
+            <label class="checkline"><input type="checkbox" checked> Email my receipt</label>
+            <div class="summary">
+              <div><span>Workflow</span><strong>Tithes & Offerings</strong></div>
+              <div><span>Total</span><strong class="summaryAmount">$50</strong></div>
+            </div>
+            <button class="btn btn-primary" data-checkout><i data-lucide="credit-card"></i> Continue Secure Giving</button>
+          </div>
+
+          <div class="checkout-panel" id="partnerPanel">
+            <span class="eyebrow">Vision Partnership</span>
+            <div class="field">
+              <label>Partnership area</label>
+              <select class="select">
+                <option>Media Partnership</option><option>Missions Partnership</option><option>Outreach Partnership</option><option>Welfare Partnership</option><option>Youth Ministry Partnership</option><option>Building Partnership</option><option>Training Partnership</option>
+              </select>
+            </div>
+            <div class="amount-grid">
+              <button class="amount active" data-amount="100">$100</button><button class="amount" data-amount="250">$250</button><button class="amount" data-amount="500">$500</button>
+              <button class="amount" data-amount="1000">$1000</button><button class="amount" data-amount="2500">$2500</button><button class="amount" data-amount="5000">$5000</button>
+            </div>
+            <div class="two-col">
+              <div class="field"><label>Amount</label><input class="input amountInput" value="100"></div>
+              <div class="field"><label>Commitment</label><select class="select"><option>Monthly partner</option><option>One-time partner</option><option>Quarterly partner</option><option>Annual partner</option></select></div>
+            </div>
+            <textarea placeholder="Optional note or partnership intention"></textarea>
+            <label class="checkline"><input type="checkbox" checked> Send me ministry impact updates</label>
+            <div class="summary">
+              <div><span>Workflow</span><strong>Partnership</strong></div>
+              <div><span>Total</span><strong class="summaryAmount">$100</strong></div>
+            </div>
+            <button class="btn btn-primary" data-checkout><i data-lucide="heart-handshake"></i> Continue as Partner</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="head">
+        <div><div class="kicker">Merged Page Logic</div><h2>One page, two clear giving journeys.</h2></div>
+        <p>Members should not feel confused by multiple money pages. This public page merges the experience while preserving the proper module boundaries.</p>
+      </div>
+      <div class="cards">
+        <article class="card"><div class="icon"><i data-lucide="landmark"></i></div><h3>Tithes & Offerings</h3><p>For regular church giving: tithes, offerings, first fruits, thanksgiving, seeds, special offerings, recurring giving, receipts, history, QR giving, and service-linked giving.</p></article>
+        <article class="card"><div class="icon"><i data-lucide="heart-handshake"></i></div><h3>Partnership</h3><p>For vision-based support: media, missions, outreach, welfare, youth ministry, building, training, partner profiles, impact updates, tiers, and partner dashboards.</p></article>
+        <article class="card"><div class="icon"><i data-lucide="shield-check"></i></div><h3>Clean Separation</h3><p>The frontend is one elegant page, but backend records, receipts, reports, CRM actions, analytics, and automations remain separated by giving type.</p></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="split">
+        <div class="panel">
+          <div class="kicker">Giving Funds</div>
+          <h2 style="font-size:42px">Standard giving categories.</h2>
+          <p>Regular giving options available during services, livestreams, mobile app sessions, and member dashboards.</p>
+          <div class="fund-list">
+            <div class="fund"><div class="fund-icon"><i data-lucide="circle-dollar-sign"></i></div><div><strong>Tithe</strong><div class="progress"><span style="width:74%"></span></div></div><button class="btn btn-soft" data-checkout>Give</button></div>
+            <div class="fund"><div class="fund-icon"><i data-lucide="gift"></i></div><div><strong>Offering</strong><div class="progress"><span style="width:52%"></span></div></div><button class="btn btn-soft" data-checkout>Give</button></div>
+            <div class="fund"><div class="fund-icon"><i data-lucide="wheat"></i></div><div><strong>First Fruits</strong><div class="progress"><span style="width:36%"></span></div></div><button class="btn btn-soft" data-checkout>Give</button></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="kicker">QR Giving</div>
+          <h2 style="font-size:42px">Fast mobile giving.</h2>
+          <p>For projector screens, livestream overlays, service slides, bulletin cards, and mobile giving moments.</p>
+          <div class="qr"><strong>QR</strong></div>
+          <div class="row" style="margin-top:18px">
+            <button class="btn btn-primary" data-qr>Open QR</button>
+            <button class="btn btn-light" data-share>Copy Giving Link</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="partnerships">
+      <div class="head">
+        <div><div class="kicker">Partnership Opportunities</div><h2>Partner with the church vision.</h2></div>
+        <p>Partnership areas use shared mission language, impact reporting, recurring commitment options, and ministry-specific support pages.</p>
+      </div>
+      <div class="partner-grid">
+        <article class="partner"><div class="partner-img" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=85')"></div><div class="partner-body"><h3>Outreach Partnership</h3><p>Support evangelism, city outreach, compassion programs, and community care.</p><button class="btn btn-primary" data-checkout>Partner</button></div></article>
+        <article class="partner"><div class="partner-img" style="background-image:url('https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=900&q=85')"></div><div class="partner-body"><h3>Media Partnership</h3><p>Help broadcast services, produce sermons, clips, podcasts, and digital resources.</p><button class="btn btn-primary" data-checkout>Partner</button></div></article>
+        <article class="partner"><div class="partner-img" style="background-image:url('https://images.unsplash.com/photo-1478147427282-58a87a120781?auto=format&fit=crop&w=900&q=85')"></div><div class="partner-body"><h3>Youth Ministry Partnership</h3><p>Support youth meetings, discipleship, mentoring, camps, and leadership training.</p><button class="btn btn-primary" data-checkout>Partner</button></div></article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="head">
+        <div><div class="kicker">Partner Tiers</div><h2>Recurring ministry partnership.</h2></div>
+      </div>
+      <div class="tier-grid">
+        <div class="tier"><span class="pill">Bronze</span><strong>$50/mo</strong><p>Monthly support and updates.</p></div>
+        <div class="tier"><span class="pill">Silver</span><strong>$100/mo</strong><p>Impact emails and reports.</p></div>
+        <div class="tier"><span class="pill">Gold</span><strong>$250/mo</strong><p>Partner dashboard access.</p></div>
+        <div class="tier"><span class="pill">Legacy</span><strong>$500+/mo</strong><p>Vision partner recognition.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="split">
+        <div class="dashboard-card">
+          <div class="kicker">Member Giving History</div>
+          <h2 style="font-size:42px">Receipts and history.</h2>
+          <p>Private member dashboard preview for giving history and downloadable receipts.</p>
+          <div class="history">
+            <div class="history-row"><div class="receipt"><i data-lucide="receipt"></i></div><div><strong>Tithe</strong><span class="pill">$120 · June 7</span></div><button class="btn btn-light" data-receipt>Receipt</button></div>
+            <div class="history-row"><div class="receipt"><i data-lucide="receipt"></i></div><div><strong>Media Partnership</strong><span class="pill">$100 · Monthly</span></div><button class="btn btn-light" data-receipt>Receipt</button></div>
+          </div>
+        </div>
+        <div class="impact">
+          <div class="kicker">Impact Updates</div>
+          <h2 style="font-size:42px">Show partners what their support is doing.</h2>
+          <p>Partnership updates can be sent automatically to recurring partners and linked to ministry CRM, communication workflows, and analytics.</p>
+          <div class="fund-list">
+            <div class="fund"><div class="fund-icon"><i data-lucide="mail"></i></div><div><strong>June Outreach Report</strong><p style="margin:4px 0 0">Sent to 182 partners</p></div><button class="btn btn-soft">View</button></div>
+            <div class="fund"><div class="fund-icon"><i data-lucide="bar-chart-3"></i></div><div><strong>Media Impact Update</strong><p style="margin:4px 0 0">2,430 sermon views reached</p></div><button class="btn btn-soft">View</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="sticky-give">
+    <div class="sticky-info">
+      <div class="sticky-icon"><i data-lucide="gift"></i></div>
+      <div><strong>Ready to give?</strong><span id="stickyMode">Tithes & Offerings</span></div>
+    </div>
+    <div class="sticky-actions">
+      <button class="btn btn-light" data-share>Share Link</button>
+      <button class="btn btn-primary" data-checkout>Continue Giving</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved</div>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="assets/giving.js"></script>
+<script src="assets/app.js"></script>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="drawer-nav">
+      <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+      <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
+      <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
+      <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
+      <a class="pjax-link" href="ministries.html"><i data-lucide="users-round"></i> Ministries</a>
+      <a class="pjax-link" href="prayer.html"><i data-lucide="heart-handshake"></i> Prayer</a>
+      <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
+          <a class="pjax-link" href="login.html"><i data-lucide="user-circle"></i> Account</a>
+    </nav>
+
+    <div class="drawer-actions">
+      <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+        <i data-lucide="radio"></i>
+        Watch Live
+      </a>
+
+      <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+        <i data-lucide="map-pin"></i>
+        Plan Visit
+      </a>
+    </div>
+  </aside>
+
+</body>
+</html>

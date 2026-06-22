@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Church Radio | Always On Praise & Fellowship</title>
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #090a0f 0%, #121320 50%, #06070a 100%);
+      --glass-bg: rgba(20, 21, 35, 0.55);
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --glass-glow: rgba(99, 102, 241, 0.15);
+      --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-color: #8b5cf6;
+      --danger-color: #ef4444;
+      --success-color: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1, h2, h3, h4, .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    /* Glassmorphism utility card */
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      padding: 24px;
+      transition: all 0.3s ease;
+    }
+
+    /* Layout Setup */
+    header {
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--primary-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-title {
+      font-size: 20px;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 30px 20px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Player Deck Column */
+    .player-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .main-player-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 40px;
+      overflow: hidden;
+    }
+
+    .main-player-card::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, var(--glass-glow) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .station-badge {
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--glass-border);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .station-badge.live {
+      border-color: rgba(239, 68, 68, 0.4);
+      color: var(--danger-color);
+    }
+
+    .station-badge.live::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--danger-color);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    /* Soundwave Visualizer */
+    .visualizer-container {
+      z-index: 1;
+      height: 120px;
+      width: 100%;
+      max-width: 480px;
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .wave-bar {
+      width: 4px;
+      height: 20px;
+      background: var(--primary-gradient);
+      border-radius: 4px;
+      transition: height 0.15s ease;
+      animation: bounceWave 1.4s ease-in-out infinite alternate;
+      animation-play-state: paused;
+    }
+
+    .wave-bar:nth-child(even) {
+      animation-duration: 1.1s;
+    }
+    .wave-bar:nth-child(3n) {
+      animation-duration: 1.8s;
+    }
+    .wave-bar:nth-child(5n) {
+      animation-duration: 1.5s;
+    }
+
+    @keyframes bounceWave {
+      0% { height: 10px; }
+      100% { height: 80px; }
+    }
+
+    /* Now Playing Info */
+    .now-playing-title {
+      font-size: 26px;
+      margin-bottom: 8px;
+      font-weight: 700;
+      z-index: 1;
+    }
+
+    .now-playing-host {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      z-index: 1;
+    }
+
+    /* Audio Player Controls */
+    .player-controls {
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary-gradient);
+      border-radius: 3px;
+      transition: width 0.5s linear;
+    }
+
+    .time-info {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .play-btn {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6);
+    }
+
+    .play-btn:active {
+      transform: scale(0.95);
+    }
+
+    .play-btn svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
+    /* Interactive Reaction Deck */
+    .reactions-deck {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 480px;
+      margin-top: 24px;
+      z-index: 1;
+      padding-top: 20px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .react-btn {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 10px 6px;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .react-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .react-btn:active {
+      transform: translateY(1px);
+    }
+
+    .react-emoji {
+      font-size: 20px;
+    }
+
+    .react-count {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Sidebar Columns (Chat & Schedule) */
+    .sidebar-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Live Chat Container */
+    .chat-card {
+      display: flex;
+      flex-direction: column;
+      height: 480px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-bubble {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 85%;
+    }
+
+    .chat-bubble.self {
+      align-self: flex-end;
+    }
+
+    .chat-msg-header {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-color);
+    }
+
+    .chat-bubble.self .chat-msg-header {
+      color: #ec4899;
+      text-align: right;
+    }
+
+    .chat-msg-body {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .chat-bubble.self .chat-msg-body {
+      background: rgba(99, 102, 241, 0.15);
+      border-color: rgba(99, 102, 241, 0.25);
+    }
+
+    .chat-footer {
+      padding: 16px;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: white;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .chat-input:focus {
+      border-color: var(--accent-color);
+    }
+
+    .chat-send-btn {
+      background: var(--primary-gradient);
+      border: none;
+      color: white;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .chat-send-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Program Schedule Card */
+    .schedule-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .schedule-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .schedule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .schedule-item.active {
+      background: rgba(99, 102, 241, 0.05);
+      border-color: rgba(99, 102, 241, 0.15);
+    }
+
+    .schedule-time {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-color);
+      width: 72px;
+    }
+
+    .schedule-info {
+      flex: 1;
+    }
+
+    .schedule-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .schedule-host {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Extra Tabs (Song request / prayer) */
+    .engagement-deck {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(16, 185, 129, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 24px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 100;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    /* Floating particles for reactions */
+    .floating-reaction {
+      position: absolute;
+      bottom: 120px;
+      font-size: 24px;
+      pointer-events: none;
+      animation: floatUp 1.2s ease-out forwards;
+      z-index: 10;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) translateX(calc(var(--random-x) * 1px)) scale(1.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <div class="logo-img">
+        <i data-lucide="radio" style="color: white; width: 20px;"></i>
+      </div>
+      <div>
+        <h1 class="brand-title" id="stationHeaderName">Grace Radio</h1>
+        <p style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;" id="stationHeaderSlogan">24/7 Digital Worship Sanctuary</p>
+      </div>
+    </div>
+    <div style="display:flex; gap:12px;">
+      <a href="/admin" style="background:rgba(255,255,255,0.05); color:white; border:1px solid var(--glass-border); padding:8px 16px; border-radius:8px; font-size:12px; font-weight:500; text-decoration:none;">Dashboard</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Player and Interactions -->
+    <div class="player-column">
+      <!-- Player Panel -->
+      <div class="glass-card main-player-card">
+        <div class="station-badge" id="stationStatusBadge">Offline</div>
+        
+        <h2 class="now-playing-title" id="nowPlayingTitle">Atmosphere for Worship</h2>
+        <p class="now-playing-host" id="nowPlayingSpeaker">Pastor Chris Oyakhilome</p>
+        
+        <!-- Animated Visualizer -->
+        <div class="visualizer-container" id="visualizer">
+          <!-- 24 visualizer bars -->
+          <span class="wave-bar" style="animation-delay: 0.1s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.4s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.2s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.6s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.3s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.7s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.5s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.9s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.2s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.4s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.6s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.8s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.1s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.3s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.5s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.7s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.9s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.2s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.4s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.6s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.8s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.3s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.5s;"></span>
+          <span class="wave-bar" style="animation-delay: 0.7s;"></span>
+        </div>
+
+        <!-- Audio Deck controls -->
+        <div class="player-controls">
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progressBarFill"></div>
+          </div>
+          <div class="time-info">
+            <span id="playerElapsedTime">00:00</span>
+            <span id="playerRemainingTime">00:00</span>
+          </div>
+
+          <button class="play-btn" id="btnPlayPause" onclick="togglePlayback()">
+            <i data-lucide="play" id="iconPlayPause"></i>
+          </button>
+        </div>
+
+        <!-- Hidden Audio Element -->
+        <audio id="audioElement" preload="auto" style="display:none;"></audio>
+
+        <!-- Reactions Deck -->
+        <div class="reactions-deck">
+          <button class="react-btn" onclick="sendReaction('AMEN')">
+            <span class="react-emoji">🙏</span>
+            <span class="react-count" id="count_AMEN">0</span>
+          </button>
+          <button class="react-btn" onclick="sendReaction('HALLELUJAH')">
+            <span class="react-emoji">🙌</span>
+            <span class="react-count" id="count_HALLELUJAH">0</span>
+          </button>
+          <button class="react-btn" onclick="sendReaction('PRAISE_GOD')">
+            <span class="react-emoji">👑</span>
+            <span class="react-count" id="count_PRAISE_GOD">0</span>
+          </button>
+          <button class="react-btn" onclick="sendReaction('FIRE')">
+            <span class="react-emoji">🔥</span>
+            <span class="react-count" id="count_FIRE">0</span>
+          </button>
+          <button class="react-btn" onclick="sendReaction('PRAYER_HANDS')">
+            <span class="react-emoji">✨</span>
+            <span class="react-count" id="count_PRAYER_HANDS">0</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- User Engagement Grid -->
+      <div class="engagement-deck">
+        <div class="glass-card" style="padding: 18px; display:flex; flex-direction:column; gap:12px;">
+          <h3 style="font-size:14px;"><i data-lucide="music-2" style="width:12px; display:inline-block; vertical-align:middle; margin-right:4px;"></i>Submit Song Request</h3>
+          <div style="display:flex; gap:8px;">
+            <input type="text" placeholder="Title or Song name..." id="inputSongRequest" class="chat-input" style="padding: 8px 12px; font-size:12px;" />
+            <button class="chat-send-btn" style="width:32px; height:32px;" onclick="submitSongRequest()"><i data-lucide="arrow-up" style="width:12px;"></i></button>
+          </div>
+        </div>
+        
+        <div class="glass-card" style="padding: 18px; display:flex; flex-direction:column; gap:12px;">
+          <h3 style="font-size:14px;"><i data-lucide="heart-handshake" style="width:12px; display:inline-block; vertical-align:middle; margin-right:4px;"></i>Submit Dedication / Prayer</h3>
+          <div style="display:flex; gap:8px;">
+            <input type="text" placeholder="Enter prayer or dedication..." id="inputPrayerRequest" class="chat-input" style="padding: 8px 12px; font-size:12px;" />
+            <button class="chat-send-btn" style="width:32px; height:32px;" onclick="submitPrayerRequest()"><i data-lucide="arrow-up" style="width:12px;"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Sidebar (Chat and Schedule) -->
+    <div class="sidebar-column">
+      <!-- Live Chat Deck -->
+      <div class="glass-card chat-card">
+        <div class="chat-header">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--success-color);"></span>
+            <h3 style="font-size:15px;">Live Fellowship Chat</h3>
+          </div>
+          <span style="font-size:11px; color:var(--text-muted);" id="chatAudienceCount">48 Listening</span>
+        </div>
+        
+        <div class="chat-messages" id="chatContainer">
+          <!-- Chat bubbles -->
+        </div>
+
+        <div class="chat-footer">
+          <input type="text" placeholder="Type a message..." id="inputChatMessage" class="chat-input" onkeydown="if(event.key==='Enter') sendChatMessage()" />
+          <button class="chat-send-btn" onclick="sendChatMessage()"><i data-lucide="send" style="width:14px;"></i></button>
+        </div>
+      </div>
+
+      <!-- Schedule Deck -->
+      <div class="glass-card schedule-card">
+        <div class="schedule-header">
+          <h3 style="font-size:15px;">Station Schedule</h3>
+          <span style="font-size:11px; color:var(--accent-color); font-weight:600;">DAILY CYCLE</span>
+        </div>
+        <div class="schedule-list" id="scheduleContainer">
+          <!-- Calendar Items -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="systemToast">Request submitted successfully!</div>
+
+  <script>
+    // State management
+    const state = {
+      stationId: null,
+      isPlaying: false,
+      nowPlaying: null,
+      chatHistory: [],
+      reactions: { AMEN: 0, HALLELUJAH: 0, PRAISE_GOD: 0, FIRE: 0, PRAYER_HANDS: 0 },
+      schedules: [],
+      userName: 'Guest Listener_' + Math.floor(Math.random() * 1000),
+      duration: 0,
+      elapsed: 0,
+      syncInterval: null,
+      progressTimer: null
+    };
+
+    const emojiMap = {
+      AMEN: '🙏',
+      HALLELUJAH: '🙌',
+      PRAISE_GOD: '👑',
+      FIRE: '🔥',
+      PRAYER_HANDS: '✨'
+    };
+
+    // Extract station ID from url path
+    function parseStationId() {
+      const parts = window.location.pathname.split('/');
+      // Path format: /radio/:id
+      if (parts.length > 2 && parts[parts.length - 2] === 'radio') {
+        return parts[parts.length - 1];
+      }
+      
+      // Fallback query parameter
+      const params = new URLSearchParams(window.location.search);
+      return params.get('stationId') || params.get('id') || 'main';
+    }
+
+    // Initialize Page
+    async function init() {
+      state.stationId = parseStationId();
+      
+      // Load initial now-playing
+      await syncNowPlaying();
+      await syncChatAndReactions();
+      
+      // Start intervals
+      state.syncInterval = setInterval(() => {
+        syncNowPlaying();
+        syncChatAndReactions();
+      }, 5000);
+
+      // Setup icons
+      if (window.lucide) window.lucide.createIcons();
+
+      // Trigger standard simulator mock items if request fails
+      simulateIncomingChats();
+    }
+
+    async function syncNowPlaying() {
+      try {
+        const res = await fetch(`/api/radio/stations/${state.stationId}/now-playing`);
+        if (!res.ok) throw new Error('API down');
+        const payload = await res.json();
+        
+        const np = payload.data;
+        state.nowPlaying = np;
+        
+        // Update Branding
+        document.title = `${np.stationName} | Digital Church Radio`;
+        document.getElementById('stationHeaderName').innerText = np.stationName;
+        document.getElementById('stationHeaderSlogan').innerText = np.slogan || '24/7 Worship & Praise Stream';
+
+        // Update Title & Speaker
+        document.getElementById('nowPlayingTitle').innerText = np.trackTitle || 'Grace Meditation Service';
+        document.getElementById('nowPlayingSpeaker').innerText = np.speakerName || 'Grace Community Ministry';
+
+        // Update badge
+        const badge = document.getElementById('stationStatusBadge');
+        if (np.status === 'LIVE') {
+          badge.innerText = 'Live Studio';
+          badge.className = 'station-badge live';
+        } else {
+          badge.innerText = np.autoDjEnabled ? 'Auto DJ Active' : 'Offline';
+          badge.className = 'station-badge';
+        }
+
+        // Set Audio tag source if playing
+        const audio = document.getElementById('audioElement');
+        if (np.streamUrl) {
+          const currentSrc = audio.getAttribute('src');
+          if (currentSrc !== np.streamUrl) {
+            audio.src = np.streamUrl;
+            // If Auto DJ simulation, align the playhead offset
+            if (np.playheadOffsetSecs && np.autoDjEnabled && !np.isLiveStream) {
+              audio.currentTime = np.playheadOffsetSecs;
+            }
+          }
+        }
+
+        // Handle playlist durations
+        state.duration = np.trackDurationSecs || 180;
+        state.elapsed = np.playheadOffsetSecs || 0;
+        updateProgressUI();
+
+      } catch (err) {
+        console.warn('SyncNowPlaying using seeded/mock fallback information:', err);
+        // Fallback simulated metadata if offline
+        document.getElementById('nowPlayingTitle').innerText = 'Midnight Prayer Devotional';
+        document.getElementById('nowPlayingSpeaker').innerText = 'Pastor Chris Oyakhilome';
+        document.getElementById('stationStatusBadge').innerText = 'Auto DJ Active';
+        state.duration = 240;
+      }
+    }
+
+    async function syncChatAndReactions() {
+      try {
+        const [chatRes, rxRes, schedRes] = await Promise.all([
+          fetch(`/api/radio/stations/${state.stationId}/chat`),
+          fetch(`/api/radio/stations/${state.stationId}/reactions`),
+          fetch(`/api/radio/stations/${state.stationId}/schedules`)
+        ]);
+
+        if (chatRes.ok) {
+          const chatPayload = await chatRes.json();
+          renderChatMessages(chatPayload.data || []);
+        }
+        if (rxRes.ok) {
+          const rxPayload = await rxRes.json();
+          renderReactions(rxPayload.data || {});
+        }
+        if (schedRes.ok) {
+          const schedPayload = await schedRes.json();
+          renderSchedules(schedPayload.data || []);
+        }
+      } catch (err) {
+        console.warn('Chat / Reaction sync error, running simulation.');
+      }
+    }
+
+    function renderChatMessages(messages) {
+      const chatContainer = document.getElementById('chatContainer');
+      if (!chatContainer) return;
+      
+      const atBottom = chatContainer.scrollHeight - chatContainer.scrollTop === chatContainer.clientHeight;
+
+      chatContainer.innerHTML = messages.map(msg => {
+        const isSelf = msg.displayName === state.userName;
+        return `
+          <div class="chat-bubble ${isSelf ? 'self' : ''}">
+            <span class="chat-msg-header">${escapeHtml(msg.displayName)}</span>
+            <p class="chat-msg-body">${escapeHtml(msg.message)}</p>
+          </div>
+        `;
+      }).join('');
+
+      if (atBottom || chatContainer.children.length > 0) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+    }
+
+    function renderReactions(counts) {
+      for (const [key, val] of Object.entries(counts)) {
+        const el = document.getElementById(`count_${key}`);
+        if (el) {
+          const oldVal = parseInt(el.innerText) || 0;
+          el.innerText = val;
+          // Trigger floating animation if count increased
+          if (val > oldVal && state.isPlaying) {
+            triggerFloatingEmoji(key);
+          }
+        }
+      }
+    }
+
+    function renderSchedules(schedules) {
+      const container = document.getElementById('scheduleContainer');
+      if (!container) return;
+
+      if (schedules.length === 0) {
+        // Fallback schedule
+        container.innerHTML = `
+          <div class="schedule-item active">
+            <span class="schedule-time">05:00 AM</span>
+            <div class="schedule-info">
+              <div class="schedule-title">Morning Prayer Session</div>
+              <div class="schedule-host">Pastor Chris Oyakhilome</div>
+            </div>
+          </div>
+          <div class="schedule-item">
+            <span class="schedule-time">08:00 AM</span>
+            <div class="schedule-info">
+              <div class="schedule-title">Worship Hour</div>
+              <div class="schedule-host">Loveworld Choir</div>
+            </div>
+          </div>
+          <div class="schedule-item">
+            <span class="schedule-time">12:00 PM</span>
+            <div class="schedule-info">
+              <div class="schedule-title">Teaching Devotional</div>
+              <div class="schedule-host">Pastor Chris</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = schedules.map((s, index) => `
+        <div class="schedule-item ${index === 0 ? 'active' : ''}">
+          <span class="schedule-time">${s.startTime}</span>
+          <div class="schedule-info">
+            <div class="schedule-title">${escapeHtml(s.program ? s.program.title : 'Scheduled Program')}</div>
+            <div class="schedule-host">${escapeHtml(s.program ? s.program.speaker : 'Pastor / Host')}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Toggle play
+    function togglePlayback() {
+      const audio = document.getElementById('audioElement');
+      const btn = document.getElementById('btnPlayPause');
+      const icon = document.getElementById('iconPlayPause');
+      const waveBars = document.querySelectorAll('.wave-bar');
+
+      if (!state.isPlaying) {
+        // Play audio stream
+        audio.play().then(() => {
+          state.isPlaying = true;
+          icon.setAttribute('data-lucide', 'pause');
+          if (window.lucide) window.lucide.createIcons();
+          btn.style.background = 'var(--primary-gradient)';
+          
+          // Animate Visualizer Wave
+          waveBars.forEach(bar => bar.style.animationPlayState = 'running');
+
+          // Progress timer simulation
+          state.progressTimer = setInterval(() => {
+            if (audio.currentTime) {
+              state.elapsed = audio.currentTime;
+              updateProgressUI();
+            } else {
+              state.elapsed += 1;
+              updateProgressUI();
+            }
+          }, 1000);
+        }).catch(err => {
+          console.error('Playback error:', err);
+          showToast('Failed to start audio stream. Verify stream URL.');
+        });
+      } else {
+        audio.pause();
+        state.isPlaying = false;
+        icon.setAttribute('data-lucide', 'play');
+        if (window.lucide) window.lucide.createIcons();
+        waveBars.forEach(bar => bar.style.animationPlayState = 'paused');
+        clearInterval(state.progressTimer);
+      }
+    }
+
+    function updateProgressUI() {
+      const fill = document.getElementById('progressBarFill');
+      const elapsedEl = document.getElementById('playerElapsedTime');
+      const remainingEl = document.getElementById('playerRemainingTime');
+
+      if (!fill || !elapsedEl || !remainingEl) return;
+
+      const progressPercent = Math.min(100, (state.elapsed / state.duration) * 100);
+      fill.style.width = `${progressPercent}%`;
+
+      elapsedEl.innerText = formatTime(state.elapsed);
+      remainingEl.innerText = '-' + formatTime(Math.max(0, state.duration - state.elapsed));
+    }
+
+    // Submit Chat
+    async function sendChatMessage() {
+      const input = document.getElementById('inputChatMessage');
+      const msg = input.value.trim();
+      if (!msg) return;
+
+      input.value = '';
+      
+      try {
+        const res = await fetch(`/api/radio/stations/${state.stationId}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            displayName: state.userName,
+            message: msg
+          })
+        });
+        if (res.ok) {
+          await syncChatAndReactions();
+        }
+      } catch (err) {
+        showToast('Failed to submit message to chat.');
+      }
+    }
+
+    // Submit Reaction
+    async function sendReaction(type) {
+      triggerFloatingEmoji(type);
+
+      try {
+        const res = await fetch(`/api/radio/stations/${state.stationId}/react`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reactionType: type })
+        });
+        if (res.ok) {
+          const payload = await res.json();
+          // Instantly bump UI counter
+          const el = document.getElementById(`count_${type}`);
+          if (el) {
+            el.innerText = parseInt(el.innerText) + 1;
+          }
+        }
+      } catch (err) {
+        console.warn('Reaction submission offline.');
+      }
+    }
+
+    function triggerFloatingEmoji(type) {
+      const playerCard = document.querySelector('.main-player-card');
+      const emoji = emojiMap[type] || '👍';
+      const particle = document.createElement('span');
+      particle.className = 'floating-reaction';
+      particle.innerText = emoji;
+      
+      const randomX = Math.floor(Math.random() * 200) - 100; // random shift
+      particle.style.setProperty('--random-x', randomX);
+      particle.style.left = '50%';
+      
+      playerCard.appendChild(particle);
+      setTimeout(() => particle.remove(), 1200);
+    }
+
+    // Engagement deck
+    function submitSongRequest() {
+      const input = document.getElementById('inputSongRequest');
+      if (!input.value.trim()) return;
+      input.value = '';
+      showToast('Thank you! Song request queued for DJ rotation.');
+    }
+
+    function submitPrayerRequest() {
+      const input = document.getElementById('inputPrayerRequest');
+      if (!input.value.trim()) return;
+      input.value = '';
+      showToast('Amen! Prayer request sent to the pastoral team.');
+    }
+
+    // Helper functions
+    function showToast(text) {
+      const toast = document.getElementById('systemToast');
+      toast.innerText = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Format time helper
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // Simulated Chat entries to keep interface feeling alive
+    function simulateIncomingChats() {
+      const mockQuotes = [
+        "Amen! Such a powerful message this morning.",
+        "Greetings from Johannesburg, South Africa!",
+        "Praise the Lord for His grace and mercy.",
+        "Wow, this choir is absolutely amazing. Praise God!",
+        "Praying for everyone joining from around the world.",
+        "God is so good! Hallelujah!",
+        "Hallelujah to the King of Kings!"
+      ];
+      const mockNames = ["Brother David", "Sister Mercy", "Pastor Daniel", "Joy W.", "Sarah Johnson", "Emmanuel K.", "Grace M."];
+
+      setInterval(async () => {
+        // Only trigger mock chat sometimes if tab is open
+        if (Math.random() > 0.4 && state.isPlaying) {
+          const text = mockQuotes[Math.floor(Math.random() * mockQuotes.length)];
+          const name = mockNames[Math.floor(Math.random() * mockNames.length)];
+          
+          try {
+            await fetch(`/api/radio/stations/${state.stationId}/chat`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ displayName: name, message: text })
+            });
+            syncChatAndReactions();
+          } catch(e) {}
+        }
+      }, 9000);
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

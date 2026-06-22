@@ -1,0 +1,54 @@
+Created At: 2026-06-06T14:53:45Z
+Completed At: 2026-06-06T14:53:45Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31847
+Total Bytes: 1550965
+Showing lines 12950 to 12995
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12950:                   <option value="duotone">duotone</option>
+12951:                   <option value="minimal">minimal</option>
+12952:                 </select>
+12953:               </div>
+12954:               <div class="control">
+12955:                 <label>Button style</label>
+12956:                 <div class="option-grid" data-setting="buttonStyle">
+12957:                   <button class="option active" data-value="solid" type="button">Solid</button>
+12958:                   <button class="option" data-value="outline" type="button">Outline</button>
+12959:                   <button class="option" data-value="soft" type="button">Soft</button>
+12960:                   <button class="option" data-value="glass" type="button">Glass</button>
+12961:                 </div>
+12962:               </div>
+12963:             </div>
+12964:           </div>
+12965:         </aside>
+12966: 
+12967:         <section class="preview-stage">
+12968:           <div class="preview-canvas" id="previewCanvas">
+12969:             <div class="preview-frame" id="previewFrame">
+12970:               <div class="device-status-bar">
+12971:                 <span class="status-time">9:41</span>
+12972:                 <div class="status-icons">
+12973:                   <span class="status-icon signal">
+12974:                     <span></span><span></span><span></span><span></span>
+12975:                   </span>
+12976:                   <span class="status-icon wifi">
+12977:                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20" stroke-width="3"></line></svg>
+12978:                   </span>
+12979:                   <span class="status-icon battery">
+12980:                     <span class="battery-body"><span class="battery-level"></span></span>
+12981:                     <span class="battery-cap"></span>
+12982:                   </span>
+12983:                 </div>
+12984:               </div>
+12985:               <div class="church-site" id="churchSite">
+12986:                 <header class="site-header">
+12987:                   <div class="site-brand"><div class="site-mark"><i data-lucide="church"></i></div><span>Christ Embassy Bunga</span></div>
+12988:                   <nav class="site-nav"><a class="active">Home</a><a>About</a><a>Events</a><a>Sermons</a><a>Prayer</a><a>Giving</a></nav>
+12989:                   <button class="theme-btn" type="button">Watch Live</button>
+12990:                 </header>
+12991:                 <section class="hero">
+12992:                   <div class="hero-grid">
+12993:                     <div>
+12994:                       <span class="kicker"><i data-lucide="sparkles"></i> Welcome home</span>
+12995:                       <h1>Experience worship, word, prayer and community.</h1>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

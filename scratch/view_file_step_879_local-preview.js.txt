@@ -1,0 +1,83 @@
+Created At: 2026-06-06T16:33:49Z
+Completed At: 2026-06-06T16:33:51Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 2905 to 2990
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2905:   if (pathname === '/api/cms/pages' && method === 'GET') {
+2906:     return sendJson(res, 200, { data: state.pages });
+2907:   }
+2908: 
+2909:   if (pathname === '/api/cms/pages' && method === 'POST') {
+2910:     const page = {
+2911:       id: createId('page'),
+2912:       websiteId: body.websiteId || demoWebsiteId,
+2913:       title: body.title || 'Untitled Page',
+2914:       slug: body.slug || createId('page-slug'),
+2915:       status: body.status || 'draft',
+2916:       isHome: Boolean(body.isHome),
+2917:       content: body.content || [],
+2918:       createdAt: now(),
+2919:       updatedAt: now(),
+2920:     };
+2921:     state.pages.push(page);
+2922:     addActivity(`Created page: ${page.title}`);
+2923:     return sendJson(res, 201, { data: page });
+2924:   }
+2925: 
+2926:   const draftMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/draft$/);
+2927:   if (draftMatch && method === 'PATCH') {
+2928:     const page = state.pages.find((item) => item.id === draftMatch[1]);
+2929:     if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2930:     page.draftContent = typeof body.draftContent === 'string' ? body.draftContent : JSON.stringify(body.draftContent || []);
+2931:     page.updatedAt = now();
+2932:     addActivity(`Updated page draft: ${page.title}`);
+2933:     return sendJson(res, 200, { data: page });
+2934:   }
+2935: 
+2936:   const publishMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/publish$/);
+2937:   if (publishMatch && method === 'POST') {
+2938:     const page = state.pages.find((item) => it
+<truncated 735 bytes>
+]);
+2952:     if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2953:     return sendJson(res, 200, {
+2954:       data: {
+2955:         previewToken: 'local-preview-token',
+2956:         previewUrl: `/api/cms/render?slug=${page.slug}&previewToken=local-preview-token`,
+2957:       },
+2958:     });
+2959:   }
+2960: 
+2961:   const pageMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)$/);
+2962:   if (pageMatch) {
+2963:     if (method === 'GET') {
+2964:       const page = state.pages.find((item) => item.id === pageMatch[1]);
+2965:       if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2966:       return sendJson(res, 200, { data: page });
+2967:     }
+2968:     if (method === 'PATCH') {
+2969:       const page = state.pages.find((item) => item.id === pageMatch[1]);
+2970:       if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2971:       Object.assign(page, body, { updatedAt: now() });
+2972:       addActivity(`Updated page: ${page.title}`);
+2973:       return sendJson(res, 200, { data: page });
+2974:     }
+2975:   }
+2976: 
+2977:   const revisionsMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/revisions$/);
+2978:   if (revisionsMatch && method === 'GET') {
+2979:     return sendJson(res, 200, {
+2980:       data: [
+2981:         { id: `${revisionsMatch[1]}-rev-1`, pageId: revisionsMatch[1], createdAt: now(), summary: 'Current local preview version' },
+2982:       ],
+2983:     });
+2984:   }
+2985: 
+2986:   const rollbackMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/rollback$/);
+2987:   if (rollbackMatch && method === 'POST') {
+2988:     const page = state.pages.find((item) => item.id === rollbackMatch[1]);
+2989:     if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2990:     addActivity(`Rolled back page: ${page.title}`);
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

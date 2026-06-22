@@ -1,0 +1,13 @@
+{
+  "name": "replace_file_content",
+  "args": {
+    "AllowMultiple": "false",
+    "Description": "\"Add page builder integration tests for draft, publish, and secure preview token flow\"",
+    "EndLine": "447",
+    "Instruction": "\"Append Page Builder draft, publish, and preview tests to the end of the file\"",
+    "ReplacementContent": "\"      // Verify merged footer configuration\\n      expect(res.body.data.footer).toBeDefined();\\n      expect(res.body.data.footer.copyrightText).toBe('&copy; 2026 Grace Community Church');\\n      expect(res.body.data.footer.socialLinks).toEqual([{ name: 'facebook', url: 'https://fb.com/grace' }]);\\n    });\\n  });\\n\\n  // ─────────────────────────────────────────────────────────────\\n  // 7. PAGE BUILDER INTEGRATION & DRAFT/PUBLISH/PREVIEW FLOWS\\n  // ─────────────────────────────────────────────────────────────\\n  describe('Page Builder Draft, Publish & Preview Token Flow', () => {\\n    let draftPageId: string;\\n    let previewToken: string;\\n    let previewUrl: string;\\n\\n    beforeAll(async () => {\\n      // Create a fresh draft page to test builder operations\\n      const pageRes = await request(app)\\n        .post('/api/cms/pages')\\n        .set('x-tenant-id', tenantId)\\n        .set('Authorization', `Bearer ${adminToken}`)\\n        .send({\\n          websiteId,\\n          title: 'Customizer Studio Page',\\n          slug: 'studio-test',\\n          content: JSON.stringify([{ type: 'text', content: 'Initial Content' }]),\\n          status: 'draft',\\n        });\\n      expect(pageRes.status).toBe(201);\\n      draftPageId = pageRes.body.data.id;\\n    });\\n\\n    it('should save page layout changes to draftContent (does not affect public render)', async () => {\\n      // 1. Save changes to draft\\n      const draftContent = [\\n        { type: 'hero', props: { title: 'Updated Draft Hero' } },\\n        { type: 'paragraph', props: { text: 'New draft description text.' } }\\n      ];\\n\\n      const saveRes = await request(app)\\n        .patch(`/api/cms/pages/${draftPageId}/draft`)\\n        .set('x-tenant-id', tenantId)\\n        .set('Authorization', `Bearer ${adminToken}`)\\n      \n<truncated 4176 bytes>",
+    "StartLine": "440",
+    "TargetContent": "\"      // Verify merged footer configuration\\n      expect(res.body.data.footer).toBeDefined();\\n      expect(res.body.data.footer.copyrightText).toBe('&copy; 2026 Grace Community Church');\\n      expect(res.body.data.footer.socialLinks).toEqual([{ name: 'facebook', url: 'https://fb.com/grace' }]);\\n    });\\n  });\\n});\"",
+    "TargetFile": "\"c:/Users/Administrator/Documents/ChurchOS/src/tests/cms_extended.test.ts\""
+  }
+}

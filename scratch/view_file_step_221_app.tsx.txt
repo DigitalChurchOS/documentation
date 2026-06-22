@@ -1,0 +1,39 @@
+Created At: 2026-06-06T14:52:35Z
+Completed At: 2026-06-06T14:52:35Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx`
+Total Lines: 1016
+Total Bytes: 38614
+Showing lines 600 to 630
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+600:       setElements(nextState.elements);
+601:       setSelectedElementId(nextState.selectedElementId);
+602:       showToastNotification('Redo performed (Ctrl+Y)');
+603:     }
+604:   };
+605: 
+606:   // Node operations
+607:   const handleSelectElement = (id: string | null) => {
+608:     setSelectedElementId(id);
+609:     if (mode === 'embed') {
+610:       if (id) {
+611:         const el = findElementById(elements, id);
+612:         if (el) {
+613:           window.parent.postMessage({
+614:             type: 'elementSelected',
+615:             elementId: id,
+616:             elementType: el.type,
+617:             elementProps: el.props,
+618:             elementStyles: el.styles
+619:           }, '*');
+620:         }
+621:       } else {
+622:         window.parent.postMessage({
+623:           type: 'elementSelected',
+624:           elementId: null
+625:         }, '*');
+626:       }
+627:     }
+628:   };
+629: 
+630:   const handleUpdateElement = (id: string, updater: (el: ElementSchema) => Partial<ElementSchema>) => {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

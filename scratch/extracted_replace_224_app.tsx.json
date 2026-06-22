@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Conditionally render only the Canvas inside page builder when embedded in the customizer iframe\"",
+  "EndLine": "750",
+  "Instruction": "\"Insert conditional return for embed mode before the default layout return\"",
+  "ReplacementContent": "\"  if (mode === 'embed') {\\n    return (\\n      <div className=\\\"w-screen h-screen flex overflow-hidden bg-bg\\\">\\n        <Canvas\\n          elements={elements}\\n          activeDevice={activeDevice}\\n          selectedElementId={selectedElementId}\\n          onSelectElement={handleSelectElement}\\n          onUpdateElement={handleUpdateElement}\\n          onDeleteElement={handleDeleteElement}\\n          onDuplicateElement={handleDuplicateElement}\\n          onAddElement={handleAddElement}\\n          onMoveElement={handleMoveElement}\\n          canvasBg={canvasBg}\\n          canvasThemeMode={canvasThemeMode}\\n        />\\n      </div>\\n    );\\n  }\\n\\n  return (\\n    <div className=\\\"w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200\\\">\"",
+  "StartLine": "747",
+  "TargetContent": "\"  const inspectorVisibilityClass = selectedElement ? 'flex' : 'hidden 2xl:flex';\\n\\n  return (\\n    <div className=\\\"w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200\\\">\"",
+  "TargetFile": "\"C:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\page-builder\\\\app.tsx\"",
+  "toolAction": "\"Adding conditional rendering for embed mode in page builder\"",
+  "toolSummary": "\"Page builder app render edit\""
+}

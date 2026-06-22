@@ -1,0 +1,92 @@
+Created At: 2026-06-06T14:55:04Z
+Completed At: 2026-06-06T14:55:05Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts`
+Total Lines: 989
+Total Bytes: 33931
+Showing lines 800 to 989
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+800:   /**
+801:    * List section templates available.
+802:    */
+803:   static async listSectionTemplates(tenantId: string) {
+804:     const settings = await this.getSettings(tenantId);
+805:     const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);
+806: 
+807:     return [...this.defaultSectionTemplates(), ...(config.sections || [])];
+808:   }
+809: 
+810:   static async registerPageTemplate(tenantId: string, data: ThemeEngineTemplateInput) {
+811:     const template = normalizeTemplate(data, 'page');
+812:     const settings = await this.getSettings(tenantId);
+813:     const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);
+814: 
+815:     if (!config.pageTemplates) {
+816:       config.pageTemplates = [];
+817:     }
+818: 
+819:     const exists = [...this.defaultPageTemplates(), ...config.pageTemplates].some((s: any) => s.key === template.key);
+820:     if (exists) {
+821:       throw new Error(`Page template with key '${template.key}' already registered`);
+822:     }
+823: 
+824:     config.pageTemplates.push(template);
+825:     await this.updateSettings(tenantId, { configJson: config });
+826: 
+827:     return {
+828:       name: template.name,
+829:       key: template.key,
+830:       structure: template.structure,
+831:     };
+832:   }
+833: 
+834:   static async listPageTemplates(tenantId: string) {
+835:     const settings = await this.getSettings(tenantId);
+836:     const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAUL
+<truncated 3226 bytes>
+44:       where: { id: themeId },
+945:       data: {
+946:         draftSettings: null,
+947:       },
+948:     });
+949:   }
+950: 
+951:   static async resetThemeCustomization(tenantId: string, themeId: string) {
+952:     const theme = await prisma.theme.findFirst({
+953:       where: {
+954:         id: themeId,
+955:         tenantId,
+956:       },
+957:     });
+958: 
+959:     if (!theme) {
+960:       throw new Error('Theme not found');
+961:     }
+962: 
+963:     return await prisma.theme.update({
+964:       where: { id: themeId },
+965:       data: {
+966:         settings: '{}',
+967:         draftSettings: null,
+968:       },
+969:     });
+970:   }
+971: 
+972:   private static defaultSectionTemplates() {
+973:     return [
+974:       { name: 'Hero Banner', key: 'hero-banner', type: 'section', structure: { title: 'string', subtitle: 'string', bgImage: 'string' } },
+975:       { name: 'Feature Grid', key: 'feature-grid', type: 'section', structure: { items: 'array' } },
+976:       { name: 'Sermon Player Widget', key: 'sermon-player', type: 'section', structure: { recentCount: 'number' } },
+977:       { name: 'Giving Callout', key: 'giving-callout', type: 'section', structure: { title: 'string', campaignId: 'string', buttonLabel: 'string' } },
+978:     ];
+979:   }
+980: 
+981:   private static defaultPageTemplates() {
+982:     return [
+983:       { name: 'Home Page', key: 'home-page', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'sermon-player'] } },
+984:       { name: 'Ministry Landing Page', key: 'ministry-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'giving-callout'] } },
+985:       { name: 'Event Landing Page', key: 'event-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid'] } },
+986:     ];
+987:   }
+988: }
+989: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

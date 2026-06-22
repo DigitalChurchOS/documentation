@@ -1,0 +1,52 @@
+Created At: 2026-06-06T16:25:14Z
+Completed At: 2026-06-06T16:25:14Z
+File Path: `file:///C:/Users/Administrator/.gemini/antigravity/brain/b6ef7979-b2e0-456b-b57d-251645bf61e7/walkthrough.md`
+Total Lines: 83
+Total Bytes: 5140
+Showing lines 40 to 83
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+40: ## 4. Frontend & Communication Bridge
+41: 
+42: - **Embed Canvas Mode**: Updated [app.tsx](file:///C:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx) to support `mode=embed`. It loads pages and synchronizes theme variables, devices viewports, layout updates, section additions/reorders/duplications/deletions, and reports elements via `postMessage`.
+43: - **Parent Customizer Dashboard**: Integrated tab selection (Theme Design / Pages) and a dynamic element inspector panel directly into [index.html](file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html). The static mockup has been replaced with an iframe loading the embed canvas, enabling instant visual updates and a synchronized "Save Draft / Publish" flow.
+44: 
+45: ---
+46: 
+47: ## 5. Test Validation & Results
+48: 
+49: We added comprehensive integration tests for both modules covering theme draft customization and page draft/publish/preview flows with full cross-tenant security checks.
+50: 
+51: ### Theme Engine Tests: 25 Passed
+52: All tests in [themeEngine.test.ts](file:///C:/Users/Administrator/Documents/ChurchOS/src/tests/themeEngine.test.ts) completed successfully:
+53: ```text
+54: PASS src/tests/themeEngine.test.ts
+55:   ChurchOS Theme Engine Module
+56:     Module Lifecycle & Logging
+57:       √ should successfully activate theme engine module for tenant
+58:       √ should block activation if required parameters are missing
+59:       √ should list all active theme engine configs for tenant
+60:       ...
+61:     Theme Customization Draft & Publish Workflow
+62:       √ should save theme customization changes to draftSettings without affecting settings
+63:       √ should discard theme draft settings successfully
+64:       √ should promote draftSettings to live settings on publish
+65:       √ should reset customizations to empty config on reset
+66:       √ should enforce tenant isolation and block unauthorized tenant users from theme customization actions
+67: ```
+68: 
+69: ### CMS & Page Builder Tests: 21 Passed
+70: All tests in [cms_extended.test.ts](file:///C:/Users/Administrator/Documents/ChurchOS/src/tests/cms_extended.test.ts) completed successfully:
+71: ```text
+72: PASS src/tests/cms_extended.test.ts
+73:   ChurchOS CMS Extended Module - Revisions, Menus, Footers & Blocks
+74:     ...
+75:     Page Builder Draft, Publish & Preview Token Flow
+76:       √ should save page layout changes to draftContent (does not affect public render)
+77:       √ should generate a secure temporary preview URL and token
+78:       √ should load draftContent when fetching the page render with a valid previewToken
+79:       √ should block preview rendering if the token is invalid or expired
+80:       √ should promote draftContent to content, set status to published, and clear draftContent upon publishing
+81:       √ should enforce tenant isolation and block unauthorized tenant users from drafting/publishing pages
+82: ```
+83: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

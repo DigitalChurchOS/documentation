@@ -1,0 +1,49 @@
+Created At: 2026-06-06T16:21:09Z
+Completed At: 2026-06-06T16:21:09Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3154
+Total Bytes: 140281
+Showing lines 2920 to 2960
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2920:     };
+2921:     state.pages.push(page);
+2922:     addActivity(`Created page: ${page.title}`);
+2923:     return sendJson(res, 201, { data: page });
+2924:   }
+2925: 
+2926:   const pageMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)$/);
+2927:   if (pageMatch && method === 'PATCH') {
+2928:     const page = state.pages.find((item) => item.id === pageMatch[1]);
+2929:     if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2930:     Object.assign(page, body, { updatedAt: now() });
+2931:     addActivity(`Updated page: ${page.title}`);
+2932:     return sendJson(res, 200, { data: page });
+2933:   }
+2934: 
+2935:   const revisionsMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/revisions$/);
+2936:   if (revisionsMatch && method === 'GET') {
+2937:     return sendJson(res, 200, {
+2938:       data: [
+2939:         { id: `${revisionsMatch[1]}-rev-1`, pageId: revisionsMatch[1], createdAt: now(), summary: 'Current local preview version' },
+2940:       ],
+2941:     });
+2942:   }
+2943: 
+2944:   const rollbackMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/rollback$/);
+2945:   if (rollbackMatch && method === 'POST') {
+2946:     const page = state.pages.find((item) => item.id === rollbackMatch[1]);
+2947:     if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2948:     addActivity(`Rolled back page: ${page.title}`);
+2949:     return sendJson(res, 200, { data: page });
+2950:   }
+2951: 
+2952:   if (pathname === '/api/cms/themes' && method === 'POST') {
+2953:     const theme = { id: createId('theme'), name: body.name || 'New Theme', settings: body.settings || {}, createdAt: now() };
+2954:     state.themes.push(theme);
+2955:     return sendJson(res, 201, { data: theme });
+2956:   }
+2957: 
+2958:   if (pathname === '/api/cms/websites' && method === 'POST') {
+2959:     const website = { id: createId('website'), title: body.title || 'Church Website', description: body.description || '', domain: body.domain || 'localhost', themeId: body.themeId || 'theme-default' };
+2960:     state.websites.push(website);
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

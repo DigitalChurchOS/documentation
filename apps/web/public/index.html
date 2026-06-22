@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Church OS — The Complete Church Operating System</title>
+  <meta name="description" content="Build, manage, and grow your church online. Digital Church OS gives ministries a complete platform to launch websites, manage members, accept giving, publish sermons, and run livestreams." />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
+  <style>
+    :root {
+      --bg: #f8f4ed;
+      --bg-2: #fffaf3;
+      --ink: #15171a;
+      --muted: #73706b;
+      --soft: rgba(255,255,255,.72);
+      --solid: #ffffff;
+      --line: rgba(21,23,26,.1);
+      --accent: #f97316;
+      --accent-2: #ffc27a;
+      --accent-soft: rgba(249,115,22,.12);
+      --charcoal: #1d1d1c;
+      --shadow: 0 30px 90px rgba(61, 44, 21, .12);
+      --shadow-soft: 0 18px 44px rgba(61, 44, 21, .08);
+      --radius: 34px;
+      --radius-sm: 22px;
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg: #151413;
+      --bg-2: #1d1b19;
+      --ink: #f7f0e8;
+      --muted: #aaa29a;
+      --soft: rgba(37,36,34,.68);
+      --solid: #22201e;
+      --line: rgba(255,255,255,.1);
+      --accent-soft: rgba(249,115,22,.18);
+      --shadow: 0 30px 100px rgba(0,0,0,.35);
+      --shadow-soft: 0 18px 50px rgba(0,0,0,.25);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background:
+        radial-gradient(circle at 15% 10%, var(--accent-soft), transparent 28%),
+        radial-gradient(circle at 92% 4%, rgba(91, 33, 182, .12), transparent 24%),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      opacity: .22;
+      background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at top, black 0%, transparent 75%);
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      width: 460px;
+      height: 460px;
+      right: -180px;
+      top: 26%;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      filter: blur(32px);
+      pointer-events: none;
+      z-index: -1;
+      animation: breathe 7s ease-in-out infinite alternate;
+    }
+
+    @keyframes breathe {
+      from { transform: translate3d(0,0,0) scale(1); opacity: .7; }
+      to { transform: translate3d(-60px,40px,0) scale(1.16); opacity: .42; }
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    button, input, select, textarea {
+      font-family: inherit;
+    }
+
+    .shell {
+      width: min(1160px, calc(100% - 40px));
+      margin-inline: auto;
+    }
+
+    .nav {
+      position: fixed;
+      z-index: 50;
+      top: 18px;
+      left: 50%;
+      width: min(1120px, calc(100% - 32px));
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--solid) 72%, transparent);
+      backdrop-filter: blur(24px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding-left: 8px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      box-shadow: 0 18px 32px color-mix(in srgb, var(--accent) 28%, transparent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .nav-links a {
+      padding: 11px 13px;
+      border-radius: 999px;
+      transition: .25s ease;
+    }
+
+    .nav-links a:hover {
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn, .icon-btn {
+      border: 0;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+    }
+
+    .btn {
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 900;
+      background: var(--soft);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      color: var(--ink);
+      background: var(--soft);
+      border: 1px solid var(--line);
+    }
+
+    .btn:hover, .icon-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border: 0;
+      box-shadow: 0 18px 38px color-mix(in srgb, var(--accent) 24%, transparent);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      align-items: center;
+      gap: clamp(30px, 5vw, 80px);
+      padding-top: 90px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity .85s cubic-bezier(.2,.8,.2,1), transform .85s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 24px;
+      font-size: clamp(48px, 7vw, 92px);
+      line-height: .88;
+      letter-spacing: -.085em;
+      max-width: 850px;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .lead {
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.75;
+      color: var(--muted);
+      max-width: 680px;
+      margin-bottom: 32px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .art-board {
+      position: relative;
+      min-height: 620px;
+      display: grid;
+      place-items: center;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--solid) 44%, transparent);
+      backdrop-filter: blur(24px);
+      animation: float 7s ease-in-out infinite alternate;
+    }
+
+    .orb.one { width: 160px; height: 160px; top: 28px; left: 16px; }
+    .orb.two { width: 96px; height: 96px; right: 4px; top: 140px; animation-delay: -.9s; }
+    .orb.three { width: 126px; height: 126px; bottom: 36px; left: 80px; animation-delay: -1.8s; }
+
+    @keyframes float {
+      from { transform: translate3d(0,0,0); }
+      to { transform: translate3d(22px,-28px,0); }
+    }
+
+    .product-card {
+      position: relative;
+      z-index: 2;
+      width: min(480px, 100%);
+      padding: 18px;
+      border-radius: 42px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--solid) 74%, transparent);
+      backdrop-filter: blur(26px);
+      box-shadow: var(--shadow);
+      transform: rotate(-2deg);
+      transition: .5s ease;
+    }
+
+    .product-card:hover {
+      transform: rotate(0deg) translateY(-8px);
+    }
+
+    .browser {
+      overflow: hidden;
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      background: var(--solid);
+    }
+
+    .browser-top {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-inline: 16px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--soft) 78%, transparent);
+    }
+
+    .dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--muted) 34%, transparent);
+    }
+
+    .browser-url {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+    }
+
+    .mini-site {
+      padding: 18px;
+    }
+
+    .mini-hero {
+      min-height: 260px;
+      border-radius: 26px;
+      padding: 24px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      background:
+        linear-gradient(135deg, rgba(0,0,0,.28), rgba(0,0,0,.06)),
+        radial-gradient(circle at 76% 20%, rgba(255,255,255,.24), transparent 18%),
+        linear-gradient(135deg, var(--accent), #161616);
+    }
+
+    .mini-hero h3 {
+      font-size: 30px;
+      line-height: .98;
+      letter-spacing: -.06em;
+      margin-bottom: 10px;
+    }
+
+    .mini-hero p {
+      color: rgba(255,255,255,.75);
+      line-height: 1.55;
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+
+    .soft-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .soft-tile {
+      min-height: 76px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-weight: 900;
+      background: color-mix(in srgb, var(--soft) 72%, transparent);
+      border: 1px solid var(--line);
+    }
+
+    .section {
+      padding: 110px 0;
+    }
+
+    .section.compact {
+      padding: 70px 0;
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 54px;
+    }
+
+    .section-head.center {
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: clamp(38px, 5vw, 68px);
+      line-height: .94;
+      letter-spacing: -.075em;
+      margin-bottom: 18px;
+    }
+
+    .section-copy {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.75;
+      margin-bottom: 0;
+    }
+
+    .quiet-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .quiet-card {
+      min-height: 260px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--solid) 58%, transparent);
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow-soft);
+      transition: .35s ease;
+    }
+
+    .quiet-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow);
+    }
+
+    .quiet-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: var(--accent-soft);
+      margin-bottom: 38px;
+    }
+
+    .quiet-card h3 {
+      font-size: 22px;
+      letter-spacing: -.04em;
+      margin-bottom: 10px;
+    }
+
+    .quiet-card p {
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 0;
+      font-size: 14px;
+    }
+
+    /* Tabs for Login & Registration forms */
+    .signup-container {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--solid) 62%, transparent);
+      backdrop-filter: blur(24px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .signup-copy {
+      padding: clamp(34px, 5vw, 64px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 640px;
+    }
+
+    .signup-copy h2 {
+      max-width: 540px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 20px;
+      margin-top: 38px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .timeline-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .timeline-item strong {
+      display: block;
+      letter-spacing: -.03em;
+      margin-bottom: 5px;
+    }
+
+    .timeline-item span {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .form-panel {
+      padding: clamp(26px, 4vw, 44px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: color-mix(in srgb, var(--bg) 50%, transparent);
+      padding: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+
+    .form-tab {
+      flex: 1;
+      border: 0;
+      cursor: pointer;
+      min-height: 42px;
+      border-radius: 999px;
+      font-weight: 800;
+      background: transparent;
+      color: var(--muted);
+      transition: .25s ease;
+    }
+
+    .form-tab.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 500;
+      padding-left: 10px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--solid) 68%, transparent);
+      color: var(--ink);
+      border-radius: 17px;
+      min-height: 52px;
+      padding: 0 15px;
+      outline: 0;
+      transition: border .25s ease, box-shadow .25s ease, transform .25s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      box-shadow: 0 0 0 5px var(--accent-soft);
+      transform: translateY(-1px);
+    }
+
+    .domain-preview {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--soft) 82%, transparent);
+      margin-top: 3px;
+    }
+
+    .domain-preview code {
+      color: var(--accent);
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 32px;
+      padding: 0 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      white-space: nowrap;
+    }
+
+    .pill.ok {
+      color: #16a34a;
+      background: rgba(22,163,74,.12);
+      border-color: rgba(22,163,74,.22);
+    }
+
+    .pill.bad {
+      color: #dc2626;
+      background: rgba(220,38,38,.12);
+      border-color: rgba(220,38,38,.22);
+    }
+
+    /* Pricing section */
+    .pricing-toolbar {
+      display: flex;
+      justify-content: center;
+      margin-top: 34px;
+    }
+
+    .billing-toggle {
+      display: inline-flex;
+      gap: 6px;
+      padding: 6px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: color-mix(in srgb, var(--solid) 60%, transparent);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .billing-toggle button {
+      border: 0;
+      cursor: pointer;
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 900;
+      transition: .25s ease;
+    }
+
+    .billing-toggle button.active {
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 14px 28px color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 46px;
+    }
+
+    .price-card {
+      position: relative;
+      min-height: 560px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--solid) 58%, transparent);
+      backdrop-filter: blur(24px);
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
+    }
+
+    .price-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow);
+    }
+
+    .price-card.featured {
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+      background:
+        radial-gradient(circle at 82% 12%, var(--accent-soft), transparent 30%),
+        color-mix(in srgb, var(--solid) 64%, transparent);
+    }
+
+    .price-card.featured::before {
+      content: "Most popular";
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      min-height: 30px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 11px;
+      border-radius: 999px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .price-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: var(--accent-soft);
+      margin-bottom: 34px;
+    }
+
+    .price-card h3 {
+      font-size: 26px;
+      letter-spacing: -.05em;
+      margin-bottom: 10px;
+    }
+
+    .price-card p {
+      color: var(--muted);
+      line-height: 1.62;
+      margin-bottom: 0;
+      min-height: 78px;
+      font-size: 14px;
+    }
+
+    .price-value {
+      margin: 28px 0 24px;
+      font-size: 42px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: -.07em;
+    }
+
+    .price-value span {
+      color: var(--muted);
+      font-size: 14px;
+      letter-spacing: 0;
+      font-weight: 900;
+    }
+
+    .price-features {
+      display: grid;
+      gap: 13px;
+      margin: 0 0 28px;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-weight: 750;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .price-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .price-features i {
+      flex: 0 0 18px;
+      width: 18px;
+      height: 18px;
+      color: #16a34a;
+      margin-top: 1px;
+    }
+
+    .price-card .btn {
+      margin-top: auto;
+      width: 100%;
+    }
+
+    .pricing-note {
+      margin: 28px auto 0;
+      max-width: 760px;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    /* Modules Showcase Section */
+    .module-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      width: fit-content;
+    }
+    .module-badge.included {
+      background: rgba(22,163,74,.08);
+      color: #16a34a;
+      border-color: rgba(22,163,74,.15);
+    }
+    .module-badge.pro {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: color-mix(in srgb, var(--accent) 15%, transparent);
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(100px);
+      opacity: 0;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: var(--ink);
+      color: var(--bg);
+      font-weight: 900;
+      font-size: 14px;
+      box-shadow: var(--shadow);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      transition: transform .35s cubic-bezier(.175, .885, .32, 1.275), opacity .3s ease;
+    }
+    .toast-container.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .footer {
+      padding: 60px 0 70px;
+      color: var(--muted);
+      text-align: center;
+      border-top: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .nav-links {
+        display: none;
+      }
+      .hero, .signup-container {
+        grid-template-columns: 1fr;
+      }
+      .hero {
+        padding-top: 150px;
+      }
+      .art-board {
+        min-height: 520px;
+      }
+      .quiet-grid, .pricing-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .quiet-grid, .pricing-grid, .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .price-card {
+        min-height: auto;
+      }
+    }
+
+    /* Form Background and Centered Layout */
+    .signup-wrapper {
+      position: relative;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px;
+      border-radius: var(--radius);
+      background: var(--solid);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+      z-index: 2;
+    }
+    .signup-section-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 80% 20%, var(--accent-soft), transparent 50%);
+      mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    /* Input Groups & Utilities */
+    .input-group {
+      display: flex;
+      align-items: center;
+      background: color-mix(in srgb, var(--solid) 68%, transparent);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding-right: 15px;
+      transition: border .25s ease, box-shadow .25s ease;
+    }
+    .input-group:focus-within {
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+      box-shadow: 0 0 0 5px var(--accent-soft);
+    }
+    .input-group input {
+      border: none;
+      box-shadow: none;
+      background: transparent;
+      padding-right: 5px;
+      flex: 1;
+    }
+    .input-group input:focus {
+      box-shadow: none;
+      transform: none;
+    }
+    .input-suffix {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .password-wrapper {
+      position: relative;
+    }
+    .password-wrapper input {
+      padding-right: 45px;
+    }
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      background: transparent;
+      border: none;
+      padding: 0;
+    }
+    .password-toggle:hover {
+      color: var(--accent);
+    }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .step-count {
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 13px;
+      background: var(--soft);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+
+    @media (max-width: 900px) {
+      .signup-container { grid-template-columns: 1fr !important; gap: 40px !important; }
+      .signup-left h2 { font-size: 2.5rem !important; }
+      #step1, #step2 { grid-template-columns: 1fr !important; }
+      .field.full { grid-column: span 1 !important; }
+    }
+
+    /* Custom Dropdown */
+    .custom-select-wrapper {
+      position: relative;
+      user-select: none;
+      width: 100%;
+    }
+    .custom-select-trigger {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font: inherit;
+      color: var(--charcoal);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .custom-select-trigger:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      outline: none;
+    }
+    .custom-select-dropdown {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      padding: 6px;
+    }
+    .custom-select-wrapper.open .custom-select-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .custom-select-search {
+      padding: 6px;
+      position: relative;
+    }
+    .custom-select-search i,
+    .custom-select-search svg {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      width: 16px;
+      height: 16px;
+    }
+    .custom-select-search input {
+      width: 100%;
+      padding: 10px 10px 10px 32px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bg-2);
+      font: inherit;
+      outline: none;
+      font-size: 14px;
+    }
+    .custom-select-search input:focus {
+      border-color: var(--accent);
+    }
+    .custom-select-options {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+    .custom-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--charcoal);
+      transition: background 0.2s;
+      font-weight: 500;
+      font-size: 14px;
+    }
+    .custom-option:hover {
+      background: var(--soft);
+    }
+    .custom-option.selected {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .custom-option.selected::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-left: auto;
+    }
+    }
+    .country-flag {
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+  </style>
+</head>
+<body data-theme="light">
+  <header class="nav">
+    <a class="brand" href="#">
+      <span class="brand-icon"><i data-lucide="church"></i></span>
+      <span>Digital Church OS</span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#modules">Modules</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#signup">Signup</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+        <i data-lucide="moon"></i>
+      </button>
+      <a class="btn btn-primary" href="#signup">Start Church</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero shell">
+      <div class="reveal visible">
+        <div class="eyebrow"><i data-lucide="sparkles"></i> The SaaS platform for churches</div>
+        <h1>Build, manage, and grow your church <span class="gradient-text">online.</span></h1>
+        <p class="lead">
+          Digital Church OS gives churches a complete operating system to launch responsive public websites, manage members, accept giving, publish sermons, organize cells, and launch ministry modules.
+        </p>
+        <div class="hero-actions">
+          <a href="#signup" class="btn btn-primary"><i data-lucide="rocket"></i> Create Church Account</a>
+          <a href="#pricing" class="btn"><i data-lucide="credit-card"></i> View Plans</a>
+        </div>
+      </div>
+
+      <div class="art-board reveal visible">
+        <span class="orb one"></span>
+        <span class="orb two"></span>
+        <span class="orb three"></span>
+
+        <div class="product-card">
+          <div class="browser">
+            <div class="browser-top">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="browser-url" id="previewUrl">churchname.churched.online</div>
+            </div>
+            <div class="mini-site">
+              <div class="mini-hero">
+                <div class="pill" style="background:rgba(255,255,255,.18); color:#fff; border-color:rgba(255,255,255,.22); width:fit-content; margin-bottom:14px;">
+                  <i data-lucide="wand-sparkles"></i> Christo Theme
+                </div>
+                <h3 id="heroPreviewName">Your church, beautifully launched.</h3>
+                <p>Website, giving, members, livestream, events, media, and ministry tools from one place.</p>
+              </div>
+              <div class="soft-row">
+                <div class="soft-tile"><i data-lucide="users"></i></div>
+                <div class="soft-tile"><i data-lucide="hand-coins"></i></div>
+                <div class="soft-tile"><i data-lucide="radio"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Features Grid -->
+    <section class="section shell" id="features">
+      <div class="section-head center reveal visible">
+        <div class="eyebrow"><i data-lucide="layout"></i> Platform Capabilities</div>
+        <h2>One workspace. Infinite reach.</h2>
+        <p class="section-copy">
+          Digital Church OS replaces ten fragmented systems. Manage everything with clean design and atomic speed.
+        </p>
+      </div>
+
+      <div class="quiet-grid">
+        <article class="quiet-card reveal visible">
+          <div class="quiet-icon"><i data-lucide="globe-2"></i></div>
+          <h3>Church Website Builder</h3>
+          <p>Launch high-speed pages using our custom theme rendering engine. Zero setup required, fully integrated with your dashboard databases.</p>
+        </article>
+
+        <article class="quiet-card reveal visible">
+          <div class="quiet-icon"><i data-lucide="users"></i></div>
+          <h3>Member CRM & Portal</h3>
+          <p>Nurture your community. Track discipleship pathways, follow up visitors, manage volunteer teams, and provide personal dashboard accounts.</p>
+        </article>
+
+        <article class="quiet-card reveal visible">
+          <div class="quiet-icon"><i data-lucide="hand-coins"></i></div>
+          <h3>Giving & Online Tithes</h3>
+          <p>Accept secure giving, direct bank transfers, and mobile payments. Set up custom giving campaigns, goals, and export tax statements.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Modules Grid -->
+    <section class="section compact shell" id="modules">
+      <div class="section-head center reveal visible">
+        <div class="eyebrow"><i data-lucide="blocks"></i> Ministry Modules</div>
+        <h2>Activate only what you need.</h2>
+        <p class="section-copy">
+          Our modular plug-and-play architecture allows you to scale features as your ministry grows.
+        </p>
+      </div>
+
+      <div class="quiet-grid">
+        <article class="quiet-card reveal visible">
+          <div class="module-badge included">Included in all plans</div>
+          <h3 style="margin-top: 14px;"><i data-lucide="calendar"></i> Events Calendar</h3>
+          <p>Organize local services, conferences, and prayer meetings with capacity limits, reminder notifications, and ticketing.</p>
+        </article>
+
+        <article class="quiet-card reveal visible">
+          <div class="module-badge pro">Growth & Pro Plans</div>
+          <h3 style="margin-top: 14px;"><i data-lucide="video"></i> Livestream Hub</h3>
+          <p>Stream services directly to your custom website. Features live prayer requests, chat rooms, notes, and giving CTAs.</p>
+        </article>
+
+        <article class="quiet-card reveal visible">
+          <div class="module-badge pro">Pro Plan Exclusive</div>
+          <h3 style="margin-top: 14px;"><i data-lucide="graduation-cap"></i> LMS Discipleship</h3>
+          <p>Create discipleship courses, school of ministry classes, quizzes, and leadership training programs online.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Pricing Page Section -->
+    <section class="section shell" id="pricing">
+      <div class="section-head center reveal visible">
+        <div class="eyebrow"><i data-lucide="credit-card"></i> Simple, Transparent Pricing</div>
+        <h2>Find the right fit for your church.</h2>
+        <p class="section-copy">
+          All accounts start with a 14-day free trial. Scale or downgrade anytime as requirements change.
+        </p>
+
+        <div class="pricing-toolbar">
+          <div class="billing-toggle" aria-label="Billing cycle">
+            <button class="active" type="button" data-billing="monthly">Monthly</button>
+            <button type="button" data-billing="yearly">Yearly <span style="opacity:.75;">save 20%</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Starter Plan -->
+        <article class="price-card reveal visible">
+          <div class="price-icon"><i data-lucide="sprout"></i></div>
+          <h3>Starter</h3>
+          <p>For smaller congregations launching a primary website and basic member logs.</p>
+          <div class="price-value" data-monthly="$19" data-yearly="$182" data-slug="starter">$19<span>/mo</span></div>
+          <ul class="price-features">
+            <li><i data-lucide="check-circle-2"></i> Up to 50 active members</li>
+            <li><i data-lucide="check-circle-2"></i> Church Website & CMS</li>
+            <li><i data-lucide="check-circle-2"></i> Blog, pages, and basic events</li>
+            <li><i data-lucide="check-circle-2"></i> Christo Theme included</li>
+          </ul>
+          <button class="btn btn-select-plan" data-plan="starter" type="button">Select Starter</button>
+        </article>
+
+        <!-- Growth Plan -->
+        <article class="price-card featured reveal visible">
+          <div class="price-icon"><i data-lucide="trending-up"></i></div>
+          <h3>Growth</h3>
+          <p>For growing congregations managing giving, media libraries, cell groups, and notifications.</p>
+          <div class="price-value" data-monthly="$49" data-yearly="$470" data-slug="growth">$49<span>/mo</span></div>
+          <ul class="price-features">
+            <li><i data-lucide="check-circle-2"></i> Up to 500 active members</li>
+            <li><i data-lucide="check-circle-2"></i> Giving & payment processing</li>
+            <li><i data-lucide="check-circle-2"></i> Media library & audio podcasts</li>
+            <li><i data-lucide="check-circle-2"></i> Cell Groups directory</li>
+          </ul>
+          <button class="btn btn-primary btn-select-plan" data-plan="growth" type="button">Select Growth</button>
+        </article>
+
+        <!-- Pro Plan -->
+        <article class="price-card reveal visible">
+          <div class="price-icon"><i data-lucide="radio"></i></div>
+          <h3>Pro</h3>
+          <p>For churches running live broadcasts, interactive prayer walls, and discipleship courses.</p>
+          <div class="price-value" data-monthly="$99" data-yearly="$950" data-slug="pro">$99<span>/mo</span></div>
+          <ul class="price-features">
+            <li><i data-lucide="check-circle-2"></i> Up to 5,000 active members</li>
+            <li><i data-lucide="check-circle-2"></i> Livestream Hub & live chat</li>
+            <li><i data-lucide="check-circle-2"></i> Prayer wall & testimony wall</li>
+            <li><i data-lucide="check-circle-2"></i> Discipleship LMS & quizzes</li>
+          </ul>
+          <button class="btn btn-select-plan" data-plan="pro" type="button">Select Pro</button>
+        </article>
+
+        <!-- Enterprise Plan -->
+        <article class="price-card reveal visible">
+          <div class="price-icon"><i data-lucide="network"></i></div>
+          <h3>Enterprise</h3>
+          <p>For multi-campus churches and denominations requiring custom bandwidth and dedicated support.</p>
+          <div class="price-value" data-monthly="Custom" data-yearly="Custom" data-slug="enterprise">Custom</div>
+          <ul class="price-features">
+            <li><i data-lucide="check-circle-2"></i> Unlimited active members</li>
+            <li><i data-lucide="check-circle-2"></i> Multi-branch/campus support</li>
+            <li><i data-lucide="check-circle-2"></i> Custom theme/plugin coding</li>
+            <li><i data-lucide="check-circle-2"></i> Dedicated account engineer</li>
+          </ul>
+          <button class="btn btn-select-plan" data-plan="enterprise" type="button">Contact Sales</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- Interactive Signup & Login Panel Section -->
+    
+    <!-- Interactive Signup & Login Panel Section -->
+    <!-- Interactive Signup & Login Panel Section -->
+    <section class="section shell" id="signup" style="position: relative; padding: 100px 20px;">
+      <div class="signup-section-bg"></div>
+      
+      <div class="signup-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; align-items: center;">
+        
+        <!-- Left Column -->
+        <div class="signup-left">
+          <h2 id="copyTitle" style="font-size: 3.5rem; line-height: 1.1; margin-bottom: 20px;">Provision your church workspace in 30 seconds.</h2>
+          <p class="section-copy" id="copyDesc" style="font-size: 1.25rem;">
+            Enter your details, choose a unique church subdomain, and proceed directly to the interactive onboarding wizard.
+          </p>
+        </div>
+
+        <!-- Right Column -->
+        <div class="signup-right">
+          <div class="signup-wrapper" style="max-width: 100%; margin: 0;">
+            <div class="form-tabs" style="margin-bottom: 30px;">
+              <button class="form-tab active" id="tabRegister" type="button">Register Church</button>
+              <button class="form-tab" id="tabLogin" type="button">Sign In</button>
+            </div>
+
+            <!-- Registration Form -->
+            <form id="signupForm">
+              
+              <!-- Step 1 -->
+              <div id="step1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="step-header" style="grid-column: span 2;">
+                  <h3 style="margin: 0;">Step 1: Church Details</h3>
+                  <div class="step-count">1 of 2</div>
+                </div>
+                
+                <div class="field full" style="grid-column: span 2;">
+                  <label for="churchName">Church Name</label>
+                  <input id="churchName" placeholder="e.g. Christ Embassy Calgary" required />
+                </div>
+
+                <div class="field">
+                  <label for="ownerName">Pastor/Owner Full Name</label>
+                  <input id="ownerName" placeholder="e.g. Pastor David Cole" required />
+                </div>
+
+                <div class="field">
+                  <label for="ownerEmail">Owner Email Address</label>
+                  <input id="ownerEmail" type="email" placeholder="e.g. pastor@church.org" required />
+                </div>
+
+                <div class="field">
+                  <label for="country">Country</label>
+                  <div class="custom-select-wrapper" id="countryWrapper">
+                    <input type="hidden" id="country" required />
+                    <button type="button" class="custom-select-trigger" id="countryTrigger">
+                      <span class="country-trigger-text">Select a country</span>
+                      <i data-lucide="chevron-down"></i>
+                    </button>
+                    <div class="custom-select-dropdown">
+                      <div class="custom-select-search">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="countrySearch" placeholder="Search countries..." />
+                      </div>
+                      <div class="custom-select-options" id="countryOptions"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="city">City</label>
+                  <input id="city" placeholder="e.g. Calgary" required />
+                </div>
+
+                <div class="field full" style="margin-top: 10px; grid-column: span 2;">
+                  <button class="btn btn-primary" type="button" id="btnProceed" style="width:100%; min-height:56px;">
+                    Proceed <i data-lucide="arrow-right"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Step 2 -->
+              <div id="step2" style="display: none; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="step-header" style="grid-column: span 2;">
+                  <h3 style="margin: 0;">Step 2: Workspace Setup</h3>
+                  <div class="step-count">2 of 2</div>
+                </div>
+                
+                <div class="field full" style="grid-column: span 2;">
+                  <label for="subdomain">Preferred Subdomain</label>
+                  <div class="input-group">
+                    <input id="subdomain" placeholder="e.g. cecalgary" required />
+                    <span class="input-suffix">.churched.online</span>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="password">Password</label>
+                  <div class="password-wrapper">
+                    <input id="password" type="password" placeholder="••••••••" required minlength="8" />
+                    <button type="button" class="password-toggle" data-target="password">
+                      <i data-lucide="eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="repeatPassword">Repeat Password</label>
+                  <div class="password-wrapper">
+                    <input id="repeatPassword" type="password" placeholder="••••••••" required minlength="8" />
+                    <button type="button" class="password-toggle" data-target="repeatPassword">
+                      <i data-lucide="eye"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="field full" style="grid-column: span 2; display: grid; grid-template-columns: auto 1fr; gap: 15px; margin-top: 10px;">
+                  <button class="btn" type="button" id="btnBack" style="min-height:56px; padding: 0 20px;">
+                    <i data-lucide="arrow-left"></i> Back
+                  </button>
+                  <button class="btn btn-primary" type="submit" style="min-height:56px;">
+                    <i data-lucide="rocket"></i> Create Workspace
+                  </button>
+                </div>
+              </div>
+            </form>
+
+            <!-- Login Form -->
+            <form id="loginForm" style="display: none;">
+              <div id="loginStep" style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+              <div class="field full">
+                <label for="loginSubdomain">Church Subdomain</label>
+                <div class="input-group" style="margin-bottom: 20px;">
+                  <input id="loginSubdomain" placeholder="e.g. cecalgary" required />
+                  <span class="input-suffix">.churched.online</span>
+                </div>
+              </div>
+
+              <div class="field full">
+                <label for="loginEmail">Email Address</label>
+                <input id="loginEmail" type="email" placeholder="e.g. pastor@church.org" required />
+              </div>
+
+              <div class="field full">
+                <label for="loginPassword">Password</label>
+                <div class="password-wrapper">
+                  <input id="loginPassword" type="password" placeholder="••••••••" required />
+                  <button type="button" class="password-toggle" data-target="loginPassword">
+                    <i data-lucide="eye"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="field full" style="margin-top: 20px;">
+                <button class="btn btn-primary" type="submit" style="width:100%; min-height:56px;">
+                  <i data-lucide="log-in"></i> Sign In to Dashboard
+                </button>
+              </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    Digital Church OS — The Complete Church Management Platform. © 2026. All rights reserved.
+  </footer>
+
+  <!-- Toast Element -->
+  <div class="toast-container" id="toast">
+    <i data-lucide="info" id="toastIcon"></i>
+    <span id="toastMessage">Workspace created successfully!</span>
+  </div>
+
+  <script>
+    const body = document.body;
+    const themeToggle = document.getElementById("themeToggle");
+    const churchNameInput = document.getElementById("churchName");
+    const heroPreviewName = document.getElementById("heroPreviewName");
+    const subdomainInput = document.getElementById("subdomain");
+    
+    
+    const planSelect = document.getElementById("plan");
+    let selectedPlan = planSelect?.value || "growth";
+    const previewUrl = document.getElementById("previewUrl");
+
+    const tabRegister = document.getElementById("tabRegister");
+    const tabLogin = document.getElementById("tabLogin");
+    const signupForm = document.getElementById("signupForm");
+    const loginForm = document.getElementById("loginForm");
+    const copyTitle = document.getElementById("copyTitle");
+    const copyDesc = document.getElementById("copyDesc");
+    
+
+    const loginSubdomain = document.getElementById("loginSubdomain");
+    
+
+    function icon(name) {
+      return `<i data-lucide="${name}"></i>`;
+    }
+
+    // Initialize icons
+    lucide.createIcons();
+
+    // Toggle theme
+    function syncThemeIcon() {
+      const isDark = body.dataset.theme === "dark";
+      themeToggle.innerHTML = isDark ? icon("sun") : icon("moon");
+      lucide.createIcons();
+    }
+
+    themeToggle.addEventListener("click", () => {
+      body.dataset.theme = body.dataset.theme === "dark" ? "light" : "dark";
+      syncThemeIcon();
+    });
+
+    
+    // Subdomain formatting and validation
+    function cleanSubdomain(value) {
+      return value.toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-");
+    }
+
+    subdomainInput.addEventListener("input", () => {
+      subdomainInput.value = cleanSubdomain(subdomainInput.value);
+    });
+
+    
+    // Populate Custom Country Dropdown
+    const countries = [
+      { name: "Afghanistan", code: "AF", emoji: "🇦🇫" }, { name: "Albania", code: "AL", emoji: "🇦🇱" }, { name: "Algeria", code: "DZ", emoji: "🇩🇿" },
+      { name: "Andorra", code: "AD", emoji: "🇦🇩" }, { name: "Angola", code: "AO", emoji: "🇦🇴" }, { name: "Argentina", code: "AR", emoji: "🇦🇷" },
+      { name: "Armenia", code: "AM", emoji: "🇦🇲" }, { name: "Australia", code: "AU", emoji: "🇦🇺" }, { name: "Austria", code: "AT", emoji: "🇦🇹" },
+      { name: "Azerbaijan", code: "AZ", emoji: "🇦🇿" }, { name: "Bahamas", code: "BS", emoji: "🇧🇸" }, { name: "Bahrain", code: "BH", emoji: "🇧🇭" },
+      { name: "Bangladesh", code: "BD", emoji: "🇧🇩" }, { name: "Barbados", code: "BB", emoji: "🇧🇧" }, { name: "Belarus", code: "BY", emoji: "🇧🇾" },
+      { name: "Belgium", code: "BE", emoji: "🇧🇪" }, { name: "Belize", code: "BZ", emoji: "🇧🇿" }, { name: "Benin", code: "BJ", emoji: "🇧🇯" },
+      { name: "Bhutan", code: "BT", emoji: "🇧🇹" }, { name: "Bolivia", code: "BO", emoji: "🇧🇴" }, { name: "Bosnia", code: "BA", emoji: "🇧🇦" },
+      { name: "Botswana", code: "BW", emoji: "🇧🇼" }, { name: "Brazil", code: "BR", emoji: "🇧🇷" }, { name: "Brunei", code: "BN", emoji: "🇧🇳" },
+      { name: "Bulgaria", code: "BG", emoji: "🇧🇬" }, { name: "Burkina Faso", code: "BF", emoji: "🇧🇫" }, { name: "Burundi", code: "BI", emoji: "🇧🇮" },
+      { name: "Cambodia", code: "KH", emoji: "🇰🇭" }, { name: "Cameroon", code: "CM", emoji: "🇨🇲" }, { name: "Canada", code: "CA", emoji: "🇨🇦" },
+      { name: "Central African Republic", code: "CF", emoji: "🇨🇫" }, { name: "Chad", code: "TD", emoji: "🇹🇩" }, { name: "Chile", code: "CL", emoji: "🇨🇱" },
+      { name: "China", code: "CN", emoji: "🇨🇳" }, { name: "Colombia", code: "CO", emoji: "🇨🇴" }, { name: "Comoros", code: "KM", emoji: "🇰🇲" },
+      { name: "Congo", code: "CG", emoji: "🇨🇬" }, { name: "Costa Rica", code: "CR", emoji: "🇨🇷" }, { name: "Croatia", code: "HR", emoji: "🇭🇷" },
+      { name: "Cuba", code: "CU", emoji: "🇨🇺" }, { name: "Cyprus", code: "CY", emoji: "🇨🇾" }, { name: "Czech Republic", code: "CZ", emoji: "🇨🇿" },
+      { name: "Denmark", code: "DK", emoji: "🇩🇰" }, { name: "Djibouti", code: "DJ", emoji: "🇩🇯" }, { name: "Dominica", code: "DM", emoji: "🇩🇲" },
+      { name: "Dominican Republic", code: "DO", emoji: "🇩🇴" }, { name: "Ecuador", code: "EC", emoji: "🇪🇨" }, { name: "Egypt", code: "EG", emoji: "🇪🇬" },
+      { name: "El Salvador", code: "SV", emoji: "🇸🇻" }, { name: "Equatorial Guinea", code: "GQ", emoji: "🇬🇶" }, { name: "Eritrea", code: "ER", emoji: "🇪🇷" },
+      { name: "Estonia", code: "EE", emoji: "🇪🇪" }, { name: "Eswatini", code: "SZ", emoji: "🇸🇿" }, { name: "Ethiopia", code: "ET", emoji: "🇪🇹" },
+      { name: "Fiji", code: "FJ", emoji: "🇫🇯" }, { name: "Finland", code: "FI", emoji: "🇫🇮" }, { name: "France", code: "FR", emoji: "🇫🇷" },
+      { name: "Gabon", code: "GA", emoji: "🇬🇦" }, { name: "Gambia", code: "GM", emoji: "🇬🇲" }, { name: "Georgia", code: "GE", emoji: "🇬🇪" },
+      { name: "Germany", code: "DE", emoji: "🇩🇪" }, { name: "Ghana", code: "GH", emoji: "🇬🇭" }, { name: "Greece", code: "GR", emoji: "🇬🇷" },
+      { name: "Grenada", code: "GD", emoji: "🇬🇩" }, { name: "Guatemala", code: "GT", emoji: "🇬🇹" }, { name: "Guinea", code: "GN", emoji: "🇬🇳" },
+      { name: "Guinea-Bissau", code: "GW", emoji: "🇬🇼" }, { name: "Guyana", code: "GY", emoji: "🇬🇾" }, { name: "Haiti", code: "HT", emoji: "🇭🇹" },
+      { name: "Honduras", code: "HN", emoji: "🇭🇳" }, { name: "Hungary", code: "HU", emoji: "🇭🇺" }, { name: "Iceland", code: "IS", emoji: "🇮🇸" },
+      { name: "India", code: "IN", emoji: "🇮🇳" }, { name: "Indonesia", code: "ID", emoji: "🇮🇩" }, { name: "Iran", code: "IR", emoji: "🇮🇷" },
+      { name: "Iraq", code: "IQ", emoji: "🇮🇶" }, { name: "Ireland", code: "IE", emoji: "🇮🇪" }, { name: "Israel", code: "IL", emoji: "🇮🇱" },
+      { name: "Italy", code: "IT", emoji: "🇮🇹" }, { name: "Jamaica", code: "JM", emoji: "🇯🇲" }, { name: "Japan", code: "JP", emoji: "🇯🇵" },
+      { name: "Jordan", code: "JO", emoji: "🇯🇴" }, { name: "Kazakhstan", code: "KZ", emoji: "🇰🇿" }, { name: "Kenya", code: "KE", emoji: "🇰🇪" },
+      { name: "Kiribati", code: "KI", emoji: "🇰🇮" }, { name: "Kuwait", code: "KW", emoji: "🇰🇼" }, { name: "Kyrgyzstan", code: "KG", emoji: "🇰🇬" },
+      { name: "Laos", code: "LA", emoji: "🇱🇦" }, { name: "Latvia", code: "LV", emoji: "🇱🇻" }, { name: "Lebanon", code: "LB", emoji: "🇱🇧" },
+      { name: "Lesotho", code: "LS", emoji: "🇱🇸" }, { name: "Liberia", code: "LR", emoji: "🇱🇷" }, { name: "Libya", code: "LY", emoji: "🇱🇾" },
+      { name: "Liechtenstein", code: "LI", emoji: "🇱🇮" }, { name: "Lithuania", code: "LT", emoji: "🇱🇹" }, { name: "Luxembourg", code: "LU", emoji: "🇱🇺" },
+      { name: "Madagascar", code: "MG", emoji: "🇲🇬" }, { name: "Malawi", code: "MW", emoji: "🇲🇼" }, { name: "Malaysia", code: "MY", emoji: "🇲🇾" },
+      { name: "Maldives", code: "MV", emoji: "🇲🇻" }, { name: "Mali", code: "ML", emoji: "🇲🇱" }, { name: "Malta", code: "MT", emoji: "🇲🇹" },
+      { name: "Marshall Islands", code: "MH", emoji: "🇲🇭" }, { name: "Mauritania", code: "MR", emoji: "🇲🇷" }, { name: "Mauritius", code: "MU", emoji: "🇲🇺" },
+      { name: "Mexico", code: "MX", emoji: "🇲🇽" }, { name: "Micronesia", code: "FM", emoji: "🇫🇲" }, { name: "Moldova", code: "MD", emoji: "🇲🇩" },
+      { name: "Monaco", code: "MC", emoji: "🇲🇨" }, { name: "Mongolia", code: "MN", emoji: "🇲🇳" }, { name: "Montenegro", code: "ME", emoji: "🇲🇪" },
+      { name: "Morocco", code: "MA", emoji: "🇲🇦" }, { name: "Mozambique", code: "MZ", emoji: "🇲🇿" }, { name: "Myanmar", code: "MM", emoji: "🇲🇲" },
+      { name: "Namibia", code: "NA", emoji: "🇳🇦" }, { name: "Nauru", code: "NR", emoji: "🇳🇷" }, { name: "Nepal", code: "NP", emoji: "🇳🇵" },
+      { name: "Netherlands", code: "NL", emoji: "🇳🇱" }, { name: "New Zealand", code: "NZ", emoji: "🇳🇿" }, { name: "Nicaragua", code: "NI", emoji: "🇳🇮" },
+      { name: "Niger", code: "NE", emoji: "🇳🇪" }, { name: "Nigeria", code: "NG", emoji: "🇳🇬" }, { name: "North Korea", code: "KP", emoji: "🇰🇵" },
+      { name: "North Macedonia", code: "MK", emoji: "🇲🇰" }, { name: "Norway", code: "NO", emoji: "🇳🇴" }, { name: "Oman", code: "OM", emoji: "🇴🇲" },
+      { name: "Pakistan", code: "PK", emoji: "🇵🇰" }, { name: "Palau", code: "PW", emoji: "🇵🇼" }, { name: "Palestine", code: "PS", emoji: "🇵🇸" },
+      { name: "Panama", code: "PA", emoji: "🇵🇦" }, { name: "Papua New Guinea", code: "PG", emoji: "🇵🇬" }, { name: "Paraguay", code: "PY", emoji: "🇵🇾" },
+      { name: "Peru", code: "PE", emoji: "🇵🇪" }, { name: "Philippines", code: "PH", emoji: "🇵🇭" }, { name: "Poland", code: "PL", emoji: "🇵🇱" },
+      { name: "Portugal", code: "PT", emoji: "🇵🇹" }, { name: "Qatar", code: "QA", emoji: "🇶🇦" }, { name: "Romania", code: "RO", emoji: "🇷🇴" },
+      { name: "Russia", code: "RU", emoji: "🇷🇺" }, { name: "Rwanda", code: "RW", emoji: "🇷🇼" }, { name: "Samoa", code: "WS", emoji: "🇼🇸" },
+      { name: "San Marino", code: "SM", emoji: "🇸🇲" }, { name: "Saudi Arabia", code: "SA", emoji: "🇸🇦" }, { name: "Senegal", code: "SN", emoji: "🇸🇳" },
+      { name: "Serbia", code: "RS", emoji: "🇷🇸" }, { name: "Seychelles", code: "SC", emoji: "🇸🇨" }, { name: "Sierra Leone", code: "SL", emoji: "🇸🇱" },
+      { name: "Singapore", code: "SG", emoji: "🇸🇬" }, { name: "Slovakia", code: "SK", emoji: "🇸🇰" }, { name: "Slovenia", code: "SI", emoji: "🇸🇮" },
+      { name: "Solomon Islands", code: "SB", emoji: "🇸🇧" }, { name: "Somalia", code: "SO", emoji: "🇸🇴" }, { name: "South Africa", code: "ZA", emoji: "🇿🇦" },
+      { name: "South Korea", code: "KR", emoji: "🇰🇷" }, { name: "South Sudan", code: "SS", emoji: "🇸🇸" }, { name: "Spain", code: "ES", emoji: "🇪🇸" },
+      { name: "Sri Lanka", code: "LK", emoji: "🇱🇰" }, { name: "Sudan", code: "SD", emoji: "🇸🇩" }, { name: "Suriname", code: "SR", emoji: "🇸🇷" },
+      { name: "Sweden", code: "SE", emoji: "🇸🇪" }, { name: "Switzerland", code: "CH", emoji: "🇨🇭" }, { name: "Syria", code: "SY", emoji: "🇸🇾" },
+      { name: "Tajikistan", code: "TJ", emoji: "🇹🇯" }, { name: "Tanzania", code: "TZ", emoji: "🇹🇿" }, { name: "Thailand", code: "TH", emoji: "🇹🇭" },
+      { name: "Timor-Leste", code: "TL", emoji: "🇹🇱" }, { name: "Togo", code: "TG", emoji: "🇹🇬" }, { name: "Tonga", code: "TO", emoji: "🇹🇴" },
+      { name: "Trinidad", code: "TT", emoji: "🇹🇹" }, { name: "Tunisia", code: "TN", emoji: "🇹🇳" }, { name: "Turkey", code: "TR", emoji: "🇹🇷" },
+      { name: "Turkmenistan", code: "TM", emoji: "🇹🇲" }, { name: "Tuvalu", code: "TV", emoji: "🇹🇻" }, { name: "Uganda", code: "UG", emoji: "🇺🇬" },
+      { name: "Ukraine", code: "UA", emoji: "🇺🇦" }, { name: "United Arab Emirates", code: "AE", emoji: "🇦🇪" }, { name: "United Kingdom", code: "GB", emoji: "🇬🇧" },
+      { name: "United States", code: "US", emoji: "🇺🇸" }, { name: "Uruguay", code: "UY", emoji: "🇺🇾" }, { name: "Uzbekistan", code: "UZ", emoji: "🇺🇿" },
+      { name: "Vanuatu", code: "VU", emoji: "🇻🇺" }, { name: "Venezuela", code: "VE", emoji: "🇻🇪" }, { name: "Vietnam", code: "VN", emoji: "🇻🇳" },
+      { name: "Yemen", code: "YE", emoji: "🇾🇪" }, { name: "Zambia", code: "ZM", emoji: "🇿🇲" }, { name: "Zimbabwe", code: "ZW", emoji: "🇿🇼" }
+    ];
+
+    const countryWrapper = document.getElementById('countryWrapper');
+    const countryTrigger = document.getElementById('countryTrigger');
+    const countryTriggerText = countryTrigger.querySelector('.country-trigger-text');
+    const countrySearch = document.getElementById('countrySearch');
+    const countryOptions = document.getElementById('countryOptions');
+    const countryHidden = document.getElementById('country');
+
+    function renderCountries(list) {
+      countryOptions.innerHTML = '';
+      if (list.length === 0) {
+        countryOptions.innerHTML = '<div class="custom-option" style="color:var(--muted)">No results found</div>';
+        return;
+      }
+      list.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'custom-option';
+        div.innerHTML = `<span class="fi fi-${c.code.toLowerCase()}"></span> <span class="country-name">${c.name}</span>`;
+        div.addEventListener('click', () => {
+          countryHidden.value = c.name;
+          countryTriggerText.innerHTML = `<span style="display:flex;align-items:center;gap:8px;"><span class="fi fi-${c.code.toLowerCase()}"></span> ${c.name}</span>`;
+          countryWrapper.classList.remove('open');
+          
+          // Re-trigger validation visually
+          countryHidden.dispatchEvent(new Event('change'));
+        });
+        countryOptions.appendChild(div);
+      });
+    }
+
+    // Toggle dropdown
+    countryTrigger.addEventListener('click', () => {
+      countryWrapper.classList.toggle('open');
+      if (countryWrapper.classList.contains('open')) {
+        countrySearch.value = '';
+        renderCountries(countries);
+        setTimeout(() => countrySearch.focus(), 50);
+      }
+    });
+
+    // Search filter
+    countrySearch.addEventListener('input', (e) => {
+      const val = e.target.value.toLowerCase();
+      const filtered = countries.filter(c => c.name.toLowerCase().includes(val));
+      renderCountries(filtered);
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!countryWrapper.contains(e.target)) {
+        countryWrapper.classList.remove('open');
+      }
+    });
+
+    // Initial render
+    renderCountries(countries);
+
+    // Two-step logic
+// Two-step logic
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const btnProceed = document.getElementById("btnProceed");
+    const btnBack = document.getElementById("btnBack");
+
+    if (btnProceed) {
+      btnProceed.addEventListener("click", () => {
+        // Validate step 1 fields
+        const s1Inputs = step1.querySelectorAll('input, select');
+        let valid = true;
+        s1Inputs.forEach(input => {
+          if (!input.checkValidity()) {
+            input.reportValidity();
+            valid = false;
+          }
+        });
+        if (valid) {
+          step1.style.display = "none";
+          step2.style.display = "grid";
+        }
+      });
+    }
+
+    if (btnBack) {
+      btnBack.addEventListener("click", () => {
+        step2.style.display = "none";
+        step1.style.display = "grid";
+      });
+    }
+
+    // Password visibility toggles
+    document.querySelectorAll(".password-toggle").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        if (input.type === "password") {
+          input.type = "text";
+          btn.innerHTML = icon("eye-off");
+        } else {
+          input.type = "password";
+          btn.innerHTML = icon("eye");
+        }
+        lucide.createIcons();
+      });
+    });
+
+    // Login subdomain mirror
+    loginSubdomain.addEventListener("input", () => {
+      const clean = cleanSubdomain(loginSubdomain.value);
+      loginSubdomain.value = clean;
+      
+    });
+
+    // Billing toggle
+    document.querySelectorAll("[data-billing]").forEach(button => {
+      button.addEventListener("click", () => {
+        const cycle = button.dataset.billing;
+        document.querySelectorAll("[data-billing]").forEach(item => item.classList.toggle("active", item === button));
+        document.querySelectorAll(".price-value").forEach(price => {
+          const value = price.dataset[cycle];
+          if (value === "Custom") {
+            price.innerHTML = "Custom";
+          } else {
+            price.innerHTML = `${value}<span>/${cycle === "monthly" ? "mo" : "yr"}</span>`;
+          }
+        });
+      });
+    });
+
+    // Plan selection buttons
+    document.querySelectorAll(".btn-select-plan").forEach(button => {
+      button.addEventListener("click", () => {
+        const plan = button.dataset.plan;
+        selectedPlan = plan;
+        if (planSelect) planSelect.value = plan;
+        document.getElementById("signup").scrollIntoView({ behavior: "smooth" });
+        showToast(`Selected ${plan.toUpperCase()} plan. Complete the form to start.`);
+      });
+    });
+
+    // Toggle between login and register forms
+    tabRegister.addEventListener("click", () => {
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+      signupForm.style.display = "grid";
+      loginForm.style.display = "none";
+      copyTitle.textContent = "Provision your church workspace in 30 seconds.";
+      copyDesc.textContent = "Enter your details, choose a unique church subdomain, and proceed directly to the interactive onboarding wizard.";
+      
+    });
+
+    tabLogin.addEventListener("click", () => {
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+      signupForm.style.display = "none";
+      loginForm.style.display = "grid";
+      copyTitle.textContent = "Welcome back to your Church Office.";
+      copyDesc.textContent = "Enter your workspace details and credentials to manage your website, giving gateway, membership logs, and plugins.";
+      
+    });
+
+    // Toast utility
+    const toastEl = document.getElementById("toast");
+    const toastMsg = document.getElementById("toastMessage");
+    function showToast(msg, error = false) {
+      toastMsg.textContent = msg;
+      toastEl.className = "toast-container show";
+      if (error) {
+        toastEl.style.background = "#dc2626";
+      } else {
+        toastEl.style.background = "var(--ink)";
+      }
+      setTimeout(() => {
+        toastEl.className = "toast-container";
+      }, 3000);
+    }
+
+    async function postJson(url, body, extraHeaders = {}) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...extraHeaders },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || "Request failed");
+      }
+      return data;
+    }
+
+    function resolveTenant(payload) {
+      const data = payload?.data || {};
+      if (payload?.tenant) return payload.tenant;
+      if (data?.tenant) return data.tenant;
+      if (data?.id || data?.subdomain) return data;
+      return {};
+    }
+
+    function resolveTenantId(payload, tenant = resolveTenant(payload)) {
+      const data = payload?.data || {};
+      return payload?.tenantId || data?.tenantId || tenant?.tenantId || tenant?.id || "";
+    }
+
+    function resolveToken(payload) {
+      return payload?.token || payload?.data?.token || "";
+    }
+
+    function persistSession(payload) {
+      const tenant = resolveTenant(payload);
+      const tenantId = resolveTenantId(payload, tenant);
+      const token = resolveToken(payload);
+      if (!token || !tenantId) {
+        throw new Error("Registration completed without a usable session");
+      }
+      localStorage.setItem("churchos.token", token);
+      localStorage.setItem("churchos.tenantId", tenantId);
+      localStorage.setItem("churchos.subdomain", tenant.subdomain || "");
+      localStorage.setItem("churchos.tenantName", tenant.name || "");
+      localStorage.setItem("churchos.tenantHost", tenant.subdomainHost || (tenant.subdomain ? `${tenant.subdomain}.churched.online` : ""));
+      const memberName = `${payload?.user?.member?.firstName || ""} ${payload?.user?.member?.lastName || ""}`.trim();
+      localStorage.setItem("churchos.ownerName", payload?.user?.name || memberName || "");
+      localStorage.setItem("churchos.ownerEmail", payload?.user?.email || "");
+      let existingContext = {};
+      try {
+        existingContext = JSON.parse(localStorage.getItem("churchos.onboardingContext.v1") || "{}");
+      } catch {}
+      localStorage.setItem("churchos.onboardingContext.v1", JSON.stringify({
+        ...existingContext,
+        tenant: {
+          ...(existingContext.tenant || {}),
+          id: tenantId,
+          name: tenant.name || "",
+          subdomain: tenant.subdomain || "",
+          subdomainHost: tenant.subdomainHost || (tenant.subdomain ? `${tenant.subdomain}.churched.online` : ""),
+          country: tenant.country || document.getElementById("country").value,
+          city: tenant.city || document.getElementById("city").value.trim(),
+          plan: planSelect?.value || selectedPlan
+        },
+        owner: {
+          ...(existingContext.owner || {}),
+          name: document.getElementById("ownerName").value.trim() || payload?.user?.name || memberName || "",
+          email: document.getElementById("ownerEmail").value.trim() || payload?.user?.email || ""
+        },
+        steps: existingContext.steps || {},
+        completedAt: existingContext.completedAt || null
+      }));
+      localStorage.setItem("churchos.unifiedDashboard.session.v2", "active");
+    }
+
+    // Parse URL params for plan selection on start
+    window.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const plan = params.get("plan");
+      if (plan && ["starter", "growth", "pro", "enterprise"].includes(plan.toLowerCase())) {
+        selectedPlan = plan.toLowerCase();
+        if (planSelect) planSelect.value = selectedPlan;
+        document.getElementById("signup").scrollIntoView({ behavior: "smooth" });
+      }
+    });
+
+    // Handle Registration Submission
+    signupForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const submitButton = signupForm.querySelector('button[type="submit"]');
+      try {
+        showToast("Provisioning church workspace...", false);
+        if (submitButton) submitButton.disabled = true;
+
+        const password = document.getElementById("password").value;
+        const repeatPassword = document.getElementById("repeatPassword").value;
+        if (password !== repeatPassword) {
+          throw new Error("Passwords do not match");
+        }
+
+        const data = await postJson("/api/auth/register-tenant", {
+          name: churchNameInput.value.trim(),
+          ownerName: document.getElementById("ownerName").value.trim(),
+          ownerEmail: document.getElementById("ownerEmail").value.trim(),
+          ownerPassword: password,
+          subdomain: subdomainInput.value.trim(),
+          country: document.getElementById("country").value,
+          city: document.getElementById("city").value.trim(),
+          plan: planSelect?.value || selectedPlan
+        });
+
+        persistSession(data);
+        showToast("Success! Redirecting to onboarding...", false);
+        setTimeout(() => {
+          window.location.href = "/onboarding";
+        }, 700);
+
+      } catch (err) {
+        showToast(err.message || "An unexpected error occurred", true);
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
+    });
+
+    // Handle Login Submission
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const submitButton = loginForm.querySelector('button[type="submit"]');
+      try {
+        showToast("Resolving church workspace...", false);
+        if (submitButton) submitButton.disabled = true;
+
+        const resolved = await postJson("/api/public/resolve-subdomain", {
+          subdomain: loginSubdomain.value.trim()
+        });
+        const tenant = resolveTenant(resolved);
+        const tenantId = resolveTenantId(resolved, tenant);
+        if (!tenantId) {
+          throw new Error("Church workspace not found");
+        }
+        const data = await postJson("/api/auth/login", {
+          email: document.getElementById("loginEmail").value.trim(),
+          password: document.getElementById("loginPassword").value
+        }, { "x-tenant-id": tenantId });
+
+        persistSession({ ...data, tenant, tenantId });
+        showToast("Success! Redirecting to dashboard...", false);
+        setTimeout(() => {
+          window.location.href = "/admin";
+        }, 700);
+
+      } catch (err) {
+        showToast(err.message || "An unexpected error occurred", true);
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

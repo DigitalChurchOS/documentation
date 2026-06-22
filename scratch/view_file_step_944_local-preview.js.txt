@@ -1,0 +1,69 @@
+Created At: 2026-06-06T16:46:27Z
+Completed At: 2026-06-06T16:46:28Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 200 to 260
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+200:       status: 'published',
+201:       isHome: false,
+202:       seoTitle: 'Prayer & Testimonies | Christ Embassy Next Church',
+203:       seoDescription: 'Prayer request form, prayer wall, testimony wall, prayer sessions, and reactions.',
+204:       content: [
+205:         { type: 'hero', title: 'Prayer & Testimonies', subtitle: 'Submit prayer requests, join corporate prayer, and share testimonies for moderation.', bgImage: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1400&q=80', buttonText: 'Request Prayer', buttonUrl: '#prayer-request' },
+206:         { type: 'dynamic_prayer_wall', title: 'Prayer Wall', sourceModule: 'Prayer & Testimony', fields: ['requests', 'iPrayed', 'testimonies', 'sessions'] },
+207:       ],
+208:       createdAt: now(),
+209:       updatedAt: now(),
+210:     },
+211:     {
+212:       id: 'page-ministries',
+213:       websiteId: demoWebsiteId,
+214:       title: 'Ministries',
+215:       slug: 'ministries',
+216:       status: 'published',
+217:       isHome: false,
+218:       seoTitle: 'Ministries | Christ Embassy Next Church',
+219:       seoDescription: 'Ministry directory, volunteer opportunities, leaders, events, and media connections.',
+220:       content: [
+221:         { type: 'ministries_list', title: 'Find Your Ministry', items: [{ name: 'Worship & Creative Arts', desc: 'Choir, music direction, stage design, dance, and creative production.' }, { name: 'Hospitality & First Impressions', desc: 'Guest welcome, ushers, follow-up, and visitor care.' }, { name: 'Outreach & Missions', desc: 'Evangelism campaigns, local care, and missions support.' }] },
+222:         { type: 'dynamic_ministry_directory', title: 'Ministry Directory', sourceModule: 'Ministries', fields: ['leader', 'meetingTimes', 'joinForm'] },
+223:       ],
+224:       createdAt: now(),
+225:       updatedAt: now(),
+226:     },
+227:     {
+228:       id: 'page-groups',
+229:       websiteId: demoWebsiteId,
+230:       title: 'Cell Groups',
+231:       slug: 'groups',
+232:       status: 'published',
+233:       isHome: false,
+234:       seoTitle: 'Cell Groups | Christ Embassy Next Church',
+235:       seoDescription: 'Cell group finder, leader cards, meeting schedules, and join requests.',
+236:       content: [
+237:         { type: 'dynamic_cell_finder', title: 'Find a Cell Group', sourceModule: 'Cell Groups', fields: ['location', 'language', 'day', 'leader', 'joinRequest'] },
+238:       ],
+239:       createdAt: now(),
+240:       updatedAt: now(),
+241:     },
+242:     {
+243:       id: 'page-courses',
+244:       websiteId: demoWebsiteId,
+245:       title: 'Discipleship Courses',
+246:       slug: 'courses',
+247:       status: 'published',
+248:       isHome: false,
+249:       seoTitle: 'Courses | Christ Embassy Next Church',
+250:       seoDescription: 'Course list, lesson player, progress, quizzes, certificates, and recommendations.',
+251:       content: [
+252:         { type: 'dynamic_course_list', title: 'Discipleship Tracks', sourceModule: 'Discipleship / Courses', fields: ['enrollment', 'lessonProgress', 'quizzes', 'certificates'] },
+253:       ],
+254:       createdAt: now(),
+255:       updatedAt: now(),
+256:     },
+257:     {
+258:       id: 'page-branches',
+259:       websiteId: demoWebsiteId,
+260:       title: 'Branches',
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

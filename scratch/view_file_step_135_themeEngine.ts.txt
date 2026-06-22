@@ -1,0 +1,78 @@
+Created At: 2026-06-06T14:50:23Z
+Completed At: 2026-06-06T14:50:24Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts`
+Total Lines: 711
+Total Bytes: 22461
+Showing lines 487 to 556
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+487:    * Customize a theme settings profile (colors, typography, branding layouts).
+488:    */
+489:   static async customizeTheme(tenantId: string, themeId: string, customConfig: CustomizeThemeInput) {
+490:     validateCustomization(customConfig);
+491: 
+492:     // 1. Find theme
+493:     let theme = await prisma.theme.findFirst({
+494:       where: {
+495:         id: themeId,
+496:         OR: [{ tenantId }, { tenantId: null }],
+497:       },
+498:     });
+499: 
+500:     if (!theme) {
+501:       throw new Error('Customizable tenant theme not found');
+502:     }
+503: 
+504:     if (theme.tenantId === null) {
+505:       theme = await prisma.theme.create({
+506:         data: {
+507:           tenantId,
+508:           name: `${theme.name} Custom`,
+509:           settings: theme.settings || '{}',
+510:           isCustom: true,
+511:         },
+512:       });
+513: 
+514:       await prisma.website.updateMany({
+515:         where: { tenantId, themeId },
+516:         data: { themeId: theme.id },
+517:       });
+518:     }
+519: 
+520:     // 2. Merge existing settings with updates
+521:     let existingSettings: Record<string, any> = {};
+522:     try {
+523:       existingSettings = JSON.parse(theme.settings || '{}');
+524:     } catch {
+525:       existingSettings = {};
+526:     }
+527: 
+528:     const updatedSettings = {
+529:       ...existingSettings,
+530:       ...customConfig,
+531:       colors: {
+532:         ...(existingSettings.colors || {}),
+533:         ...(customConfig.colors || {}),
+534:       },
+535:       fonts: {
+536:         ...(existingSettings.fonts || {}),
+537:         ...(customConfig.fonts || {}),
+538:       },
+539:       logos: {
+540:         ...(existingSettings.logos || {}),
+541:         ...(customConfig.logos || {}),
+542:       },
+543:       layout: {
+544:         ...(existingSettings.layout || {}),
+545:         ...(customConfig.layout || {}),
+546:       },
+547:     };
+548: 
+549:     // 3. Save to database
+550:     return await prisma.theme.update({
+551:       where: { id: themeId },
+552:       data: {
+553:         settings: JSON.stringify(updatedSettings),
+554:       },
+555:     });
+556:   }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

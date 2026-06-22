@@ -1,0 +1,103 @@
+Created At: 2026-06-06T14:28:40Z
+Completed At: 2026-06-06T14:28:40Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/src/services/themeEngine.ts`
+Total Lines: 711
+Total Bytes: 22461
+Showing lines 1 to 711
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import prisma from '../lib/prisma';
+2: import { trackEvent } from './analytics';
+3: 
+4: const MODULE_KEY = 'theme-engine';
+5: const VALID_STATUSES = new Set(['active', 'inactive', 'suspended']);
+6: const VALID_VISIBILITIES = new Set(['public', 'private']);
+7: const VALID_BILLING_PLANS = new Set(['free', 'premium', 'platform']);
+8: const VALID_PROVIDER_MODES = new Set(['bring_your_own', 'platform_managed', 'marketplace']);
+9: const CUSTOM_CSS_LIMIT = 20000;
+10: 
+11: const DEFAULT_THEME_ENGINE_CONFIG = {
+12:   allowMarketplaceThemes: true,
+13:   allowCustomCss: true,
+14:   publicPublishingRequiresActiveEntitlement: true,
+15:   defaultHeaderStyle: 'default',
+16:   defaultFooterStyle: 'simple',
+17:   mobileLayout: 'stacked',
+18:   sections: [],
+19:   pageTemplates: [],
+20: };
+21: 
+22: export interface CustomizeThemeInput {
+23:   colors?: {
+24:     primary?: string;
+25:     secondary?: string;
+26:     accent?: string;
+27:   };
+28:   fonts?: {
+29:     heading?: string;
+30:     body?: string;
+31:   };
+32:   logos?: {
+33:     primaryUrl?: string;
+34:     secondaryUrl?: string;
+35:   };
+36:   layout?: {
+37:     headerStyle?: string;
+38:     footerStyle?: string;
+39:     mobileLayout?: string;
+40:   };
+41:   customCss?: string;
+42: }
+43: 
+44: export interface ThemeEngineModuleInput {
+45:   title: string;
+46:   description?: string;
+47:   visibility?: string;
+48:   createdBy?: string | null;
+49: }
+50: 
+51: export interface ThemeEngineSettingsInput {
+52:   enabled?: boolean;
+53:   billingPlan?: string;
+54:   providerMo
+<truncated 22355 bytes>
+ny) => s.key === template.key);
+673:     if (exists) {
+674:       throw new Error(`Page template with key '${template.key}' already registered`);
+675:     }
+676: 
+677:     config.pageTemplates.push(template);
+678:     await this.updateSettings(tenantId, { configJson: config });
+679: 
+680:     return {
+681:       name: template.name,
+682:       key: template.key,
+683:       structure: template.structure,
+684:     };
+685:   }
+686: 
+687:   static async listPageTemplates(tenantId: string) {
+688:     const settings = await this.getSettings(tenantId);
+689:     const config = safeParseJson<Record<string, any>>(settings.configJson, DEFAULT_THEME_ENGINE_CONFIG);
+690: 
+691:     return [...this.defaultPageTemplates(), ...(config.pageTemplates || [])];
+692:   }
+693: 
+694:   private static defaultSectionTemplates() {
+695:     return [
+696:       { name: 'Hero Banner', key: 'hero-banner', type: 'section', structure: { title: 'string', subtitle: 'string', bgImage: 'string' } },
+697:       { name: 'Feature Grid', key: 'feature-grid', type: 'section', structure: { items: 'array' } },
+698:       { name: 'Sermon Player Widget', key: 'sermon-player', type: 'section', structure: { recentCount: 'number' } },
+699:       { name: 'Giving Callout', key: 'giving-callout', type: 'section', structure: { title: 'string', campaignId: 'string', buttonLabel: 'string' } },
+700:     ];
+701:   }
+702: 
+703:   private static defaultPageTemplates() {
+704:     return [
+705:       { name: 'Home Page', key: 'home-page', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'sermon-player'] } },
+706:       { name: 'Ministry Landing Page', key: 'ministry-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid', 'giving-callout'] } },
+707:       { name: 'Event Landing Page', key: 'event-landing', type: 'page', structure: { sections: ['hero-banner', 'feature-grid'] } },
+708:     ];
+709:   }
+710: }
+711: 
+The above content shows the entire, complete file contents of the requested file.

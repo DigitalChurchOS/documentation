@@ -1,0 +1,39 @@
+Created At: 2026-06-06T16:35:57Z
+Completed At: 2026-06-06T16:35:57Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 240 to 270
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+240:       updatedAt: now(),
+241:     },
+242:     {
+243:       id: 'page-courses',
+244:       websiteId: demoWebsiteId,
+245:       title: 'Discipleship Courses',
+246:       slug: 'courses',
+247:       status: 'published',
+248:       isHome: false,
+249:       seoTitle: 'Courses | Christ Embassy Next Church',
+250:       seoDescription: 'Course list, lesson player, progress, quizzes, certificates, and recommendations.',
+251:       content: [
+252:         { type: 'dynamic_course_list', title: 'Discipleship Tracks', sourceModule: 'Discipleship / Courses', fields: ['enrollment', 'lessonProgress', 'quizzes', 'certificates'] },
+253:       ],
+254:       createdAt: now(),
+255:       updatedAt: now(),
+256:     },
+257:     {
+258:       id: 'page-branches',
+259:       websiteId: demoWebsiteId,
+260:       title: 'Branches',
+261:       slug: 'branches',
+262:       status: 'published',
+263:       isHome: false,
+264:       seoTitle: 'Branches | Christ Embassy Next Church',
+265:       seoDescription: 'Branch finder, branch service schedules, campus pastors, maps, and location-aware content.',
+266:       content: [
+267:         { type: 'dynamic_branch_finder', title: 'Find a Next Church Branch', sourceModule: 'Branches', fields: ['nearestBranch', 'pastor', 'serviceTimes', 'map', 'contact'] },
+268:       ],
+269:       createdAt: now(),
+270:       updatedAt: now(),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,49 @@
+Created At: 2026-06-06T14:53:23Z
+Completed At: 2026-06-06T14:53:23Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 3920 to 3960
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+3920: .stat span { display:block; color: var(--platform-muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing:.06em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+3921: .stat strong { display:block; margin-top: 5px; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+3922: .active-features { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+3923: .feature-item { display: flex; align-items: center; gap: 8px; color: var(--platform-ink); font-size: 13px; font-weight: 580; }
+3924: .feature-item svg, .feature-item i { width: 15px; height: 15px; color: #7c3aed; opacity: 0.85; }
+3925: 
+3926: .market-view, .customizer { display:none; }
+3927: .market-view.active, .customizer.active, .themes-view.active { display:block; }
+3928: .themes-view.hidden { display:none; }
+3929: 
+3930: /* Theme customizer */
+3931: body.customizer-open { overflow: hidden; }
+3932: .customizer { position: fixed; inset: 0; z-index: 80; background: #f5f3fb; color: var(--platform-ink); }
+3933: .customizer-shell { height: 100%; display: grid; grid-template-rows: 62px 1fr; }
+3934: .customizer.topbar-hidden .customizer-shell { grid-template-rows: 0 1fr; }
+3935: .customizer-topbar {
+3936:   background: var(--constant-topbar-bg); border-bottom: 1px solid var(--constant-topbar-border); backdrop-filter: blur(18px);
+3937:   display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 18px; overflow: hidden; transition: height .25s ease, opacity .2s ease;
+3938: }
+3939: .customizer.topbar-hidden .customizer-topbar { height: 0; opacity: 0; padding-top: 0; padding-bottom: 0; border-bottom: 0; }
+3940: .customizer-left-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+3941: .back-btn { width: 38px; height: 38px; border-radius: 10px; border:1px solid var(--platform-border); background:#fff; display:grid; place-items:center; color:#5b526b; cursor: pointer; }
+3942: .draft-dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 0 3px rgba(245,158,11,.14); }
+3943: .customizer-title h2 { font-size: 15px; margin: 0; letter-spacing: -.02em; color: #202033; font-weight: 850; }
+3944: .customizer-title p { margin: 2px 0 0; color: var(--platform-muted); font-size: 11px; font-weight: 700; }
+3945: .toolbar-right { display: flex; align-items:center; gap:10px; }
+3946: 
+3947: /* Topbar compact buttons override */
+3948: .customizer-topbar .primary-btn,
+3949: .customizer-topbar .secondary-btn,
+3950: .customizer-topbar .ghost-btn,
+3951: .customizer-topbar .icon-btn {
+3952:   height: 38px;
+3953:   padding: 0 14px;
+3954:   border-radius: 10px;
+3955:   font-size: 12.5px;
+3956:   font-weight: 800;
+3957:   display: inline-flex;
+3958:   align-items: center;
+3959:   justify-content: center;
+3960:   gap: 7px;
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

@@ -1,0 +1,69 @@
+Created At: 2026-06-06T16:31:05Z
+Completed At: 2026-06-06T16:31:06Z
+File Path: `file:///C:/Users/Administrator/.gemini/antigravity/brain/b6ef7979-b2e0-456b-b57d-251645bf61e7/implementation_plan.md`
+Total Lines: 105
+Total Bytes: 6398
+Showing lines 1 to 105
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Properly Integrate Page Builder into Theme Customizer
+2: 
+3: ## Problem Diagnosis
+4: 
+5: After reviewing the actual code, here is what exists and what's broken:
+6: 
+7: ### What Exists (Partially Working)
+8: 1. **Theme Customizer** (`apps/tenant-dashboard/public/index.html` lines 12811–13113) — A fullscreen overlay with:
+9:    - Top bar with Save/Publish/Reset/Discard/Preview buttons
+10:    - Left sidebar with two tabs: "Theme Design" (settings) and "Pages" (page list + section catalog)
+11:    - Right area: a preview stage containing a static church site mockup (`#churchSite`) and a hidden iframe (`#customizerIframe`)
+12: 
+13: 2. **Pages Tab** (lines 12966–13000) — Contains:
+14:    - A page list (`#customizerPagesList`) that dynamically loads from the CMS API
+15:    - An "Add New Page" button
+16:    - A "Section Catalog" with 4 block types (Hero Banner, Feature Grid, Sermons Grid, Giving CTA)
+17: 
+18: 3. **Page Builder Iframe Bridge** (lines 16527–16861) — When a page is selected:
+19:    - It loads the Page Builder in embed mode via `iframe.src = /page-builder/?mode=embed&pageId=...`
+20:    - Hides the static church site mockup, shows the iframe
+21:    - postMessage bridge handles: `elementSelected` → shows inspector panel, `elementsReport` → saves content
+22:    - Save/Publish buttons coordinate theme + page content saving
+23: 
+24: 4. **Page Builder App** (`page-builder/app.js`) — In embed mode (`mode=embed`):
+25:    - Only renders the `Canvas` component (no sidebars/toolbars)
+26:    - Listens for post
+<truncated 3300 bytes>
+board with the customizer opened on the Pages tab, so there's only ONE entry point for editing.
+73: 
+74: #### [MODIFY] [app.ts](file:///c:/Users/Administrator/Documents/ChurchOS/src/app.ts)
+75: 
+76: - Add a redirect from standalone `/page-builder` to `/admin?module=customizer&tab=pages`
+77: 
+78: ### 5. Wire device toggle to iframe
+79: 
+80: The Customizer topbar already has Desktop/Tablet/Mobile device toggle buttons. Wire them to send `setDevice` messages to the iframe so the canvas responsive preview works.
+81: 
+82: #### [MODIFY] [index.html](file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html)
+83: 
+84: - In the `setStageDevice()` function (or device toggle handler), send a `setDevice` postMessage to the iframe
+85: 
+86: ### 6. Handle Theme Design changes syncing to Page Builder canvas
+87: 
+88: When theme settings change (color mode, accent preset), forward `themeChange` messages to the iframe canvas so the preview updates in real-time.
+89: 
+90: #### [MODIFY] [index.html](file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html)
+91: 
+92: - In `applyCustomizerTheme()` or the option-grid click handlers, postMessage `themeChange` to the iframe
+93: 
+94: ## Verification Plan
+95: 
+96: ### Manual Verification
+97: 1. Open `http://localhost:3000/admin` → navigate to Theme Customizer
+98: 2. Click the "Pages" tab → verify the page list loads and the first page auto-selects
+99: 3. Verify the Page Builder canvas shows in the preview area with the page's content
+100: 4. Click on elements in the canvas → verify the Inspector panel appears in the sidebar
+101: 5. Use Section Catalog to add blocks → verify they appear in the canvas
+102: 6. Toggle device sizes (Desktop/Tablet/Mobile) → verify the canvas resizes
+103: 7. Click Save Draft / Publish → verify changes persist
+104: 8. Navigate to `http://localhost:3000/page-builder` → verify it redirects to customizer
+105: 
+The above content shows the entire, complete file contents of the requested file.

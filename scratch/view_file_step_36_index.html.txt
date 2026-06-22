@@ -1,0 +1,69 @@
+Created At: 2026-06-06T14:28:00Z
+Completed At: 2026-06-06T14:28:00Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 16421 to 16500
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+16421:         backgroundStyle: customizerState.backgroundStyle,
+16422:         iconStyle: customizerState.iconStyle,
+16423:         buttonStyle: customizerState.buttonStyle,
+16424:         colors: {
+16425:           primary: accentColors[0],
+16426:           secondary: '#ffffff',
+16427:           accent: accentColors[0]
+16428:         }
+16429:       };
+16430: 
+16431:       const res = await cmsApiRequest('PATCH', `/api/theme-engine/themes/${themeEngineState.activeThemeId}/customization/draft`, payload);
+16432:       if (res && res.ok) {
+16433:         if (shouldPublish) {
+16434:           const pubRes = await cmsApiRequest('POST', `/api/theme-engine/themes/${themeEngineState.activeThemeId}/customization/publish`);
+16435:           if (pubRes && pubRes.ok) {
+16436:             showToast('Theme published successfully!');
+16437:             const currentWebsiteId = cmsState.activeWebsiteId || (cmsState.websites && cmsState.websites[0]?.id);
+16438:             if (currentWebsiteId) {
+16439:               await cmsApiRequest('POST', `/api/theme-engine/themes/${themeEngineState.activeThemeId}/activate`, { websiteId: currentWebsiteId });
+16440:             }
+16441:           } else {
+16442:             alert('Failed to publish theme customizations');
+16443:             return;
+16444:           }
+16445:         } else {
+16446:           showToast('Theme settings saved as draft!');
+16447:         }
+16448:         
+16449:         await bootstrapTenantThemes();
+16450:         
+16451:         if (shouldPublish) {
+16452: 
+<truncated 1195 bytes>
+       </div>
+16474:         `;
+16475:         if (window.lucide) window.lucide.createIcons();
+16476:         return;
+16477:       }
+16478: 
+16479:       grid.innerHTML = res.data.map(asset => {
+16480:         const priceLabel = asset.pricingType === 'paid' ? formatCurrency(asset.price) : 'Free';
+16481:         let config = {};
+16482:         try {
+16483:           config = typeof asset.assetConfig === 'string' ? JSON.parse(asset.assetConfig) : asset.assetConfig || {};
+16484:         } catch {}
+16485:         
+16486:         const reqPerms = config.requiredPermissions || [];
+16487:         const permsHtml = reqPerms.length > 0 
+16488:           ? `<div style="margin-top: 8px;"><small style="font-weight:700; color:var(--muted);">Permissions Required:</small> <div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:4px;">${reqPerms.map(p => `<code style="font-size:10px; background:var(--panel-2); padding:2px 4px; border-radius:4px;">${escapeHtml(p)}</code>`).join('')}</div></div>` 
+16489:           : '';
+16490: 
+16491:         return `
+16492:           <div class="panel" style="display: flex; flex-direction: column; gap: 12px; height: 100%;">
+16493:             <div style="display: flex; align-items: center; gap: 12px;">
+16494:               <div style="width: 40px; height: 40px; border-radius: 8px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent);">
+16495:                 <i data-lucide="toy-brick" style="width: 20px; height: 20px;"></i>
+16496:               </div>
+16497:               <div style="flex: 1;">
+16498:                 <h3 style="margin: 0; font-size: 15px; font-weight: 700;">${escapeHtml(asset.name)}</h3>
+16499:                 <code style="font-size: 11px;">v${escapeHtml(asset.version)}</code>
+16500:               </div>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

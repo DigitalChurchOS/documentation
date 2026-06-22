@@ -1,0 +1,24 @@
+name = "thechurch"
+main = "src/worker.ts"
+compatibility_date = "2026-05-28"
+workers_dev = false
+compatibility_flags = [
+  "nodejs_compat"
+]
+routes = [
+  { pattern = "churched.online/*", zone_name = "churched.online" },
+  { pattern = "*.churched.online/*", zone_name = "churched.online" }
+]
+
+[assets]
+directory = "./dist/public"
+binding = "ASSETS"
+html_handling = "none"
+not_found_handling = "single-page-application"
+run_worker_first = true
+
+[[services]]
+binding = "API"
+service = "churchos-api"
+
+

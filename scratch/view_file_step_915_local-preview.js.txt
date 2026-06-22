@@ -1,0 +1,29 @@
+Created At: 2026-06-06T16:36:06Z
+Completed At: 2026-06-06T16:36:06Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 310 to 330
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+310:       seoDescription: 'Mobile app screen composition for member dashboard, giving, livestream, prayer, and notifications.',
+311:       content: [
+312:         { type: 'dynamic_mobile_home', title: 'Next Church Mobile Home', sourceModule: 'Mobile App', fields: ['quickActions', 'liveService', 'giving', 'prayer', 'notifications'] },
+313:       ],
+314:       createdAt: now(),
+315:       updatedAt: now(),
+316:     },
+317:     {
+318:       id: 'page-first-time',
+319:       websiteId: demoWebsiteId,
+320:       title: 'First-Time Visitor',
+321:       slug: 'first-time',
+322:       status: 'draft',
+323:       isHome: false,
+324:       seoTitle: 'First-Time Visitor | Christ Embassy Next Church',
+325:       seoDescription: 'Visitor capture, welcome flow, CRM routing, pastoral follow-up, and next steps.',
+326:       content: [
+327:         { type: 'contact_form', header: 'Plan Your First Visit', email: 'hello@nextchurch.example', phone: '+234 800 000 0000', showMap: true },
+328:         { type: 'dynamic_visitor_capture', title: 'First-Time Visitor Capture', sourceModule: 'Member CRM', fields: ['guestDetails', 'familyInfo', 'followUp', 'assignedCareAgent'] },
+329:       ],
+330:       createdAt: now(),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

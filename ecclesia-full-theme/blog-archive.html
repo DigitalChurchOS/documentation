@@ -1,0 +1,115 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Blog Archive</title><link rel="stylesheet" href="assets/blog.css">  <link rel="stylesheet" href="assets/styles.css" />
+</head><body>
+<div class="top"><strong>Daily Devotional:</strong> New article every morning · Subscribe for updates</div><header class="header"><div class="navwrap"><a class="brand" href="blog-archive.html"><span class="mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a><nav class="nav"><a>Home</a><a>About</a><a class="active">Articles</a><a>Sermons</a><a>Events</a><a>Prayer</a><a>Contact</a></nav><div class="actions"><a class="btn softbtn" href="blog-single.html"><i data-lucide="book-open"></i> Read</a><a class="btn primary"><i data-lucide="bell"></i> Subscribe</a><button class="mobilebtn" id="menuBtn"><i data-lucide="menu"></i></button></div></div></header>
+<main>
+<section class="bloghero"><div class="container herostage"><div class="hero-card"><span class="eyebrow"><i data-lucide="newspaper"></i> Church Publishing Hub</span><h1>Read, grow, and stay connected through every church channel.</h1><p class="lead">Explore faith articles, devotionals, youth updates, testimonies, announcements, health reflections, and messages from the Pastor’s Desk.</p><div class="row" style="margin-top:28px"><a class="btn primary" href="#articles">Browse Articles</a><a class="btn light" href="blog-single.html">Read Featured</a></div><div class="channel-strip"><div class="channel-mini"><i data-lucide="book-open"></i><strong>Devotionals</strong><span>Daily Word</span></div><div class="channel-mini"><i data-lucide="heart"></i><strong>Faith</strong><span>Teachings</span></div><div class="channel-mini"><i data-lucide="sparkles"></i><strong>Testimonies</strong><span>Stories</span></div><div class="channel-mini"><i data-lucide="megaphone"></i><strong>Updates</strong><span>News</span></div></div></div><div class="hero-feature"><span class="eyebrow"><i data-lucide="star"></i> Featured Article</span><h2 style="margin-top:18px">How to Hear God in a Noisy World</h2><p>A practical article on slowing down, listening to the Word, and following the Spirit with confidence.</p><div class="row"><span class="pill"><i data-lucide="user"></i> Pastor Daniel Grace</span><span class="pill"><i data-lucide="clock"></i> 7 min read</span></div><div class="row"><a class="btn primary" href="blog-single.html">Read Featured</a><button class="btn light" data-save>Save</button></div></div></div></section>
+<section class="section" id="articles"><div class="head"><div><div class="kicker">Browse articles</div><h2>Find the right word for today.</h2></div><p class="note">Search multiple church blogs independently: devotionals, faith, youth, testimonies, announcements, health, and more.</p></div><div class="channels"><button class="channel-tab active" data-channel=""><i data-lucide="layout-grid"></i><strong>All</strong><span>96 posts</span></button><button class="channel-tab" data-channel="Devotionals"><i data-lucide="sunrise"></i><strong>Devotionals</strong><span>32 posts</span></button><button class="channel-tab" data-channel="Faith"><i data-lucide="book-open"></i><strong>Faith</strong><span>21 articles</span></button><button class="channel-tab" data-channel="Youth"><i data-lucide="users"></i><strong>Youth</strong><span>14 updates</span></button><button class="channel-tab" data-channel="Testimonies"><i data-lucide="sparkles"></i><strong>Testimonies</strong><span>18 stories</span></button><button class="channel-tab" data-channel="Announcements"><i data-lucide="megaphone"></i><strong>News</strong><span>11 updates</span></button></div><div class="filters">
+<div class="filtertop">
+<div class="searchwrap">
+<i data-lucide="search"></i>
+<input id="searchInput" class="search" placeholder="Search title, author, category, tag, or topic...">
+</div>
+<div class="selectwrap">
+<i data-lucide="layers"></i>
+<select id="channelFilter" class="select">
+<option value="">All channels</option>
+<option>Faith</option>
+<option>Devotionals</option>
+<option>Youth</option>
+<option>Testimonies</option>
+<option>Announcements</option>
+<option>Health</option>
+</select>
+</div>
+<div class="selectwrap">
+<i data-lucide="user"></i>
+<select id="authorFilter" class="select">
+<option value="">All authors</option>
+<option>Pastor Daniel Grace</option>
+<option>Sarah Grace</option>
+<option>Rachel Adams</option>
+<option>Maria A.</option>
+<option>Church Office</option>
+<option>Dr. Naomi King</option>
+</select>
+</div>
+<div class="selectwrap">
+<i data-lucide="arrow-down-up"></i>
+<select id="sortFilter" class="select">
+<option value="newest">Newest first</option>
+<option value="oldest">Oldest first</option>
+</select>
+</div>
+<div class="radiogroup">
+<label class="radio-icon">
+<input type="radio" name="view" value="grid" checked>
+<i data-lucide="layout-grid"></i>
+</label>
+<label class="radio-icon">
+<input type="radio" name="view" value="list">
+<i data-lucide="list"></i>
+</label>
+</div>
+<button class="iconbtn" id="clearFilters">
+<i data-lucide="rotate-ccw"></i>
+</button>
+</div>
+<div class="controlrow">
+<div class="row" style="margin:0">
+<label class="check">
+<input type="checkbox" name="tag" value="Prayer">
+<span>Prayer</span>
+</label>
+<label class="check">
+<input type="checkbox" name="tag" value="Faith">
+<span>Faith</span>
+</label>
+<label class="check">
+<input type="checkbox" name="tag" value="Grace">
+<span>Grace</span>
+</label>
+</div>
+</div>
+</div></section>
+<section class="section" style="padding-top:0"><div class="layout"><div><div class="kicker" id="resultCount">6 articles</div><h2 style="font-size:34px;margin-bottom:20px">Latest articles</h2><div class="empty" id="emptyState"><i data-lucide="search-x"></i><h3>No articles match your filters.</h3><p>Try changing the channel, author, tag, or search keyword.</p></div><div class="postgrid" id="postGrid">
+<article class="post" data-order="1" data-channel="Faith" data-author="Pastor Daniel Grace" data-title="How to Hear God in a Noisy World" data-tags="Prayer,Faith,Guidance"><div class="postimg" style="background-image:url('https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=900&q=85')"><div class="badges"><span class="badge"><i data-lucide="clock"></i> 7 min read</span></div></div><div class="postbody"><div class="meta"><i data-lucide="calendar-days"></i> 2026-06-07 · <i data-lucide="user"></i> Pastor Daniel Grace</div><h3>How to Hear God in a Noisy World</h3><p>A practical article on slowing down, listening to the Word, and following the Spirit with confidence.</p><div class="row"><span class="pill">Prayer</span><span class="pill">Faith</span></div><div class="row"><a class="btn primary" href="blog-single.html">Read Article</a><button class="btn light" data-save>Save</button></div></div></article>
+<article class="post" data-order="2" data-channel="Devotionals" data-author="Sarah Grace" data-title="Grace for Today Walking in Peace" data-tags="Peace,Devotional,Grace"><div class="postimg" style="background-image:url('https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=85')"><div class="badges"><span class="badge"><i data-lucide="clock"></i> 4 min read</span></div></div><div class="postbody"><div class="meta"><i data-lucide="calendar-days"></i> 2026-06-06 · <i data-lucide="user"></i> Sarah Grace</div><h3>Grace for Today: Walking in Peace</h3><p>A morning devotional to help you begin the day with prayer, scripture, and inward rest.</p><div class="row"><span class="pill">Grace</span><span class="pill">Peace</span></div><div class="row"><a class="btn primary" href="blog-single.html">Read Article</a><button class="btn light" data-save>Save</button></div></div></article>
+<article class="post" data-order="3" data-channel="Youth" data-author="Rachel Adams" data-title="Young Called and Courageous" data-tags="Youth,Purpose,Courage"><div class="postimg" style="background-image:url('https://images.unsplash.com/photo-1478147427282-58a87a120781?auto=format&fit=crop&w=900&q=85')"><div class="badges"><span class="badge"><i data-lucide="clock"></i> 5 min read</span></div></div><div class="postbody"><div class="meta"><i data-lucide="calendar-days"></i> 2026-06-04 · <i data-lucide="user"></i> Rachel Adams</div><h3>Young, Called, and Courageous</h3><p>Encouragement for young people to live boldly, make wise choices, and serve God with joy.</p><div class="row"><span class="pill">Youth</span><span class="pill">Purpose</span></div><div class="row"><a class="btn primary" href="blog-single.html">Read Article</a><button class="btn light" data-save>Save</button></div></div></article>
+<article class="post" data-order="4" data-channel="Testimonies" data-author="Maria A." data-title="God Restored My Family" data-tags="Testimony,Family,Restoration,Prayer"><div class="postimg" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=85')"><div class="badges"><span class="badge"><i data-lucide="clock"></i> 6 min read</span></div></div><div class="postbody"><div class="meta"><i data-lucide="calendar-days"></i> 2026-06-02 · <i data-lucide="user"></i> Maria A.</div><h3>God Restored My Family</h3><p>A powerful testimony of answered prayer, healing, forgiveness, and family restoration.</p><div class="row"><span class="pill">Testimony</span><span class="pill">Prayer</span></div><div class="row"><a class="btn primary" href="blog-single.html">Read Article</a><button class="btn light" data-save>Save</button></div></div></article>
+<article class="post" data-order="5" data-channel="Announcements" data-author="Church Office" data-title="June Church Family Updates" data-tags="Announcements,Events,Church"><div class="postimg" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=900&q=85')"><div class="badges"><span class="badge"><i data-lucide="clock"></i> 3 min read</span></div></div><div class="postbody"><div class="meta"><i data-lucide="calendar-days"></i> 2026-06-01 · <i data-lucide="user"></i> Church Office</div><h3>June Church Family Updates</h3><p>Important updates about services, ministry gatherings, outreach, and volunteer opportunities.</p><div class="row"><span class="pill">News</span><span class="pill">Events</span></div><div class="row"><a class="btn primary" href="blog-single.html">Read Article</a><button class="btn light" data-save>Save</button></div></div></article>
+<article class="post" data-order="6" data-channel="Health" data-author="Dr. Naomi King" data-title="Faith Rest and Emotional Health" data-tags="Health,Wellness,Rest"><div class="postimg" style="background-image:url('https://images.unsplash.com/photo-1499728603263-13726abce5fd?auto=format&fit=crop&w=900&q=85')"><div class="badges"><span class="badge"><i data-lucide="clock"></i> 8 min read</span></div></div><div class="postbody"><div class="meta"><i data-lucide="calendar-days"></i> 2026-05-29 · <i data-lucide="user"></i> Dr. Naomi King</div><h3>Faith, Rest, and Emotional Health</h3><p>A church-friendly wellness article on rest, emotional strength, prayer, and healthy rhythms.</p><div class="row"><span class="pill">Health</span><span class="pill">Rest</span></div><div class="row"><a class="btn primary" href="blog-single.html">Read Article</a><button class="btn light" data-save>Save</button></div></div></article>
+</div></div><aside class="side"><div class="panel"><div class="kicker">Authors</div><h3>Featured writers</h3><div class="author-mini"><div class="avatar" style="background-image:url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=85')"></div><div><strong>Pastor Daniel Grace</strong><br><span style="color:var(--muted);font-size:13px">Pastor’s Desk</span></div></div><div class="author-mini"><div class="avatar" style="background-image:url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=85')"></div><div><strong>Sarah Grace</strong><br><span style="color:var(--muted);font-size:13px">Devotionals</span></div></div></div><div class="panel"><div class="kicker">Popular tags</div><div class="tagcloud"><span class="tag">Prayer</span><span class="tag">Faith</span><span class="tag">Grace</span><span class="tag">Youth</span><span class="tag">Family</span><span class="tag">Healing</span></div></div></aside></div></section>
+</main><footer class="section" style="padding-top:40px"><div class="newsletter"><span class="eyebrow"><i data-lucide="mail"></i> Stay in the Word</span><h2 style="margin-top:18px">Receive devotionals and faith articles.</h2><p>Get new devotionals, faith articles, youth updates, testimonies, and announcements from Grace City Church.</p><div class="emailbox"><input placeholder="Email address"><button class="btn primary">Subscribe</button></div></div></footer><script src="https://unpkg.com/lucide@latest"></script><script src="assets/blog.js"></script><script src="assets/app.js"></script>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="drawer-nav">
+      <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+      <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
+      <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
+      <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
+      <a class="pjax-link" href="ministries.html"><i data-lucide="users-round"></i> Ministries</a>
+      <a class="pjax-link" href="prayer.html"><i data-lucide="heart-handshake"></i> Prayer</a>
+      <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
+          <a class="pjax-link" href="login.html"><i data-lucide="user-circle"></i> Account</a>
+    </nav>
+
+    <div class="drawer-actions">
+      <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+        <i data-lucide="radio"></i>
+        Watch Live
+      </a>
+
+      <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+        <i data-lucide="map-pin"></i>
+        Plan Visit
+      </a>
+    </div>
+  </aside>
+
+</body></html>

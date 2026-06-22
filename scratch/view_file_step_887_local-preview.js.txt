@@ -1,0 +1,56 @@
+Created At: 2026-06-06T16:34:04Z
+Completed At: 2026-06-06T16:34:04Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 75 to 140
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+75:   ],
+76:   marketplaceAssets: [
+77:     { id: 'asset-neon-youth', name: 'Neon Youth Style', description: 'Vibrant gradients and bold typography for youth ministries.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#ff00ff', secondary: '#00ffff', accent: '#ffff00' }, fonts: { heading: 'Outfit', body: 'Inter' } }), version: '1.0.0' },
+78:     { id: 'asset-traditional-hymnal', name: 'Traditional Hymnal', description: 'Classic serif fonts and clean layout styles for traditional services.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#4b5563', secondary: '#ffffff', accent: '#7c3aed' }, fonts: { heading: 'Playfair Display', body: 'Georgia' } }), version: '1.0.0' },
+79:     { id: 'asset-modern-dynamic', name: 'Modern Dynamic', description: 'Sleek dark overlays and custom blocks for media ministries.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#0f172a', secondary: '#f8fafc', accent: '#14b8a6' }, fonts: { heading: 'Montserrat', body: 'Inter' } }), version: '1.0.0' },
+80:   ],
+81:   pages: [
+82:     {
+83:       id: 'page-home',
+84:       websiteId: demoWebsiteId,
+85:       title: 'Home',
+86:       slug: 'home',
+87:       status: 'published',
+88:       isHome: true,
+89:       seoTitle: 'Christ Embassy Next Church | Home',
+90:       seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and minis
+<truncated 2043 bytes>
+line: 'Pastoral & Ministry Leadership', members: [{ name: 'Pastor Daniel Okafor', role: 'Resident Pastor', bio: 'Leads teaching, pastoral care, and strategic ministry development.' }, { name: 'Minister Amara Cole', role: 'Digital Ministry Director', bio: 'Oversees livestream, page publishing, content, and volunteer media teams.' }] },
+111:       ],
+112:       createdAt: now(),
+113:       updatedAt: now(),
+114:     },
+115:     {
+116:       id: 'page-services',
+117:       websiteId: demoWebsiteId,
+118:       title: 'Services',
+119:       slug: 'services',
+120:       status: 'published',
+121:       isHome: false,
+122:       seoTitle: 'Services | Christ Embassy Next Church',
+123:       seoDescription: 'Service times, locations, countdowns, livestream links, and order of service.',
+124:       content: [
+125:         { type: 'service_times', title: 'Service Times & Locations', sundayTimes: 'Sunday Celebration - 9:00 AM and 11:30 AM', midWeekTimes: 'Wednesday Word & Prayer - 7:00 PM', address: '221 Victory Avenue, Lagos and online' },
+126:         { type: 'hero', title: 'Plan Your Visit', subtitle: 'Find parking, children check-in, service schedule, and first-time guest support.', bgImage: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1400&q=80', buttonText: 'I Am Visiting', buttonUrl: '/first-time' },
+127:       ],
+128:       createdAt: now(),
+129:       updatedAt: now(),
+130:     },
+131:     {
+132:       id: 'page-livestream',
+133:       websiteId: demoWebsiteId,
+134:       title: 'Watch Live',
+135:       slug: 'live',
+136:       status: 'published',
+137:       isHome: false,
+138:       seoTitle: 'Watch Live | Christ Embassy Next Church',
+139:       seoDescription: 'Livestream player, live prayer, sermon notes, chat, and giving CTA test page.',
+140:       content: [
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

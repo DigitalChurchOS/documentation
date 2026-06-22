@@ -1,0 +1,87 @@
+Created At: 2026-06-06T14:27:55Z
+Completed At: 2026-06-06T14:27:55Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 18276 to 19075
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+18276:       document.querySelectorAll('[data-cms-tab]').forEach((button) => {
+18277:         button.onclick = () => {
+18278:           switchCmsTab(button.dataset.cmsTab);
+18279:         };
+18280:       });
+18281:     }
+18282: 
+18283:     function switchCmsTab(tabName) {
+18284:       cmsState.activeTab = tabName;
+18285:       document.querySelectorAll('#cmsConsoleContainer .cms-nav-item').forEach((btn) => {
+18286:         btn.classList.toggle('active', btn.dataset.cmsTab === tabName);
+18287:       });
+18288:       document.querySelectorAll('#cmsConsoleContainer .cms-tab-content').forEach((tab) => {
+18289:         tab.classList.toggle('hidden', tab.id !== `cms${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`);
+18290:       });
+18291:       
+18292:       if (tabName === 'overview') renderCmsOverview();
+18293:       else if (tabName === 'pages') renderCmsPagesGrid();
+18294:       else if (tabName === 'templates') renderCmsTemplates();
+18295:       else if (tabName === 'menus') loadCmsNavigationMenu();
+18296:       else if (tabName === 'footer') loadCmsFooterConfig();
+18297:       else if (tabName === 'blocks') renderCmsBlocksInventory();
+18298:       else if (tabName === 'publishing') renderCmsPublishing();
+18299:       else if (tabName === 'reports') renderCmsReports();
+18300:       else if (tabName === 'logs') populateCmsLogs();
+18301:       
+18302:       refreshIcons();
+18303:     }
+18304: 
+18305:     function cmsModuleMeta() {
+18306:       return modules.find(m => m.key === 'cms') || {};
+18307:     }
+<truncated 38321 bytes>
+ElementById('blockKey').value = block.key || '';
+19031:       
+19032:       const content = typeof block.content === 'object' ? JSON.stringify(block.content, null, 2) : block.content;
+19033:       document.getElementById('blockContent').value = content || '';
+19034: 
+19035:       document.getElementById('cmsBlockModal').style.display = 'flex';
+19036:     }
+19037: 
+19038:     async function saveCmsReusableBlock() {
+19039:       const id = document.getElementById('blockModalId').value;
+19040:       const name = document.getElementById('blockName').value.trim();
+19041:       const key = document.getElementById('blockKey').value.trim().toLowerCase();
+19042:       const contentStr = document.getElementById('blockContent').value.trim();
+19043: 
+19044:       if (!name || !key) {
+19045:         alert('Name and Key are required');
+19046:         return;
+19047:       }
+19048: 
+19049:       let contentObj = null;
+19050:       try {
+19051:         contentObj = JSON.parse(contentStr);
+19052:       } catch (err) {
+19053:         alert('Invalid JSON content layout: ' + err.message);
+19054:         return;
+19055:       }
+19056: 
+19057:       const payload = {
+19058:         name,
+19059:         key,
+19060:         content: contentObj
+19061:       };
+19062: 
+19063:       let res;
+19064:       if (id) {
+19065:         res = await cmsApiRequest('PATCH', `/api/cms/reusable-blocks/${id}`, payload);
+19066:       } else {
+19067:         res = await cmsApiRequest('POST', `/api/cms/reusable-blocks`, payload);
+19068:       }
+19069: 
+19070:       if (res && res.data) {
+19071:         closeCmsModal('cmsBlockModal');
+19072:         showToast(id ? 'Reusable block updated' : 'Reusable block created');
+19073:         await loadAllCmsData();
+19074:       } else {
+19075:         alert('Failed to save reusable block');
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

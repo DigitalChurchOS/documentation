@@ -1,0 +1,86 @@
+Created At: 2026-06-06T16:46:56Z
+Completed At: 2026-06-06T16:46:56Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx`
+Total Lines: 1036
+Total Bytes: 39268
+Showing lines 13 to 812
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+13:   moveElementInTree,
+14:   getBreadcrumbPath
+15: } from './utils.js';
+16: 
+17: // Helper to recursively assign new unique IDs on duplication or insertion
+18: const cloneElementWithNewIds = (el: ElementSchema): ElementSchema => {
+19:   const shortType = el.type.substring(0, 3);
+20:   return {
+21:     ...el,
+22:     id: generateId(shortType),
+23:     children: (el.children || []).map(child => cloneElementWithNewIds(child))
+24:   };
+25: };
+26: 
+27: interface InspectorBoundaryProps {
+28:   resetKey: string;
+29:   children: React.ReactNode;
+30: }
+31: 
+32: interface InspectorBoundaryState {
+33:   hasError: boolean;
+34:   message: string;
+35: }
+36: 
+37: class InspectorBoundary extends React.Component<InspectorBoundaryProps, InspectorBoundaryState> {
+38:   state: InspectorBoundaryState = { hasError: false, message: '' };
+39: 
+40:   static getDerivedStateFromError(error: unknown): InspectorBoundaryState {
+41:     return { hasError: true, message: error instanceof Error ? error.message : String(error) };
+42:   }
+43: 
+44:   componentDidUpdate(prevProps: InspectorBoundaryProps) {
+45:     if (prevProps.resetKey !== this.props.resetKey && this.state.hasError) {
+46:       this.setState({ hasError: false, message: '' });
+47:     }
+48:   }
+49: 
+50:   componentDidCatch(error: unknown) {
+51:     console.error('Inspector failed to render', error);
+52:   }
+53: 
+54:   render() {
+55:     if (this.state.hasError) {
+56:       return (
+57:         <aside className="sidebar thin-scroll select-none" style={{ borderLeft: '1px solid var(--border-col
+<truncated 29024 bytes>
+          <Icon name="arrow-left" className="w-4 h-4" />
+782:             <span>Back to CMS</span>
+783:           </button>
+784: 
+785:           <div className="flex items-center gap-2">
+786:             <div className="bg-accent text-white p-2 rounded-xl flex items-center justify-center shadow-md shadow-accent/20">
+787:               <Icon name="panel-left" className="w-5 h-5" />
+788:             </div>
+789:             <div>
+790:               <span className="font-semibold text-sm tracking-normal text-text">ChurchOS CMS</span>
+791:               <span className="text-[10px] text-muted font-semibold ml-2 px-1.5 py-0.5 rounded-md bg-surface-soft border border-border uppercase">Builder</span>
+792:               {initialSlug && (
+793:                 <span className="text-[10px] text-muted font-mono ml-2">/{initialSlug}</span>
+794:               )}
+795:               <span className="text-[10px] text-muted font-semibold ml-2 px-1.5 py-0.5 rounded-md bg-surface-soft border border-border uppercase">{initialStatus}</span>
+796:             </div>
+797:           </div>
+798: 
+799:           {/* Template Selectors Dropdown */}
+800:           <div className="flex items-center gap-2 bg-surface-soft px-3 py-1.5 rounded-xl border border-border">
+801:             <span className="text-xs text-muted font-medium">Template</span>
+802:             <select
+803:               value={activeTemplate}
+804:               onChange={(e) => loadTemplate(e.target.value as any)}
+805:               className="bg-transparent text-xs text-text font-semibold focus:outline-none cursor-pointer"
+806:             >
+807:               <option value="hero">Service Hero Page</option>
+808:               <option value="church_landing">Ministry Landing Page</option>
+809:             </select>
+810:           </div>
+811:         </div>
+812: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

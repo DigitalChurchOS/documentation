@@ -1,0 +1,29 @@
+Created At: 2026-06-06T16:36:03Z
+Completed At: 2026-06-06T16:36:03Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 290 to 310
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+290:       title: 'Announcements',
+291:       slug: 'announcements',
+292:       status: 'published',
+293:       isHome: false,
+294:       seoTitle: 'Announcements | Christ Embassy Next Church',
+295:       seoDescription: 'Featured announcements, alert banners, notification signup, and branch messages.',
+296:       content: [
+297:         { type: 'dynamic_announcement_list', title: 'Latest Church Updates', sourceModule: 'Announcements', fields: ['featured', 'branch', 'alertBanner', 'notificationSignup'] },
+298:       ],
+299:       createdAt: now(),
+300:       updatedAt: now(),
+301:     },
+302:     {
+303:       id: 'page-mobile-app',
+304:       websiteId: demoWebsiteId,
+305:       title: 'Mobile App Screen',
+306:       slug: 'mobile-app',
+307:       status: 'draft',
+308:       isHome: false,
+309:       seoTitle: 'Mobile App Screen | Christ Embassy Next Church',
+310:       seoDescription: 'Mobile app screen composition for member dashboard, giving, livestream, prayer, and notifications.',
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

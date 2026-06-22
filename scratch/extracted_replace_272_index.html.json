@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Add sidebar tabs structure to theme customizer panel in index.html\"",
+  "EndLine": "12844",
+  "Instruction": "\"Insert tabs header and theme-design-tab wrapper div around the panel heading\"",
+  "ReplacementContent": "\"        <aside class=\\\"settings-panel\\\" style=\\\"display:flex; flex-direction:column; overflow-y:auto;\\\">\\n          <div class=\\\"customizer-tabs\\\">\\n            <button class=\\\"customizer-tab active\\\" id=\\\"tabThemeDesign\\\" type=\\\"button\\\"><i data-lucide=\\\"palette\\\"></i> Theme Design</button>\\n            <button class=\\\"customizer-tab\\\" id=\\\"tabPages\\\" type=\\\"button\\\"><i data-lucide=\\\"file-text\\\"></i> Pages</button>\\n          </div>\\n          \\n          <div class=\\\"settings-tab-content theme-design-tab\\\" id=\\\"customizerThemeDesignTab\\\" style=\\\"flex:1; overflow-y:auto;\\\">\\n            <div class=\\\"panel-heading\\\">\\n              <h3>Universal Appearance</h3>\\n              <p>These controls come from the platform theme settings contract and active theme capabilities.</p>\\n            </div>\"",
+  "StartLine": "12839",
+  "TargetContent": "\"        <aside class=\\\"settings-panel\\\">\\n          <div class=\\\"panel-heading\\\">\\n            <h3>Universal Appearance</h3>\\n            <p>These controls come from the platform theme settings contract and active theme capabilities.</p>\\n          </div>\"",
+  "TargetFile": "\"C:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\apps\\\\tenant-dashboard\\\\public\\\\index.html\"",
+  "toolAction": "\"Adding tabs structure to customizer sidebar\"",
+  "toolSummary": "\"index.html sidebar tabs edit\""
+}

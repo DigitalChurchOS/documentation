@@ -1,0 +1,69 @@
+Created At: 2026-06-06T16:46:50Z
+Completed At: 2026-06-06T16:46:50Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 2900 to 2960
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+2900:     return false;
+2901:   }
+2902: 
+2903:   const body = method === 'GET' ? {} : await readJsonBody(req);
+2904: 
+2905:   if (pathname === '/api/cms/pages' && method === 'GET') {
+2906:     return sendJson(res, 200, { data: state.pages });
+2907:   }
+2908: 
+2909:   if (pathname === '/api/cms/pages' && method === 'POST') {
+2910:     const page = {
+2911:       id: createId('page'),
+2912:       websiteId: body.websiteId || demoWebsiteId,
+2913:       title: body.title || 'Untitled Page',
+2914:       slug: body.slug || createId('page-slug'),
+2915:       status: body.status || 'draft',
+2916:       isHome: Boolean(body.isHome),
+2917:       content: body.content || [],
+2918:       createdAt: now(),
+2919:       updatedAt: now(),
+2920:     };
+2921:     state.pages.push(page);
+2922:     addActivity(`Created page: ${page.title}`);
+2923:     return sendJson(res, 201, { data: page });
+2924:   }
+2925: 
+2926:   const draftMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/draft$/);
+2927:   if (draftMatch && method === 'PATCH') {
+2928:     const page = state.pages.find((item) => item.id === draftMatch[1]);
+2929:     if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2930:     page.draftContent = typeof body.draftContent === 'string' ? body.draftContent : JSON.stringify(body.draftContent || []);
+2931:     page.updatedAt = now();
+2932:     addActivity(`Updated page draft: ${page.title}`);
+2933:     return sendJson(res, 200, { data: page });
+2934:   }
+2935: 
+2936:   const publishMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/publish$/);
+2937:   if (publishMatch && method === 'POST') {
+2938:     const page = state.pages.find((item) => item.id === publishMatch[1]);
+2939:     if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2940:     const nextContent = page.draftContent || page.content;
+2941:     page.content = typeof nextContent === 'string' ? nextContent : JSON.stringify(nextContent || []);
+2942:     page.draftContent = null;
+2943:     page.status = 'published';
+2944:     page.updatedAt = now();
+2945:     addActivity(`Published page: ${page.title}`);
+2946:     return sendJson(res, 200, { data: page });
+2947:   }
+2948: 
+2949:   const previewMatch = pathname.match(/^\/api\/cms\/pages\/([^/]+)\/preview$/);
+2950:   if (previewMatch && method === 'POST') {
+2951:     const page = state.pages.find((item) => item.id === previewMatch[1]);
+2952:     if (!page) return sendJson(res, 404, { error: 'Page not found' });
+2953:     return sendJson(res, 200, {
+2954:       data: {
+2955:         previewToken: 'local-preview-token',
+2956:         previewUrl: `/api/cms/render?slug=${page.slug}&previewToken=local-preview-token`,
+2957:       },
+2958:     });
+2959:   }
+2960: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
