@@ -269,12 +269,13 @@ function initShell() {
   const railBorder = document.body.getAttribute("data-rail-border") !== "false";
   const railBorderSize = document.body.getAttribute("data-rail-border-size") || "small";
   const railBorderColor = document.body.getAttribute("data-rail-border-color") || "standard";
+  const railVerticalAlign = document.body.getAttribute("data-rail-vertical-align") || "center";
 
   // Rail Navigation HTML
   let railHtml = '';
   if (railPosition === 'below-header') {
     railHtml = `
-      <div class="rail-menu-horizontal dark-menu"
+      <div class="rail-menu-horizontal"
            data-rail-style="${railStyle}"
            data-rail-shadow="${railShadow}"
            data-rail-shadow-intensity="${railShadowIntensity}"
@@ -282,7 +283,8 @@ function initShell() {
            data-rail-solid-themed="${railSolidThemed}"
            data-rail-border="${railBorder}"
            data-rail-border-size="${railBorderSize}"
-           data-rail-border-color="${railBorderColor}">
+           data-rail-border-color="${railBorderColor}"
+           data-rail-vertical-align="${railVerticalAlign}">
         <nav class="horizontal-rail-nav">
     `;
     finalRailItems.forEach(item => {
@@ -307,7 +309,8 @@ function initShell() {
              data-rail-solid-themed="${railSolidThemed}"
              data-rail-border="${railBorder}"
              data-rail-border-size="${railBorderSize}"
-             data-rail-border-color="${railBorderColor}">
+             data-rail-border-color="${railBorderColor}"
+             data-rail-vertical-align="${railVerticalAlign}">
         <nav class="rail-nav">
     `;
     finalRailItems.forEach(item => {

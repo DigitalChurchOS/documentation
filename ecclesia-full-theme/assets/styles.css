@@ -2014,4 +2014,66 @@ body.dark-mode .rail-menu-horizontal[data-rail-style="light"] .rail-item {
   border: none !important;
 }
 
+/* Vertical alignment settings for floating and detached modes */
+
+/* Top Alignment */
+.left-rail[data-rail-style="floating"][data-rail-vertical-align="top"],
+.left-rail[data-rail-style="detached"][data-rail-vertical-align="top"],
+.right-rail[data-rail-style="floating"][data-rail-vertical-align="top"],
+.right-rail[data-rail-style="detached"][data-rail-vertical-align="top"] {
+  position: sticky !important;
+  top: 18px !important;
+  bottom: auto !important;
+  align-self: start !important;
+  transform: none !important;
+}
+
+/* Center Alignment */
+.left-rail[data-rail-style="floating"][data-rail-vertical-align="center"],
+.left-rail[data-rail-style="detached"][data-rail-vertical-align="center"],
+.right-rail[data-rail-style="floating"][data-rail-vertical-align="center"],
+.right-rail[data-rail-style="detached"][data-rail-vertical-align="center"],
+.left-rail[data-rail-style="floating"]:not([data-rail-vertical-align]),
+.left-rail[data-rail-style="detached"]:not([data-rail-vertical-align]),
+.right-rail[data-rail-style="floating"]:not([data-rail-vertical-align]),
+.right-rail[data-rail-style="detached"]:not([data-rail-vertical-align]) {
+  position: sticky !important;
+  top: 50% !important;
+  bottom: auto !important;
+  align-self: start !important;
+  transform: translateY(-50%) !important;
+}
+
+/* Bottom Alignment */
+.left-rail[data-rail-style="floating"][data-rail-vertical-align="bottom"],
+.left-rail[data-rail-style="detached"][data-rail-vertical-align="bottom"],
+.right-rail[data-rail-style="floating"][data-rail-vertical-align="bottom"],
+.right-rail[data-rail-style="detached"][data-rail-vertical-align="bottom"] {
+  position: sticky !important;
+  top: auto !important;
+  bottom: 18px !important;
+  align-self: start !important;
+  transform: none !important;
+}
+
+/* Dark Mode Subtle Theme Accents */
+
+body.dark-mode .left-rail,
+body.dark-mode .right-rail {
+  background: color-mix(in srgb, var(--accent) 8%, #141416) !important;
+  border-color: color-mix(in srgb, var(--accent) 15%, rgba(255, 255, 255, 0.08)) !important;
+}
+
+body.dark-mode .left-rail[data-rail-style="transparent"],
+body.dark-mode .right-rail[data-rail-style="transparent"],
+body.dark-mode .rail-menu-horizontal[data-rail-style="transparent"] {
+  background: color-mix(in srgb, var(--accent) 9%, rgba(20, 20, 25, 0.45)) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+
+body.dark-mode .mobile-rail-drawer {
+  background: color-mix(in srgb, var(--accent) 8%, #141416) !important;
+}
+
 

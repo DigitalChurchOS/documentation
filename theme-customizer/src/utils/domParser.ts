@@ -50,6 +50,7 @@ export interface ThemeState {
   railBorder?: boolean;
   railBorderSize?: string;
   railBorderColor?: string;
+  railVerticalAlign?: string;
 
   copyrightText: string;
   privacyLabel: string;
@@ -1055,6 +1056,7 @@ export function applyThemeStructure(doc: Document, state: ThemeState, navigation
     body.setAttribute("data-rail-border", String(state.railBorder || false));
     body.setAttribute("data-rail-border-size", state.railBorderSize || "small");
     body.setAttribute("data-rail-border-color", state.railBorderColor || "standard");
+    body.setAttribute("data-rail-vertical-align", state.railVerticalAlign || "center");
   }
 
   const header = doc.querySelector("header, [data-editor-type='header']");

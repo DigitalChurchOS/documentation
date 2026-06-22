@@ -1636,7 +1636,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                     <button
                       className={`tiny-switch ${state.railSolidThemed ? "on" : "off"}`}
                       onClick={() => onChange({ railSolidThemed: !state.railSolidThemed })}
-                    />
+                    >
+                      <div className="tiny-knob"></div>
+                    </button>
                   </div>
                 </div>
               )}
@@ -1689,7 +1691,32 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                     <button
                       className={`tiny-switch ${state.railShowIcons !== false ? "on" : "off"}`}
                       onClick={() => onChange({ railShowIcons: state.railShowIcons !== false ? false : true })}
-                    />
+                    >
+                      <div className="tiny-knob"></div>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {state.railPosition !== "below-header" && (state.railStyle === "floating" || state.railStyle === "detached") && (
+                <div className="edit-box" style={{ marginTop: '20px' }}>
+                  <h4>Vertical Alignment</h4>
+                  <p>Choose where the floating or detached menu sits vertically.</p>
+                  <div className="choice-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                    {[
+                      { key: "top", name: "Top" },
+                      { key: "center", name: "Center" },
+                      { key: "bottom", name: "Bottom" }
+                    ].map((item) => (
+                      <button
+                        key={item.key}
+                        className={`visual-card ${state.railVerticalAlign === item.key || (!state.railVerticalAlign && item.key === 'center') ? "active" : ""}`}
+                        onClick={() => onChange({ railVerticalAlign: item.key })}
+                        style={{ padding: '8px', minHeight: 'auto', textAlign: 'center' }}
+                      >
+                        <strong>{item.name}</strong>
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
@@ -1707,7 +1734,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                   <button
                     className={`tiny-switch ${state.railShadow ? "on" : "off"}`}
                     onClick={() => onChange({ railShadow: !state.railShadow })}
-                  />
+                  >
+                    <div className="tiny-knob"></div>
+                  </button>
                 </div>
               </div>
 
@@ -1742,7 +1771,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                       <button
                         className={`tiny-switch ${state.railShadowThemed ? "on" : "off"}`}
                         onClick={() => onChange({ railShadowThemed: !state.railShadowThemed })}
-                      />
+                      >
+                        <div className="tiny-knob"></div>
+                      </button>
                     </div>
                   </div>
                 </>
@@ -1757,7 +1788,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                   <button
                     className={`tiny-switch ${state.railBorder !== false ? "on" : "off"}`}
                     onClick={() => onChange({ railBorder: state.railBorder !== false ? false : true })}
-                  />
+                  >
+                    <div className="tiny-knob"></div>
+                  </button>
                 </div>
               </div>
 

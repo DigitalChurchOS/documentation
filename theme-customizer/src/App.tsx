@@ -669,6 +669,7 @@ export function App() {
       railBorder: true,
       railBorderSize: "small",
       railBorderColor: "standard",
+      railVerticalAlign: "center",
       copyrightText: "Ecclesia Theme. All rights reserved.",
       privacyLabel: "Privacy Policy",
       privacyHref: "#privacy",
