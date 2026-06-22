@@ -1225,7 +1225,9 @@
           if (d) {
             d.style.position = '';
             d.style.top = '';
+            d.style.bottom = '';
             d.style.left = '';
+            d.style.right = '';
             d.style.width = '';
             d.style.zIndex = '';
           }
@@ -1236,18 +1238,35 @@
       if (isOpen && dropdown && trigger) {
         const rect = trigger.getBoundingClientRect();
         dropdown.style.position = 'fixed';
-        dropdown.style.top = (rect.bottom + 6) + 'px';
         dropdown.style.left = rect.left + 'px';
+        dropdown.style.right = 'auto'; // override CSS right:0 rule to prevent shifting/stretching
         dropdown.style.zIndex = '99999';
         if (el.closest('.phone-input-group')) {
           dropdown.style.width = '240px';
         } else {
           dropdown.style.width = rect.width + 'px';
         }
+
+        // Adjust drop direction based on available space in viewport
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        const estimatedHeight = 300; // max estimated height of dropdown panel
+
+        if (spaceBelow < estimatedHeight && spaceAbove > spaceBelow) {
+          // Drop UP
+          dropdown.style.top = 'auto';
+          dropdown.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+        } else {
+          // Drop DOWN
+          dropdown.style.bottom = 'auto';
+          dropdown.style.top = (rect.bottom + 6) + 'px';
+        }
       } else if (!isOpen && dropdown) {
         dropdown.style.position = '';
         dropdown.style.top = '';
+        dropdown.style.bottom = '';
         dropdown.style.left = '';
+        dropdown.style.right = '';
         dropdown.style.width = '';
         dropdown.style.zIndex = '';
       }
@@ -1274,7 +1293,9 @@
       if (d) {
         d.style.position = '';
         d.style.top = '';
+        d.style.bottom = '';
         d.style.left = '';
+        d.style.right = '';
         d.style.width = '';
         d.style.zIndex = '';
       }
@@ -1294,7 +1315,9 @@
           if (d) {
             d.style.position = '';
             d.style.top = '';
+            d.style.bottom = '';
             d.style.left = '';
+            d.style.right = '';
             d.style.width = '';
             d.style.zIndex = '';
           }
@@ -3086,7 +3109,9 @@
           if (d) {
             d.style.position = '';
             d.style.top = '';
+            d.style.bottom = '';
             d.style.left = '';
+            d.style.right = '';
             d.style.width = '';
             d.style.zIndex = '';
           }
