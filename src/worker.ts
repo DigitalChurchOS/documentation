@@ -354,7 +354,10 @@ export default {
 
     // 4. Static assets: serve directly if it looks like a physical file (has extension)
     // We check for '.' to identify file extensions like .js, .css, .png, .ico, etc.
-    const isStaticFile = pathname.includes('.') && !pathname.endsWith('/');
+    // We exclude .html files from being served as static assets on tenant requests so that
+    // the SPA router can handle them (e.g. /about.html, /sermons.html).
+    const isTenantRequest = isTenantPublicHost || pathname.startsWith('/church/') || pathname === '/church';
+    const isStaticFile = pathname.includes('.') && !pathname.endsWith('/') && !(isTenantRequest && pathname.endsWith('.html'));
     if (isStaticFile) {
       return env.ASSETS.fetch(request);
     }
