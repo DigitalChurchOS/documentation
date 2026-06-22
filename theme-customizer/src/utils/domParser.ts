@@ -115,7 +115,7 @@ export function getTokenStyle(state: ThemeState): string {
   let gold = secondaryColor;
 
   if (state.style === "Soft") {
-    primary = `color-mix(in srgb, ${baseAccent} 65%, ${dark ? "#4b5563" : "#94a3b8"})`;
+    primary = `color-mix(in srgb, ${baseAccent} 65%, ${dark ? "#374151" : "#cbd5e1"})`;
     primarySoft = `color-mix(in srgb, var(--accent) 8%, transparent)`;
     accent2 = `color-mix(in srgb, var(--accent) 70%, transparent)`;
     gold = `color-mix(in srgb, ${secondaryColor} 50%, ${dark ? "#1f2937" : "#f1f5f9"})`;
@@ -123,12 +123,14 @@ export function getTokenStyle(state: ThemeState): string {
     primary = baseAccent;
     primarySoft = `color-mix(in srgb, var(--accent) 18%, transparent)`;
     accent2 = `color-mix(in srgb, var(--accent) 90%, transparent)`;
+    gold = secondaryColor;
   } else if (state.style === "Rich") {
-    primary = dark ? baseAccent : `color-mix(in srgb, ${baseAccent} 85%, #000000)`;
+    primary = dark ? baseAccent : `color-mix(in srgb, ${baseAccent} 82%, #000000)`;
     primarySoft = `color-mix(in srgb, var(--accent) 22%, transparent)`;
     accent2 = `color-mix(in srgb, var(--accent) 95%, transparent)`;
+    gold = secondaryColor;
   } else if (state.style === "Elegant") {
-    primary = `color-mix(in srgb, ${baseAccent} 60%, #475467)`;
+    primary = `color-mix(in srgb, ${baseAccent} 75%, #475569)`;
     primarySoft = `color-mix(in srgb, var(--accent) 10%, transparent)`;
     accent2 = `color-mix(in srgb, var(--accent) 75%, transparent)`;
     gold = `color-mix(in srgb, ${secondaryColor} 40%, #64748b)`;
@@ -205,38 +207,34 @@ export function getTokenStyle(state: ThemeState): string {
 
   if (state.style === "Soft") {
     siteBg = dark 
-      ? "color-mix(in srgb, var(--primary) 4%, #1f2937)" 
-      : "color-mix(in srgb, var(--primary) 2%, #faf9f6)";
-    siteSoft = dark 
       ? "color-mix(in srgb, var(--primary) 8%, #111827)" 
-      : "color-mix(in srgb, var(--primary) 4%, #faf9f6)";
+      : "color-mix(in srgb, var(--primary) 6%, #ffffff)";
+    siteSoft = dark 
+      ? "color-mix(in srgb, var(--primary) 12%, #1f2937)" 
+      : "color-mix(in srgb, var(--primary) 4%, #ffffff)";
     textMain = dark ? "#e4e4e7" : "#27272a";
     textMuted = dark ? "#a1a1aa" : "#71717a";
   } else if (state.style === "Vibrant") {
-    siteBg = dark 
-      ? "color-mix(in srgb, var(--primary) 5%, #0f172a)" 
-      : "color-mix(in srgb, var(--primary) 3%, #f8fafc)";
+    siteBg = dark ? "#000000" : "#ffffff";
     siteSoft = dark 
-      ? "color-mix(in srgb, var(--primary) 10%, #1e293b)" 
-      : "#ffffff"; // pure white highlights
-    textMain = dark ? "#ffffff" : "#000000"; // rich dark / bright white
+      ? "color-mix(in srgb, var(--primary) 10%, #1c1c1e)" 
+      : "#ffffff";
+    textMain = dark ? "#ffffff" : "#000000";
     textMuted = dark ? "#cbd5e1" : "#4b5563";
   } else if (state.style === "Rich") {
     siteBg = dark 
-      ? "color-mix(in srgb, var(--primary) 10%, #080c14)" 
-      : "color-mix(in srgb, var(--primary) 8%, #fcf8f2)";
+      ? "color-mix(in srgb, var(--primary) 12%, #000000)" 
+      : "color-mix(in srgb, var(--primary) 8%, #ffffff)";
     siteSoft = dark 
-      ? "color-mix(in srgb, var(--primary) 16%, #111827)" 
-      : "color-mix(in srgb, var(--primary) 14%, #f6efe6)";
+      ? "color-mix(in srgb, var(--primary) 16%, #0d0f12)" 
+      : "color-mix(in srgb, var(--primary) 12%, #ffffff)";
     textMain = dark ? "#f8fafc" : "#1d1812";
     textMuted = dark ? "#cbd5e1" : "#74685e";
   } else { // Elegant
-    siteBg = dark 
-      ? "color-mix(in srgb, var(--primary) 3%, #0b0f19)" 
-      : "#ffffff"; // elegant background can be white
+    siteBg = dark ? "#090d16" : "#ffffff";
     siteSoft = dark 
       ? "color-mix(in srgb, var(--primary) 6%, #1e293b)" 
-      : "#f8fafc"; // cool grey-white
+      : "#f8fafc";
     textMain = dark ? "#f1f5f9" : "#1e293b";
     textMuted = dark ? "#94a3b8" : "#475467";
   }
@@ -286,10 +284,10 @@ export function getTokenStyle(state: ThemeState): string {
   if (state.style === "Soft") {
     bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 30%), radial-gradient(circle at 84% 2%, color-mix(in srgb, var(--gold) 6%, transparent), transparent 26%), var(--bg)`;
   } else if (state.style === "Vibrant") {
-    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--accent) 15%, transparent), transparent 30%), radial-gradient(circle at 84% 2%, color-mix(in srgb, var(--gold) 10%, transparent), transparent 26%), var(--bg)`;
-  } else if (state.style === "Rich") {
-    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 32%), radial-gradient(circle at 84% 2%, color-mix(in srgb, var(--gold) 16%, transparent), transparent 28%), var(--bg)`;
-  } else { // Elegant
+    bodyBg = dark 
+      ? `linear-gradient(135deg, color-mix(in srgb, var(--accent) 10%, #000000) 0%, #000000 100%)`
+      : `linear-gradient(135deg, color-mix(in srgb, var(--accent) 7%, #ffffff) 0%, #ffffff 100%)`;
+  } else { // Rich and Elegant
     bodyBg = "var(--bg)";
   }
 

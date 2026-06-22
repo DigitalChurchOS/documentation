@@ -173,7 +173,7 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
 
   let primary = baseAccent;
   let surface = dark ? '#111827' : '#ffffff';
-  let bg = dark ? '#0f172a' : '#f8fafc';
+  let bg = dark ? '#000000' : '#ffffff';
   let soft = dark ? '#1e293b' : '#ffffff';
   let text = dark ? '#ffffff' : '#000000';
   let muted = dark ? '#cbd5e1' : '#4b5563';
@@ -182,20 +182,20 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   let softShadow = `0 12px 35px color-mix(in srgb, var(--primary) 10%, ${dark ? 'rgba(0,0,0,0.35)' : 'rgba(15,23,42,0.06)'})`;
 
   if (style === 'Soft') {
-    primary = `color-mix(in srgb, ${baseAccent} 65%, ${dark ? '#4b5563' : '#94a3b8'})`;
-    bg = dark ? `color-mix(in srgb, var(--primary) 4%, #1f2937)` : `color-mix(in srgb, var(--primary) 2%, #faf9f6)`;
-    soft = dark ? `color-mix(in srgb, var(--primary) 8%, #111827)` : `color-mix(in srgb, var(--primary) 4%, #faf9f6)`;
+    primary = `color-mix(in srgb, ${baseAccent} 65%, ${dark ? '#374151' : '#cbd5e1'})`;
+    bg = dark ? `color-mix(in srgb, var(--primary) 8%, #111827)` : `color-mix(in srgb, var(--primary) 6%, #ffffff)`;
+    soft = dark ? `color-mix(in srgb, var(--primary) 12%, #1f2937)` : `color-mix(in srgb, var(--primary) 4%, #ffffff)`;
     text = dark ? '#e4e4e7' : '#27272a';
     muted = dark ? '#a1a1aa' : '#71717a';
   } else if (style === 'Rich') {
-    primary = dark ? baseAccent : `color-mix(in srgb, ${baseAccent} 85%, #000000)`;
-    bg = dark ? `color-mix(in srgb, var(--primary) 10%, #080c14)` : `color-mix(in srgb, var(--primary) 8%, #fcf8f2)`;
-    soft = dark ? `color-mix(in srgb, var(--primary) 16%, #111827)` : `color-mix(in srgb, var(--primary) 14%, #f6efe6)`;
+    primary = dark ? baseAccent : `color-mix(in srgb, ${baseAccent} 82%, #000000)`;
+    bg = dark ? `color-mix(in srgb, var(--primary) 12%, #000000)` : `color-mix(in srgb, var(--primary) 8%, #ffffff)`;
+    soft = dark ? `color-mix(in srgb, var(--primary) 16%, #0d0f12)` : `color-mix(in srgb, var(--primary) 12%, #ffffff)`;
     text = dark ? '#f8fafc' : '#1d1812';
     muted = dark ? '#cbd5e1' : '#74685e';
   } else if (style === 'Elegant') {
-    primary = `color-mix(in srgb, ${baseAccent} 60%, #475467)`;
-    bg = dark ? `color-mix(in srgb, var(--primary) 3%, #0b0f19)` : '#ffffff';
+    primary = `color-mix(in srgb, ${baseAccent} 75%, #475569)`;
+    bg = dark ? '#090d16' : '#ffffff';
     soft = dark ? `color-mix(in srgb, var(--primary) 6%, #1e293b)` : '#f8fafc';
     text = dark ? '#f1f5f9' : '#1e293b';
     muted = dark ? '#94a3b8' : '#475467';
@@ -241,9 +241,11 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   if (style === 'Soft') {
     bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, ${primary} 8%, transparent), transparent 30%), radial-gradient(circle at 84% 2%, color-mix(in srgb, ${gold} 6%, transparent), transparent 26%), ${bg}`;
   } else if (style === 'Vibrant') {
-    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, ${primary} 15%, transparent), transparent 30%), radial-gradient(circle at 84% 2%, color-mix(in srgb, ${gold} 10%, transparent), transparent 26%), ${bg}`;
-  } else if (style === 'Rich') {
-    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, ${primary} 22%, transparent), transparent 32%), radial-gradient(circle at 84% 2%, color-mix(in srgb, ${gold} 16%, transparent), transparent 28%), ${bg}`;
+    bodyBg = dark 
+      ? `linear-gradient(135deg, color-mix(in srgb, ${primary} 10%, #000000) 0%, #000000 100%)`
+      : `linear-gradient(135deg, color-mix(in srgb, ${primary} 7%, #ffffff) 0%, #ffffff 100%)`;
+  } else { // Rich and Elegant
+    bodyBg = bg;
   }
 
   const resolvedBg = bgGradient === 'none' ? bodyBg : bgGradient;
