@@ -1,0 +1,38 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Prayer Wall</title><link rel="stylesheet" href="assets/prayer.css">  <link rel="stylesheet" href="assets/styles.css" />
+</head><body><div class="top"><strong>Daily Prayer:</strong> Morning Prayer begins at 5:00 AM · reminders and alarms available.</div><header class="header"><div class="navwrap"><a class="brand" href="prayer-home.html"><span class="mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a><nav class="nav"><a>Home</a><a class="active">Prayer</a><a>Testimonies</a><a>Groups</a><a>Media</a><a>Contact</a></nav><div class="actions"><button class="btn soft" data-reminder><i data-lucide="bell"></i> Reminder</button><button class="btn primary" data-join><i data-lucide="flame"></i> Join Prayer</button><button class="menu" id="menuBtn"><i data-lucide="menu"></i></button></div></div></header><main>
+<section class="hero"><div class="hero-copy"><span class="eyebrow"><i data-lucide="message-circle-heart"></i> Prayer Wall</span><h1>Submit a request and let the church pray with you.</h1><p class="lead">Prayer requests can be public, private, anonymous or routed directly to pastoral care. Members can agree in prayer, react, and confirm “I prayed.”</p><div class="row" style="margin-top:28px"><a class="btn primary" href="#submit">Submit Prayer Request</a><button class="btn light" data-chat>Private Care</button></div></div><div class="cinema" style="background-image:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.72)),url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1500&q=85')"><span class="eyebrow" style="background:rgba(255,255,255,.13);color:white">Community Prayer</span><div></div><div><h2>198 requests prayed for this week.</h2><p>Care teams receive private requests while approved public requests encourage the whole church to pray together.</p></div></div></section>
+<section class="section"><div class="wall-layout"><div><div class="tabs"><button class="tab active" data-tab="publicPanel">Public Requests</button><button class="tab" data-tab="answeredPanel">Answered</button><button class="tab" data-tab="urgentPanel">Urgent</button></div><div class="tab-panel active" id="publicPanel"><div class="wall-grid" style="margin-top:22px"><article class="prayer-card"><div class="request-meta"><i data-lucide="heart-pulse"></i> Healing · Public</div><h3>Pray for my mother's recovery</h3><p>Please agree with our family for healing, strength and peace during treatment.</p><div class="reaction-row"><button class="react" data-react>Amen 42</button><button class="react" data-react>I'm praying 18</button><button class="react" data-prayed>I Prayed</button></div></article><article class="prayer-card"><div class="request-meta"><i data-lucide="home"></i> Family · Anonymous</div><h3>Restoration in my home</h3><p>Trusting God for peace, forgiveness and direction in my family.</p><div class="reaction-row"><button class="react" data-react>Amen 31</button><button class="react" data-react>I agree 12</button><button class="react" data-prayed>I Prayed</button></div></article><article class="prayer-card private"><div class="request-meta"><i data-lucide="lock"></i> Private Care</div><h3>Private pastoral request</h3><p>This example shows how a sensitive request appears as private and care-routed.</p><div class="reaction-row"><button class="react" data-chat>Assigned to Care</button></div></article><article class="prayer-card"><div class="request-meta"><i data-lucide="briefcase"></i> Direction</div><h3>Wisdom for a job decision</h3><p>Please pray for clear direction and peace about a major work decision.</p><div class="reaction-row"><button class="react" data-react>Amen 16</button><button class="react" data-prayed>I Prayed</button></div></article></div></div><div class="tab-panel" id="answeredPanel"><div class="rich" style="margin-top:22px"><h3>Answered prayer stories appear here.</h3><p>Answered requests can be converted into testimony submissions.</p></div></div><div class="tab-panel" id="urgentPanel"><div class="rich" style="margin-top:22px"><h3>Urgent requests appear here.</h3><p>High-urgency requests can trigger care team notifications.</p></div></div></div><aside class="form-card" id="submit"><div class="kicker">Submit Request</div><h3>How can we pray?</h3><div class="field"><label>Request title</label><input class="input" placeholder="Short title"></div><div class="field"><label>Category</label><select class="select"><option>Healing</option><option>Family</option><option>Salvation</option><option>Finances</option><option>Direction</option></select></div><div class="field"><label>Prayer request</label><textarea placeholder="Write your request..."></textarea></div><label class="radioline"><input type="radio" name="privacy" checked> Public after moderation</label><label class="radioline"><input type="radio" name="privacy"> Private pastoral care only</label><label class="checkline"><input type="checkbox"> Show anonymously</label><button class="btn primary" data-submit>Submit Request</button></aside></div></section>
+</main><div class="sticky-prayer"><div class="sticky-info"><div class="sticky-icon"><i data-lucide="message-circle-heart"></i></div><div><strong>Need prayer or want to testify?</strong><span>Submit a request, join a room, or share your testimony</span></div></div><div class="sticky-actions"><a class="btn light pjax-link" href="prayer-wall.html">Prayer Wall</a><button class="btn primary" data-join>Join Prayer</button></div></div><div class="toast" id="toast">Saved</div><script src="https://unpkg.com/lucide@latest"></script><script src="assets/prayer.js"></script><script src="assets/app.js"></script>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+
+    <nav class="drawer-nav">
+      <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+      <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
+      <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
+      <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
+      <a class="pjax-link" href="ministries.html"><i data-lucide="users-round"></i> Ministries</a>
+      <a class="pjax-link" href="prayer.html"><i data-lucide="heart-handshake"></i> Prayer</a>
+      <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
+          <a class="pjax-link" href="login.html"><i data-lucide="user-circle"></i> Account</a>
+    </nav>
+
+    <div class="drawer-actions">
+      <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+        <i data-lucide="radio"></i>
+        Watch Live
+      </a>
+
+      <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+        <i data-lucide="map-pin"></i>
+        Plan Visit
+      </a>
+    </div>
+  </aside>
+
+</body></html>

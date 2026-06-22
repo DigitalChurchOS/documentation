@@ -1,0 +1,15 @@
+{
+  "name": "replace_file_content",
+  "args": {
+    "AllowMultiple": "false",
+    "Description": "\"Add makePageContent helper function to local-preview.js for building canvas structures\"",
+    "EndLine": "20",
+    "Instruction": "\"Inject the makePageContent helper function above the state object declaration\"",
+    "ReplacementContent": "\"const demoTenantId = 'demo-church-local';\\nconst demoWebsiteId = 'christ-embassy-next-main';\\nconst now = () => new Date().toISOString();\\n\\nconst makePageContent = (title, subtitle, badgeText = 'Christ Embassy', moduleName = null, blockName = null, actionName = null, fieldsList = []) => {\\n  const elements = [\\n    {\\n      id: 'flex_hero_' + Math.random().toString(36).substring(2, 7),\\n      type: 'flexbox',\\n      props: { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', gap: '16px' },\\n      styles: {\\n        desktop: {\\n          display: 'flex',\\n          flexDirection: 'column',\\n          justifyContent: 'center',\\n          alignItems: 'center',\\n          gap: '20px',\\n          paddingTop: '80px',\\n          paddingBottom: '80px',\\n          paddingLeft: '40px',\\n          paddingRight: '40px',\\n          minHeight: '350px',\\n          borderRadius: '8px',\\n          backgroundColor: '#f8fafc',\\n          borderStyle: 'solid',\\n          borderWidth: '1px',\\n          borderColor: '#e5e7eb'\\n        },\\n        mobile: {\\n          paddingTop: '40px',\\n          paddingBottom: '40px',\\n          paddingLeft: '20px',\\n          paddingRight: '20px'\\n        }\\n      },\\n      children: [\\n        {\\n          id: 'hero_badge_' + Math.random().toString(36).substring(2, 7),\\n          type: 'button',\\n          props: { text: badgeText, url: '#' },\\n          styles: {\\n            desktop: {\\n              backgroundColor: '#eff6ff',\\n              color: '#1d4ed8',\\n              paddingLeft: '14px',\\n              paddingRight: '14px',\\n              paddingTop: '6px',\\n              paddingBottom: '6px',\\n              borderRadius: '999px',\\n              fontSize: '11px',\\n              fontWeight: '700',\\n              textAlign: 'center',\\n              borderStyle: 'solid',\\n              borderWidth: '1px',\\n              borderColor: '#bfdbfe',\\n              textTransform: 'uppercase'\\n            }\\n          },\\n          children: []\\n        },\\n\n<truncated 2928 bytes>",
+    "StartLine": "16",
+    "TargetContent": "\"const demoTenantId = 'demo-church-local';\\nconst demoWebsiteId = 'christ-embassy-next-main';\\nconst now = () => new Date().toISOString();\\nconst state = {\"",
+    "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\scripts\\\\local-preview.js\"",
+    "toolAction": "\"Adding makePageContent helper\"",
+    "toolSummary": "\"Add makePageContent helper function\""
+  }
+}

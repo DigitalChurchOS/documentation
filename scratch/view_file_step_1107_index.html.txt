@@ -1,0 +1,53 @@
+Created At: 2026-06-06T16:49:56Z
+Completed At: 2026-06-06T16:49:56Z
+File Path: `file:///C:/Users/Administrator/.gemini/antigravity/brain/b6ef7979-b2e0-456b-b57d-251645bf61e7/walkthrough.md`
+Total Lines: 92
+Total Bytes: 6481
+Showing lines 1 to 92
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Walkthrough - Unified Website Editing Studio
+2: 
+3: We have updated, reconstructed, improved, and successfully integrated the Page Builder into the Theme Customizer of the Digital Church OS SaaS platform. Both tools now operate in harmony as one unified Website Editing Studio.
+4: 
+5: ---
+6: 
+7: ## 1. Database Schema Extensions
+8: 
+9: To prevent drafts/edits in the editor from affecting the public frontend immediately, we extended the SQLite models in [schema.prisma](file:///C:/Users/Administrator/Documents/ChurchOS/prisma/schema.prisma):
+10: - **Theme Model**: Added `draftSettings String? @map("draft_settings")` to isolate theme customization drafts.
+11: - **Page Model**: Added `draftContent String? @map("draft_content")` to isolate page layout overrides.
+12: 
+13: ---
+14: 
+15: ## 2. Backend API Implementations
+16: 
+17: We implemented and extended the API endpoints to manage drafts, previews, and publications safely:
+18: - **Theme API (`src/routes/themeEngine.ts`)**:
+19:   - `PATCH /themes/:themeId/customization/draft` - saves customizations into `draftSettings`.
+20:   - `POST /themes/:themeId/customization/publish` - promotes draft settings to live settings.
+21:   - `POST /themes/:themeId/customization/discard` - discards draft settings.
+22:   - `POST /themes/:themeId/customization/reset` - resets settings to `{}`.
+23: - **CMS/Page API (`src/routes/cms.ts`)**:
+24:   - `GET /pages/:id` - fetches page details (including draft and published contents).
+25:   - `PATCH /pages/:id/draft` - saves visual layout changes to `draftContent`.
+
+<truncated 3315 bytes>
+Flow
+76:       √ should save page layout changes to draftContent (does not affect public render)
+77:       √ should generate a secure temporary preview URL and token
+78:       √ should load draftContent when fetching the page render with a valid previewToken
+79:       √ should block preview rendering if the token is invalid or expired
+80:       √ should promote draftContent to content, set status to published, and clear draftContent upon publishing
+81:       √ should enforce tenant isolation and block unauthorized tenant users from drafting/publishing pages
+82: ```
+83: 
+84: ---
+85: 
+86: ## 6. Page Builder Embed Fixes & Local Preview Support
+87: 
+88: To address the empty customizer state and the direct access issue on the local environment, we:
+89: - **Local Preview Server Mock Endpoints**: Added missing page CRUD and draft sub-resource endpoints (`GET /api/cms/pages/:id`, `PATCH /api/cms/pages/:id/draft`, `POST /api/cms/pages/:id/publish`, and `POST /api/cms/pages/:id/preview`) to [local-preview.js](file:///C:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js) so it aligns with production API behavior. The canvas in the Customizer iframe now renders page details successfully.
+90: - **Standalone Redirects**: Added detection in [local-preview.js](file:///C:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js) so that direct browser navigation to `/page-builder` (without `mode=embed` query param) automatically redirects to the Customizer at `/admin?module=customizer&tab=pages`.
+91: - **Recursion & Reload Prevention**: Optimized the page selection process in [index.html](file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html) by highlighting active pages directly via dataset attributes instead of triggering nested `loadCustomizerPages` updates, and checking if the `iframe.src` has changed before reloading it, eliminating duplicate page builder iframe reloads.
+92: 
+The above content shows the entire, complete file contents of the requested file.

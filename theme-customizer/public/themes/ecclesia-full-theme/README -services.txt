@@ -1,0 +1,1 @@
+Open services-archive.html. The archive hero includes live/replay/countdown states. In assets/services.js, set liveMode=true to preview live state, or hasRecentReplay=false to preview countdown-only state.

@@ -1,0 +1,80 @@
+Created At: 2026-06-06T14:54:04Z
+Completed At: 2026-06-06T14:54:05Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31898
+Total Bytes: 1555986
+Showing lines 16315 to 16450
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+16315:     function setupThemeEventListeners() {
+16316:       // Preview Toggle
+16317:       document.querySelectorAll('[data-preview-toggle]').forEach(group => {
+16318:         const clone = group.cloneNode(true);
+16319:         group.parentNode.replaceChild(clone, group);
+16320:         clone.addEventListener('click', e => {
+16321:           const btn = e.target.closest('.segment');
+16322:           if (!btn) return;
+16323:           if (clone.dataset.previewToggle === 'stage') {
+16324:             setStageDevice(btn.dataset.device);
+16325:           } else {
+16326:             setCardDevice(btn.dataset.device);
+16327:           }
+16328:         });
+16329:       });
+16330: 
+16331:       // Settings Accents/Modes click options
+16332:       document.querySelectorAll('[data-setting]').forEach(group => {
+16333:         const clone = group.cloneNode(true);
+16334:         group.parentNode.replaceChild(clone, group);
+16335:         clone.addEventListener('click', e => {
+16336:           const btn = e.target.closest('.option');
+16337:           if (!btn) return;
+16338:           clone.querySelectorAll('.option').forEach(b => b.classList.remove('active'));
+16339:           btn.classList.add('active');
+16340:           customizerState[clone.dataset.setting] = btn.dataset.value;
+16341:           applyCustomizerTheme();
+16342:         });
+16343:       });
+16344: 
+16345:       // Settings select dropdown change
+16346:       document.querySelectorAll('[data-select]').forEach(sel => {
+16347:         const clone = sel.clon
+<truncated 3483 bytes>
+Topbar) {
+16414:         hideTopbar.onclick = () => {
+16415:           document.getElementById('customizer').classList.add('topbar-hidden');
+16416:         };
+16417:       }
+16418: 
+16419:       const revealTopbar = document.getElementById('revealTopbar');
+16420:       if (revealTopbar) {
+16421:         revealTopbar.onclick = () => {
+16422:           document.getElementById('customizer').classList.remove('topbar-hidden');
+16423:         };
+16424:       }
+16425: 
+16426:       // Save Draft button
+16427:       const customizerSaveBtn = document.getElementById('customizerSaveBtn');
+16428:       if (customizerSaveBtn) {
+16429:         customizerSaveBtn.onclick = () => saveCustomizerSettings(false);
+16430:       }
+16431: 
+16432:       // Publish button
+16433:       const customizerPublishBtn = document.getElementById('customizerPublishBtn');
+16434:       if (customizerPublishBtn) {
+16435:         customizerPublishBtn.onclick = () => saveCustomizerSettings(true);
+16436:       }
+16437: 
+16438:       // Discard button
+16439:       const customizerDiscardBtn = document.getElementById('customizerDiscardBtn');
+16440:       if (customizerDiscardBtn) {
+16441:         customizerDiscardBtn.onclick = async () => {
+16442:           if (confirm('Are you sure you want to discard your theme customizations draft?')) {
+16443:             showToast('Discarding draft customizations...');
+16444:             await cmsApiRequest('POST', `/api/theme-engine/themes/${themeEngineState.activeThemeId}/customization/discard`);
+16445:             showToast('Draft discarded successfully!');
+16446:             document.getElementById('customizer').classList.remove('active');
+16447:             document.body.classList.remove('customizer-open');
+16448:             await bootstrapTenantThemes();
+16449:           }
+16450:         };
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

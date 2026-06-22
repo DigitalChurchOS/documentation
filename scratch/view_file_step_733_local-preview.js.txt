@@ -1,0 +1,17 @@
+Created At: 2026-06-06T16:22:43Z
+Completed At: 2026-06-06T16:22:43Z
+File Path: `file:///C:/Users/Administrator/.gemini/antigravity/brain/b6ef7979-b2e0-456b-b57d-251645bf61e7/.system_generated/tasks/task-709.log`
+Total Lines: 9
+Total Bytes: 558
+Showing lines 1 to 9
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: ChurchOS Developer Dashboard is running at http://localhost:3002
+2: [SYSTEM] Spawning API Server: npm run dev
+3: (node:51348) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
+4: (Use `node --trace-deprecation ...` to show where the warning was created)
+5: [SYSTEM] Spawning Preview Server: node scripts/local-preview.js
+6: [PREVIEW] ChurchOS preview running at http://localhost:3000
+7: [API] > churchos@1.0.0 dev
+8: > npx ts-node --files src/server.ts
+9: 
+The above content shows the entire, complete file contents of the requested file.

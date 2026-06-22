@@ -1,0 +1,68 @@
+Created At: 2026-06-06T14:52:55Z
+Completed At: 2026-06-06T14:52:55Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 12760 to 12900
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12760:           </select>
+12761:         </div>
+12762:       </div>
+12763:       <div class="modal-footer">
+12764:         <button class="btn" onclick="closeUserRoleModal('userRoleEditModal')">Cancel</button>
+12765:         <button class="btn primary" onclick="saveUserRoleChange()"><i data-lucide="check"></i>Update Role</button>
+12766:       </div>
+12767:     </div>
+12768:   </div>
+12769: 
+12770:   <!-- THEME CUSTOMIZER STANDALONE EXPERIENCE -->
+12771:   <section class="customizer" id="customizer">
+12772:     <button class="reveal-toolbar" id="revealTopbar" title="Show toolbar" type="button"><i data-lucide="sliders-horizontal"></i></button>
+12773:     <div class="customizer-shell">
+12774:       <header class="customizer-topbar">
+12775:         <div class="customizer-left-title">
+12776:           <button class="back-btn" id="closeCustomizer" type="button"><i data-lucide="arrow-left"></i></button>
+12777:           <div class="draft-dot"></div>
+12778:           <div class="customizer-title">
+12779:             <h2>Theme Customizer<span id="customizerThemeName" style="display:none;">Christo Theme</span></h2>
+12780:             <p>Draft settings are preview-only until published</p>
+12781:           </div>
+12782:         </div>
+12783:         <div class="toolbar-right">
+12784:           <div class="segmented" data-preview-toggle="stage">
+12785:             <button class="segment active" data-device="desktop" title="Desktop" type="button"><i data-lucide="monitor"></i></button>
+12786:             <button class="segment" d
+<truncated 5965 bytes>
+ue="flat" type="button">Flat</button>
+12870:                 </div>
+12871:               </div>
+12872:               <div class="control">
+12873:                 <label>Spacing scale</label>
+12874:                 <div class="option-grid three" data-setting="spacingScale">
+12875:                   <button class="option" data-value="compact" type="button">Compact</button>
+12876:                   <button class="option active" data-value="comfortable" type="button">Comfort</button>
+12877:                   <button class="option" data-value="spacious" type="button">Spacious</button>
+12878:                 </div>
+12879:               </div>
+12880:             </div>
+12881:           </div>
+12882: 
+12883:           <div class="setting-group">
+12884:             <button class="group-toggle" type="button">Backgrounds, Icons & Motion <i data-lucide="chevron-down"></i></button>
+12885:             <div class="group-content">
+12886:               <div class="control">
+12887:                 <label>Background style</label>
+12888:                 <select class="select-like" data-select="backgroundStyle">
+12889:                   <option value="softGradient">softGradient</option>
+12890:                   <option value="solid">solid</option>
+12891:                   <option value="animatedGradient">animatedGradient</option>
+12892:                   <option value="blobs">blobs</option>
+12893:                   <option value="textured">textured</option>
+12894:                   <option value="parallax">parallax</option>
+12895:                 </select>
+12896:               </div>
+12897:               <div class="control">
+12898:                 <label>Icon style</label>
+12899:                 <select class="select-like" data-select="iconStyle">
+12900:                   <option value="lucideLine">lucideLine</option>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

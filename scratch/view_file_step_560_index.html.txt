@@ -1,0 +1,49 @@
+Created At: 2026-06-06T16:18:00Z
+Completed At: 2026-06-06T16:18:01Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 32409
+Total Bytes: 1581872
+Showing lines 13840 to 13880
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+13840:       document.getElementById('themeToggle').addEventListener('click', () => {
+13841:         state.theme.mode = state.theme.mode === 'light' ? 'dark' : 'light';
+13842:         applyTheme();
+13843:         saveState(`Theme switched to ${state.theme.mode} mode`);
+13844:       });
+13845:       document.getElementById('publishingToggle').addEventListener('click', () => {
+13846:         state.tenant.publishingEnabled = !state.tenant.publishingEnabled;
+13847:         saveState(`Site publishing ${state.tenant.publishingEnabled ? 'enabled' : 'paused'}`);
+13848:       });
+13849:       document.getElementById('previewToggle').addEventListener('click', () => {
+13850:         state.tenant.previewUnpaid = !state.tenant.previewUnpaid;
+13851:         saveState(`Unpaid module previews ${state.tenant.previewUnpaid ? 'enabled' : 'disabled'}`);
+13852:       });
+13853:       document.getElementById('saveProfileBtn').addEventListener('click', () => {
+13854:         state.user.name = document.getElementById('displayName').value || 'Admin User';
+13855:         state.user.role = document.getElementById('role').value;
+13856:         saveState('Profile settings saved');
+13857:       });
+13858:       if (isLoggedIn()) {
+13859:         mountApp();
+13860:         bootstrapCms();
+13861:         bootstrapUserRoles();
+13862:       }
+13863:       
+13864:       // Check query parameter deep linking
+13865:       const targetModule = urlParams.get('module');
+13866:       if (targetModule) {
+13867:         selectedModule = normalizeModuleKey(targetModule);
+13868:         switchView('modules');
+13869:       }
+13870:       
+13871:       refreshIcons();
+13872:     }
+13873: 
+13874:     function normalizeModuleKey(key) {
+13875:       const aliases = {
+13876:         'core-website-cms': 'cms',
+13877:         'website-cms': 'cms'
+13878:       };
+13879:       return aliases[key] || key;
+13880:     }
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

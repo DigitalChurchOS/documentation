@@ -1,0 +1,1 @@
+Open library-archive.html for archive. Open resource-single.html for single template. Includes download and Send To actions.

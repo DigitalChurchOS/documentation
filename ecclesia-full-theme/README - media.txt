@@ -1,0 +1,1 @@
+Open media-archive.html for archive. Open media-single.html for single template. Each media type has a unique card style and the single page has type switch preview.

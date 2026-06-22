@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Redirect standalone /page-builder access to the admin customizer Pages tab, while keeping /page-builder/?mode=embed working for the iframe\"",
+  "EndLine": "97",
+  "Instruction": "\"Change the /page-builder route handlers. Keep static serving for the iframe embed mode, but add a redirect for direct navigation (no mode=embed query param) to /admin?module=customizer&tab=pages\"",
+  "ReplacementContent": "\"// Serve Page Builder static files and index\\n// When accessed with mode=embed, serve the page builder for iframe embedding.\\n// When accessed directly (no mode=embed), redirect to the unified customizer.\\napp.use('/page-builder', (req, res, next) => {\\n  // Allow static file requests (JS, CSS, images, etc.) to pass through\\n  if (req.path !== '/' && req.path !== '') {\\n    return express.static(path.join(__dirname, '..', 'page-builder'))(req, res, next);\\n  }\\n  // Check if this is an embed request (from customizer iframe)\\n  if (req.query.mode === 'embed') {\\n    return res.sendFile(path.join(__dirname, '..', 'page-builder', 'index.html'));\\n  }\\n  // Direct navigation — redirect to the unified customizer\\n  res.redirect('/admin?module=customizer&tab=pages');\\n});\"",
+  "StartLine": "90",
+  "TargetContent": "\"// Serve Page Builder static files and index\\napp.use('/page-builder', express.static(path.join(__dirname, '..', 'page-builder')));\\napp.get('/page-builder', (req, res) => {\\n  res.redirect('/page-builder/');\\n});\\napp.get('/page-builder{/*path}', (_req, res) => {\\n  res.sendFile(path.join(__dirname, '..', 'page-builder', 'index.html'));\\n});\"",
+  "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\src\\\\app.ts\"",
+  "toolAction": "\"Fixing page builder redirect\"",
+  "toolSummary": "\"Server routing fix\""
+}

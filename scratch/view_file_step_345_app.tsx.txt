@@ -1,0 +1,74 @@
+Created At: 2026-06-06T14:55:17Z
+Completed At: 2026-06-06T14:55:18Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx`
+Total Lines: 1036
+Total Bytes: 39268
+Showing lines 800 to 1036
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+800:           <div className="flex items-center gap-2 bg-surface-soft px-3 py-1.5 rounded-xl border border-border">
+801:             <span className="text-xs text-muted font-medium">Template</span>
+802:             <select
+803:               value={activeTemplate}
+804:               onChange={(e) => loadTemplate(e.target.value as any)}
+805:               className="bg-transparent text-xs text-text font-semibold focus:outline-none cursor-pointer"
+806:             >
+807:               <option value="hero">Service Hero Page</option>
+808:               <option value="church_landing">Ministry Landing Page</option>
+809:             </select>
+810:           </div>
+811:         </div>
+812: 
+813:         {/* Center Section: Device Viewport Switches */}
+814:         <div className="flex items-center gap-1 bg-surface-soft p-1 rounded-xl border border-border">
+815:           {[
+816:             { id: 'desktop', icon: 'monitor', label: 'Desktop' },
+817:             { id: 'laptop', icon: 'laptop', label: 'Laptop' },
+818:             { id: 'tablet', icon: 'tablet', label: 'Tablet' },
+819:             { id: 'mobile', icon: 'smartphone', label: 'Mobile' }
+820:           ].map(device => (
+821:             <button
+822:               key={device.id}
+823:               onClick={() => { setActiveDevice(device.id as DeviceType); showToastNotification(`Switched to ${device.label} layout overrides`); }}
+824:               style={{
+825:                 background: activeDevice === device.id ? 'var(--accent)' : 'transparent',
+826:                 boxShadow: 'none',
+<truncated 8648 bytes>
+ex-1 p-5 overflow-auto bg-bg/50 thin-scroll">
+1000:               <pre className="text-xs text-accent/90 font-mono leading-relaxed select-text select-all whitespace-pre-wrap">{compiledSchema}</pre>
+1001:             </div>
+1002: 
+1003:             <div className="p-4 border-t border-border bg-surface-soft flex gap-3 justify-end">
+1004:               <button
+1005:                 onClick={() => {
+1006:                   navigator.clipboard.writeText(compiledSchema);
+1007:                   showToastNotification('Copied compiled schema JSON to clipboard!');
+1008:                 }}
+1009:                 className="px-4 py-2 bg-accent hover:opacity-90 text-white font-semibold rounded-lg text-xs transition-colors"
+1010:               >
+1011:                 Copy to Clipboard
+1012:               </button>
+1013:               <button
+1014:                 onClick={() => setCompiledSchema(null)}
+1015:                 className="px-4 py-2 bg-surface hover:bg-surface-soft text-text border border-border font-semibold rounded-lg text-xs transition-colors"
+1016:               >
+1017:                 Close View
+1018:               </button>
+1019:             </div>
+1020: 
+1021:           </div>
+1022:         </div>
+1023:       )}
+1024: 
+1025:       {/* -------------------- 5. FLOATING GLASS TOAST NOTIFICATION -------------------- */}
+1026:       {toast.show && (
+1027:         <div className="fixed bottom-14 right-6 bg-surface border border-border text-text px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-50 animate-in slide-in-from-bottom duration-300">
+1028:           <Icon name="bell" className="w-4 h-4 text-accent animate-pulse" />
+1029:           <span className="text-xs font-semibold">{toast.message}</span>
+1030:         </div>
+1031:       )}
+1032: 
+1033:     </div>
+1034:   );
+1035: };
+1036: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

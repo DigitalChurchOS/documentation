@@ -1,0 +1,47 @@
+Created At: 2026-06-06T14:53:39Z
+Completed At: 2026-06-06T14:53:39Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31841
+Total Bytes: 1550442
+Showing lines 12812 to 12850
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12812:   <section class="customizer" id="customizer">
+12813:     <button class="reveal-toolbar" id="revealTopbar" title="Show toolbar" type="button"><i data-lucide="sliders-horizontal"></i></button>
+12814:     <div class="customizer-shell">
+12815:       <header class="customizer-topbar">
+12816:         <div class="customizer-left-title">
+12817:           <button class="back-btn" id="closeCustomizer" type="button"><i data-lucide="arrow-left"></i></button>
+12818:           <div class="draft-dot"></div>
+12819:           <div class="customizer-title">
+12820:             <h2>Theme Customizer<span id="customizerThemeName" style="display:none;">Christo Theme</span></h2>
+12821:             <p>Draft settings are preview-only until published</p>
+12822:           </div>
+12823:         </div>
+12824:         <div class="toolbar-right">
+12825:           <div class="segmented" data-preview-toggle="stage">
+12826:             <button class="segment active" data-device="desktop" title="Desktop" type="button"><i data-lucide="monitor"></i></button>
+12827:             <button class="segment" data-device="tablet" title="Tablet" type="button"><i data-lucide="tablet"></i></button>
+12828:             <button class="segment" data-device="mobile" title="Mobile" type="button"><i data-lucide="smartphone"></i></button>
+12829:           </div>
+12830:           <button class="secondary-btn" id="customizerPreviewBtn" type="button"><i data-lucide="eye"></i> Preview Site</button>
+12831:           <button class="ghost-btn" id="customizerResetBtn" type="button"><i data-lucide="rotate-ccw"></i> Reset</button>
+12832:           <button class="ghost-btn" id="customizerDiscardBtn" type="button"><i data-lucide="trash-2"></i> Discard</button>
+12833:           <button class="secondary-btn" id="customizerSaveBtn" type="button"><i data-lucide="save"></i> Save Draft</button>
+12834:           <button class="primary-btn" id="customizerPublishBtn" type="button"><i data-lucide="send"></i> Publish</button>
+12835:           <button class="icon-btn" id="hideTopbar" title="Hide toolbar" type="button"><i data-lucide="layout-panel-top"></i></button>
+12836:         </div>
+12837:       </header>
+12838:       <div class="customizer-body">
+12839:         <aside class="settings-panel">
+12840:           <div class="panel-heading">
+12841:             <h3>Universal Appearance</h3>
+12842:             <p>These controls come from the platform theme settings contract and active theme capabilities.</p>
+12843:           </div>
+12844: 
+12845:           <div class="setting-group">
+12846:             <button class="group-toggle" type="button">Mode <i data-lucide="chevron-down"></i></button>
+12847:             <div class="group-content">
+12848:               <div class="control">
+12849:                 <label>Color mode</label>
+12850:                 <div class="option-grid three" data-setting="colorMode">
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

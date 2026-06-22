@@ -1,0 +1,39 @@
+Created At: 2026-06-06T16:47:49Z
+Completed At: 2026-06-06T16:47:49Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3362
+Total Bytes: 147293
+Showing lines 235 to 265
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+235:   marketplaceAssets: [
+236:     { id: 'asset-neon-youth', name: 'Neon Youth Style', description: 'Vibrant gradients and bold typography for youth ministries.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#ff00ff', secondary: '#00ffff', accent: '#ffff00' }, fonts: { heading: 'Outfit', body: 'Inter' } }), version: '1.0.0' },
+237:     { id: 'asset-traditional-hymnal', name: 'Traditional Hymnal', description: 'Classic serif fonts and clean layout styles for traditional services.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#4b5563', secondary: '#ffffff', accent: '#7c3aed' }, fonts: { heading: 'Playfair Display', body: 'Georgia' } }), version: '1.0.0' },
+238:     { id: 'asset-modern-dynamic', name: 'Modern Dynamic', description: 'Sleek dark overlays and custom blocks for media ministries.', type: 'theme', pricingType: 'free', price: 0, status: 'approved', assetConfig: JSON.stringify({ colors: { primary: '#0f172a', secondary: '#f8fafc', accent: '#14b8a6' }, fonts: { heading: 'Montserrat', body: 'Inter' } }), version: '1.0.0' },
+239:   ],
+240:   pages: [
+241:     {
+242:       id: 'page-home',
+243:       websiteId: demoWebsiteId,
+244:       title: 'Home',
+245:       slug: 'home',
+246:       status: 'published',
+247:       isHome: true,
+248:       seoTitle: 'Christ Embassy Next Church | Home',
+249:       seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and ministry features.',
+250:       content: [
+251:         { type: 'hero', title: 'Christ Embassy Next Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },
+252:         { type: 'service_times', title: 'Weekly Service Rhythm', sundayTimes: 'Sunday Celebration Service - 9:00 AM and 11:30 AM', midWeekTimes: 'Wednesday Word & Prayer - 7:00 PM, Friday Youth Ignite - 6:30 PM', address: 'Next Church Campus, 221 Victory Avenue, Lagos' },
+253:         { type: 'ministries_list', title: 'Featured Ministry Pathways', items: [{ name: 'NextGen Youth', desc: 'Youth services, mentorship, creative teams, and campus outreach.' }, { name: 'Prayer & Testimony Hub', desc: 'Prayer requests, testimony moderation, prayer rooms, and corporate prayer schedules.' }, { name: 'Digital Media Team', desc: 'Livestream, sermon clips, podcast publishing, and social media campaigns.' }] },
+254:       ],
+255:       createdAt: now(),
+256:       updatedAt: now(),
+257:     },
+258:     {
+259:       id: 'page-about',
+260:       websiteId: demoWebsiteId,
+261:       title: 'About Next Church',
+262:       slug: 'about',
+263:       status: 'published',
+264:       isHome: false,
+265:       seoTitle: 'About Christ Embassy Next Church',
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

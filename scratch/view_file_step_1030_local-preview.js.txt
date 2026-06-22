@@ -1,0 +1,44 @@
+Created At: 2026-06-06T16:47:51Z
+Completed At: 2026-06-06T16:47:51Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3362
+Total Bytes: 147293
+Showing lines 500 to 535
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+500:       seoDescription: 'Contact form, location map, branch details, pastoral care request, and communication opt-in.',
+501:       content: [
+502:         { type: 'contact_form', header: 'Contact Christ Embassy Next Church', email: 'hello@nextchurch.example', phone: '+234 800 000 0000', showMap: true },
+503:       ],
+504:       createdAt: now(),
+505:       updatedAt: now(),
+506:     },
+507:     {
+508:       id: 'page-member-dashboard',
+509:       websiteId: demoWebsiteId,
+510:       title: 'Member Dashboard',
+511:       slug: 'member-dashboard',
+512:       status: 'draft',
+513:       isHome: false,
+514:       seoTitle: 'Member Dashboard | Christ Embassy Next Church',
+515:       seoDescription: 'Personalized member actions, events, groups, courses, giving history, and prayer sessions.',
+516:       content: [
+517:         { type: 'dynamic_member_dashboard', title: 'Personalized Member Dashboard', sourceModule: 'Member Management', fields: ['profile', 'events', 'givingHistory', 'groups', 'courses', 'notifications'] },
+518:       ],
+519:       createdAt: now(),
+520:       updatedAt: now(),
+521:     },
+522:   ],
+523:   navigation: [
+524:     {
+525:       id: 'nav-main',
+526:       websiteId: demoWebsiteId,
+527:       name: 'Header Navigation',
+528:       items: [
+529:         { label: 'Home', url: '/home' },
+530:         { label: 'Services', url: '/services' },
+531:         { label: 'Watch Live', url: '/live' },
+532:         { label: 'Events', url: '/events' },
+533:         { label: 'Sermons', url: '/sermons' },
+534:         { label: 'Prayer', url: '/prayer' },
+535:         { label: 'Give', url: '/give' },
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

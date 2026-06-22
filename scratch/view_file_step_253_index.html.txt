@@ -1,0 +1,73 @@
+Created At: 2026-06-06T14:53:10Z
+Completed At: 2026-06-06T14:53:10Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 15990 to 16100
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+15990:     };
+15991: 
+15992:     function applyCustomizerTheme() {
+15993:       const root = document.documentElement;
+15994:       const a = customizerAccents[customizerState.accentPreset] || customizerAccents.orange;
+15995:       root.style.setProperty('--theme-accent', a[0]);
+15996:       root.style.setProperty('--theme-accent-2', a[1]);
+15997:       root.style.setProperty('--theme-accent-soft', a[2]);
+15998:       root.style.setProperty('--theme-gradient-a', a[3]);
+15999:       root.style.setProperty('--theme-gradient-b', a[4]);
+16000:       root.style.setProperty('--theme-gradient-c', a[5]);
+16001: 
+16002:       const radius = customizerState.edgeStyle === 'rounded' 
+16003:         ? ['34px', '999px', '22px'] 
+16004:         : customizerState.edgeStyle === 'sharp' 
+16005:           ? ['4px', '6px', '4px'] 
+16006:           : ['22px', '16px', '14px'];
+16007:       root.style.setProperty('--theme-radius-card', radius[0]);
+16008:       root.style.setProperty('--theme-radius-button', radius[1]);
+16009:       root.style.setProperty('--theme-radius-field', radius[2]);
+16010: 
+16011:       root.style.setProperty('--theme-shadow', customizerState.cardStyle === 'flat' ? 'none' : customizerState.cardStyle === 'bordered' ? 'none' : '0 22px 70px rgba(31,25,61,.12)');
+16012: 
+16013:       const churchSite = document.getElementById('churchSite');
+16014:       if (churchSite) {
+16015:         churchSite.classList.toggle('dark', customizerState.colorMode === 'dark');
+16016:       }
+16017: 
+16018:       const fakeBrowser = d
+<truncated 2345 bytes>
+  ]);
+16067: 
+16068:       const themes = (themesRes && themesRes.ok && themesRes.data) ? themesRes.data : [];
+16069:       let marketplaceThemes = (marketplaceRes && marketplaceRes.ok && marketplaceRes.data) ? marketplaceRes.data : [];
+16070:       if (!marketplaceThemes || marketplaceThemes.length === 0) {
+16071:         marketplaceThemes = themeEngineState.marketplaceThemes || [];
+16072:       }
+16073: 
+16074:       themeEngineState.themes = themes;
+16075: 
+16076:       const overview = (overviewRes && overviewRes.ok && overviewRes.data) ? overviewRes.data : {};
+16077:       const activeWebsite = overview.activeWebsite;
+16078:       let activeThemeId = activeWebsite ? activeWebsite.themeId : null;
+16079:       if (!activeThemeId && themes.length > 0) {
+16080:         activeThemeId = themes[0].id;
+16081:       }
+16082:       themeEngineState.activeThemeId = activeThemeId;
+16083: 
+16084:       const activeTheme = themes.find(t => t.id === activeThemeId);
+16085:       
+16086:       // Update UI active theme card
+16087:       if (activeTheme) {
+16088:         let settings = {};
+16089:         try {
+16090:           settings = typeof activeTheme.settings === 'string' ? JSON.parse(activeTheme.settings) : (activeTheme.settings || {});
+16091:         } catch(e) {}
+16092: 
+16093:         const activeTitleEl = document.getElementById('activeThemeTitle');
+16094:         if (activeTitleEl) {
+16095:           activeTitleEl.innerHTML = escapeHtml(activeTheme.name) + ' <span class="pill active">Active</span>';
+16096:         }
+16097: 
+16098:         const activeDescEl = document.getElementById('activeThemeDescription');
+16099:         if (activeDescEl) {
+16100:           activeDescEl.textContent = activeTheme.description || 'Premium website theme using universal appearance settings and responsive routing.';
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

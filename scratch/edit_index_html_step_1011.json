@@ -1,0 +1,15 @@
+{
+  "name": "replace_file_content",
+  "args": {
+    "AllowMultiple": "false",
+    "Description": "\"Add loading spinner div and onload handler to customizer iframe\"",
+    "EndLine": "13036",
+    "Instruction": "\"Add the spinner HTML and the onload handler to the iframe element\"",
+    "ReplacementContent": "\"              <iframe id=\\\"customizerIframe\\\" src=\\\"\\\" style=\\\"width:100%; height:calc(100% - 24px); border:none; display:none; background:transparent;\\\" onload=\\\"const spinner = document.getElementById('customizerLoading'); if (spinner) spinner.style.display = 'none';\\\"></iframe>\\n              <div id=\\\"customizerLoading\\\" style=\\\"position:absolute; inset:24px 0 0 0; display:none; flex-direction:column; align-items:center; justify-content:center; background:#ffffff; z-index:100; font-family:system-ui,-apple-system,sans-serif;\\\">\\n                <div style=\\\"width:36px; height:36px; border:4px solid #f3f3f3; border-top:4px solid var(--platform-accent, #7C3AED); border-radius:50%; animation:customizer-spin 1s linear infinite; margin-bottom:12px;\\\"></div>\\n                <style>\\n                  @keyframes customizer-spin {\\n                    0% { transform: rotate(0deg); }\\n                    100% { transform: rotate(360deg); }\\n                  }\\n                </style>\\n                <div style=\\\"font-size:13px; font-weight:700; color:#1f2937;\\\">Loading Page Builder...</div>\\n              </div>\"",
+    "StartLine": "13034",
+    "TargetContent": "\"              <iframe id=\\\"customizerIframe\\\" src=\\\"\\\" style=\\\"width:100%; height:calc(100% - 24px); border:none; display:none; background:transparent;\\\"></iframe>\"",
+    "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\apps\\\\tenant-dashboard\\\\public\\\\index.html\"",
+    "toolAction": "\"Adding customizer loading HTML\"",
+    "toolSummary": "\"Add loading indicator markup\""
+  }
+}

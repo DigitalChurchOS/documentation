@@ -1,0 +1,44 @@
+Created At: 2026-06-06T14:52:36Z
+Completed At: 2026-06-06T14:52:36Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx`
+Total Lines: 1016
+Total Bytes: 38614
+Showing lines 730 to 765
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+730:       showToastNotification('Schema compiled successfully!');
+731:     }, 1500);
+732:   };
+733: 
+734:   const handleBackToCms = () => {
+735:     const params = new URLSearchParams({
+736:       module: 'cms',
+737:       theme: themeMode,
+738:       accent: brandAccent
+739:     });
+740:     window.location.href = `/dashboard.html?${params.toString()}`;
+741:   };
+742: 
+743:   // Breadcrumbs path calculations
+744:   const breadcrumbs = selectedElementId ? getBreadcrumbPath(elements, selectedElementId) : [];
+745: 
+746:   const selectedElement = selectedElementId ? findElementById(elements, selectedElementId) : null;
+747:   const inspectorVisibilityClass = selectedElement ? 'flex' : 'hidden 2xl:flex';
+748: 
+749:   return (
+750:     <div className="w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200">
+751:       
+752:       {/* -------------------- 1. TOP ACTION TOOLBAR -------------------- */}
+753:       <header className="h-16 flex items-center justify-between px-5 bg-surface border-b border-border z-30 select-none transition-colors duration-200">
+754:         
+755:         {/* Left Section: Logo & Preset Templates selector */}
+756:         <div className="flex items-center gap-6">
+757:           <button
+758:             onClick={handleBackToCms}
+759:             className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-soft hover:bg-border/30 border border-border rounded-xl text-xs font-bold text-text hover:text-accent transition-all duration-150 cursor-pointer"
+760:           >
+761:             <Icon name="arrow-left" className="w-4 h-4" />
+762:             <span>Back to CMS</span>
+763:           </button>
+764: 
+765:           <div className="flex items-center gap-2">
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

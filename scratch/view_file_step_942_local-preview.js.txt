@@ -1,0 +1,70 @@
+Created At: 2026-06-06T16:46:26Z
+Completed At: 2026-06-06T16:46:26Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 140 to 200
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+140:       content: [
+141:         { type: 'hero', title: 'Watch Live', subtitle: 'Live service player placeholder with prayer, chat, notes, reactions, and giving actions.', bgImage: 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join Live Service', buttonUrl: '#live-player' },
+142:         { type: 'dynamic_livestream', title: 'Live Video Player', sourceModule: 'Livestream', fields: ['player', 'chat', 'viewerCount', 'prayerRequest', 'givingCTA'] },
+143:       ],
+144:       createdAt: now(),
+145:       updatedAt: now(),
+146:     },
+147:     {
+148:       id: 'page-sermons',
+149:       websiteId: demoWebsiteId,
+150:       title: 'Sermons & Media',
+151:       slug: 'sermons',
+152:       status: 'published',
+153:       isHome: false,
+154:       seoTitle: 'Sermons & Media | Christ Embassy Next Church',
+155:       seoDescription: 'Sermon grid, series pages, podcast feed, media filters, and replay content.',
+156:       content: [
+157:         { type: 'dynamic_sermon_grid', title: 'Latest Sermons', sourceModule: 'Sermons / Media', filters: ['series', 'speaker', 'topic', 'date'] },
+158:         { type: 'dynamic_media_library', title: 'Media Library', sourceModule: 'Media', fields: ['video', 'audio', 'resources'] },
+159:       ],
+160:       createdAt: now(),
+161:       updatedAt: now(),
+162:     },
+163:     {
+164:       id: 'page-events',
+165:       websiteId: demoWebsiteId,
+166:       title: 'Events',
+167:       slug: 'events',
+168:       status: 'published',
+169:       isHome: fa
+<truncated 46 bytes>
+bassy Next Church',
+171:       seoDescription: 'Event grid, registration, countdowns, venue maps, reminders, and capacity testing.',
+172:       content: [
+173:         { type: 'hero', title: 'Upcoming Events', subtitle: 'Conference nights, worship experiences, youth events, and leadership training.', bgImage: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1400&q=80', buttonText: 'Register Now', buttonUrl: '#events' },
+174:         { type: 'dynamic_events_grid', title: 'Event Calendar', sourceModule: 'Events', fields: ['date', 'location', 'registration', 'capacity', 'reminders'] },
+175:       ],
+176:       createdAt: now(),
+177:       updatedAt: now(),
+178:     },
+179:     {
+180:       id: 'page-giving',
+181:       websiteId: demoWebsiteId,
+182:       title: 'Giving',
+183:       slug: 'give',
+184:       status: 'published',
+185:       isHome: false,
+186:       seoTitle: 'Give | Christ Embassy Next Church',
+187:       seoDescription: 'Giving forms, campaigns, pledges, recurring giving, confirmations, and receipts.',
+188:       content: [
+189:         { type: 'hero', title: 'Give Securely', subtitle: 'Support ministry, missions, outreach, media, welfare, and discipleship work.', bgImage: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80', buttonText: 'Start Giving', buttonUrl: '#giving-form' },
+190:         { type: 'dynamic_giving_campaign', title: 'Kingdom Expansion Campaign', sourceModule: 'Giving', fields: ['progress', 'recurringGiving', 'pledges', 'receipts'] },
+191:       ],
+192:       createdAt: now(),
+193:       updatedAt: now(),
+194:     },
+195:     {
+196:       id: 'page-prayer',
+197:       websiteId: demoWebsiteId,
+198:       title: 'Prayer & Testimonies',
+199:       slug: 'prayer',
+200:       status: 'published',
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

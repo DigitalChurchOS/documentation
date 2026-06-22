@@ -1,0 +1,114 @@
+Created At: 2026-06-06T14:52:33Z
+Completed At: 2026-06-06T14:52:33Z
+The following changes were made by the replace_file_content tool to: C:\Users\Administrator\Documents\ChurchOS\page-builder\app.tsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -338,6 +338,11 @@
+ 
+ export const App: React.FC = () => {
+   const pageContext = new URLSearchParams(window.location.search);
++  const mode = pageContext.get('mode');
++  const pageId = pageContext.get('pageId');
++  const tenantId = pageContext.get('tenantId');
++  const token = pageContext.get('token');
++
+   const initialTitle = pageContext.get('title') || 'Sunday Experience Landing Page';
+   const initialSlug = pageContext.get('slug') || '';
+   const initialStatus = pageContext.get('status') || 'draft';
+@@ -379,6 +379,11 @@
+   // Scoped canvas preview theme (only toggles content simulation)
+   const [canvasThemeMode, setCanvasThemeMode] = useState<'dark' | 'light'>('light');
+ 
++  const elementsRef = React.useRef(elements);
++  useEffect(() => {
++    elementsRef.current = elements;
++  }, [elements]);
++
+   useEffect(() => {
+     document.body.classList.toggle('light-mode', themeMode === 'light');
+   }, [themeMode]);
+@@ -386,13 +386,118 @@
+     document.documentElement.style.setProperty('--accent', brandAccent);
+   }, [brandAccent]);
+ 
+-  // Listen for message events for real-time theme updates
++  // Fetch page details if pageId is specified and mode is embed
++  useEffect(() => {
++    if (mode === 'embed' && pageId) {
++      fetch(`/api/cms/pages/${pageId}`, {
++        headers: {
++          'Authorization': `Bearer ${token}`,
++          'x-tenant-id': tenantId || '',
++        }
++      })
++        .then(res => res.json())
++        .then(res => {
++          if (res.data) {
++            const pageData = res.data;
++            setPageTitle(pageData.title || '');
++            setPageDesc(pageData.seoDescription || '');
++            const contentJson = pageD
+<truncated 3688 bytes>
+vent.data;
++        const newEl = cloneElementWithNewIds(sectionSchema);
++        setElements(prev => [...prev, newEl]);
++      } else if (event.data.type === 'getElements') {
++        window.parent.postMessage({
++          type: 'elementsReport',
++          pageId,
++          elements: elementsRef.current
++        }, '*');
+       }
+     };
+     window.addEventListener('message', handleMessage);
+@@ -399,4 +399,4 @@
+-  }, []);
++  }, [pageId]);
+ 
+   // History states for undo/redo
+   const [history, setHistory] = useState<HistoryState[]>([]);
+@@ -441,10 +441,12 @@
+     }
+   };
+ 
+-  // Set default initial template on mount
+-  useEffect(() => {
+-    loadTemplate('hero');
+-  }, []);
++  // Set default initial template on mount if not in embed mode
++  useEffect(() => {
++    if (mode !== 'embed') {
++      loadTemplate('hero');
++    }
++  }, [mode]);
+ 
+   // Push new history state
+   const pushState = (newElements: ElementSchema[], newSelectedId: string | null = selectedElementId) => {
+@@ -484,6 +484,25 @@
+   // Node operations
+   const handleSelectElement = (id: string | null) => {
+     setSelectedElementId(id);
++    if (mode === 'embed') {
++      if (id) {
++        const el = findElementById(elements, id);
++        if (el) {
++          window.parent.postMessage({
++            type: 'elementSelected',
++            elementId: id,
++            elementType: el.type,
++            elementProps: el.props,
++            elementStyles: el.styles
++          }, '*');
++        }
++      } else {
++        window.parent.postMessage({
++          type: 'elementSelected',
++          elementId: null
++        }, '*');
++      }
++    }
+   };
+ 
+   const handleUpdateElement = (id: string, updater: (el: ElementSchema) => Partial<ElementSchema>) => {
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.

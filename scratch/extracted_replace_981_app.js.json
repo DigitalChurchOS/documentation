@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Make content parsing robust for both array and string inputs\"",
+  "EndLine": "380",
+  "Instruction": "\"Replace JSON.parse call to support both string and array format for page content\"",
+  "ReplacementContent": "\"                    const contentJson = pageData.draftContent || pageData.content || '[]';\\n                    const parsedElements = typeof contentJson === 'string' ? JSON.parse(contentJson) : contentJson;\"",
+  "StartLine": "373",
+  "TargetContent": "\"                    const contentJson = pageData.draftContent || pageData.content || '[]';\\n                    const parsedElements = JSON.parse(contentJson);\"",
+  "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\page-builder\\\\app.js\"",
+  "toolAction": "\"Updating content parsing in app.js\"",
+  "toolSummary": "\"Update content parsing in app.js\""
+}

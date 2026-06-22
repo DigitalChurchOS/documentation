@@ -1,0 +1,39 @@
+Created At: 2026-06-06T14:52:41Z
+Completed At: 2026-06-06T14:52:41Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/page-builder/app.tsx`
+Total Lines: 1034
+Total Bytes: 39184
+Showing lines 740 to 770
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+740:     window.location.href = `/dashboard.html?${params.toString()}`;
+741:   };
+742: 
+743:   // Breadcrumbs path calculations
+744:   const breadcrumbs = selectedElementId ? getBreadcrumbPath(elements, selectedElementId) : [];
+745: 
+746:   const selectedElement = selectedElementId ? findElementById(elements, selectedElementId) : null;
+747:   if (mode === 'embed') {
+748:     return (
+749:       <div className="w-screen h-screen flex overflow-hidden bg-bg">
+750:         <Canvas
+751:           elements={elements}
+752:           activeDevice={activeDevice}
+753:           selectedElementId={selectedElementId}
+754:           onSelectElement={handleSelectElement}
+755:           onUpdateElement={handleUpdateElement}
+756:           onDeleteElement={handleDeleteElement}
+757:           onDuplicateElement={handleDuplicateElement}
+758:           onAddElement={handleAddElement}
+759:           onMoveElement={handleMoveElement}
+760:           canvasBg={canvasBg}
+761:           canvasThemeMode={canvasThemeMode}
+762:         />
+763:       </div>
+764:     );
+765:   }
+766: 
+767:   return (
+768:     <div className="w-screen h-screen flex flex-col overflow-hidden text-text bg-bg transition-colors duration-200">
+769:       
+770:       {/* -------------------- 1. TOP ACTION TOOLBAR -------------------- */}
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

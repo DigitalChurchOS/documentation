@@ -1,0 +1,3311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ecclesia Theme Customizer + Smart Editor</title>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+:root{
+  --primary:#0284c7;
+  --primary-soft:#0284c720;
+  --radius:22px;
+  --sidebar-dark:#111827;
+  --sidebar-mid:#202a38;
+  --sidebar-card:#374151;
+  --sidebar-card-hover:#4b5563;
+  --preview-bg:#d9dee7;
+}
+
+body{
+  height:100vh;
+  overflow:hidden;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--preview-bg);
+  color:#101828;
+}
+
+button,
+input,
+textarea{
+  font-family:inherit;
+}
+
+button{
+  font-weight:500!important;
+}
+
+.app{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.topbar{
+  height:70px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  padding:0 24px;
+  background:#fff;
+  border-bottom:1px solid #d8dde6;
+}
+
+.brand strong{
+  display:block;
+  font-size:19px;
+  font-weight:800;
+  letter-spacing:-.03em;
+  color:#101828;
+}
+
+.brand span{
+  display:block;
+  margin-top:4px;
+  font-size:12px;
+  color:#667085;
+}
+
+.top-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.editor-switch{
+  width:74px;
+  height:36px;
+  border:0;
+  border-radius:999px;
+  background:#eef2f7;
+  padding:4px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  position:relative;
+}
+
+.editor-switch::before{
+  content:"";
+  position:absolute;
+  inset:4px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#e0f2fe,#f8fafc);
+}
+
+.editor-switch.browse::before{
+  background:linear-gradient(90deg,#f8fafc,#fef3c7);
+}
+
+.switch-knob{
+  width:28px;
+  height:28px;
+  border-radius:999px;
+  background:#101828;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  position:relative;
+  z-index:2;
+  transform:translateX(0);
+  transition:.25s ease;
+  box-shadow:0 6px 14px rgba(16,24,40,.22);
+}
+
+.editor-switch.browse .switch-knob{
+  transform:translateX(38px);
+  background:#475467;
+}
+
+.switch-knob svg{
+  width:15px;
+  height:15px;
+}
+
+.screen-switcher{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#f3f4f6;
+  padding:6px;
+  border-radius:999px;
+}
+
+.screen-btn{
+  border:0;
+  background:transparent;
+  color:#667085;
+  padding:9px 14px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.screen-btn svg,
+.icon-btn svg{
+  width:16px;
+  height:16px;
+}
+
+.screen-btn.active{
+  background:#101828;
+  color:#fff;
+}
+
+.icon-btn{
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:999px;
+  background:#f3f4f6;
+  color:#101828;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+
+.publish-btn{
+  border:0;
+  border-radius:999px;
+  background:var(--primary);
+  color:#fff;
+  padding:12px 20px;
+  cursor:pointer;
+}
+
+.workspace{
+  flex:1;
+  min-height:0;
+  display:grid;
+  grid-template-columns:1fr 4fr;
+  background:var(--preview-bg);
+}
+
+.sidebar{
+  min-width:350px;
+  min-height:0;
+  background:var(--sidebar-mid);
+  color:#fff;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+}
+
+.active-style{
+  background:var(--sidebar-dark);
+  padding:14px 16px 16px;
+}
+
+.active-style strong{
+  display:block;
+  font-size:12px;
+  margin-bottom:6px;
+}
+
+.active-style span{
+  display:block;
+  color:#cbd5e1;
+  font-size:11px;
+  line-height:1.45;
+}
+
+.sidebar-view{
+  min-height:0;
+  display:none;
+}
+
+.sidebar-view.active{
+  display:grid;
+  grid-template-rows:auto 1fr;
+  min-height:0;
+}
+
+#editorView.active{
+  grid-template-rows:1fr auto;
+}
+
+.mode-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr 42px;
+  gap:6px;
+  padding:12px 14px;
+}
+
+.mode-tab,
+.preview-mode-btn{
+  border:0;
+  border-radius:999px;
+  padding:10px;
+  background:#374151;
+  color:#d1d5db;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.mode-tab.active{
+  background:#fff;
+  color:#111827;
+}
+
+.preview-mode-btn{
+  background:transparent;
+  display:grid;
+  place-items:center;
+}
+
+.preview-mode-btn:hover{
+  background:#374151;
+  color:#fff;
+}
+
+.content-shell{
+  min-height:0;
+  display:grid;
+  grid-template-columns:78px 1fr;
+}
+
+.content-shell.no-rail{
+  grid-template-columns:1fr;
+}
+
+.content-shell.no-rail .rail{
+  display:none;
+}
+
+.rail{
+  background:var(--sidebar-dark);
+  padding:12px 8px;
+}
+
+.rail-btn{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#cbd5e1;
+  border-radius:16px;
+  padding:10px 4px;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  font-size:9px;
+  margin-bottom:5px;
+}
+
+.rail-btn svg{
+  width:18px;
+  height:18px;
+}
+
+.rail-btn.active,
+.rail-btn:hover{
+  background:#334155;
+  color:#fff;
+}
+
+.panel{
+  min-height:0;
+  overflow-y:auto;
+  padding:18px 22px 90px;
+  scrollbar-width:none;
+}
+
+.panel::-webkit-scrollbar{
+  display:none;
+}
+
+.sub-panel,
+.section-panel{
+  display:none;
+}
+
+.sub-panel.active,
+.section-panel.active{
+  display:block;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.title-icon{
+  width:48px;
+  height:48px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.12);
+}
+
+.section-title h3{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:-.04em;
+}
+
+.choice-grid,
+.style-grid{
+  display:grid;
+  gap:10px;
+}
+
+.preset-card,
+.choice-btn,
+.visual-card,
+.type-card,
+.editor-card{
+  width:100%;
+  border:1px solid rgba(255,255,255,.12);
+  background:var(--sidebar-card);
+  color:#fff;
+  border-radius:18px;
+  padding:16px 18px;
+  text-align:left;
+  cursor:pointer;
+  transition:.2s ease;
+  margin-bottom:10px;
+}
+
+.choice-btn{
+  border-radius:20px;
+  font-size:15px;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  position:relative;
+}
+
+.preset-card strong,
+.visual-card strong,
+.editor-card strong{
+  display:block;
+  font-size:14px;
+  font-weight:500;
+  margin-bottom:4px;
+}
+
+.preset-card span,
+.choice-btn span,
+.visual-card span,
+.editor-card span,
+.type-card span{
+  color:#d1d5db;
+  font-size:12px;
+  font-weight:400;
+  line-height:1.45;
+}
+
+.preset-card:hover,
+.choice-btn:hover,
+.visual-card:hover,
+.type-card:hover,
+.editor-card:hover{
+  background:var(--sidebar-card-hover);
+  box-shadow:0 10px 24px rgba(15,23,42,.18);
+}
+
+.preset-card.active,
+.choice-btn.active,
+.visual-card.active,
+.type-card.active,
+.editor-card.active{
+  background:#fff;
+  color:#111827;
+  box-shadow:0 14px 34px rgba(15,23,42,.22);
+}
+
+.preset-card.active span,
+.choice-btn.active span,
+.visual-card.active span,
+.editor-card.active span,
+.type-card.active span{
+  color:#667085;
+}
+
+.color-btn{
+  padding-right:46px;
+}
+
+.color-btn::after{
+  content:"";
+  position:absolute;
+  right:16px;
+  top:50%;
+  width:18px;
+  height:18px;
+  transform:translateY(-50%);
+  border-radius:999px;
+  background:var(--dot);
+  border:2px solid rgba(255,255,255,.9);
+}
+
+.tab-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  padding:6px;
+  border-radius:999px;
+  background:rgba(255,255,255,.13);
+  margin-bottom:16px;
+}
+
+.tab-btn{
+  border:0;
+  border-radius:999px;
+  background:transparent;
+  color:#dbe4f0;
+  padding:10px;
+  cursor:pointer;
+}
+
+.tab-btn.active{
+  background:#fff;
+  color:#111827;
+}
+
+.typo-tab-panel{
+  display:none;
+}
+
+.typo-tab-panel.active{
+  display:grid;
+  gap:12px;
+}
+
+.type-card-name{
+  color:#fff;
+  font-size:13px;
+  font-weight:500;
+  margin-bottom:12px;
+}
+
+.type-card.active .type-card-name{
+  color:#111827;
+}
+
+.type-preview-title{
+  color:#fff;
+  font-size:24px;
+  margin-bottom:6px;
+}
+
+.type-card.active .type-preview-title{
+  color:#111827;
+}
+
+.edit-box,
+.report{
+  margin-top:14px;
+  background:var(--sidebar-dark);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  padding:14px;
+  color:#e5e7eb;
+}
+
+.edit-box h4,
+.report h4{
+  font-size:14px;
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.edit-box p,
+.report p{
+  color:#cbd5e1;
+  font-size:12px;
+  line-height:1.5;
+  margin-bottom:8px;
+}
+
+.field{
+  display:grid;
+  gap:6px;
+  margin-bottom:12px;
+}
+
+.field label{
+  font-size:12px;
+  font-weight:700;
+  color:#e5e7eb;
+}
+
+.field input,
+.field textarea{
+  width:100%;
+  border:1px solid rgba(255,255,255,.12);
+  background:#374151;
+  color:#fff;
+  border-radius:14px;
+  padding:12px;
+  outline:0;
+}
+
+.field textarea{
+  min-height:120px;
+  resize:vertical;
+}
+
+.action-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.small-btn{
+  border:0;
+  background:#374151;
+  color:#fff;
+  border-radius:14px;
+  padding:12px;
+  cursor:pointer;
+}
+
+.small-btn:hover{
+  background:#4b5563;
+}
+
+.danger{
+  background:#7f1d1d;
+}
+
+.mini-toggle-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px 2px 4px;
+}
+
+.mini-toggle-row strong{
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
+}
+
+.mini-toggle-row span{
+  display:block;
+  margin-top:4px;
+  color:#cbd5e1;
+  font-size:12px;
+  line-height:1.4;
+}
+
+.tiny-switch{
+  width:58px;
+  height:30px;
+  border:0;
+  border-radius:999px;
+  padding:3px;
+  background:#374151;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  flex-shrink:0;
+}
+
+.tiny-knob{
+  width:24px;
+  height:24px;
+  border-radius:999px;
+  background:#94a3b8;
+  transform:translateX(0);
+  transition:.2s;
+}
+
+.tiny-switch.on{
+  background:#fff;
+}
+
+.tiny-switch.on .tiny-knob{
+  background:#111827;
+  transform:translateX(28px);
+}
+
+.editor-local-tabs{
+  display:none;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  padding:10px 14px;
+  background:var(--sidebar-dark);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.editor-local-tabs.active{
+  display:grid;
+}
+
+.editor-local-tabs.mobile-tabs{
+  grid-template-columns:repeat(4,1fr);
+}
+
+.local-tab{
+  border:0;
+  border-radius:14px;
+  background:#374151;
+  color:#d1d5db;
+  padding:11px 8px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.local-tab.active{
+  background:#fff;
+  color:#111827;
+}
+
+.mini{
+  height:62px;
+  border-radius:14px;
+  background:#1f2937;
+  border:1px solid rgba(255,255,255,.12);
+  margin-bottom:10px;
+  position:relative;
+  overflow:hidden;
+  padding:9px;
+}
+
+.mini-dot{
+  width:22px;
+  height:22px;
+  border-radius:8px;
+  background:#e5e7eb;
+}
+
+.mini-menu{
+  display:flex;
+  gap:5px;
+}
+
+.mini-menu i{
+  width:22px;
+  height:6px;
+  border-radius:999px;
+  background:#94a3b8;
+  display:block;
+}
+
+.mini-header{
+  height:28px;
+  border-radius:8px;
+  background:#e5e7eb;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 8px;
+}
+
+.mini-header.transparent{
+  background:rgba(255,255,255,.25);
+  border:1px dashed rgba(255,255,255,.45);
+}
+
+.mini-header.floating{
+  width:86%;
+  margin:7px auto 0;
+  box-shadow:0 8px 18px rgba(0,0,0,.25);
+}
+
+.mini-header.detached{
+  width:72%;
+  margin:7px auto 0;
+  border-radius:13px;
+}
+
+.mini-layout{
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.mini-layout.center{
+  justify-content:center;
+}
+
+.mini-layout.right{
+  flex-direction:row-reverse;
+}
+
+.mini-layout.stack{
+  flex-direction:column;
+  justify-content:center;
+}
+
+.mini-layout.menu-top{
+  flex-direction:column-reverse;
+  justify-content:center;
+}
+
+.mini-effect{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.mini-effect i{
+  width:34px;
+  height:8px;
+  border-radius:999px;
+  background:#94a3b8;
+}
+
+.mini-mobile{
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.mini-mobile.left{
+  flex-direction:row-reverse;
+}
+
+.phone-screen{
+  flex:1;
+  height:34px;
+  background:#334155;
+  border-radius:10px;
+  margin:0 8px;
+}
+
+.phone-menu{
+  width:26px;
+  height:20px;
+  display:grid;
+  gap:4px;
+}
+
+.phone-menu i{
+  height:4px;
+  border-radius:999px;
+  background:#e5e7eb;
+}
+
+.mini-drawer{
+  height:44px;
+  display:grid;
+  grid-template-columns:1fr 34px;
+  gap:8px;
+  align-items:center;
+}
+
+.mini-drawer.left{
+  grid-template-columns:34px 1fr;
+}
+
+.drawer{
+  width:75%;
+  height:42px;
+  border-radius:10px;
+  background:#e5e7eb;
+}
+
+.mini-drawer.right .drawer{
+  margin-left:auto;
+}
+
+.page{
+  height:34px;
+  border-radius:10px;
+  background:#334155;
+}
+
+.mini-hamburger{
+  height:44px;
+  display:grid;
+  place-items:center;
+}
+
+.hamburger-shell{
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+}
+
+.mini-hamburger.circle .hamburger-shell{
+  background:#e5e7eb;
+}
+
+.bars{
+  width:18px;
+  display:grid;
+  gap:4px;
+}
+
+.bars i{
+  height:3px;
+  border-radius:999px;
+  background:#94a3b8;
+}
+
+.mini-hamburger.circle .bars i{
+  background:#1f2937;
+}
+
+.mini-footer{
+  position:absolute;
+  left:9px;
+  right:9px;
+  bottom:9px;
+  height:26px;
+  border-radius:8px;
+  background:#e5e7eb;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 8px;
+}
+
+.mini-line{
+  height:8px;
+  border-radius:999px;
+  background:#94a3b8;
+}
+
+.mini-widget{
+  height:44px;
+  display:grid;
+  gap:6px;
+}
+
+.mini-widget.equal{
+  grid-template-columns:repeat(4,1fr);
+}
+
+.mini-widget.feature{
+  grid-template-columns:1.55fr 1fr 1fr 1fr;
+}
+
+.mini-widget.compact{
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+}
+
+.mini-widget.stacked{
+  grid-template-columns:1fr;
+}
+
+.mini-widget i{
+  border-radius:8px;
+  background:#94a3b8;
+}
+
+.bottom-tabs{
+  display:grid;
+  grid-template-columns:50px 1fr 1fr;
+  gap:8px;
+  padding:12px 14px;
+  background:var(--sidebar-dark);
+}
+
+.bottom-tab{
+  border:0;
+  border-radius:16px;
+  background:transparent;
+  color:#cbd5e1;
+  padding:12px;
+  font-size:12px;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+}
+
+.bottom-tab.active{
+  background:#fff;
+  color:#111827;
+}
+
+.bottom-tab svg{
+  width:18px;
+  height:18px;
+}
+
+.preview-area{
+  position:relative;
+  overflow:hidden;
+  background:var(--preview-bg);
+  display:grid;
+  place-items:center;
+  padding:30px;
+}
+
+.device-frame{
+  width:100%;
+  height:100%;
+  max-height:100%;
+  display:grid;
+  place-items:center;
+}
+
+.preview-shell{
+  background:#fff;
+  overflow:hidden;
+  position:relative;
+  max-width:100%;
+  max-height:100%;
+  transition:.3s ease;
+}
+
+.preview-frame{
+  width:100%;
+  height:100%;
+  border:0;
+  background:#fff;
+  display:block;
+}
+
+.device-frame.desktop{
+  position:absolute;
+  inset:0;
+}
+
+.device-frame.desktop .preview-shell{
+  width:100%;
+  height:100%;
+  border-radius:0;
+}
+
+.device-frame.laptop .preview-shell{
+  aspect-ratio:16/10;
+  width:min(1180px,calc(100% - 20px));
+  max-height:calc(100% - 20px);
+  border:12px solid #101828;
+  border-radius:22px;
+  box-shadow:0 34px 90px rgba(16,24,40,.24);
+}
+
+.device-frame.tablet .preview-shell{
+  aspect-ratio:4/3;
+  width:min(820px,calc(100% - 20px));
+  max-height:calc(100% - 20px);
+  border:18px solid #101828;
+  border-radius:38px;
+  box-shadow:0 34px 90px rgba(16,24,40,.24);
+}
+
+.device-frame.mobile .preview-shell{
+  aspect-ratio:390/844;
+  width:min(390px,calc(100% - 20px));
+  max-height:calc(100% - 20px);
+  border:14px solid #101828;
+  border-radius:48px;
+  box-shadow:0 34px 90px rgba(16,24,40,.24);
+}
+
+.fullscreen-floating{
+  position:fixed;
+  top:50%;
+  right:22px;
+  transform:translateY(-50%);
+  z-index:100;
+  display:none;
+  flex-direction:column;
+  gap:8px;
+  background:rgba(255,255,255,.92);
+  border:1px solid #d8dde6;
+  border-radius:999px;
+  padding:8px;
+}
+
+.fullscreen-floating .screen-btn{
+  width:42px;
+  height:42px;
+  padding:0;
+  justify-content:center;
+}
+
+.fullscreen-floating .screen-btn span{
+  display:none;
+}
+
+.app.fullscreen .topbar,
+.app.fullscreen .sidebar{
+  display:none;
+}
+
+.app.fullscreen .workspace{
+  grid-template-columns:1fr;
+}
+
+.app.fullscreen .fullscreen-floating{
+  display:flex;
+}
+</style>
+</head>
+
+<body>
+<input type="file" id="htmlImporter" accept=".html,text/html" hidden>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand">
+      <strong>Ecclesia Theme Customizer</strong>
+      <span>Theme DNA, smart editor, header/footer styles, mobile drawer, widgets, import, and browse mode.</span>
+    </div>
+
+    <div class="top-actions">
+      <button class="editor-switch" id="editorModeToggle" title="Editor mode">
+        <span class="switch-knob"><i data-lucide="mouse-pointer-click"></i></span>
+      </button>
+
+      <div class="screen-switcher">
+        <button class="screen-btn active" data-size="desktop"><i data-lucide="monitor"></i><span>Desktop</span></button>
+        <button class="screen-btn" data-size="laptop"><i data-lucide="laptop"></i><span>Laptop</span></button>
+        <button class="screen-btn" data-size="tablet"><i data-lucide="tablet"></i><span>Tablet</span></button>
+        <button class="screen-btn" data-size="mobile"><i data-lucide="smartphone"></i><span>Mobile</span></button>
+      </div>
+
+      <button class="icon-btn" id="fullscreenBtn"><i data-lucide="maximize-2"></i></button>
+      <button class="publish-btn">Publish</button>
+    </div>
+  </header>
+
+  <div class="fullscreen-floating">
+    <button class="screen-btn active" data-size="desktop"><i data-lucide="monitor"></i><span>Desktop</span></button>
+    <button class="screen-btn" data-size="laptop"><i data-lucide="laptop"></i><span>Laptop</span></button>
+    <button class="screen-btn" data-size="tablet"><i data-lucide="tablet"></i><span>Tablet</span></button>
+    <button class="screen-btn" data-size="mobile"><i data-lucide="smartphone"></i><span>Mobile</span></button>
+    <button class="icon-btn" id="exitFullscreenBtn"><i data-lucide="x"></i></button>
+  </div>
+
+  <main class="workspace">
+    <aside class="sidebar">
+      <div class="active-style">
+        <strong>Active Style</strong>
+        <span id="summary"></span>
+      </div>
+
+      <div class="sidebar-view active" id="customizerView">
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-customizer-mode="simple">Simple</button>
+          <button class="mode-tab" data-customizer-mode="advanced">Advanced</button>
+          <button class="preview-mode-btn" id="siteModeToggle"><i data-lucide="moon"></i></button>
+        </div>
+
+        <div class="content-shell no-rail" id="customizerContent">
+          <nav class="rail"><div id="railNav"></div></nav>
+
+          <div class="panel">
+            <div class="sub-panel active" id="simplePanel">
+              <button class="preset-card active" data-preset="horizon"><strong>Horizon</strong><span>Modern · Ocean Blue · Elevated · Light</span></button>
+              <button class="preset-card" data-preset="aura"><strong>Aura</strong><span>Premium · Orchid · Glass · Elegant</span></button>
+              <button class="preset-card" data-preset="summit"><strong>Summit</strong><span>Bold · Red · Sharp · Dynamic</span></button>
+              <button class="preset-card" data-preset="canvas"><strong>Canvas</strong><span>Minimal · Neutral · Flat · Reader</span></button>
+              <button class="preset-card" data-preset="ember"><strong>Ember</strong><span>Warm · Orange · Round · Soft</span></button>
+              <button class="preset-card" data-preset="pulse"><strong>Pulse</strong><span>Youth · Rose · Glass · Dynamic</span></button>
+              <button class="preset-card" data-preset="eclipse"><strong>Eclipse</strong><span>Premium · Purple · Immersive · Cinematic</span></button>
+            </div>
+
+            <div class="sub-panel" id="advancedPanel">
+              <section class="section-panel active" id="typography">
+                <div class="section-title"><div class="title-icon"><i data-lucide="type"></i></div><h3>Type</h3></div>
+
+                <div class="tab-switch">
+                  <button class="tab-btn active" data-tab="typeStyle">Style</button>
+                  <button class="tab-btn" data-tab="typeSize">Size</button>
+                </div>
+
+                <div class="typo-tab-panel active" id="typeStyle">
+                  <button class="type-card active" data-type-style="Modern Sans">
+                    <div class="type-card-name">Modern Sans</div>
+                    <div class="type-preview-title">Welcome Home</div>
+                    <span>Clean and confident</span>
+                  </button>
+
+                  <button class="type-card" data-type-style="Grace Serif">
+                    <div class="type-card-name">Grace Serif</div>
+                    <div class="type-preview-title" style="font-family:Georgia,serif;">Welcome Home</div>
+                    <span>Refined and graceful</span>
+                  </button>
+
+                  <button class="type-card" data-type-style="Editorial">
+                    <div class="type-card-name">Editorial</div>
+                    <div class="type-preview-title" style="font-family:'Times New Roman',serif;">Welcome Home</div>
+                    <span>Story-rich and elegant</span>
+                  </button>
+
+                  <button class="type-card" data-type-style="Bold">
+                    <div class="type-card-name">Bold</div>
+                    <div class="type-preview-title" style="font-family:'Bebas Neue',sans-serif;">Welcome Home</div>
+                    <span>Strong and energetic</span>
+                  </button>
+                </div>
+
+                <div class="typo-tab-panel" id="typeSize">
+                  <button class="type-card active" data-type-size="Balanced"><div class="type-card-name">Balanced</div><span>Natural readable scale</span></button>
+                  <button class="type-card" data-type-size="Compact"><div class="type-card-name">Compact</div><span>Smaller tighter scale</span></button>
+                  <button class="type-card" data-type-size="Heroic"><div class="type-card-name">Heroic</div><span>Large hero-first scale</span></button>
+                  <button class="type-card" data-type-size="Reader"><div class="type-card-name">Reader</div><span>Comfortable body reading</span></button>
+                </div>
+              </section>
+
+              <section class="section-panel" id="personality">
+                <div class="section-title"><div class="title-icon"><i data-lucide="palette"></i></div><h3>Personality</h3></div>
+                <div class="choice-grid" data-key="personality">
+                  <button class="choice-btn">Minimal <span>Clean and quiet</span></button>
+                  <button class="choice-btn active">Modern <span>Balanced and polished</span></button>
+                  <button class="choice-btn">Bold <span>Strong visual impact</span></button>
+                  <button class="choice-btn">Classic <span>Formal and timeless</span></button>
+                  <button class="choice-btn">Youth <span>Energetic and expressive</span></button>
+                  <button class="choice-btn">Premium <span>Elegant and refined</span></button>
+                </div>
+              </section>
+
+              <section class="section-panel" id="family">
+                <div class="section-title"><div class="title-icon"><i data-lucide="swatch-book"></i></div><h3>Accent</h3></div>
+                <div class="choice-grid" data-key="family">
+                  <button class="choice-btn color-btn" style="--dot:#2563eb">Blue</button>
+                  <button class="choice-btn color-btn active" style="--dot:#0284c7">Ocean Blue</button>
+                  <button class="choice-btn color-btn" style="--dot:#7c3aed">Purple</button>
+                  <button class="choice-btn color-btn" style="--dot:#C71585">Orchid</button>
+                  <button class="choice-btn color-btn" style="--dot:#16a34a">Green</button>
+                  <button class="choice-btn color-btn" style="--dot:#0d9488">Teal</button>
+                  <button class="choice-btn color-btn" style="--dot:#dc2626">Red</button>
+                  <button class="choice-btn color-btn" style="--dot:#FF017F">Rose</button>
+                  <button class="choice-btn color-btn" style="--dot:#ec4899">Pink</button>
+                  <button class="choice-btn color-btn" style="--dot:#ea580c">Orange</button>
+                  <button class="choice-btn color-btn" style="--dot:#d97706">Gold</button>
+                  <button class="choice-btn color-btn" style="--dot:#8b5e3c">Brown</button>
+                  <button class="choice-btn color-btn" style="--dot:#475467">Neutral</button>
+                </div>
+              </section>
+
+              <section class="section-panel" id="style">
+                <div class="section-title"><div class="title-icon"><i data-lucide="paintbrush"></i></div><h3>Style</h3></div>
+                <div class="choice-grid" data-key="style">
+                  <button class="choice-btn">Soft</button>
+                  <button class="choice-btn">Vibrant</button>
+                  <button class="choice-btn active">Rich</button>
+                  <button class="choice-btn">Elegant</button>
+                </div>
+              </section>
+
+              <section class="section-panel" id="shape">
+                <div class="section-title"><div class="title-icon"><i data-lucide="square-round-corner"></i></div><h3>Shape</h3></div>
+                <div class="choice-grid" data-key="shape">
+                  <button class="choice-btn">Sharp</button>
+                  <button class="choice-btn active">Soft</button>
+                  <button class="choice-btn">Round</button>
+                </div>
+              </section>
+
+              <section class="section-panel" id="visual">
+                <div class="section-title"><div class="title-icon"><i data-lucide="layers-3"></i></div><h3>Visual</h3></div>
+                <div class="choice-grid" data-key="visual">
+                  <button class="choice-btn">Flat</button>
+                  <button class="choice-btn">Soft</button>
+                  <button class="choice-btn">Glass</button>
+                  <button class="choice-btn active">Elevated</button>
+                  <button class="choice-btn">Immersive</button>
+                </div>
+              </section>
+
+              <section class="section-panel" id="density">
+                <div class="section-title"><div class="title-icon"><i data-lucide="align-vertical-space-around"></i></div><h3>Density</h3></div>
+                <div class="choice-grid" data-key="density">
+                  <button class="choice-btn">Compact</button>
+                  <button class="choice-btn active">Comfortable</button>
+                  <button class="choice-btn">Spacious</button>
+                </div>
+              </section>
+
+              <section class="section-panel" id="motion">
+                <div class="section-title"><div class="title-icon"><i data-lucide="wand-sparkles"></i></div><h3>Motion</h3></div>
+                <div class="choice-grid" data-key="motion">
+                  <button class="choice-btn">None</button>
+                  <button class="choice-btn active">Gentle</button>
+                  <button class="choice-btn">Dynamic</button>
+                  <button class="choice-btn">Cinematic</button>
+                </div>
+              </section>
+
+              <section class="section-panel" id="atmosphere">
+                <div class="section-title"><div class="title-icon"><i data-lucide="cloud-sun"></i></div><h3>Aura</h3></div>
+                <div class="choice-grid" data-key="atmosphere">
+                  <button class="choice-btn active">Light</button>
+                  <button class="choice-btn">Warm</button>
+                  <button class="choice-btn">Worship</button>
+                  <button class="choice-btn">Prayer</button>
+                  <button class="choice-btn">Celebration</button>
+                  <button class="choice-btn">Elegant</button>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-view" id="editorView">
+        <div class="panel" id="editorPanel"></div>
+        <div class="editor-local-tabs" id="editorLocalTabs"></div>
+      </div>
+
+      <div class="sidebar-view" id="settingsView">
+        <div class="panel">
+          <div class="section-title">
+            <div class="title-icon"><i data-lucide="settings"></i></div>
+            <h3>Settings</h3>
+          </div>
+
+          <div class="edit-box">
+            <h4>Page Import</h4>
+            <p>Import an HTML file, preview it, and test how compatible it is with the theme customizer and editor system.</p>
+            <div class="action-grid">
+              <button class="small-btn" id="importBtn">Import HTML</button>
+              <button class="small-btn" id="testCompatibilityBtn">Test Compatibility</button>
+            </div>
+          </div>
+
+          <div class="report" id="compatibilityReport">
+            <h4>Compatibility Report</h4>
+            <p>No imported page tested yet.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-tabs">
+        <button class="bottom-tab" data-main-tab="settings"><i data-lucide="settings"></i></button>
+        <button class="bottom-tab active" data-main-tab="customizer">Customizer</button>
+        <button class="bottom-tab" data-main-tab="editor">Editor</button>
+      </div>
+    </aside>
+
+    <section class="preview-area">
+      <div class="device-frame desktop" id="deviceFrame">
+        <div class="preview-shell">
+          <iframe id="previewFrame" class="preview-frame"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+lucide.createIcons();
+
+const app = document.getElementById("app");
+const frame = document.getElementById("deviceFrame");
+const previewFrame = document.getElementById("previewFrame");
+const summary = document.getElementById("summary");
+const customizerContent = document.getElementById("customizerContent");
+const railNav = document.getElementById("railNav");
+const siteModeToggle = document.getElementById("siteModeToggle");
+const editorPanel = document.getElementById("editorPanel");
+const editorLocalTabs = document.getElementById("editorLocalTabs");
+const editorModeToggle = document.getElementById("editorModeToggle");
+const compatibilityReport = document.getElementById("compatibilityReport");
+
+let importedHtml = "";
+let editorMode = true;
+let selectedElement = null;
+let selectedPath = "";
+let lastScrollY = 0;
+
+const advancedRail = [
+  ["typography","type","Type"],
+  ["personality","palette","Person"],
+  ["family","swatch-book","Accent"],
+  ["style","paintbrush","Style"],
+  ["shape","square-round-corner","Shape"],
+  ["visual","layers-3","Visual"],
+  ["density","align-vertical-space-around","Density"],
+  ["motion","wand-sparkles","Motion"],
+  ["atmosphere","cloud-sun","Aura"]
+];
+
+let state = {
+  preset:"Horizon",
+  personality:"Modern",
+  typography:"Modern Sans",
+  typeSize:"Balanced",
+  family:"Ocean Blue",
+  style:"Rich",
+  shape:"Soft",
+  visual:"Elevated",
+  density:"Comfortable",
+  motion:"Gentle",
+  atmosphere:"Light",
+  previewMode:"light",
+
+  headerStyle:"full",
+  headerLayout:"logo-left",
+  headerEffect:"static",
+  mobileMenuPosition:"right",
+  mobileDrawerMode:"overlay",
+  mobileHamburgerShape:"circle",
+
+  footerStyle:"classic",
+  footerWidgets:"show",
+  footerWidgetLayout:"feature",
+  footerBottom:"split",
+  footerLegal:"show",
+  footerManual:false,
+
+  copyrightText:"© GraceHouse Church. All rights reserved.",
+  privacyLabel:"Privacy Policy",
+  privacyHref:"#privacy",
+  termsLabel:"Terms of Use",
+  termsHref:"#terms"
+};
+
+const colorMap = {
+  Blue:"#2563eb",
+  "Ocean Blue":"#0284c7",
+  Purple:"#7c3aed",
+  Orchid:"#C71585",
+  Green:"#16a34a",
+  Teal:"#0d9488",
+  Red:"#dc2626",
+  Rose:"#FF017F",
+  Pink:"#ec4899",
+  Orange:"#ea580c",
+  Gold:"#d97706",
+  Brown:"#8b5e3c",
+  Neutral:"#475467"
+};
+
+const typographyMap = {
+  "Modern Sans":{title:"Inter,system-ui,sans-serif",body:"Inter,system-ui,sans-serif"},
+  "Grace Serif":{title:"Georgia,serif",body:"Inter,system-ui,sans-serif"},
+  Editorial:{title:"Georgia,'Times New Roman',serif",body:"Inter,system-ui,sans-serif"},
+  Bold:{title:"'Bebas Neue',Impact,sans-serif",body:"Arial,system-ui,sans-serif"}
+};
+
+const typeSizeMap = {
+  Balanced:{title:"64px",subtitle:"22px",body:"16px"},
+  Compact:{title:"52px",subtitle:"18px",body:"14px"},
+  Heroic:{title:"78px",subtitle:"26px",body:"16px"},
+  Reader:{title:"58px",subtitle:"22px",body:"18px"}
+};
+
+const presets = {
+  horizon:{preset:"Horizon",personality:"Modern",typography:"Modern Sans",typeSize:"Balanced",family:"Ocean Blue",style:"Rich",shape:"Soft",visual:"Elevated",density:"Comfortable",motion:"Gentle",atmosphere:"Light"},
+  aura:{preset:"Aura",personality:"Premium",typography:"Grace Serif",typeSize:"Heroic",family:"Orchid",style:"Elegant",shape:"Soft",visual:"Glass",density:"Spacious",motion:"Gentle",atmosphere:"Elegant"},
+  summit:{preset:"Summit",personality:"Bold",typography:"Bold",typeSize:"Heroic",family:"Red",style:"Vibrant",shape:"Sharp",visual:"Elevated",density:"Comfortable",motion:"Dynamic",atmosphere:"Celebration"},
+  canvas:{preset:"Canvas",personality:"Minimal",typography:"Editorial",typeSize:"Reader",family:"Neutral",style:"Soft",shape:"Soft",visual:"Flat",density:"Spacious",motion:"None",atmosphere:"Light"},
+  ember:{preset:"Ember",personality:"Modern",typography:"Grace Serif",typeSize:"Balanced",family:"Orange",style:"Rich",shape:"Round",visual:"Soft",density:"Comfortable",motion:"Gentle",atmosphere:"Warm"},
+  pulse:{preset:"Pulse",personality:"Youth",typography:"Bold",typeSize:"Heroic",family:"Rose",style:"Vibrant",shape:"Round",visual:"Glass",density:"Comfortable",motion:"Dynamic",atmosphere:"Celebration"},
+  eclipse:{preset:"Eclipse",personality:"Premium",typography:"Editorial",typeSize:"Heroic",family:"Purple",style:"Rich",shape:"Soft",visual:"Immersive",density:"Spacious",motion:"Cinematic",atmosphere:"Worship"}
+};
+
+const headerFooterPairs = {
+  full:"classic",
+  transparent:"minimal",
+  floating:"floating",
+  detached:"boxed"
+};
+
+const defaultPage = `<!DOCTYPE html>
+<html>
+<head>
+<style>
+html{width:100%;max-width:100%;overflow-x:hidden;scrollbar-gutter:stable}
+*{box-sizing:border-box}
+body{margin:0;width:100%;max-width:100%;overflow-x:hidden;background:var(--site-bg);color:var(--site-text);font-family:var(--font-body);transition:transform var(--duration) var(--ease)}
+img,video,canvas,svg{max-width:100%;height:auto}
+header{width:100%;max-width:100%;min-width:0;height:74px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(24px,4vw,34px);background:var(--site-surface);border-bottom:1px solid var(--site-border)}
+.logo{font-weight:900;min-width:0}
+nav{display:flex;gap:20px;color:var(--site-muted);font-size:14px;min-width:0;flex-wrap:wrap}
+nav a{color:var(--site-muted);text-decoration:none;white-space:nowrap}
+section{width:100%;max-width:100%;padding:clamp(54px,7vw,var(--section)) clamp(28px,5vw,var(--padding))}
+.hero{background:linear-gradient(135deg,var(--site-soft),var(--site-bg));min-height:520px}
+.badge{display:inline-block;background:var(--primary-soft);color:var(--primary);padding:8px 14px;border-radius:999px;font-weight:800;margin-bottom:18px}
+h1{font-family:var(--font-title);font-size:clamp(42px,7vw,var(--title-size));line-height:1;letter-spacing:-.06em;max-width:760px;margin:0 0 18px;overflow-wrap:anywhere;text-wrap:balance}
+p{font-size:clamp(17px,2.4vw,var(--subtitle-size));color:var(--site-muted);line-height:1.45;max-width:670px;overflow-wrap:anywhere}
+button,.btn{display:inline-block;background:var(--primary);color:#fff;border:0;border-radius:var(--radius);padding:13px 20px;font-weight:500!important;transition:all var(--duration) var(--ease);text-decoration:none}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap);padding:clamp(28px,5vw,var(--padding));background:var(--site-bg);max-width:100%}
+.card{display:block;min-width:0;background:var(--site-surface);border:1px solid var(--site-border);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-soft);text-decoration:none;color:var(--site-text)}
+.card p{font-size:var(--body-size)}
+footer{width:100%;max-width:100%;padding:42px;background:var(--site-soft);color:var(--site-muted);overflow:hidden}
+.footer-widgets{display:grid;grid-template-columns:1.45fr 1fr 1fr 1fr;gap:24px;margin-bottom:28px}
+.footer-widget{min-width:0}
+.footer-widget h4{color:var(--site-text);margin-bottom:10px}
+.footer-widget p{font-size:14px}
+.footer-widget a{display:block;color:var(--site-muted);text-decoration:none;margin:8px 0;font-size:14px}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:18px;border-top:1px solid var(--site-border);padding-top:18px}
+.footer-bottom p{font-size:14px;margin:0}
+.footer-legal{display:flex;gap:16px;flex-wrap:wrap}
+.footer-legal a{color:var(--site-muted);text-decoration:none;font-size:14px}
+.ec-mobile-menu-toggle{display:none}
+.ec-mobile-drawer,.ec-mobile-overlay{display:none}
+@media(max-width:900px){
+  .grid{grid-template-columns:1fr}
+  h1{font-size:clamp(38px,8vw,62px)}
+}
+</style>
+</head>
+<body>
+<header data-editor-type="header" data-editor-label="Header">
+  <div class="logo" data-editor-type="title">GraceHouse</div>
+  <nav>
+    <a href="#home" data-editor-type="button">Home</a>
+    <a href="#about" data-editor-type="button">About</a>
+    <a href="#events" data-editor-type="button">Events</a>
+  </nav>
+</header>
+
+<section id="home" class="hero" data-editor-type="section" data-editor-label="Hero Section">
+  <span class="badge" data-editor-type="badge">Welcome Home</span>
+  <h1 data-editor-type="title">A church website shaped by one simple Theme DNA.</h1>
+  <p data-editor-type="description">This page uses Ecclesia tokens and can be edited intelligently.</p>
+  <a class="btn" href="#about" data-editor-type="button">Visit Us</a>
+</section>
+
+<section id="about" class="grid" data-editor-type="section" data-editor-label="Cards Section">
+  <a href="#one" class="card" data-editor-type="card">
+    <h3 data-editor-type="title">One Visual DNA</h3>
+    <p data-editor-type="description">Every page follows the same design system.</p>
+  </a>
+  <a href="#preview" class="card" data-editor-type="card">
+    <h3 data-editor-type="title">Live Preview</h3>
+    <p data-editor-type="description">Preview across devices.</p>
+  </a>
+  <a href="#publish" class="card" data-editor-type="card">
+    <h3 data-editor-type="title">Simple Publishing</h3>
+    <p data-editor-type="description">Simple and powerful.</p>
+  </a>
+</section>
+
+<footer data-editor-type="footer" data-editor-label="Footer">
+  <div class="footer-widgets">
+    <div class="footer-widget" data-editor-type="card" data-editor-label="Footer Brand">
+      <h4 data-editor-type="title">GraceHouse</h4>
+      <p data-editor-type="description">A welcoming church community shaped by faith, love, and purpose.</p>
+    </div>
+    <div class="footer-widget" data-editor-type="card" data-editor-label="Footer Menu">
+      <h4 data-editor-type="title">Explore</h4>
+      <a href="#home" data-editor-type="button">Home</a>
+      <a href="#about" data-editor-type="button">About</a>
+      <a href="#events" data-editor-type="button">Events</a>
+    </div>
+    <div class="footer-widget" data-editor-type="card" data-editor-label="Footer Ministries">
+      <h4 data-editor-type="title">Ministries</h4>
+      <a href="#kids" data-editor-type="button">Kids</a>
+      <a href="#youth" data-editor-type="button">Youth</a>
+      <a href="#care" data-editor-type="button">Care</a>
+    </div>
+    <div class="footer-widget" data-editor-type="card" data-editor-label="Footer Contact">
+      <h4 data-editor-type="title">Visit</h4>
+      <p data-editor-type="description">Join us this Sunday and experience a warm church family.</p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p class="footer-copy" data-editor-type="description">© GraceHouse Church. All rights reserved.</p>
+    <div class="footer-legal">
+      <a class="privacy-link" href="#privacy" data-editor-type="button">Privacy Policy</a>
+      <a class="terms-link" href="#terms" data-editor-type="button">Terms of Use</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>`;
+
+function getTokenStyle(){
+  const primary = colorMap[state.family] || "#0284c7";
+  const typo = typographyMap[state.typography];
+  const size = typeSizeMap[state.typeSize];
+  const dark = state.previewMode === "dark";
+
+  return `<style id="ecclesia-theme-tokens">
+:root{
+  --primary:${primary};
+  --primary-soft:${primary}20;
+  --radius:${state.shape==="Sharp"?"6px":state.shape==="Round"?"32px":"22px"};
+  --font-title:${typo.title};
+  --font-body:${typo.body};
+  --title-size:${size.title};
+  --subtitle-size:${size.subtitle};
+  --body-size:${size.body};
+  --site-bg:${dark?"#0b1120":"#fff"};
+  --site-surface:${dark?"#111827":"#fff"};
+  --site-soft:${dark?"#172033":"#f8fafc"};
+  --site-text:${dark?"#f8fafc":"#101828"};
+  --site-muted:${dark?"#cbd5e1":"#667085"};
+  --site-border:${dark?"rgba(255,255,255,.1)":"#eef2f7"};
+  --section:72px;
+  --padding:42px;
+  --gap:18px;
+  --duration:.25s;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --shadow-soft:0 14px 34px rgba(16,24,40,.06);
+}
+
+html{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+  scrollbar-gutter:stable;
+}
+
+*,*::before,*::after{
+  box-sizing:border-box;
+}
+
+body{
+  width:100%;
+  max-width:100%;
+  transition:transform var(--duration) var(--ease);
+  overflow-x:hidden;
+}
+
+body > *{
+  max-width:100%;
+  transition:transform var(--duration) var(--ease);
+}
+
+img,video,canvas,svg,iframe{
+  max-width:100%;
+}
+
+header,main,section,footer{
+  max-width:100%;
+}
+
+button,.btn{
+  font-weight:500!important;
+}
+
+h1,h2,h3,h4,h5,h6,p,a,span,button{
+  overflow-wrap:anywhere;
+}
+
+header,footer{
+  transition:all var(--duration) var(--ease);
+}
+
+header{
+  width:100%;
+  min-width:0;
+}
+
+header nav{
+  min-width:0;
+  flex-wrap:wrap;
+}
+
+header[data-header-style="full"]{
+  width:100%;
+  position:relative;
+}
+
+header[data-header-style="transparent"]{
+  background:transparent!important;
+  border-color:transparent!important;
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  z-index:50;
+}
+
+header[data-header-style="floating"]{
+  width:calc(100% - 48px);
+  margin:18px auto 0;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-soft);
+  position:relative;
+}
+
+header[data-header-style="detached"]{
+  max-width:1120px;
+  width:calc(100% - 96px);
+  margin:22px auto;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-soft);
+  position:relative;
+}
+
+header[data-header-effect="sticky"],
+header[data-header-effect="reveal"],
+header[data-header-effect="hide"],
+header[data-header-effect="glass"]{
+  position:sticky!important;
+  top:0;
+  z-index:90;
+}
+
+header[data-header-effect="floating-sticky"]{
+  position:sticky!important;
+  top:18px;
+  z-index:90;
+}
+
+header.ec-header-hidden{
+  transform:translateY(-140%)!important;
+}
+
+header.ec-header-glass{
+  background:rgba(255,255,255,.78)!important;
+  backdrop-filter:blur(18px);
+  box-shadow:var(--shadow-soft);
+  border-color:rgba(255,255,255,.35)!important;
+}
+
+header[data-header-layout="logo-left"]{
+  flex-direction:row;
+  justify-content:space-between;
+}
+
+header[data-header-layout="logo-center"]{
+  justify-content:center;
+  gap:32px;
+}
+
+header[data-header-layout="logo-right"]{
+  flex-direction:row-reverse;
+  justify-content:space-between;
+}
+
+header[data-header-layout="stacked"]{
+  height:auto;
+  flex-direction:column;
+  justify-content:center;
+  gap:14px;
+  padding-top:20px;
+  padding-bottom:20px;
+}
+
+header[data-header-layout="menu-top"]{
+  height:auto;
+  flex-direction:column-reverse;
+  justify-content:center;
+  gap:14px;
+  padding-top:20px;
+  padding-bottom:20px;
+}
+
+.ec-mobile-menu-toggle{
+  display:none;
+  width:42px;
+  height:42px;
+  border:1px solid var(--site-border);
+  background:var(--site-surface);
+  color:var(--site-text);
+  border-radius:999px;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+header[data-mobile-hamburger-shape="plain"] .ec-mobile-menu-toggle{
+  border-color:transparent!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+}
+
+header[data-mobile-hamburger-shape="circle"] .ec-mobile-menu-toggle{
+  border-radius:999px!important;
+  border:1px solid var(--site-border)!important;
+  background:var(--site-surface)!important;
+  box-shadow:var(--shadow-soft);
+}
+
+.ec-mobile-menu-toggle span,
+.ec-mobile-menu-toggle span:before,
+.ec-mobile-menu-toggle span:after{
+  display:block;
+  width:18px;
+  height:2px;
+  border-radius:999px;
+  background:currentColor;
+  content:"";
+  position:relative;
+}
+
+.ec-mobile-menu-toggle span:before{
+  position:absolute;
+  top:-6px;
+}
+
+.ec-mobile-menu-toggle span:after{
+  position:absolute;
+  top:6px;
+}
+
+.ec-mobile-drawer{
+  position:fixed;
+  top:0;
+  bottom:0;
+  width:75vw;
+  max-width:75vw;
+  background:var(--site-surface);
+  color:var(--site-text);
+  z-index:500;
+  padding:28px;
+  box-shadow:0 30px 90px rgba(15,23,42,.25);
+  transition:transform var(--duration) var(--ease);
+  display:block;
+  overflow-y:auto;
+}
+
+.ec-mobile-drawer-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:18px;
+}
+
+.ec-mobile-drawer-head h3{
+  font-family:var(--font-title);
+  font-size:24px;
+  color:var(--site-text);
+  margin:0;
+}
+
+.ec-mobile-drawer-close{
+  width:38px;
+  height:38px;
+  border-radius:999px;
+  border:1px solid var(--site-border);
+  background:var(--site-soft);
+  color:var(--site-text);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  font-size:22px;
+  line-height:1;
+  padding:0;
+  flex-shrink:0;
+}
+
+.ec-mobile-drawer a{
+  display:block;
+  padding:13px 0;
+  color:var(--site-text);
+  text-decoration:none;
+  border-bottom:1px solid var(--site-border);
+}
+
+.ec-mobile-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.42);
+  z-index:450;
+  cursor:pointer;
+}
+
+body[data-mobile-menu-position="right"] .ec-mobile-drawer{
+  right:0;
+  transform:translateX(100%);
+}
+
+body[data-mobile-menu-position="left"] .ec-mobile-drawer{
+  left:0;
+  transform:translateX(-100%);
+}
+
+body.ec-mobile-drawer-open[data-mobile-menu-position="right"] .ec-mobile-drawer,
+body.ec-mobile-drawer-open[data-mobile-menu-position="left"] .ec-mobile-drawer{
+  transform:translateX(0);
+}
+
+body.ec-mobile-drawer-open .ec-mobile-overlay{
+  display:block;
+}
+
+body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"] .ec-mobile-overlay{
+  background:transparent;
+}
+
+body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="right"] > *:not(.ec-mobile-drawer):not(.ec-mobile-overlay){
+  transform:translateX(-75vw);
+}
+
+body.ec-mobile-drawer-open[data-mobile-drawer-mode="push"][data-mobile-menu-position="left"] > *:not(.ec-mobile-drawer):not(.ec-mobile-overlay){
+  transform:translateX(75vw);
+}
+
+@media(max-width:980px){
+  :root{
+    --section:clamp(48px,7vw,72px);
+    --padding:clamp(28px,5vw,42px);
+  }
+
+  h1{
+    font-size:clamp(40px,7vw,var(--title-size))!important;
+  }
+
+  p{
+    font-size:clamp(17px,2.5vw,var(--subtitle-size))!important;
+  }
+
+  header{
+    padding-left:clamp(22px,4vw,34px)!important;
+    padding-right:clamp(22px,4vw,34px)!important;
+  }
+}
+
+@media(max-width:760px){
+  header{
+    position:relative;
+    gap:12px;
+    min-height:74px;
+  }
+
+  header nav{
+    display:none!important;
+  }
+
+  .ec-mobile-menu-toggle{
+    display:flex;
+  }
+
+  header .logo{
+    min-width:0;
+    white-space:nowrap;
+  }
+
+  header[data-header-layout="logo-left"][data-mobile-menu-position="left"]{
+    justify-content:flex-start!important;
+    flex-direction:row!important;
+  }
+
+  header[data-header-layout="logo-left"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle{
+    order:0;
+    margin:0;
+  }
+
+  header[data-header-layout="logo-left"][data-mobile-menu-position="left"] .logo{
+    order:1;
+    margin:0;
+    text-align:left;
+  }
+
+  header[data-header-layout="logo-left"][data-mobile-menu-position="right"]{
+    justify-content:space-between!important;
+    flex-direction:row!important;
+  }
+
+  header[data-header-layout="logo-left"][data-mobile-menu-position="right"] .logo{
+    order:0;
+    margin:0;
+    text-align:left;
+  }
+
+  header[data-header-layout="logo-left"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle{
+    order:20;
+    margin-left:auto;
+  }
+
+  header[data-header-layout="logo-right"][data-mobile-menu-position="left"]{
+    justify-content:space-between!important;
+    flex-direction:row!important;
+  }
+
+  header[data-header-layout="logo-right"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle{
+    order:0;
+    margin-right:auto;
+  }
+
+  header[data-header-layout="logo-right"][data-mobile-menu-position="left"] .logo{
+    order:20;
+    margin-left:auto;
+    text-align:right;
+  }
+
+  header[data-header-layout="logo-right"][data-mobile-menu-position="right"]{
+    justify-content:flex-end!important;
+    flex-direction:row!important;
+  }
+
+  header[data-header-layout="logo-right"][data-mobile-menu-position="right"] .logo{
+    order:10;
+    margin:0;
+    text-align:right;
+  }
+
+  header[data-header-layout="logo-right"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle{
+    order:20;
+    margin:0;
+  }
+
+  header[data-header-layout="logo-center"],
+  header[data-header-layout="stacked"],
+  header[data-header-layout="menu-top"]{
+    justify-content:center!important;
+    flex-direction:row!important;
+    padding-top:0!important;
+    padding-bottom:0!important;
+  }
+
+  header[data-header-layout="logo-center"] .logo,
+  header[data-header-layout="stacked"] .logo,
+  header[data-header-layout="menu-top"] .logo{
+    order:10;
+    margin:0 auto;
+    text-align:center;
+  }
+
+  header[data-header-layout="logo-center"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
+  header[data-header-layout="stacked"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle,
+  header[data-header-layout="menu-top"][data-mobile-menu-position="left"] .ec-mobile-menu-toggle{
+    position:absolute;
+    left:clamp(18px,5vw,34px);
+    order:0;
+    margin:0;
+  }
+
+  header[data-header-layout="logo-center"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
+  header[data-header-layout="stacked"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle,
+  header[data-header-layout="menu-top"][data-mobile-menu-position="right"] .ec-mobile-menu-toggle{
+    position:absolute;
+    right:clamp(18px,5vw,34px);
+    order:20;
+    margin:0;
+  }
+
+  header[data-header-style="detached"]{
+    width:calc(100% - 34px);
+    margin:14px auto;
+  }
+
+  h1{
+    font-size:clamp(36px,10vw,58px)!important;
+  }
+
+  section{
+    padding-left:clamp(22px,6vw,32px)!important;
+    padding-right:clamp(22px,6vw,32px)!important;
+  }
+
+  .grid{grid-template-columns:1fr!important}
+  .footer-widgets{grid-template-columns:1fr!important}
+  .footer-bottom{flex-direction:column;text-align:center}
+}
+
+footer[data-footer-style="classic"]{background:var(--site-soft);color:var(--site-muted);text-align:left}
+footer[data-footer-style="minimal"]{background:transparent;border-top:1px solid var(--site-border);text-align:center}
+footer[data-footer-style="floating"]{width:calc(100% - 48px);margin:0 auto 24px;border-radius:var(--radius);background:var(--site-surface);box-shadow:var(--shadow-soft);border:1px solid var(--site-border)}
+footer[data-footer-style="boxed"]{max-width:1120px;width:calc(100% - 96px);margin:24px auto;border-radius:var(--radius);background:var(--site-soft);border:1px solid var(--site-border)}
+footer[data-footer-style="compact"]{padding-top:22px!important;padding-bottom:22px!important;border-top:1px solid var(--site-border);text-align:center}
+
+footer[data-footer-widgets="hidden"] .footer-widgets{display:none!important}
+footer[data-footer-widget-layout="equal"] .footer-widgets{grid-template-columns:repeat(4,1fr)}
+footer[data-footer-widget-layout="feature"] .footer-widgets{grid-template-columns:1.55fr 1fr 1fr 1fr}
+footer[data-footer-widget-layout="compact"] .footer-widgets{grid-template-columns:repeat(4,1fr);gap:12px}
+footer[data-footer-widget-layout="stacked"] .footer-widgets{grid-template-columns:1fr;text-align:center}
+
+footer[data-footer-bottom="center"] .footer-bottom{justify-content:center;text-align:center;flex-direction:column}
+footer[data-footer-bottom="split"] .footer-bottom{justify-content:space-between}
+footer[data-footer-bottom="minimal"] .footer-bottom{border-top:0;justify-content:center;text-align:center}
+footer[data-footer-bottom="minimal"] .footer-legal{display:none!important}
+footer[data-footer-legal="hidden"] .footer-legal{display:none!important}
+
+.ec-editing *{cursor:crosshair!important}
+</style>`;
+}
+
+function inject(html){
+  const add = getTokenStyle();
+  if(html.includes("</head>")) return html.replace("</head>", add + "</head>");
+  return add + html;
+}
+
+function getDoc(){
+  return previewFrame.contentDocument || previewFrame.contentWindow.document;
+}
+
+function loadPreview(){
+  previewFrame.onload = () => {
+    bindFrameEditor();
+    applyStructure();
+    renderSections();
+  };
+
+  previewFrame.srcdoc = inject(importedHtml || defaultPage);
+}
+
+function refreshTokens(){
+  const doc = getDoc();
+  if(!doc) return;
+
+  const old = doc.getElementById("ecclesia-theme-tokens");
+  const temp = document.createElement("div");
+  temp.innerHTML = getTokenStyle();
+  const fresh = temp.firstChild;
+
+  if(old) old.replaceWith(fresh);
+  else doc.head.appendChild(fresh);
+
+  applyStructure();
+}
+
+function frameQuery(selector){
+  const doc = getDoc();
+  return doc ? doc.querySelector(selector) : null;
+}
+
+function frameQueryAll(selector){
+  const doc = getDoc();
+  return doc ? Array.from(doc.querySelectorAll(selector)) : [];
+}
+
+function bindFrameEditor(){
+  const doc = getDoc();
+  if(!doc || doc.__ecclesiaBound) return;
+
+  doc.__ecclesiaBound = true;
+
+  doc.addEventListener("pointerdown", event => {
+    const toggle = event.target.closest(".ec-mobile-menu-toggle");
+    const close = event.target.closest(".ec-mobile-drawer-close");
+    const overlay = event.target.closest(".ec-mobile-overlay");
+
+    if(close || overlay){
+      event.preventDefault();
+      event.stopPropagation();
+      closeDrawer();
+      return;
+    }
+
+    if(toggle && !editorMode){
+      event.preventDefault();
+      event.stopPropagation();
+      toggleDrawer();
+      return;
+    }
+
+    if(!editorMode) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    selectElement(resolveTarget(event.target));
+  }, true);
+
+  doc.addEventListener("click", event => {
+    if(!editorMode) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+
+  doc.defaultView.addEventListener("scroll", handleFrameScroll, {passive:true});
+  setFrameEditorMode();
+}
+
+function toggleDrawer(){
+  const doc = getDoc();
+  if(doc && doc.body) doc.body.classList.toggle("ec-mobile-drawer-open");
+}
+
+function closeDrawer(){
+  const doc = getDoc();
+  if(doc && doc.body) doc.body.classList.remove("ec-mobile-drawer-open");
+}
+
+function handleFrameScroll(){
+  const doc = getDoc();
+  if(!doc) return;
+
+  const y = doc.defaultView.scrollY || doc.documentElement.scrollTop || 0;
+  const header = frameQuery("header,[data-editor-type='header']");
+  if(!header) return;
+
+  header.classList.remove("ec-header-glass");
+
+  if(state.headerEffect === "reveal"){
+    if(y > 80 && y > lastScrollY) header.classList.add("ec-header-hidden");
+    else header.classList.remove("ec-header-hidden");
+  }else if(state.headerEffect === "hide"){
+    if(y > 120) header.classList.add("ec-header-hidden");
+    else header.classList.remove("ec-header-hidden");
+  }else if(state.headerEffect === "glass"){
+    header.classList.remove("ec-header-hidden");
+    if(y > 20) header.classList.add("ec-header-glass");
+  }else{
+    header.classList.remove("ec-header-hidden");
+  }
+
+  lastScrollY = y;
+}
+
+function setFrameEditorMode(){
+  const doc = getDoc();
+  if(!doc || !doc.body) return;
+
+  doc.body.classList.toggle("ec-editing", editorMode);
+
+  if(!editorMode && selectedElement){
+    selectedElement.style.outline = "";
+    selectedElement = null;
+  }
+}
+
+function cssPath(el){
+  const doc = getDoc();
+  const parts = [];
+
+  while(el && el.nodeType === 1 && el !== doc.body){
+    let index = 1;
+    let sibling = el;
+
+    while((sibling = sibling.previousElementSibling)){
+      if(sibling.tagName === el.tagName) index++;
+    }
+
+    parts.unshift(el.tagName.toLowerCase() + ":nth-of-type(" + index + ")");
+    el = el.parentElement;
+  }
+
+  return parts.join(">");
+}
+
+function findElement(path){
+  const doc = getDoc();
+  try{
+    return doc.body.querySelector(path);
+  }catch(error){
+    return null;
+  }
+}
+
+function inferType(el){
+  if(!el) return "element";
+  if(el.dataset.editorType) return el.dataset.editorType;
+  if(el.tagName === "HEADER") return "header";
+  if(el.tagName === "FOOTER") return "footer";
+  if(["H1","H2","H3","H4"].includes(el.tagName)) return "title";
+  if(el.tagName === "P") return "description";
+  if(["A","BUTTON"].includes(el.tagName)) return "button";
+  if(el.tagName === "IMG") return "image";
+  if(el.classList.contains("card")) return "card";
+  if(["SECTION","MAIN"].includes(el.tagName)) return "section";
+  return "element";
+}
+
+function labelFor(el,type){
+  return el.dataset.editorLabel || (
+    type === "header" ? "Header" :
+    type === "footer" ? "Footer" :
+    type === "section" ? "Section" :
+    type === "title" ? "Title" :
+    type === "description" ? "Description" :
+    type === "button" ? "Button" :
+    type === "image" ? "Image" :
+    type === "card" ? "Card" :
+    "Element"
+  );
+}
+
+function resolveTarget(raw){
+  const header = raw.closest("header,[data-editor-type='header']");
+  const footer = raw.closest("footer,[data-editor-type='footer']");
+
+  if(header){
+    const child = raw.closest(".ec-mobile-menu-toggle,a,button,img,h1,h2,h3,h4,p,[data-editor-type='title'],[data-editor-type='button'],[data-editor-type='image'],[data-editor-type='description']");
+    return child && child !== header ? child : header;
+  }
+
+  if(footer){
+    const child = raw.closest("a,button,img,h1,h2,h3,h4,p,[data-editor-type='title'],[data-editor-type='button'],[data-editor-type='image'],[data-editor-type='description']");
+    return child && child !== footer ? child : footer;
+  }
+
+  const card = raw.closest("[data-editor-type='card'],.card");
+
+  if(card){
+    const inner = raw.closest("h1,h2,h3,h4,p,button,a,img,[data-editor-type='title'],[data-editor-type='description'],[data-editor-type='button'],[data-editor-type='image']");
+    return inner && inner !== card ? inner : card;
+  }
+
+  return raw.closest("[data-editor-type],h1,h2,h3,h4,p,button,a,img,section,main") || raw;
+}
+
+function selectElement(el){
+  if(!el) return;
+
+  if(selectedElement) selectedElement.style.outline = "";
+
+  selectedElement = el;
+  selectedElement.style.outline = "3px solid #0284c7";
+  selectedElement.style.outlineOffset = "3px";
+
+  const type = inferType(el);
+
+  renderElementEditor({
+    path:cssPath(el),
+    type,
+    label:labelFor(el,type),
+    text:el.innerText || "",
+    href:el.getAttribute("href") || "",
+    src:el.getAttribute("src") || "",
+    alt:el.getAttribute("alt") || "",
+    children:["section","header","footer"].includes(type) ? childrenOf(cssPath(el)) : []
+  });
+}
+
+function childrenOf(path){
+  const el = findElement(path);
+  if(!el) return [];
+
+  return Array.from(el.querySelectorAll("[data-editor-type],h1,h2,h3,h4,p,button,a,img,.card"))
+    .filter(child => child !== el)
+    .slice(0,40)
+    .map(child => {
+      const type = inferType(child);
+      return {
+        path:cssPath(child),
+        type,
+        label:labelFor(child,type),
+        text:(child.innerText || child.alt || "").trim().slice(0,80)
+      };
+    });
+}
+
+function sectionList(){
+  return frameQueryAll("header,section,footer,main,[data-editor-type='header'],[data-editor-type='section'],[data-editor-type='footer']")
+    .map(el => {
+      const type = inferType(el);
+      return {
+        path:cssPath(el),
+        type,
+        label:labelFor(el,type)
+      };
+    });
+}
+
+function renderSections(){
+  clearLocalTabs();
+
+  const sections = sectionList();
+
+  editorPanel.innerHTML = `
+    <div class="section-title">
+      <div class="title-icon"><i data-lucide="layout-template"></i></div>
+      <h3>Page Sections</h3>
+    </div>
+
+    ${
+      sections.length
+      ? sections.map(section => `
+        <button class="editor-card" data-section-path="${section.path}" data-section-type="${section.type}">
+          <strong>${section.label}</strong>
+          <span>${section.type === "header" ? "Open header styles" : section.type === "footer" ? "Open footer styles" : "Open section settings and elements"}</span>
+        </button>
+      `).join("")
+      : `<div class="edit-box"><p>Add sections or data-editor-type attributes to make the page editable.</p></div>`
+    }
+  `;
+
+  document.querySelectorAll("[data-section-path]").forEach(button => {
+    button.onclick = () => {
+      const path = button.dataset.sectionPath;
+      const type = button.dataset.sectionType;
+
+      if(type === "header") renderHeaderEditor("style");
+      else if(type === "footer") renderFooterEditor("style");
+      else renderSectionDetail(path);
+    };
+  });
+
+  lucide.createIcons();
+}
+
+function renderSectionDetail(path){
+  clearLocalTabs();
+
+  const children = childrenOf(path);
+
+  editorPanel.innerHTML = `
+    <div class="section-title">
+      <div class="title-icon"><i data-lucide="panel-top"></i></div>
+      <h3>Section</h3>
+    </div>
+
+    <div class="edit-box">
+      <h4>Section Settings</h4>
+      <p>Edit only the section background here. Text inside this section is edited separately.</p>
+
+      <div class="field">
+        <label>Background Color</label>
+        <input id="sectionBg" placeholder="#ffffff or transparent">
+      </div>
+
+      <div class="field">
+        <label>Background Image URL</label>
+        <input id="sectionBgImg" placeholder="https://...">
+      </div>
+
+      <div class="action-grid">
+        <button class="small-btn" id="saveSection">Save</button>
+        <button class="small-btn" id="backToSections">Sections</button>
+      </div>
+    </div>
+
+    <div class="edit-box">
+      <h4>Elements</h4>
+      <p>Click an element below or click it directly inside the preview.</p>
+      ${children.map(child => `
+        <button class="editor-card" data-child-path="${child.path}">
+          <strong>${child.label}</strong>
+          <span>${child.text || child.type}</span>
+        </button>
+      `).join("")}
+    </div>
+  `;
+
+  document.getElementById("saveSection").onclick = () => {
+    const el = findElement(path);
+    if(!el) return;
+
+    const color = document.getElementById("sectionBg").value;
+    const image = document.getElementById("sectionBgImg").value;
+
+    if(color) el.style.background = color;
+    if(image) el.style.backgroundImage = `url('${image}')`;
+  };
+
+  document.getElementById("backToSections").onclick = renderSections;
+
+  document.querySelectorAll("[data-child-path]").forEach(button => {
+    button.onclick = () => selectElement(findElement(button.dataset.childPath));
+  });
+
+  lucide.createIcons();
+}
+
+function renderElementEditor(data){
+  clearLocalTabs();
+  showMainTab("editor", false);
+  selectedPath = data.path;
+
+  if(data.type === "header"){
+    renderHeaderEditor("style");
+    return;
+  }
+
+  if(data.type === "footer"){
+    renderFooterEditor("style");
+    return;
+  }
+
+  if(data.type === "section"){
+    renderSectionDetail(data.path);
+    return;
+  }
+
+  let fields = "";
+  let extra = "";
+
+  if(data.type === "title"){
+    fields = `<div class="field"><label>Title</label><textarea id="editText">${escapeHtml(data.text)}</textarea></div>`;
+  }else if(data.type === "description"){
+    fields = `<div class="field"><label>Description</label><textarea id="editText">${escapeHtml(data.text)}</textarea></div>`;
+  }else if(data.type === "button"){
+    fields = `
+      <div class="field"><label>Button Label</label><input id="editText" value="${escapeAttr(data.text)}"></div>
+      <div class="field"><label>Button Link</label><input id="editHref" value="${escapeAttr(data.href)}" placeholder="/visit"></div>
+    `;
+  }else if(data.type === "image"){
+    fields = `
+      <div class="field"><label>Image URL</label><input id="editSrc" value="${escapeAttr(data.src)}"></div>
+      <div class="field"><label>Alt Text</label><input id="editAlt" value="${escapeAttr(data.alt)}"></div>
+    `;
+    extra = `<button class="small-btn danger" id="deleteElement">Remove</button>`;
+  }else if(data.type === "card"){
+    fields = `
+      <p>Cards are containers. Edit the card link here, or click the title/description directly in the preview.</p>
+      <div class="field"><label>Card Link</label><input id="editHref" value="${escapeAttr(data.href)}" placeholder="/page"></div>
+    `;
+    extra = `<button class="small-btn" id="duplicateElement">Duplicate</button><button class="small-btn danger" id="deleteElement">Delete</button>`;
+  }else{
+    fields = `<p>This element is selectable, but no safe simple editing rule is defined yet.</p>`;
+  }
+
+  editorPanel.innerHTML = `
+    <div class="section-title">
+      <div class="title-icon"><i data-lucide="edit-3"></i></div>
+      <h3>${data.label}</h3>
+    </div>
+
+    <div class="edit-box">
+      ${fields}
+      <div class="action-grid">
+        <button class="small-btn" id="saveElement">Save</button>
+        ${extra}
+        <button class="small-btn" id="goSections">Sections</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("saveElement").onclick = () => {
+    const el = findElement(selectedPath);
+    if(!el) return;
+
+    if(document.getElementById("editText")) el.innerText = document.getElementById("editText").value;
+    if(document.getElementById("editHref")) el.setAttribute("href", document.getElementById("editHref").value);
+    if(document.getElementById("editSrc")) el.setAttribute("src", document.getElementById("editSrc").value);
+    if(document.getElementById("editAlt")) el.setAttribute("alt", document.getElementById("editAlt").value);
+  };
+
+  if(document.getElementById("duplicateElement")){
+    document.getElementById("duplicateElement").onclick = () => {
+      const el = findElement(selectedPath);
+      if(el) el.after(el.cloneNode(true));
+    };
+  }
+
+  if(document.getElementById("deleteElement")){
+    document.getElementById("deleteElement").onclick = () => {
+      const el = findElement(selectedPath);
+      if(el) el.remove();
+    };
+  }
+
+  document.getElementById("goSections").onclick = renderSections;
+
+  lucide.createIcons();
+}
+
+function miniHeader(style){
+  const cls = style === "transparent" ? "transparent" : style === "floating" ? "floating" : style === "detached" ? "detached" : "";
+  return `<div class="mini"><div class="mini-header ${cls}"><div class="mini-dot"></div><div class="mini-menu"><i></i><i></i><i></i></div></div></div>`;
+}
+
+function miniLayout(layout){
+  const cls = layout === "logo-center" ? "center" : layout === "logo-right" ? "right" : layout === "stacked" ? "stack" : layout === "menu-top" ? "menu-top" : "";
+  return `<div class="mini"><div class="mini-layout ${cls}"><div class="mini-dot"></div><div class="mini-menu"><i></i><i></i><i></i></div></div></div>`;
+}
+
+function miniEffect(){
+  return `<div class="mini"><div class="mini-effect"><i></i><i></i><i></i></div></div>`;
+}
+
+function miniMobilePosition(position){
+  const cls = position === "left" ? "left" : "";
+  return `<div class="mini"><div class="mini-mobile ${cls}"><div class="phone-screen"></div><div class="phone-menu"><i></i><i></i><i></i></div></div></div>`;
+}
+
+function miniDrawer(position){
+  const cls = position === "left" ? "left" : "right";
+  return `<div class="mini"><div class="mini-drawer ${cls}"><div class="drawer"></div><div class="page"></div></div></div>`;
+}
+
+function miniHamburger(shape){
+  const cls = shape === "plain" ? "plain" : "circle";
+  return `<div class="mini"><div class="mini-hamburger ${cls}"><div class="hamburger-shell"><div class="bars"><i></i><i></i><i></i></div></div></div></div>`;
+}
+
+function miniFooter(style){
+  return `<div class="mini"><div class="mini-footer"><div class="mini-line" style="width:55px"></div><div class="mini-line" style="width:35px"></div></div></div>`;
+}
+
+function miniWidget(layout){
+  const cls = layout === "equal" ? "equal" : layout === "compact" ? "compact" : layout === "stacked" ? "stacked" : "feature";
+  return `<div class="mini"><div class="mini-widget ${cls}"><i></i><i></i><i></i><i></i></div></div>`;
+}
+
+function renderHeaderEditor(tab="style"){
+  showMainTab("editor", false);
+  setLocalTabs("header", tab, [["style","Style"],["layout","Arrangement"],["effect","Effects"],["mobile","Mobile"]]);
+
+  const styles = [
+    ["full","Full Header","Attached edge-to-edge header"],
+    ["transparent","Transparent","Sits over the hero area"],
+    ["floating","Floating","Raised header with spacing"],
+    ["detached","Detached","Boxed and aligned with page content"]
+  ];
+
+  const layouts = [
+    ["logo-left","Logo Left","Logo left, menu right"],
+    ["logo-center","Logo Center","Logo and menu centered"],
+    ["logo-right","Logo Right","Menu left, logo right"],
+    ["stacked","Logo Above","Logo above menu"],
+    ["menu-top","Menu Above","Menu above logo"]
+  ];
+
+  const effects = [
+    ["static","Static","Header scrolls normally"],
+    ["sticky","Sticky","Header remains visible"],
+    ["reveal","Reveal On Up","Hides down, returns up"],
+    ["hide","Auto Hide","Slides away after scrolling"],
+    ["glass","Glass On Scroll","Adds blur while scrolling"],
+    ["floating-sticky","Floating Sticky","Floating header remains visible"]
+  ];
+
+  const mobilePositions = [
+    ["right","Right Hamburger","Menu icon on right side"],
+    ["left","Left Hamburger","Menu icon on left side"]
+  ];
+
+  const drawerModes = [
+    ["overlay","Overlay Drawer","75% drawer over page; tap 25% gap to close"],
+    ["push","Push Drawer","75% drawer pushes page sideways"]
+  ];
+
+  const hamburgerShapes = [
+    ["circle","Circle Button","Hamburger inside a rounded button"],
+    ["plain","Plain Icon","Hamburger without a button shape"]
+  ];
+
+  let content = "";
+
+  if(tab === "style"){
+    content = `
+      <div class="edit-box">
+        <h4>Header Style</h4>
+        <p>Choose the base structure of the header.</p>
+        <div class="style-grid">
+          ${styles.map(([key,name,desc]) => `
+            <button class="visual-card ${state.headerStyle===key?"active":""}" data-header-style="${key}">
+              ${miniHeader(key)}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if(tab === "layout"){
+    content = `
+      <div class="edit-box">
+        <h4>Header Arrangement</h4>
+        <p>Choose how the logo and menu are positioned. This logo arrangement remains respected on mobile.</p>
+        <div class="style-grid">
+          ${layouts.map(([key,name,desc]) => `
+            <button class="visual-card ${state.headerLayout===key?"active":""}" data-header-layout="${key}">
+              ${miniLayout(key)}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if(tab === "effect"){
+    content = `
+      <div class="edit-box">
+        <h4>Header Effects</h4>
+        <p>These effects apply to the selected header style.</p>
+        <div class="style-grid">
+          ${effects.map(([key,name,desc]) => `
+            <button class="visual-card ${state.headerEffect===key?"active":""}" data-header-effect="${key}">
+              ${miniEffect()}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if(tab === "mobile"){
+    content = `
+      <div class="edit-box">
+        <h4>Mobile Menu Position</h4>
+        <p>Choose where the hamburger icon appears. This does not override the logo arrangement.</p>
+        <div class="style-grid">
+          ${mobilePositions.map(([key,name,desc]) => `
+            <button class="visual-card ${state.mobileMenuPosition===key?"active":""}" data-mobile-menu-position="${key}">
+              ${miniMobilePosition(key)}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="edit-box">
+        <h4>Hamburger Icon Style</h4>
+        <p>Choose whether the hamburger icon is plain or inside a circle button.</p>
+        <div class="style-grid">
+          ${hamburgerShapes.map(([key,name,desc]) => `
+            <button class="visual-card ${state.mobileHamburgerShape===key?"active":""}" data-mobile-hamburger-shape="${key}">
+              ${miniHamburger(key)}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="edit-box">
+        <h4>Mobile Drawer Behavior</h4>
+        <p>The drawer uses 75% of the screen and leaves a 25% negative space. Clicking the empty space closes it.</p>
+        <div class="style-grid">
+          ${drawerModes.map(([key,name,desc]) => `
+            <button class="visual-card ${state.mobileDrawerMode===key?"active":""}" data-mobile-drawer-mode="${key}">
+              ${miniDrawer(state.mobileMenuPosition)}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  editorPanel.innerHTML = `
+    <div class="section-title">
+      <div class="title-icon"><i data-lucide="panel-top"></i></div>
+      <h3>Header</h3>
+    </div>
+
+    ${content}
+
+    <div class="edit-box">
+      <h4>Header Elements</h4>
+      <p>Click the logo or menu links directly in the preview to edit text or link destination.</p>
+      <div class="action-grid">
+        <button class="small-btn" id="goSections">Sections</button>
+        <button class="small-btn" id="goFooter">Footer</button>
+      </div>
+    </div>
+  `;
+
+  document.querySelectorAll("[data-header-style]").forEach(btn => {
+    btn.onclick = () => {
+      state.headerStyle = btn.dataset.headerStyle;
+      if(!state.footerManual) state.footerStyle = headerFooterPairs[state.headerStyle] || "classic";
+      applyStructure();
+      renderHeaderEditor("style");
+    };
+  });
+
+  document.querySelectorAll("[data-header-layout]").forEach(btn => {
+    btn.onclick = () => {
+      state.headerLayout = btn.dataset.headerLayout;
+      applyStructure();
+      renderHeaderEditor("layout");
+    };
+  });
+
+  document.querySelectorAll("[data-header-effect]").forEach(btn => {
+    btn.onclick = () => {
+      state.headerEffect = btn.dataset.headerEffect;
+      applyStructure();
+      renderHeaderEditor("effect");
+    };
+  });
+
+  document.querySelectorAll("[data-mobile-menu-position]").forEach(btn => {
+    btn.onclick = () => {
+      state.mobileMenuPosition = btn.dataset.mobileMenuPosition;
+      applyStructure();
+      renderHeaderEditor("mobile");
+    };
+  });
+
+  document.querySelectorAll("[data-mobile-drawer-mode]").forEach(btn => {
+    btn.onclick = () => {
+      state.mobileDrawerMode = btn.dataset.mobileDrawerMode;
+      applyStructure();
+      renderHeaderEditor("mobile");
+    };
+  });
+
+  document.querySelectorAll("[data-mobile-hamburger-shape]").forEach(btn => {
+    btn.onclick = () => {
+      state.mobileHamburgerShape = btn.dataset.mobileHamburgerShape;
+      applyStructure();
+      renderHeaderEditor("mobile");
+    };
+  });
+
+  document.getElementById("goSections").onclick = renderSections;
+  document.getElementById("goFooter").onclick = () => renderFooterEditor("style");
+
+  lucide.createIcons();
+}
+
+function renderFooterEditor(tab="style"){
+  showMainTab("editor", false);
+  setLocalTabs("footer", tab, [["style","Style"],["widgets","Widgets"],["bottom","Bottom"]]);
+
+  const styles = [
+    ["classic","Classic Footer","Standard full footer"],
+    ["minimal","Minimal Footer","Clean centered footer"],
+    ["floating","Floating Footer","Raised footer container"],
+    ["boxed","Boxed Footer","Contained footer block"],
+    ["compact","Compact Footer","Small and simple footer"]
+  ];
+
+  const widgets = [
+    ["equal","Equal Columns","Four equal widget areas"],
+    ["feature","Feature Column","Description column is wider"],
+    ["compact","Compact Four","Four compact widget areas"],
+    ["stacked","Stacked","Widgets centered in one column"]
+  ];
+
+  const bottom = [
+    ["center","Centered Bottom","Copyright and legal centered"],
+    ["split","Split Bottom","Copyright left, legal right"],
+    ["minimal","Minimal Bottom","Simple copyright only"]
+  ];
+
+  let content = "";
+
+  if(tab === "style"){
+    content = `
+      <div class="edit-box">
+        <h4>Footer Style</h4>
+        <p>The footer can follow the header automatically, or you can select a different footer style manually.</p>
+        <div class="style-grid">
+          ${styles.map(([key,name,desc]) => `
+            <button class="visual-card ${state.footerStyle===key?"active":""}" data-footer-style="${key}">
+              ${miniFooter(key)}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if(tab === "widgets"){
+    content = `
+      <div class="edit-box">
+        <h4>Footer Widgets</h4>
+        <p>Control the top widget area of the footer.</p>
+
+        <div class="mini-toggle-row">
+          <div>
+            <strong>Show Footer Widgets</strong>
+            <span>Turn the top widget area on or off.</span>
+          </div>
+          <button class="tiny-switch ${state.footerWidgets==="show"?"on":""}" id="footerWidgetToggle">
+            <span class="tiny-knob"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="edit-box">
+        <h4>Widget Layout</h4>
+        <p>Choose how footer widgets are arranged.</p>
+        <div class="style-grid">
+          ${widgets.map(([key,name,desc]) => `
+            <button class="visual-card ${state.footerWidgetLayout===key?"active":""}" data-footer-widget-layout="${key}">
+              ${miniWidget(key)}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  if(tab === "bottom"){
+    content = `
+      <div class="edit-box">
+        <h4>Footer Bottom</h4>
+        <p>This is the copyright and legal area shown at the bottom of every footer.</p>
+
+        <div class="field">
+          <label>Copyright Text</label>
+          <input id="copyrightInput" value="${escapeAttr(state.copyrightText)}">
+        </div>
+
+        <div class="field">
+          <label>Privacy Label</label>
+          <input id="privacyLabelInput" value="${escapeAttr(state.privacyLabel)}">
+        </div>
+
+        <div class="field">
+          <label>Privacy Link</label>
+          <input id="privacyHrefInput" value="${escapeAttr(state.privacyHref)}">
+        </div>
+
+        <div class="field">
+          <label>Terms Label</label>
+          <input id="termsLabelInput" value="${escapeAttr(state.termsLabel)}">
+        </div>
+
+        <div class="field">
+          <label>Terms Link</label>
+          <input id="termsHrefInput" value="${escapeAttr(state.termsHref)}">
+        </div>
+
+        <div class="action-grid">
+          <button class="small-btn" id="saveFooterBottom">Save</button>
+          <button class="small-btn ${state.footerLegal==="show"?"":"danger"}" id="toggleLegal">${state.footerLegal==="show"?"Hide Legal Links":"Show Legal Links"}</button>
+        </div>
+      </div>
+
+      <div class="edit-box">
+        <h4>Bottom Layout</h4>
+        <div class="style-grid">
+          ${bottom.map(([key,name,desc]) => `
+            <button class="visual-card ${state.footerBottom===key?"active":""}" data-footer-bottom="${key}">
+              ${miniFooter(key)}
+              <strong>${name}</strong>
+              <span>${desc}</span>
+            </button>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
+  editorPanel.innerHTML = `
+    <div class="section-title">
+      <div class="title-icon"><i data-lucide="panel-bottom"></i></div>
+      <h3>Footer</h3>
+    </div>
+
+    ${content}
+
+    <div class="edit-box">
+      <h4>Footer Elements</h4>
+      <p>Click footer text, widget titles, descriptions, or links directly in the preview to edit them.</p>
+      <div class="action-grid">
+        <button class="small-btn" id="goSections">Sections</button>
+        <button class="small-btn" id="syncFooter">Sync With Header</button>
+      </div>
+    </div>
+  `;
+
+  document.querySelectorAll("[data-footer-style]").forEach(btn => {
+    btn.onclick = () => {
+      state.footerStyle = btn.dataset.footerStyle;
+      state.footerManual = true;
+      applyStructure();
+      renderFooterEditor("style");
+    };
+  });
+
+  if(document.getElementById("footerWidgetToggle")){
+    document.getElementById("footerWidgetToggle").onclick = () => {
+      state.footerWidgets = state.footerWidgets === "show" ? "hidden" : "show";
+      applyStructure();
+      renderFooterEditor("widgets");
+    };
+  }
+
+  document.querySelectorAll("[data-footer-widget-layout]").forEach(btn => {
+    btn.onclick = () => {
+      state.footerWidgetLayout = btn.dataset.footerWidgetLayout;
+      applyStructure();
+      renderFooterEditor("widgets");
+    };
+  });
+
+  document.querySelectorAll("[data-footer-bottom]").forEach(btn => {
+    btn.onclick = () => {
+      state.footerBottom = btn.dataset.footerBottom;
+      applyStructure();
+      renderFooterEditor("bottom");
+    };
+  });
+
+  if(document.getElementById("saveFooterBottom")){
+    document.getElementById("saveFooterBottom").onclick = () => {
+      state.copyrightText = document.getElementById("copyrightInput").value;
+      state.privacyLabel = document.getElementById("privacyLabelInput").value;
+      state.privacyHref = document.getElementById("privacyHrefInput").value;
+      state.termsLabel = document.getElementById("termsLabelInput").value;
+      state.termsHref = document.getElementById("termsHrefInput").value;
+      applyStructure();
+      renderFooterEditor("bottom");
+    };
+  }
+
+  if(document.getElementById("toggleLegal")){
+    document.getElementById("toggleLegal").onclick = () => {
+      state.footerLegal = state.footerLegal === "show" ? "hidden" : "show";
+      applyStructure();
+      renderFooterEditor("bottom");
+    };
+  }
+
+  document.getElementById("goSections").onclick = renderSections;
+
+  document.getElementById("syncFooter").onclick = () => {
+    state.footerManual = false;
+    state.footerStyle = headerFooterPairs[state.headerStyle] || "classic";
+    applyStructure();
+    renderFooterEditor("style");
+  };
+
+  lucide.createIcons();
+}
+
+function setLocalTabs(type, active, tabs){
+  editorLocalTabs.classList.add("active");
+  editorLocalTabs.classList.toggle("mobile-tabs", tabs.length === 4);
+
+  editorLocalTabs.innerHTML = tabs.map(([key,label]) => `
+    <button class="local-tab ${key===active?"active":""}" data-local-tab="${key}">${label}</button>
+  `).join("");
+
+  editorLocalTabs.querySelectorAll(".local-tab").forEach(btn => {
+    btn.onclick = () => {
+      if(type === "header") renderHeaderEditor(btn.dataset.localTab);
+      if(type === "footer") renderFooterEditor(btn.dataset.localTab);
+    };
+  });
+}
+
+function clearLocalTabs(){
+  editorLocalTabs.classList.remove("active","mobile-tabs");
+  editorLocalTabs.innerHTML = "";
+}
+
+function ensureMobileMenu(header){
+  const doc = getDoc();
+  if(!doc || !header) return;
+
+  let toggle = header.querySelector(".ec-mobile-menu-toggle");
+  if(!toggle){
+    toggle = doc.createElement("button");
+    toggle.className = "ec-mobile-menu-toggle";
+    toggle.setAttribute("data-editor-type","button");
+    toggle.setAttribute("data-editor-label","Mobile Menu Button");
+    toggle.setAttribute("aria-label","Open mobile menu");
+    toggle.innerHTML = "<span></span>";
+    header.appendChild(toggle);
+  }
+
+  let drawer = doc.querySelector(".ec-mobile-drawer");
+  if(!drawer){
+    drawer = doc.createElement("aside");
+    drawer.className = "ec-mobile-drawer";
+    drawer.setAttribute("data-editor-type","section");
+    drawer.setAttribute("data-editor-label","Mobile Drawer");
+    doc.body.appendChild(drawer);
+  }
+
+  let overlay = doc.querySelector(".ec-mobile-overlay");
+  if(!overlay){
+    overlay = doc.createElement("div");
+    overlay.className = "ec-mobile-overlay";
+    doc.body.appendChild(overlay);
+  }
+
+  const nav = header.querySelector("nav");
+
+  drawer.innerHTML = `
+    <div class="ec-mobile-drawer-head">
+      <h3>Menu</h3>
+      <button class="ec-mobile-drawer-close" aria-label="Close mobile menu">×</button>
+    </div>
+    <div class="ec-mobile-drawer-nav"></div>
+  `;
+
+  const drawerNav = drawer.querySelector(".ec-mobile-drawer-nav");
+
+  if(nav && drawerNav){
+    Array.from(nav.querySelectorAll("a")).forEach(link => {
+      const clone = link.cloneNode(true);
+      clone.setAttribute("data-editor-type","button");
+      drawerNav.appendChild(clone);
+    });
+  }
+}
+
+function applyStructure(){
+  const doc = getDoc();
+  const header = frameQuery("header,[data-editor-type='header']");
+  const footer = frameQuery("footer,[data-editor-type='footer']");
+
+  if(doc && doc.body){
+    doc.body.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
+    doc.body.setAttribute("data-mobile-drawer-mode", state.mobileDrawerMode);
+  }
+
+  if(header){
+    header.setAttribute("data-editor-type","header");
+    header.setAttribute("data-editor-label","Header");
+    header.setAttribute("data-header-style", state.headerStyle);
+    header.setAttribute("data-header-layout", state.headerLayout);
+    header.setAttribute("data-header-effect", state.headerEffect);
+    header.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
+    header.setAttribute("data-mobile-hamburger-shape", state.mobileHamburgerShape);
+    ensureMobileMenu(header);
+  }
+
+  if(footer){
+    footer.setAttribute("data-editor-type","footer");
+    footer.setAttribute("data-editor-label","Footer");
+    footer.setAttribute("data-footer-style", state.footerStyle);
+    footer.setAttribute("data-footer-widgets", state.footerWidgets === "show" ? "shown" : "hidden");
+    footer.setAttribute("data-footer-widget-layout", state.footerWidgetLayout);
+    footer.setAttribute("data-footer-bottom", state.footerBottom);
+    footer.setAttribute("data-footer-legal", state.footerLegal === "show" ? "shown" : "hidden");
+
+    const copy = footer.querySelector(".footer-copy");
+    const privacy = footer.querySelector(".privacy-link");
+    const terms = footer.querySelector(".terms-link");
+
+    if(copy) copy.innerText = state.copyrightText;
+    if(privacy){
+      privacy.innerText = state.privacyLabel;
+      privacy.setAttribute("href", state.privacyHref);
+    }
+    if(terms){
+      terms.innerText = state.termsLabel;
+      terms.setAttribute("href", state.termsHref);
+    }
+  }
+
+  handleFrameScroll();
+}
+
+function updateTheme(){
+  const primary = colorMap[state.family] || "#0284c7";
+
+  document.documentElement.style.setProperty("--primary", primary);
+  document.documentElement.style.setProperty("--primary-soft", primary + "20");
+
+  summary.textContent = `${state.preset} · ${state.previewMode === "dark" ? "Dark" : "Light"} · ${state.personality} · ${state.typography} · ${state.typeSize} · ${state.family} · ${state.style} · ${state.shape} · ${state.visual} · ${state.density} · ${state.motion} · ${state.atmosphere}`;
+
+  siteModeToggle.innerHTML = state.previewMode === "dark" ? `<i data-lucide="sun"></i>` : `<i data-lucide="moon"></i>`;
+
+  setActiveControls();
+  refreshTokens();
+  lucide.createIcons();
+}
+
+function setActiveControls(){
+  document.querySelectorAll(".choice-grid").forEach(group => {
+    const key = group.dataset.key;
+    group.querySelectorAll(".choice-btn").forEach(btn => {
+      btn.classList.toggle("active", getBtnValue(btn) === state[key]);
+    });
+  });
+
+  document.querySelectorAll("[data-type-style]").forEach(card => {
+    card.classList.toggle("active", card.dataset.typeStyle === state.typography);
+  });
+
+  document.querySelectorAll("[data-type-size]").forEach(card => {
+    card.classList.toggle("active", card.dataset.typeSize === state.typeSize);
+  });
+}
+
+function getBtnValue(btn){
+  return btn.childNodes[0].textContent.trim();
+}
+
+function setCustomizerMode(mode){
+  document.querySelectorAll(".mode-tab").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.customizerMode === mode);
+  });
+
+  document.getElementById("simplePanel").classList.toggle("active", mode === "simple");
+  document.getElementById("advancedPanel").classList.toggle("active", mode === "advanced");
+
+  customizerContent.classList.toggle("no-rail", mode === "simple");
+  railNav.innerHTML = "";
+
+  if(mode === "advanced"){
+    advancedRail.forEach(([id, icon, label], index) => {
+      const btn = document.createElement("button");
+      btn.className = `rail-btn ${index === 0 ? "active" : ""}`;
+      btn.innerHTML = `<i data-lucide="${icon}"></i>${label}`;
+
+      btn.onclick = () => {
+        document.querySelectorAll(".rail-btn").forEach(x => x.classList.remove("active"));
+        document.querySelectorAll(".section-panel").forEach(panel => panel.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById(id).classList.add("active");
+      };
+
+      railNav.appendChild(btn);
+    });
+  }
+
+  lucide.createIcons();
+}
+
+function showMainTab(tab, reset=true){
+  document.querySelectorAll(".bottom-tab").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mainTab === tab);
+  });
+
+  document.querySelectorAll(".sidebar-view").forEach(view => view.classList.remove("active"));
+  document.getElementById(tab + "View").classList.add("active");
+
+  if(tab === "editor" && reset) renderSections();
+  if(tab !== "editor") clearLocalTabs();
+}
+
+function escapeHtml(value){
+  return String(value || "").replace(/[&<>]/g, match => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;"
+  }[match]));
+}
+
+function escapeAttr(value){
+  return escapeHtml(value).replace(/"/g,"&quot;");
+}
+
+document.querySelectorAll(".bottom-tab").forEach(btn => {
+  btn.onclick = () => showMainTab(btn.dataset.mainTab);
+});
+
+document.querySelectorAll(".mode-tab").forEach(btn => {
+  btn.onclick = () => setCustomizerMode(btn.dataset.customizerMode);
+});
+
+document.querySelectorAll(".screen-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".screen-btn").forEach(item => {
+      item.classList.toggle("active", item.dataset.size === btn.dataset.size);
+    });
+    frame.className = "device-frame " + btn.dataset.size;
+  };
+});
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".tab-btn").forEach(x => x.classList.remove("active"));
+    document.querySelectorAll(".typo-tab-panel").forEach(panel => panel.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  };
+});
+
+document.querySelectorAll("[data-type-style]").forEach(card => {
+  card.onclick = () => {
+    state.typography = card.dataset.typeStyle;
+    state.preset = "Custom";
+    updateTheme();
+  };
+});
+
+document.querySelectorAll("[data-type-size]").forEach(card => {
+  card.onclick = () => {
+    state.typeSize = card.dataset.typeSize;
+    state.preset = "Custom";
+    updateTheme();
+  };
+});
+
+document.querySelectorAll(".choice-grid").forEach(group => {
+  group.querySelectorAll(".choice-btn").forEach(btn => {
+    btn.onclick = () => {
+      state[group.dataset.key] = getBtnValue(btn);
+      state.preset = "Custom";
+      updateTheme();
+    };
+  });
+});
+
+document.querySelectorAll(".preset-card").forEach(card => {
+  card.onclick = () => {
+    const preset = presets[card.dataset.preset];
+    if(!preset) return;
+
+    state = {...state, ...preset};
+
+    document.querySelectorAll(".preset-card").forEach(item => item.classList.remove("active"));
+    card.classList.add("active");
+
+    updateTheme();
+  };
+});
+
+siteModeToggle.onclick = () => {
+  state.previewMode = state.previewMode === "light" ? "dark" : "light";
+  updateTheme();
+};
+
+editorModeToggle.onclick = () => {
+  editorMode = !editorMode;
+
+  editorModeToggle.classList.toggle("browse", !editorMode);
+  editorModeToggle.innerHTML = editorMode
+    ? `<span class="switch-knob"><i data-lucide="mouse-pointer-click"></i></span>`
+    : `<span class="switch-knob"><i data-lucide="navigation"></i></span>`;
+
+  setFrameEditorMode();
+  lucide.createIcons();
+};
+
+document.getElementById("fullscreenBtn").onclick = () => app.classList.add("fullscreen");
+document.getElementById("exitFullscreenBtn").onclick = () => app.classList.remove("fullscreen");
+
+document.addEventListener("keydown", event => {
+  if(event.key === "Escape") app.classList.remove("fullscreen");
+});
+
+document.getElementById("importBtn").onclick = () => document.getElementById("htmlImporter").click();
+
+document.getElementById("htmlImporter").onchange = async event => {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  importedHtml = await file.text();
+  loadPreview();
+
+  compatibilityReport.innerHTML = `
+    <h4>Compatibility Report</h4>
+    <p>HTML imported. Run compatibility test.</p>
+  `;
+};
+
+document.getElementById("testCompatibilityBtn").onclick = () => {
+  const html = importedHtml || defaultPage;
+
+  const checks = {
+    "Theme Tokens":["--primary","--site-bg","--site-text","--radius"],
+    "Responsive Safety":["overflow-x:hidden","max-width:100%","box-sizing:border-box"],
+    "Editor Markup":["data-editor-type","data-editor-label"],
+    "Header/Footer":["header","footer"],
+    "Mobile Header":["ec-mobile-menu-toggle","ec-mobile-drawer"]
+  };
+
+  let total = 0;
+  let rows = "";
+
+  Object.entries(checks).forEach(([name,tokens]) => {
+    const matched = tokens.filter(token => html.includes(token)).length;
+    const score = Math.round((matched / tokens.length) * 100);
+    total += score;
+    rows += `<div class="report-row"><strong>${name}</strong><span>${score}%</span></div>`;
+  });
+
+  const overall = Math.round(total / Object.keys(checks).length);
+
+  compatibilityReport.innerHTML = `
+    <h4>Compatibility Report</h4>
+    <p><strong>Customizer + Editor Coverage:</strong> ${overall}%</p>
+    ${rows}
+  `;
+};
+
+setCustomizerMode("simple");
+loadPreview();
+updateTheme();
+</script>
+</body>
+</html>

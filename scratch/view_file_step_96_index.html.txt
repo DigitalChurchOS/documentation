@@ -1,0 +1,44 @@
+Created At: 2026-06-06T14:29:10Z
+Completed At: 2026-06-06T14:29:10Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 14960 to 14995
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+14960:     }
+14961: 
+14962:     async function cmsApiRequest(method, path, body = null) {
+14963:       let tenantId = localStorage.getItem('churchos.tenantId') || 'demo-church-local';
+14964:       let token = localStorage.getItem('churchos.token') || 'local-preview-token';
+14965:       
+14966:       const headers = {
+14967:         'Content-Type': 'application/json',
+14968:         'x-tenant-id': tenantId,
+14969:         'Authorization': `Bearer ${token}`
+14970:       };
+14971: 
+14972:       const options = {
+14973:         method,
+14974:         headers
+14975:       };
+14976: 
+14977:       if (body && !['GET', 'HEAD'].includes(method)) {
+14978:         options.body = JSON.stringify(body);
+14979:       }
+14980: 
+14981:       try {
+14982:         const res = await fetch(path, options);
+14983:         if (res.status === 204) return { ok: true, data: null };
+14984:         const text = await res.text();
+14985:         let json = null;
+14986:         if (text) {
+14987:           try {
+14988:             json = JSON.parse(text);
+14989:           } catch {
+14990:             json = { error: text };
+14991:           }
+14992:         }
+14993:         return { ok: res.ok, status: res.status, data: json?.data || json };
+14994:       } catch (err) {
+14995:         console.error('API request failed:', err);
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

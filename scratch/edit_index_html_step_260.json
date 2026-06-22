@@ -1,0 +1,15 @@
+{
+  "name": "replace_file_content",
+  "args": {
+    "AllowMultiple": "false",
+    "Description": "\"Add CSS rules for Theme Customizer + Page Builder sidebar tabs and page lists\"",
+    "EndLine": "3930",
+    "Instruction": "\"Insert styling rules above the Theme Customizer comment\"",
+    "ReplacementContent": "\"/* Theme Customizer + Page Builder Tabs & Page Items styling */\\n.customizer-tabs {\\n  display: flex;\\n  border-bottom: 1px solid rgba(0,0,0,0.08);\\n  background: #fdfdfd;\\n}\\n.customizer-tab {\\n  flex: 1;\\n  padding: 12px 6px;\\n  font-size: 13px;\\n  font-weight: 700;\\n  color: var(--platform-muted);\\n  border: none;\\n  background: transparent;\\n  border-bottom: 2px solid transparent;\\n  cursor: pointer;\\n  display: flex;\\n  align-items: center;\\n  justify-content: center;\\n  gap: 6px;\\n  transition: all 0.2s;\\n}\\n.customizer-tab.active {\\n  color: var(--platform-accent, #6366f1);\\n  border-bottom-color: var(--platform-accent, #6366f1);\\n  background: #f9f9fb;\\n}\\n.customizer-tab svg, .customizer-tab i {\\n  width: 14px;\\n  height: 14px;\\n}\\n.page-item-row:hover {\\n  border-color: var(--platform-accent, #6366f1) !important;\\n  background: #f9f9fb !important;\\n}\\n.page-item-row.active-page {\\n  border-color: var(--platform-accent, #6366f1) !important;\\n  background: #f5f3ff !important;\\n  color: var(--platform-accent, #6366f1) !important;\\n}\\n\\n/* Theme customizer */\"",
+    "StartLine": "3930",
+    "TargetContent": "\"/* Theme customizer */\"",
+    "TargetFile": "\"C:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\apps\\\\tenant-dashboard\\\\public\\\\index.html\"",
+    "toolAction": "\"Adding customizer tabs CSS rules\"",
+    "toolSummary": "\"index.html CSS edit\""
+  }
+}

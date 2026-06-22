@@ -1,0 +1,12 @@
+{
+  "AllowMultiple": "false",
+  "Description": "\"Update previewTheme service to prioritize draftSettings over settings.\"",
+  "EndLine": "585",
+  "Instruction": "\"Update previewTheme to use theme.draftSettings || theme.settings\"",
+  "ReplacementContent": "\"  /**\\n   * Preview a theme config in temporary simulation staging context.\\n   */\\n  static async previewTheme(tenantId: string, themeId: string) {\\n    // Fetch theme\\n    const theme = await prisma.theme.findFirst({\\n      where: {\\n        id: themeId,\\n        OR: [{ tenantId: null }, { tenantId }],\\n      },\\n    });\\n\\n    if (!theme) {\\n      throw new Error('Theme not found');\\n    }\\n\\n    const settings = safeParseJson<Record<string, any>>(theme.draftSettings || theme.settings, {});\\n\\n    return {\\n      themeId: theme.id,\\n      name: theme.name,\\n      settings,\\n      version: settings.marketplace?.version || 'local',\\n      isPreview: true,\\n      timestamp: new Date().toISOString(),\\n    };\\n  }\"",
+  "StartLine": "558",
+  "TargetContent": "\"  /**\\n   * Preview a theme config in temporary simulation staging context.\\n   */\\n  static async previewTheme(tenantId: string, themeId: string) {\\n    // Fetch theme\\n    const theme = await prisma.theme.findFirst({\\n      where: {\\n        id: themeId,\\n        OR: [{ tenantId: null }, { tenantId }],\\n      },\\n    });\\n\\n    if (!theme) {\\n      throw new Error('Theme not found');\\n    }\\n\\n    const settings = safeParseJson<Record<string, any>>(theme.settings, {});\\n\\n    return {\\n      themeId: theme.id,\\n      name: theme.name,\\n      settings,\\n      version: settings.marketplace?.version || 'local',\\n      isPreview: true,\\n      timestamp: new Date().toISOString(),\\n    };\\n  }\"",
+  "TargetFile": "\"C:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\src\\\\services\\\\themeEngine.ts\"",
+  "toolAction": "\"Update previewTheme method\"",
+  "toolSummary": "\"Edit themeEngine.ts\""
+}

@@ -1,0 +1,13 @@
+{
+  "name": "replace_file_content",
+  "args": {
+    "AllowMultiple": "false",
+    "Description": "\"Use absolute path for loading App module to prevent slash resolution issues\"",
+    "EndLine": "693",
+    "Instruction": "\"Update the App import path to be absolute /page-builder/app.js\"",
+    "ReplacementContent": "\"  <!-- React Mount Connection Script -->\\n  <script type=\\\"module\\\">\\n    import React from 'react';\\n    import ReactDOM from 'react-dom/client';\\n    import { App } from '/page-builder/app.js';\\n\\n    const root = ReactDOM.createRoot(document.getElementById('root'));\\n    root.render(React.createElement(App));\\n  </script>\"",
+    "StartLine": "680",
+    "TargetContent": "\"  <!-- React Mount Connection Script -->\\n  <script type=\\\"module\\\">\\n    import React from 'react';\\n    import ReactDOM from 'react-dom/client';\\n    import { App } from './app.js';\\n\\n    const root = ReactDOM.createRoot(document.getElementById('root'));\\n    root.render(React.createElement(App));\\n  </script>\"",
+    "TargetFile": "\"c:/Users/Administrator/Documents/ChurchOS/page-builder/index.html\""
+  }
+}

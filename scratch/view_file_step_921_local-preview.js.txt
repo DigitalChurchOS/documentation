@@ -1,0 +1,24 @@
+Created At: 2026-06-06T16:36:15Z
+Completed At: 2026-06-06T16:36:15Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 360 to 375
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+360:       createdAt: now(),
+361:       updatedAt: now(),
+362:     },
+363:   ],
+364:   navigation: [
+365:     {
+366:       id: 'nav-main',
+367:       websiteId: demoWebsiteId,
+368:       name: 'Header Navigation',
+369:       items: [
+370:         { label: 'Home', url: '/home' },
+371:         { label: 'Services', url: '/services' },
+372:         { label: 'Watch Live', url: '/live' },
+373:         { label: 'Events', url: '/events' },
+374:         { label: 'Sermons', url: '/sermons' },
+375:         { label: 'Prayer', url: '/prayer' },
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

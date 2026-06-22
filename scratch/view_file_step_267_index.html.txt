@@ -1,0 +1,29 @@
+Created At: 2026-06-06T14:53:35Z
+Completed At: 2026-06-06T14:53:35Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31841
+Total Bytes: 1550442
+Showing lines 12790 to 12810
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12790:           <label for="editUserName">User Name</label>
+12791:           <input type="text" id="editUserName" class="form-control" readonly style="opacity: 0.7; background: var(--panel-2);">
+12792:         </div>
+12793:         <div class="field">
+12794:           <label for="editUserEmail">User Email</label>
+12795:           <input type="text" id="editUserEmail" class="form-control" readonly style="opacity: 0.7; background: var(--panel-2);">
+12796:         </div>
+12797:         <div class="field">
+12798:           <label for="editUserRoleSelect">Assign New Role</label>
+12799:           <select id="editUserRoleSelect" class="form-control">
+12800:             <!-- Populated dynamically -->
+12801:           </select>
+12802:         </div>
+12803:       </div>
+12804:       <div class="modal-footer">
+12805:         <button class="btn" onclick="closeUserRoleModal('userRoleEditModal')">Cancel</button>
+12806:         <button class="btn primary" onclick="saveUserRoleChange()"><i data-lucide="check"></i>Update Role</button>
+12807:       </div>
+12808:     </div>
+12809:   </div>
+12810: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

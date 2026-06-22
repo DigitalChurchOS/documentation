@@ -1,0 +1,20 @@
+Created At: 2026-06-06T14:54:40Z
+Completed At: 2026-06-06T14:54:40Z
+File Path: `file:///C:/Users/Administrator/.gemini/antigravity/brain/b6ef7979-b2e0-456b-b57d-251645bf61e7/task.md`
+Total Lines: 12
+Total Bytes: 787
+Showing lines 1 to 12
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: # Checklist for Unified Website Editing Studio Integration
+2: 
+3: - `[ ]` Extend SQLite schema in `prisma/schema.prisma`
+4: - `[ ]` Run Prisma Client generation and database migrations
+5: - `[ ]` Implement Theme Customization Draft/Publish/Reset/Discard APIs in backend
+6: - `[ ]` Implement Page Get/Draft/Publish/Preview APIs in backend
+7: - `[ ]` Implement Theme Default Pages Seeding on Theme Activation
+8: - `[ ]` Reconstruct Page Builder `page-builder/app.tsx` to support embed mode, fetch page data, and set up the postMessage communication bridge
+9: - `[ ]` Update Tenant Dashboard `apps/tenant-dashboard/public/index.html` to unify Theme Customizer with Page Builder tabs, controls, and save/publish flows
+10: - `[ ]` Compile Page Builder TypeScript files
+11: - `[ ]` Verify with backend tests and manual flows
+12: 
+The above content shows the entire, complete file contents of the requested file.

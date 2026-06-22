@@ -1,0 +1,203 @@
+Created At: 2026-06-14T05:54:05Z
+Completed At: 2026-06-14T05:54:05Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/prisma/schema.prisma`
+Total Lines: 6210
+Total Bytes: 302520
+Showing lines 6016 to 6210
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+6016: model RadioStation {
+6017:   id               String   @id @default(uuid())
+6018:   tenantId         String   @map("tenant_id")
+6019:   name             String
+6020:   slug             String
+6021:   slogan           String?
+6022:   description      String?
+6023:   logoUrl          String?  @map("logo_url")
+6024:   coverImageUrl    String?  @map("cover_image_url")
+6025:   socialLinks      String   @default("[]") @map("social_links")
+6026:   streamType       String   @default("managed") @map("stream_type")
+6027:   streamProvider   String?  @map("stream_provider")
+6028:   streamUrl        String?  @map("stream_url")
+6029:   streamKey        String?  @map("stream_key")
+6030:   status           String   @default("offline") @map("status")
+6031:   isAutoDjEnabled  Boolean  @default(true) @map("is_auto_dj_enabled")
+6032:   createdAt        DateTime @default(now()) @map("created_at")
+6033:   updatedAt        DateTime @updatedAt @map("updated_at")
+6034: 
+6035:   tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+6036:   programs         RadioProgram[]
+6037:   playlists        RadioPlaylist[]
+6038:   archives         RadioBroadcastArchive[]
+6039:   chatMessages     RadioChatMessage[]
+6040:   reactions        RadioReaction[]
+6041: 
+6042:   @@unique([tenantId, slug])
+6043:   @@index([tenantId])
+6044:   @@index([status])
+6045:   @@map("radio_stations")
+6046: }
+6047: 
+6048: // ─────────────────────────────────────────────────────────────
+6049: // 121. RADIO PROGRAM
+6050: // ─────────────────────────────────────────────────────────────
+6051: model RadioProgram {
+6052:   id          String   @id @default(uuid())
+6053:   tenantId    String   @map("tenant_id")
+6054:   stationId   String   @map("station_id")
+6055:   title       String
+6056:   slug        String
+6057:   description String?
+6058:   speaker     String?
+6059:   category    String
+6060:   createdAt   DateTime @default(now()) @map("created_at")
+6061:   updatedAt   DateTime @updatedAt @map("updated_at")
+6062: 
+6063:   tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+6064:   station     RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+6065:   schedules   RadioSchedule[]
+6066:   archives    RadioBroadcastArchive[]
+6067: 
+6068:   @@unique([tenantId, stationId, slug])
+6069:   @@index([tenantId])
+6070:   @@index([stationId])
+6071:   @@map("radio_programs")
+6072: }
+6073: 
+6074: // ─────────────────────────────────────────────────────────────
+6075: // 122. RADIO SCHEDULE
+6076: // ─────────────────────────────────────────────────────────────
+6077: model RadioSchedule {
+6078:   id             String   @id @default(uuid())
+6079:   tenantId       String   @map("tenant_id")
+6080:   programId      String   @map("program_id")
+6081:   startTime      DateTime @map("start_time")
+6082:   endTime        DateTime @map("end_time")
+6083:   recurrence     String   @default("none") @map("recurrence")
+6084:   daysOfWeek     String?  @map("days_of_week")
+6085:   createdAt      DateTime @default(now()) @map("created_at")
+6086:   updatedAt      DateTime @updatedAt @map("updated_at")
+6087: 
+6088:   tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+6089:   program        RadioProgram @relation(fields: [programId], references: [id], onDelete: Cascade)
+6090: 
+6091:   @@index([tenantId])
+6092:   @@index([programId])
+6093:   @@map("radio_schedules")
+6094: }
+6095: 
+6096: // ─────────────────────────────────────────────────────────────
+6097: // 123. RADIO PLAYLIST
+6098: // ─────────────────────────────────────────────────────────────
+6099: model RadioPlaylist {
+6100:   id           String   @id @default(uuid())
+6101:   tenantId     String   @map("tenant_id")
+6102:   stationId    String   @map("station_id")
+6103:   name         String
+6104:   isAutoDj     Boolean  @default(false) @map("is_auto_dj")
+6105:   rotationRule String   @default("random") @map("rotation_rule")
+6106:   createdAt    DateTime @default(now()) @map("created_at")
+6107:   updatedAt    DateTime @updatedAt @map("updated_at")
+6108: 
+6109:   tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+6110:   station      RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+6111:   items        RadioPlaylistItem[]
+6112: 
+6113:   @@index([tenantId])
+6114:   @@index([stationId])
+6115:   @@map("radio_playlists")
+6116: }
+6117: 
+6118: // ─────────────────────────────────────────────────────────────
+6119: // 124. RADIO PLAYLIST ITEM
+6120: // ─────────────────────────────────────────────────────────────
+6121: model RadioPlaylistItem {
+6122:   id               String   @id @default(uuid())
+6123:   playlistId       String   @map("playlist_id")
+6124:   mediaAssetId     String?  @map("media_asset_id")
+6125:   podcastEpisodeId String?  @map("podcast_episode_id")
+6126:   title            String
+6127:   audioUrl         String   @map("audio_url")
+6128:   durationSeconds  Int?     @map("duration_seconds")
+6129:   sortOrder        Int      @default(0) @map("sort_order")
+6130:   createdAt        DateTime @default(now()) @map("created_at")
+6131:   updatedAt        DateTime @updatedAt @map("updated_at")
+6132: 
+6133:   playlist         RadioPlaylist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+6134:   mediaAsset       MediaAsset?   @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+6135:   podcastEpisode   PodcastEpisode? @relation(fields: [podcastEpisodeId], references: [id], onDelete: SetNull)
+6136: 
+6137:   @@index([playlistId])
+6138:   @@map("radio_playlist_items")
+6139: }
+6140: 
+6141: // ─────────────────────────────────────────────────────────────
+6142: // 125. RADIO BROADCAST ARCHIVE
+6143: // ─────────────────────────────────────────────────────────────
+6144: model RadioBroadcastArchive {
+6145:   id               String   @id @default(uuid())
+6146:   tenantId         String   @map("tenant_id")
+6147:   stationId        String   @map("station_id")
+6148:   programId        String?  @map("program_id")
+6149:   title            String
+6150:   audioUrl         String   @map("audio_url")
+6151:   durationSeconds  Int?     @map("duration_seconds")
+6152:   fileSize         Int?     @map("file_size")
+6153:   recordedAt       DateTime @default(now()) @map("recorded_at")
+6154:   isPodcastEpisode Boolean  @default(false) @map("is_podcast_episode")
+6155:   podcastEpisodeId String?  @map("podcast_episode_id")
+6156:   createdAt        DateTime @default(now()) @map("created_at")
+6157:   updatedAt        DateTime @updatedAt @map("updated_at")
+6158: 
+6159:   tenant           Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+6160:   station          RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+6161:   program          RadioProgram? @relation(fields: [programId], references: [id], onDelete: SetNull)
+6162:   podcastEpisode   PodcastEpisode? @relation(fields: [podcastEpisodeId], references: [id], onDelete: SetNull)
+6163: 
+6164:   @@index([tenantId])
+6165:   @@index([stationId])
+6166:   @@index([programId])
+6167:   @@map("radio_broadcast_archives")
+6168: }
+6169: 
+6170: // ─────────────────────────────────────────────────────────────
+6171: // 126. RADIO CHAT MESSAGE
+6172: // ─────────────────────────────────────────────────────────────
+6173: model RadioChatMessage {
+6174:   id           String   @id @default(uuid())
+6175:   tenantId     String   @map("tenant_id")
+6176:   stationId    String   @map("station_id")
+6177:   userId       String?  @map("user_id")
+6178:   displayName  String   @map("display_name")
+6179:   message      String
+6180:   createdAt    DateTime @default(now()) @map("created_at")
+6181: 
+6182:   tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+6183:   station      RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+6184: 
+6185:   @@index([tenantId])
+6186:   @@index([stationId])
+6187:   @@map("radio_chat_messages")
+6188: }
+6189: 
+6190: // ─────────────────────────────────────────────────────────────
+6191: // 127. RADIO REACTION
+6192: // ─────────────────────────────────────────────────────────────
+6193: model RadioReaction {
+6194:   id           String   @id @default(uuid())
+6195:   tenantId     String   @map("tenant_id")
+6196:   stationId    String   @map("station_id")
+6197:   reactionType String   @map("reaction_type")
+6198:   createdAt    DateTime @default(now()) @map("created_at")
+6199: 
+6200:   tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+6201:   station      RadioStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+6202: 
+6203:   @@index([tenantId])
+6204:   @@index([stationId])
+6205:   @@map("radio_reactions")
+6206: }
+6207: 
+6208: 
+6209: 
+6210: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

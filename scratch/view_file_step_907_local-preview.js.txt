@@ -1,0 +1,72 @@
+Created At: 2026-06-06T16:35:53Z
+Completed At: 2026-06-06T16:35:53Z
+File Path: `file:///c:/Users/Administrator/Documents/ChurchOS/scripts/local-preview.js`
+Total Lines: 3203
+Total Bytes: 142473
+Showing lines 178 to 240
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+178:     },
+179:     {
+180:       id: 'page-giving',
+181:       websiteId: demoWebsiteId,
+182:       title: 'Giving',
+183:       slug: 'give',
+184:       status: 'published',
+185:       isHome: false,
+186:       seoTitle: 'Give | Christ Embassy Next Church',
+187:       seoDescription: 'Giving forms, campaigns, pledges, recurring giving, confirmations, and receipts.',
+188:       content: [
+189:         { type: 'hero', title: 'Give Securely', subtitle: 'Support ministry, missions, outreach, media, welfare, and discipleship work.', bgImage: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1400&q=80', buttonText: 'Start Giving', buttonUrl: '#giving-form' },
+190:         { type: 'dynamic_giving_campaign', title: 'Kingdom Expansion Campaign', sourceModule: 'Giving', fields: ['progress', 'recurringGiving', 'pledges', 'receipts'] },
+191:       ],
+192:       createdAt: now(),
+193:       updatedAt: now(),
+194:     },
+195:     {
+196:       id: 'page-prayer',
+197:       websiteId: demoWebsiteId,
+198:       title: 'Prayer & Testimonies',
+199:       slug: 'prayer',
+200:       status: 'published',
+201:       isHome: false,
+202:       seoTitle: 'Prayer & Testimonies | Christ Embassy Next Church',
+203:       seoDescription: 'Prayer request form, prayer wall, testimony wall, prayer sessions, and reactions.',
+204:       content: [
+205:         { type: 'hero', title: 'Prayer & Testimonies', subtitle: 'Submit prayer requests, join corporate prayer, and share testimonies for moderation.', bgImage: 'https://images.unsplash.c
+<truncated 226 bytes>
+stimony', fields: ['requests', 'iPrayed', 'testimonies', 'sessions'] },
+207:       ],
+208:       createdAt: now(),
+209:       updatedAt: now(),
+210:     },
+211:     {
+212:       id: 'page-ministries',
+213:       websiteId: demoWebsiteId,
+214:       title: 'Ministries',
+215:       slug: 'ministries',
+216:       status: 'published',
+217:       isHome: false,
+218:       seoTitle: 'Ministries | Christ Embassy Next Church',
+219:       seoDescription: 'Ministry directory, volunteer opportunities, leaders, events, and media connections.',
+220:       content: [
+221:         { type: 'ministries_list', title: 'Find Your Ministry', items: [{ name: 'Worship & Creative Arts', desc: 'Choir, music direction, stage design, dance, and creative production.' }, { name: 'Hospitality & First Impressions', desc: 'Guest welcome, ushers, follow-up, and visitor care.' }, { name: 'Outreach & Missions', desc: 'Evangelism campaigns, local care, and missions support.' }] },
+222:         { type: 'dynamic_ministry_directory', title: 'Ministry Directory', sourceModule: 'Ministries', fields: ['leader', 'meetingTimes', 'joinForm'] },
+223:       ],
+224:       createdAt: now(),
+225:       updatedAt: now(),
+226:     },
+227:     {
+228:       id: 'page-groups',
+229:       websiteId: demoWebsiteId,
+230:       title: 'Cell Groups',
+231:       slug: 'groups',
+232:       status: 'published',
+233:       isHome: false,
+234:       seoTitle: 'Cell Groups | Christ Embassy Next Church',
+235:       seoDescription: 'Cell group finder, leader cards, meeting schedules, and join requests.',
+236:       content: [
+237:         { type: 'dynamic_cell_finder', title: 'Find a Cell Group', sourceModule: 'Cell Groups', fields: ['location', 'language', 'day', 'leader', 'joinRequest'] },
+238:       ],
+239:       createdAt: now(),
+240:       updatedAt: now(),
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

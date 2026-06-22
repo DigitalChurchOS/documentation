@@ -1,0 +1,62 @@
+Created At: 2026-06-06T16:22:23Z
+Completed At: 2026-06-06T16:22:23Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 32432
+Total Bytes: 1582809
+Showing lines 18241 to 19040
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+18241:       const container = document.getElementById('teInstalledThemesList');
+18242:       if (!container) return;
+18243: 
+18244:       if (themeEngineState.themes.length === 0) {
+18245:         container.innerHTML = `<div class="panel muted" style="grid-column:1/-1; text-align:center; padding:24px;">No installed themes found.</div>`;
+18246:         return;
+18247:       }
+18248: 
+18249:       container.innerHTML = themeEngineState.themes.map(theme => {
+18250:         const isActive = theme.id === themeEngineState.activeThemeId;
+18251:         const btnClass = isActive ? 'btn primary' : 'btn secondary';
+18252:         const btnLabel = isActive ? 'Active Theme' : 'Activate';
+18253:         const actionClick = isActive 
+18254:           ? `onclick="showToast('Theme is already active')"` 
+18255:           : `onclick="activateThemeEngineTheme('${theme.id}', '${escapeHtml(theme.name)}')"` ;
+18256: 
+18257:         return `
+18258:           <div class="panel module-card" style="display:flex; flex-direction:column; justify-content:space-between; padding:20px; border:${isActive ? '2px solid var(--accent)' : '1px solid var(--line)'}">
+18259:             <div>
+18260:               <h4 style="margin:0 0 8px 0; font-weight:700;">${escapeHtml(theme.name)}</h4>
+18261:               <p class="muted" style="font-size:12px; margin-bottom:16px;">Customizable website template container scoped to your church tenant.</p>
+18262:             </div>
+18263:             <div class="row" style="gap:8px; justify-content:space-between; margin-top
+<truncated 42222 bytes>
+        </div>
+19012:         `).join('');
+19013:       }
+19014: 
+19015:       const identity = document.getElementById('cmsIdentityPanel');
+19016:       if (identity) {
+19017:         identity.innerHTML = `
+19018:           <div class="setting-row"><div><strong>Internal resource key</strong><span class="muted"><code>${meta.resourceKey || 'core-website-cms'}</code></span></div><span class="status"><i data-lucide="key-round"></i>Spec</span></div>
+19019:           <div class="setting-row"><div><strong>Entitlement key</strong><span class="muted"><code>${meta.entitlementKey || 'website-cms'}</code></span></div><span class="status"><i data-lucide="lock-keyhole"></i>Active</span></div>
+19020:           <div class="setting-row"><div><strong>Dashboard API base</strong><span class="muted"><code>${meta.apiBase || '/api/cms'}</code></span></div><span class="status"><i data-lucide="braces"></i>Live</span></div>
+19021:           <div class="setting-row"><div><strong>Public renderer</strong><span class="muted"><code>/api/cms/render</code></span></div><span class="status"><i data-lucide="globe"></i>Published only</span></div>
+19022:         `;
+19023:       }
+19024:     }
+19025: 
+19026:     function filterCmsPages(filter) {
+19027:       cmsState.activePageFilter = filter;
+19028:       ['All', 'Published', 'Draft'].forEach(name => {
+19029:         const btn = document.getElementById(`filterPage${name}`);
+19030:         if (btn) btn.classList.toggle('active', btn.id === `filterPage${filter.charAt(0).toUpperCase() + filter.slice(1)}`);
+19031:       });
+19032:       renderCmsPagesGrid();
+19033:     }
+19034: 
+19035:     function handleCmsPageSearch(value) {
+19036:       cmsState.activePageSearch = value.toLowerCase().trim();
+19037:       renderCmsPagesGrid();
+19038:     }
+19039: 
+19040:     function sortCmsPages(value) {
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

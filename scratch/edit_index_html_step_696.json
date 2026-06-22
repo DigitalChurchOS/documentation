@@ -1,0 +1,13 @@
+{
+  "name": "replace_file_content",
+  "args": {
+    "AllowMultiple": "false",
+    "Description": "\"Optimize tab switching to avoid duplicate selection reloads in theme customizer\"",
+    "EndLine": "16497",
+    "Instruction": "\"Adjust loadCustomizerPages .then callback to only re-select activeCustomizerPageId if there was a previous selection (hadSelection)\"",
+    "ReplacementContent": "\"        } else if (tabName === 'Pages') {\\n          document.getElementById('tabPages').classList.add('active');\\n          document.getElementById('customizerPagesTab').style.display = 'block';\\n          // Auto-select first page and show page builder canvas\\n          const hadSelection = !!activeCustomizerPageId;\\n          loadCustomizerPages().then(() => {\\n            if (hadSelection && activeCustomizerPageId) {\\n              // Re-activate the existing selection to ensure iframe is visible\\n              selectCustomizerPage(activeCustomizerPageId);\\n            }\\n          });\\n        }\"",
+    "StartLine": "16481",
+    "TargetContent": "\"        } else if (tabName === 'Pages') {\\n          document.getElementById('tabPages').classList.add('active');\\n          document.getElementById('customizerPagesTab').style.display = 'block';\\n          // Auto-select first page and show page builder canvas\\n          loadCustomizerPages().then(() => {\\n            if (!activeCustomizerPageId) {\\n              const websiteId = cmsState.activeWebsiteId || (cmsState.websites && cmsState.websites[0]?.id);\\n              const websitePages = (cmsState.pages || []).filter(p => p.websiteId === websiteId);\\n              if (websitePages.length > 0) {\\n                selectCustomizerPage(websitePages[0].id);\\n              }\\n            } else {\\n              // Re-activate the existing selection to ensure iframe is visible\\n              selectCustomizerPage(activeCustomizerPageId);\\n            }\\n          });\\n        }\"",
+    "TargetFile": "\"c:\\\\Users\\\\Administrator\\\\Documents\\\\ChurchOS\\\\apps\\\\tenant-dashboard\\\\public\\\\index.html\""
+  }
+}

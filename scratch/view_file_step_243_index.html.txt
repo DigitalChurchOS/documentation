@@ -1,0 +1,65 @@
+Created At: 2026-06-06T14:52:57Z
+Completed At: 2026-06-06T14:52:57Z
+File Path: `file:///C:/Users/Administrator/Documents/ChurchOS/apps/tenant-dashboard/public/index.html`
+Total Lines: 31800
+Total Bytes: 1549383
+Showing lines 12900 to 12960
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+12900:                   <option value="lucideLine">lucideLine</option>
+12901:                   <option value="filled">filled</option>
+12902:                   <option value="outline">outline</option>
+12903:                   <option value="duotone">duotone</option>
+12904:                   <option value="minimal">minimal</option>
+12905:                 </select>
+12906:               </div>
+12907:               <div class="control">
+12908:                 <label>Button style</label>
+12909:                 <div class="option-grid" data-setting="buttonStyle">
+12910:                   <button class="option active" data-value="solid" type="button">Solid</button>
+12911:                   <button class="option" data-value="outline" type="button">Outline</button>
+12912:                   <button class="option" data-value="soft" type="button">Soft</button>
+12913:                   <button class="option" data-value="glass" type="button">Glass</button>
+12914:                 </div>
+12915:               </div>
+12916:             </div>
+12917:           </div>
+12918:         </aside>
+12919: 
+12920:         <section class="preview-stage">
+12921:           <div class="preview-canvas" id="previewCanvas">
+12922:             <div class="preview-frame" id="previewFrame">
+12923:               <div class="device-status-bar">
+12924:                 <span class="status-time">9:41</span>
+12925:                 <div class="status-icons">
+12926:                   <span class="status-icon signal">
+12927:                     <span></span><
+<truncated 694 bytes>
+</span></span>
+12934:                     <span class="battery-cap"></span>
+12935:                   </span>
+12936:                 </div>
+12937:               </div>
+12938:               <div class="church-site" id="churchSite">
+12939:                 <header class="site-header">
+12940:                   <div class="site-brand"><div class="site-mark"><i data-lucide="church"></i></div><span>Christ Embassy Bunga</span></div>
+12941:                   <nav class="site-nav"><a class="active">Home</a><a>About</a><a>Events</a><a>Sermons</a><a>Prayer</a><a>Giving</a></nav>
+12942:                   <button class="theme-btn" type="button">Watch Live</button>
+12943:                 </header>
+12944:                 <section class="hero">
+12945:                   <div class="hero-grid">
+12946:                     <div>
+12947:                       <span class="kicker"><i data-lucide="sparkles"></i> Welcome home</span>
+12948:                       <h1>Experience worship, word, prayer and community.</h1>
+12949:                       <p>A warm digital church experience built from platform contracts, theme slots, universal settings, and secure plugin injection.</p>
+12950:                       <div class="hero-actions">
+12951:                         <button class="theme-btn" type="button">Plan a Visit</button>
+12952:                         <button class="theme-btn secondary" type="button">Give Now</button>
+12953:                       </div>
+12954:                     </div>
+12955:                     <div class="hero-media"><div class="floating-card"><strong>Next service</strong><span>Sunday 9:30 AM</span></div></div>
+12956:                   </div>
+12957:                 </section>
+12958:                 <section class="section">
+12959:                   <div class="section-title">
+12960:                     <div>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

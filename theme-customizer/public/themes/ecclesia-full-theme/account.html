@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Account - Grace City Church</title>
+  <link rel="stylesheet" href="assets/styles.css?v=9" />
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div class="top"><strong>Member Portal:</strong> Your profile, records, and church access in one place.</div>
+<header class="header">
+  <div class="nav-wrap">
+    <a href="index.html" class="brand"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+    <nav class="nav"><a href="index.html">Home</a><a href="about.html">About</a><a href="sermons.html">Sermons</a><a href="events.html">Events</a><a href="ministries.html">Ministries</a><a href="prayer.html">Prayer</a><a class="active" href="account.html">Account</a></nav>
+    <div class="header-actions">
+      <a class="btn btn-soft" href="login.html"><i data-lucide="log-in"></i> Sign In</a>
+      <a class="btn btn-primary" href="contact.html">Plan Visit</a>
+      <button class="mobile-menu-btn" id="menuBtn"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="member-account-hero">
+    <div>
+      <div class="section-kicker">Member profile</div>
+      <h1>Ada Stone</h1>
+      <p class="lead">ada@example.com</p>
+    </div>
+    <div class="member-stat-strip">
+      <div><span>Giving</span><strong>$2,450.00</strong></div>
+      <div><span>Records</span><strong>18</strong></div>
+      <div><span>Check-ins</span><strong>7</strong></div>
+    </div>
+  </section>
+
+  <section class="member-dashboard-preview section">
+    <article class="member-panel member-profile-panel">
+      <h2>Profile</h2>
+      <p>Joined Jun 17, 2026</p>
+      <form class="member-form-preview two-col">
+        <label>First name<input value="Ada" /></label>
+        <label>Last name<input value="Stone" /></label>
+        <label>Email<input type="email" value="ada@example.com" /></label>
+        <label>Phone<input value="+1 555 010 2026" /></label>
+        <label class="full">Address<input value="101 Fellowship Way" /></label>
+        <button class="btn btn-primary" type="button"><i data-lucide="save"></i> Save Profile</button>
+        <a class="btn btn-soft" href="login.html"><i data-lucide="log-out"></i> Sign Out</a>
+      </form>
+    </article>
+
+    <article class="member-panel">
+      <h2>Access</h2>
+      <p>Member access is active.</p>
+      <div class="member-access-list">
+        <a href="giving.html"><strong><i data-lucide="gift"></i> Giving</strong><span>Open</span></a>
+        <a href="courses-archive.html"><strong><i data-lucide="graduation-cap"></i> Courses</strong><span>3</span></a>
+        <a href="events.html"><strong><i data-lucide="calendar-days"></i> Events</strong><span>2</span></a>
+        <a href="library-archive.html"><strong><i data-lucide="book-open"></i> Library</strong><span>Browse</span></a>
+      </div>
+    </article>
+
+    <article class="member-panel">
+      <h2>Giving Records</h2>
+      <p>$2,450.00 recorded.</p>
+      <div class="member-record-list">
+        <div><strong>Tithes</strong><span>$1,800.00</span></div>
+        <div><strong>Missions</strong><span>$400.00</span></div>
+        <div><strong>Building Fund</strong><span>$250.00</span></div>
+      </div>
+    </article>
+
+    <article class="member-panel">
+      <h2>Preferences</h2>
+      <p>Communication channels</p>
+      <div class="member-check-list">
+        <label>Email updates<input type="checkbox" checked /></label>
+        <label>SMS updates<input type="checkbox" checked /></label>
+        <label>App notifications<input type="checkbox" checked /></label>
+        <label>WhatsApp updates<input type="checkbox" /></label>
+      </div>
+      <button class="btn btn-primary btn-full" type="button"><i data-lucide="check-circle-2"></i> Save Preferences</button>
+    </article>
+
+    <article class="member-panel"><h2>Groups</h2><p>2 active connection records</p><div class="member-empty-preview">Young Adults, Outreach Team</div></article>
+    <article class="member-panel"><h2>Courses</h2><p>3 enrollments</p><div class="member-empty-preview">Foundations, Leadership Track, Prayer School</div></article>
+    <article class="member-panel"><h2>Attendance</h2><p>7 recent check-ins</p><div class="member-empty-preview">Sunday Worship, Midweek Word, Prayer Room</div></article>
+    <article class="member-panel"><h2>Events</h2><p>2 registrations</p><div class="member-empty-preview">Family Sunday, Serve Day</div></article>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div><a href="index.html" class="brand" style="color:white;"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a><p style="margin-top:18px;max-width:340px;">A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.</p></div>
+      <div><h4>Explore</h4><a href="about.html">About</a><a href="sermons.html">Sermons</a><a href="events.html">Events</a><a href="ministries.html">Ministries</a></div>
+      <div><h4>Connect</h4><a href="login.html">Member Login</a><a href="account.html">My Account</a><a href="prayer.html">Prayer Request</a><a href="contact.html">Volunteer</a></div>
+      <div><h4>Service Times</h4><p>Sunday Worship<br />9:30 AM</p><p>Midweek Word & Prayer<br />Wednesday 7:00 PM</p></div>
+    </div>
+    <div class="footer-bottom"><span>Grace City Church</span><span>Ecclesia Theme - Digital Church OS</span></div>
+  </div>
+</footer>
+
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<aside class="mobile-drawer" id="mobileDrawer">
+  <div class="drawer-close-row"><button class="drawer-close" id="drawerClose" aria-label="Close menu"><i data-lucide="x"></i></button></div>
+  <nav class="drawer-nav">
+    <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+    <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
+    <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
+    <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
+    <a class="pjax-link" href="account.html"><i data-lucide="user-circle"></i> Account</a>
+  </nav>
+  <div class="drawer-actions"><a href="login.html" class="btn btn-soft btn-full pjax-link"><i data-lucide="log-in"></i> Sign In</a><a href="contact.html" class="btn btn-primary btn-full pjax-link"><i data-lucide="map-pin"></i> Plan Visit</a></div>
+</aside>
+
+<script src="assets/theme.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
