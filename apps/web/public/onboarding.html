@@ -722,6 +722,65 @@
       color: var(--muted);
     }
 
+    /* Selectable Payment Provider Cards */
+    .payment-provider-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: var(--solid);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      min-height: 100px;
+      position: relative;
+    }
+    .payment-provider-card:hover {
+      border-color: var(--accent-2);
+      transform: translateY(-2px);
+    }
+    .payment-provider-card.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: var(--shadow-soft);
+    }
+    .payment-provider-card i {
+      width: 28px;
+      height: 28px;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .payment-provider-card.active i {
+      color: var(--accent);
+    }
+    .payment-provider-card h4 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .payment-provider-card .check-indicator {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+    }
+    .payment-provider-card.active .check-indicator {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
     /* Custom Checkbox Toggle */
     .switch {
       position: relative;
@@ -1060,11 +1119,11 @@
     ];
 
     // Dynamic Dropdown Generators
-    function generateCountryOptions(selectedValue) {
+    function generateCountryOptions(selectedValue, targetInputId = 'profileCountry') {
       if (!window.WORLD_COUNTRIES) return '';
       return window.WORLD_COUNTRIES.map(c => `
         <div class="modern-option ${c.name === selectedValue ? 'selected' : ''}" 
-             onclick="selectOption(event, this, 'profileCountry', '${c.name.replace(/'/g, "\\'")}', '${c.emoji} ${c.name.replace(/'/g, "\\'")}')">
+             onclick="selectOption(event, this, '${targetInputId}', '${c.name.replace(/'/g, "\\'")}', '${c.emoji} ${c.name.replace(/'/g, "\\'")}')">
           <span style="display:flex; align-items:center; gap:8px;">${c.emoji} ${c.name}</span>
         </div>
       `).join('');
@@ -1116,6 +1175,29 @@
       });
     }
 
+    function toggleGatewayCard(el) {
+      el.classList.toggle('active');
+      
+      const activeCards = document.querySelectorAll('.payment-provider-card.active');
+      const activeKeys = Array.from(activeCards).map(card => card.dataset.gateway);
+      
+      const gatewayInput = document.getElementById('gatewayProvider');
+      if (gatewayInput) {
+        gatewayInput.value = activeKeys.join(',');
+      }
+      
+      const indicator = el.querySelector('.check-indicator');
+      if (indicator) {
+        if (el.classList.contains('active')) {
+          indicator.innerHTML = '<i data-lucide="check" style="width:10px; height:10px; color:white;"></i>';
+        } else {
+          indicator.innerHTML = '';
+        }
+      }
+      
+      lucide.createIcons({ root: el });
+    }
+
     // Secure authentication check
     const token = localStorage.getItem("churchos.token");
     const tenantId = localStorage.getItem("churchos.tenantId");
@@ -1133,11 +1215,42 @@
     }
 
     function toggleDropdown(el) {
-      // close others
+      const dropdown = el.querySelector('.modern-select-dropdown');
+      const trigger = el.querySelector('.modern-select-trigger');
+
       document.querySelectorAll('.modern-select-wrapper').forEach(item => {
-        if (item !== el) item.classList.remove('open');
+        if (item !== el) {
+          item.classList.remove('open');
+          const d = item.querySelector('.modern-select-dropdown');
+          if (d) {
+            d.style.position = '';
+            d.style.top = '';
+            d.style.left = '';
+            d.style.width = '';
+            d.style.zIndex = '';
+          }
+        }
       });
-      el.classList.toggle('open');
+
+      const isOpen = el.classList.toggle('open');
+      if (isOpen && dropdown && trigger) {
+        const rect = trigger.getBoundingClientRect();
+        dropdown.style.position = 'fixed';
+        dropdown.style.top = (rect.bottom + 6) + 'px';
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.zIndex = '99999';
+        if (el.closest('.phone-input-group')) {
+          dropdown.style.width = '240px';
+        } else {
+          dropdown.style.width = rect.width + 'px';
+        }
+      } else if (!isOpen && dropdown) {
+        dropdown.style.position = '';
+        dropdown.style.top = '';
+        dropdown.style.left = '';
+        dropdown.style.width = '';
+        dropdown.style.zIndex = '';
+      }
       lucide.createIcons();
     }
 
@@ -1157,6 +1270,14 @@
       
       // close dropdown
       customSelect.classList.remove('open');
+      const d = customSelect.querySelector('.modern-select-dropdown');
+      if (d) {
+        d.style.position = '';
+        d.style.top = '';
+        d.style.left = '';
+        d.style.width = '';
+        d.style.zIndex = '';
+      }
       lucide.createIcons();
       
       // Trigger change event if needed
@@ -1167,7 +1288,17 @@
     // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
       if (!e.target.closest('.modern-select-wrapper')) {
-        document.querySelectorAll('.modern-select-wrapper').forEach(item => item.classList.remove('open'));
+        document.querySelectorAll('.modern-select-wrapper').forEach(item => {
+          item.classList.remove('open');
+          const d = item.querySelector('.modern-select-dropdown');
+          if (d) {
+            d.style.position = '';
+            d.style.top = '';
+            d.style.left = '';
+            d.style.width = '';
+            d.style.zIndex = '';
+          }
+        });
         lucide.createIcons();
       }
     });
@@ -1225,7 +1356,7 @@
       { index: 2, category: 0, stepKey: 'profile', subStepKey: 'profile-times', title: 'Service Times', description: 'Configure worship services schedules and timezone' },
       // Category 1
       { index: 3, category: 1, stepKey: 'logo', subStepKey: 'logo', title: 'Brand Logo', description: 'Upload logos and favicon' },
-      { index: 4, category: 1, stepKey: 'website', subStepKey: 'website', title: 'Website Settings', description: 'Configure landing page content' },
+      { index: 4, category: 1, stepKey: 'website', subStepKey: 'website', title: 'Website Info', description: 'Configure landing page content' },
       { index: 5, category: 1, stepKey: 'domain', subStepKey: 'domain', title: 'Domain Setup', description: 'Reserve subdomain and custom domain' },
       // Category 2
       { index: 6, category: 2, stepKey: 'modules', subStepKey: 'modules', title: 'Active Modules', description: 'Enable target ministry modules' },
@@ -1644,12 +1775,14 @@
 
           <div class="review-section ${isWebsiteOk ? '' : 'warning'}" onclick="goToSubStep(4)">
             <div class="review-section-header">
-              <h3>Website Settings</h3>
+              <h3>Website Info</h3>
               <span class="status-badge ${isWebsiteOk ? 'ok' : 'missing'}">${isWebsiteOk ? 'Ready' : 'Missed'}</span>
             </div>
             <div class="review-section-body">
-              <div class="review-item"><span>Hero Title</span><span>${websiteMeta.homepageTitle || '—'}</span></div>
-              <div class="review-item"><span>CTA Button</span><span>${websiteMeta.primaryCtaText || '—'}</span></div>
+              <div class="review-item"><span>Homepage Title</span><span>${websiteMeta.homepageTitle || '—'}</span></div>
+              <div class="review-item"><span>Tagline</span><span>${websiteMeta.homepageSubtitle || '—'}</span></div>
+              <div class="review-item"><span>Vision</span><span>${websiteMeta.vision ? (websiteMeta.vision.substring(0, 30) + (websiteMeta.vision.length > 30 ? '...' : '')) : '—'}</span></div>
+              <div class="review-item"><span>Mission</span><span>${websiteMeta.mission ? (websiteMeta.mission.substring(0, 30) + (websiteMeta.mission.length > 30 ? '...' : '')) : '—'}</span></div>
             </div>
           </div>
 
@@ -1689,7 +1822,21 @@
               <span class="status-badge ok">Ready</span>
             </div>
             <div class="review-section-body">
-              <div class="review-item"><span>Payment Gateway</span><span>${givingMeta.gatewayProvider || 'manual'}</span></div>
+              <div class="review-item"><span>Payment Gateways</span><span>${
+                (() => {
+                  const val = givingMeta.gatewayProvider || 'manual';
+                  const namesMap = {
+                    pesapal: 'Pesapal',
+                    flutterwave: 'Flutterwave',
+                    yo: 'Yo! Payments',
+                    stripe: 'Stripe',
+                    native: 'Platform Checkout',
+                    bank: 'Manual Bank Transfer',
+                    manual: 'Manual Bank Transfer'
+                  };
+                  return val.split(',').filter(Boolean).map(k => namesMap[k] || k).join(', ') || 'Manual Bank Transfer';
+                })()
+              }</span></div>
               <div class="review-item"><span>Gateway Status</span><span>${givingMeta.integrationMode || 'pending'}</span></div>
             </div>
           </div>
@@ -1812,6 +1959,36 @@
         case 1: // profile-location
           formHtml = `
             <form id="stepForm" class="form-grid">
+              <div class="field full">
+                <label for="profileStreet">Street Address</label>
+                <input id="profileStreet" value="${metadata.street || ''}" placeholder="e.g. 221 Victory Ave" required />
+              </div>
+
+              <div class="field">
+                <label for="profileUnit">Suite / Unit / Apt (Optional)</label>
+                <input id="profileUnit" value="${metadata.unit || ''}" placeholder="e.g. Suite 404" />
+              </div>
+
+              <div class="field">
+                <label for="profilePoBox">PO Box (Optional)</label>
+                <input id="profilePoBox" value="${metadata.poBox || ''}" placeholder="e.g. PO Box 1234" />
+              </div>
+
+              <div class="field">
+                <label for="profileCity">City</label>
+                <input id="profileCity" value="${metadata.city || state.tenant.city || ''}" placeholder="e.g. Edmonton" required />
+              </div>
+
+              <div class="field">
+                <label for="profileState">State / Province / Region</label>
+                <input id="profileState" value="${metadata.state || ''}" placeholder="e.g. Alberta" required />
+              </div>
+
+              <div class="field">
+                <label for="profileZip">Zip / Postal Code</label>
+                <input id="profileZip" value="${metadata.zip || ''}" placeholder="e.g. T5J 2H5" required />
+              </div>
+
               <div class="field">
                 <label>Country</label>
                 <input type="hidden" id="profileCountry" value="${metadata.country || state.tenant.country || ''}">
@@ -1836,27 +2013,69 @@
                    </div>
                 </div>
               </div>
-
-              <div class="field">
-                <label for="profileCity">City</label>
-                <input id="profileCity" value="${metadata.city || state.tenant.city || ''}" placeholder="e.g. Edmonton" required />
-              </div>
-
-              <div class="field full">
-                <label for="profileAddress" style="display:flex; align-items:center;">
-                  Church Address
-                </label>
-                <input id="profileAddress" value="${metadata.address || ''}" placeholder="e.g. 221 Victory Ave, Edmonton" />
-              </div>
               
-              <div class="field full" style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-bottom: 8px;">
-                <input type="checkbox" id="profileVenueCheck" ${metadata.isVenueDifferent ? 'checked' : ''} onchange="document.getElementById('venueAddressContainer').style.display = this.checked ? 'block' : 'none'" style="width:16px; height:16px; flex:none; margin:0; accent-color: var(--accent); cursor:pointer;" />
+              <div class="field full" style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-top: 8px; margin-bottom: 8px;">
+                <input type="checkbox" id="profileVenueCheck" ${metadata.isVenueDifferent ? 'checked' : ''} onchange="document.getElementById('venueAddressContainer').style.display = this.checked ? 'grid' : 'none'" style="width:16px; height:16px; flex:none; margin:0; accent-color: var(--accent); cursor:pointer;" />
                 <label for="profileVenueCheck" style="margin:0; font-weight:normal; font-size:13px; color:var(--charcoal); cursor:pointer;">Church venue is different from office address</label>
               </div>
               
-              <div class="field full" id="venueAddressContainer" style="display: ${metadata.isVenueDifferent ? 'block' : 'none'};">
-                <label for="profileVenueAddress">Venue Address</label>
-                <input id="profileVenueAddress" value="${metadata.venueAddress || ''}" placeholder="e.g. 500 Main St Venue" />
+              <div class="form-grid" id="venueAddressContainer" style="display: ${metadata.isVenueDifferent ? 'grid' : 'none'}; grid-column: span 2; border-top: 1px dashed var(--line); padding-top: 16px; margin-top: 8px; gap: 16px;">
+                <h4 style="margin: 0; color: var(--accent); font-size: 13px; font-weight: 600; grid-column: span 2;">Church Venue Address</h4>
+                
+                <div class="field full">
+                  <label for="venueStreet">Street Address</label>
+                  <input id="venueStreet" value="${metadata.venueStreet || ''}" placeholder="e.g. 500 Main St Venue" />
+                </div>
+
+                <div class="field">
+                  <label for="venueUnit">Suite / Unit / Apt (Optional)</label>
+                  <input id="venueUnit" value="${metadata.venueUnit || ''}" placeholder="e.g. Suite 101" />
+                </div>
+
+                <div class="field">
+                  <label for="venuePoBox">PO Box (Optional)</label>
+                  <input id="venuePoBox" value="${metadata.venuePoBox || ''}" placeholder="e.g. PO Box 5678" />
+                </div>
+
+                <div class="field">
+                  <label for="venueCity">City</label>
+                  <input id="venueCity" value="${metadata.venueCity || ''}" placeholder="e.g. Edmonton" />
+                </div>
+
+                <div class="field">
+                  <label for="venueState">State / Province / Region</label>
+                  <input id="venueState" value="${metadata.venueState || ''}" placeholder="e.g. Alberta" />
+                </div>
+
+                <div class="field">
+                  <label for="venueZip">Zip / Postal Code</label>
+                  <input id="venueZip" value="${metadata.venueZip || ''}" placeholder="e.g. T5J 2H5" />
+                </div>
+
+                <div class="field">
+                  <label>Country</label>
+                  <input type="hidden" id="venueCountry" value="${metadata.venueCountry || ''}">
+                  <div class="modern-select-wrapper" onclick="toggleDropdown(this)">
+                     <div class="modern-select-trigger">
+                       <span style="display:flex; align-items:center; gap:4px; font-weight:500;">
+                         ${(() => {
+                           const c = window.WORLD_COUNTRIES?.find(x => x.name === metadata.venueCountry);
+                           return c ? `${c.emoji} ${c.name}` : (metadata.venueCountry || 'Select Country');
+                         })()}
+                       </span>
+                       <i data-lucide="chevron-down" style="width:16px; height:16px; color:var(--muted);"></i>
+                     </div>
+                     <div class="modern-select-dropdown">
+                       <div class="modern-select-search" onclick="event.stopPropagation()">
+                         <i data-lucide="search"></i>
+                         <input type="text" placeholder="Search country..." oninput="filterOptions(this)" />
+                       </div>
+                       <div class="modern-select-options-container">
+                         ${generateCountryOptions(metadata.venueCountry || '', 'venueCountry')}
+                       </div>
+                     </div>
+                  </div>
+                </div>
               </div>
             </form>
           `;
@@ -2012,30 +2231,39 @@
           break;
           
         case 4: // website
-          formHtml = `
-            <form id="stepForm" class="form-grid">
-              <div class="field full">
-                <label for="homepageTitle">Homepage Title</label>
-                <input id="homepageTitle" value="${metadata.homepageTitle || 'Welcome Home'}" placeholder="e.g. Welcome to Christ Embassy" required />
-              </div>
-              <div class="field full">
-                <label for="homepageSubtitle">Homepage Subtitle</label>
-                <input id="homepageSubtitle" value="${metadata.homepageSubtitle || 'We are glad you are here.'}" placeholder="e.g. Build, manage, and grow your church online." required />
-              </div>
-              <div class="field full">
-                <label for="aboutText">About Text Paragraph</label>
-                <textarea id="aboutText" placeholder="Brief story about your church mission and core values...">${metadata.aboutText || ''}</textarea>
-              </div>
-              <div class="field">
-                <label for="primaryCtaText">Primary CTA Button Label</label>
-                <input id="primaryCtaText" value="${metadata.primaryCtaText || 'Plan a Visit'}" placeholder="e.g. Watch Live" />
-              </div>
-              <div class="field">
-                <label for="primaryCtaUrl">Primary CTA Button Link</label>
-                <input id="primaryCtaUrl" value="${metadata.primaryCtaUrl || '/visit'}" placeholder="e.g. /give" />
-              </div>
-            </form>
-          `;
+          {
+            const profileStep = state.steps.find(s => s.stepKey === 'profile') || {};
+            let profileMeta = {};
+            if (profileStep.metadataJson) {
+              try { profileMeta = JSON.parse(profileStep.metadataJson); } catch {}
+            }
+            const churchName = profileMeta.churchName || readOnboardingContext().steps?.profile?.churchName || state.tenant.name || '';
+            
+            formHtml = `
+              <form id="stepForm" class="form-grid">
+                <div class="field full">
+                  <label for="homepageTitle">Homepage Title</label>
+                  <input id="homepageTitle" value="${metadata.homepageTitle || churchName || 'Welcome Home'}" placeholder="e.g. Welcome to Christ Embassy" required />
+                </div>
+                <div class="field full">
+                  <label for="homepageSubtitle">Tagline</label>
+                  <input id="homepageSubtitle" value="${metadata.homepageSubtitle || 'We are glad you are here.'}" placeholder="e.g. Build, manage, and grow your church online." required />
+                </div>
+                <div class="field full">
+                  <label for="aboutText">About Text Paragraph</label>
+                  <textarea id="aboutText" placeholder="Brief story about your church and core values...">${metadata.aboutText || ''}</textarea>
+                </div>
+                <div class="field full">
+                  <label for="vision">Vision</label>
+                  <textarea id="vision" placeholder="Enter church vision statement...">${metadata.vision || ''}</textarea>
+                </div>
+                <div class="field full">
+                  <label for="mission">Mission Statement</label>
+                  <textarea id="mission" placeholder="Enter church mission statement...">${metadata.mission || ''}</textarea>
+                </div>
+              </form>
+            `;
+          }
           break;
           
         case 5: // domain
@@ -2101,43 +2329,50 @@
         case 7: // giving
           {
             const gatewayVal = metadata.gatewayProvider || 'pesapal';
-            const gatewayNameMap = {
-              pesapal: 'Pesapal (East Africa)',
-              flutterwave: 'Flutterwave',
-              yo: 'Yo! Payments',
-              stripe: 'Stripe (Card Payments)',
-              bank: 'Manual Bank Transfer'
-            };
+            const activeGateways = gatewayVal.split(',').filter(Boolean);
             
+            const providers = [
+              { key: 'stripe', name: 'Stripe', icon: 'credit-card', desc: 'Global card checkout' },
+              { key: 'flutterwave', name: 'Flutterwave', icon: 'globe', desc: 'Accept cards & Mobile Money' },
+              { key: 'pesapal', name: 'Pesapal', icon: 'wallet', desc: 'Popular in East Africa' },
+              { key: 'yo', name: 'Yo! Payments', icon: 'smartphone', desc: 'Direct Mobile Money gateway' },
+              { key: 'native', name: 'Platform Checkout', icon: 'shield-check', desc: 'Native central checkout' },
+              { key: 'bank', name: 'Manual Bank', icon: 'landmark', desc: 'Direct bank transfer guides' }
+            ];
+
             const integrationVal = metadata.integrationMode || 'pending';
             const integrationNameMap = {
               pending: 'Pending DNS Configuration',
               active: 'Live Production Gate'
             };
 
+            const cardsHtml = providers.map(p => {
+              const isActive = activeGateways.includes(p.key);
+              return `
+                <div class="payment-provider-card ${isActive ? 'active' : ''}" 
+                     data-gateway="${p.key}" 
+                     onclick="toggleGatewayCard(this)">
+                  <div class="check-indicator">
+                    ${isActive ? '<i data-lucide="check" style="width:10px; height:10px; color:white;"></i>' : ''}
+                  </div>
+                  <i data-lucide="${p.icon}"></i>
+                  <h4>${p.name}</h4>
+                  <span style="font-size:9px; color:var(--muted); line-height:1.2; display:block; margin-top:2px;">${p.desc}</span>
+                </div>
+              `;
+            }).join('');
+
             formHtml = `
-              <form id="stepForm" class="form-grid">
-                <div class="field">
-                  <label>Payment Gateway Provider</label>
-                  <input type="hidden" id="gatewayProvider" value="${gatewayVal}" />
-                  <div class="modern-select-wrapper" onclick="toggleDropdown(this)">
-                    <div class="modern-select-trigger">
-                      <span>${gatewayNameMap[gatewayVal]}</span>
-                      <i data-lucide="chevron-down"></i>
-                    </div>
-                    <div class="modern-select-dropdown">
-                      <div class="modern-select-options-container">
-                        ${Object.entries(gatewayNameMap).map(([key, name]) => `
-                          <div class="modern-option ${key === gatewayVal ? 'selected' : ''}" 
-                               onclick="selectOption(event, this, 'gatewayProvider', '${key}', '${name.replace(/'/g, "\\'")}')">
-                            ${name}
-                          </div>
-                        `).join('')}
-                      </div>
-                    </div>
+              <form id="stepForm" class="form-grid" style="gap:20px;">
+                <input type="hidden" id="gatewayProvider" value="${gatewayVal}" />
+                
+                <div class="field full">
+                  <label>Select Payment Gateways to Activate</label>
+                  <div class="payment-cards-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; width:100%; margin-top:8px;">
+                    ${cardsHtml}
                   </div>
                 </div>
-                
+
                 <div class="field">
                   <label>Integration Mode</label>
                   <input type="hidden" id="integrationMode" value="${integrationVal}" />
@@ -2160,7 +2395,7 @@
                 </div>
                 
                 <div class="field full">
-                  <span style="font-size:12px; color:var(--muted); line-height: 1.4;">Select a giving portal gateway. Configuration can be skipped and adjusted later from your dashboard Settings panel.</span>
+                  <span style="font-size:12px; color:var(--muted); line-height: 1.4;">Select one or more payment gateways to enable. Configuration can be skipped and adjusted later from your dashboard Settings panel.</span>
                 </div>
               </form>
             `;
@@ -2323,14 +2558,75 @@
               email: document.getElementById("profileEmail").value.trim()
             };
           } else if (state.activeSubStepIndex === 1) {
+            const street = document.getElementById("profileStreet").value.trim();
+            const unit = document.getElementById("profileUnit").value.trim();
+            const poBox = document.getElementById("profilePoBox").value.trim();
+            const city = document.getElementById("profileCity").value.trim();
+            const provinceState = document.getElementById("profileState").value.trim();
+            const zip = document.getElementById("profileZip").value.trim();
+            const country = document.getElementById("profileCountry").value;
+
+            const parts = [
+              street,
+              unit ? `Unit/Suite ${unit}` : '',
+              poBox ? poBox : '',
+              city,
+              provinceState,
+              zip,
+              country
+            ].filter(Boolean);
+            const address = parts.join(', ');
+
             const isVenueDifferent = document.getElementById("profileVenueCheck").checked;
+            let venueStreet = '';
+            let venueUnit = '';
+            let venuePoBox = '';
+            let venueCity = '';
+            let venueState = '';
+            let venueZip = '';
+            let venueCountry = '';
+            let venueAddress = null;
+
+            if (isVenueDifferent) {
+              venueStreet = document.getElementById("venueStreet").value.trim();
+              venueUnit = document.getElementById("venueUnit").value.trim();
+              venuePoBox = document.getElementById("venuePoBox").value.trim();
+              venueCity = document.getElementById("venueCity").value.trim();
+              venueState = document.getElementById("venueState").value.trim();
+              venueZip = document.getElementById("venueZip").value.trim();
+              venueCountry = document.getElementById("venueCountry").value;
+
+              const venueParts = [
+                venueStreet,
+                venueUnit ? `Unit/Suite ${venueUnit}` : '',
+                venuePoBox ? venuePoBox : '',
+                venueCity,
+                venueState,
+                venueZip,
+                venueCountry
+              ].filter(Boolean);
+              venueAddress = venueParts.join(', ');
+            }
+
             bodyData = {
               ...existingMeta,
-              country: document.getElementById("profileCountry").value,
-              city: document.getElementById("profileCity").value.trim(),
-              address: document.getElementById("profileAddress").value.trim(),
+              street,
+              unit,
+              poBox,
+              state: provinceState,
+              zip,
+              city,
+              country,
+              address,
               isVenueDifferent: isVenueDifferent,
-              venueAddress: isVenueDifferent ? document.getElementById("profileVenueAddress").value.trim() : null
+              venueStreet,
+              venueUnit,
+              venuePoBox,
+              venueCity,
+              venueState,
+              venueZip,
+              venueCountry,
+              venueAddress
             };
           } else if (state.activeSubStepIndex === 2) {
             const stRows = document.querySelectorAll('.service-time-row');
@@ -2363,8 +2659,8 @@
             homepageTitle: document.getElementById("homepageTitle").value.trim(),
             homepageSubtitle: document.getElementById("homepageSubtitle").value.trim(),
             aboutText: document.getElementById("aboutText").value.trim(),
-            primaryCtaText: document.getElementById("primaryCtaText").value.trim(),
-            primaryCtaUrl: document.getElementById("primaryCtaUrl").value.trim()
+            vision: document.getElementById("vision").value.trim(),
+            mission: document.getElementById("mission").value.trim()
           };
         } else if (sub.stepKey === 'domain') {
           url = '/api/onboarding/domain';
@@ -2780,6 +3076,23 @@
         showToast(err.message || 'Launch failed', true);
       }
     }
+
+    // Close dropdowns on scroll to prevent floating fixed menus from becoming misaligned
+    document.addEventListener('scroll', function(e) {
+      if (e.target.closest('#stepForm') || e.target.id === 'stepForm' || e.target === document) {
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(el => {
+          el.classList.remove('open');
+          const d = el.querySelector('.modern-select-dropdown');
+          if (d) {
+            d.style.position = '';
+            d.style.top = '';
+            d.style.left = '';
+            d.style.width = '';
+            d.style.zIndex = '';
+          }
+        });
+      }
+    }, true);
 
     // Initialize Page
     loadOnboarding();

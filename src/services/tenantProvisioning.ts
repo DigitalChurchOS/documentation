@@ -858,7 +858,21 @@ export class TenantProvisioningService {
 
       await this.mergeChurchDetails(tenantId, {
         address: metadata.address || '',
+        street: metadata.street || '',
+        unit: metadata.unit || '',
+        poBox: metadata.poBox || '',
+        state: metadata.state || '',
+        zip: metadata.zip || '',
+        city: metadata.city || '',
+        country: metadata.country || '',
         venueAddress: metadata.venueAddress || '',
+        venueStreet: metadata.venueStreet || '',
+        venueUnit: metadata.venueUnit || '',
+        venuePoBox: metadata.venuePoBox || '',
+        venueCity: metadata.venueCity || '',
+        venueState: metadata.venueState || '',
+        venueZip: metadata.venueZip || '',
+        venueCountry: metadata.venueCountry || '',
         isVenueDifferent: Boolean(metadata.isVenueDifferent),
         phone,
         phoneCode: metadata.phoneCode || '',
@@ -866,8 +880,6 @@ export class TenantProvisioningService {
         publicEmail: metadata.email || '',
         timezone: metadata.timezone || 'UTC',
         serviceTimes: metadata.serviceTimes || [],
-        city: metadata.city || '',
-        country: metadata.country || '',
         ownerName: metadata.ownerName || '',
         ownerEmail: metadata.ownerEmail || '',
       });
@@ -913,8 +925,8 @@ export class TenantProvisioningService {
                 title: metadata.homepageTitle || website.title,
                 subtitle: metadata.homepageSubtitle || '',
                 aboutText: metadata.aboutText || '',
-                buttonText: metadata.primaryCtaText || 'Plan a Visit',
-                buttonUrl: metadata.primaryCtaUrl || '/visit',
+                vision: metadata.vision || '',
+                mission: metadata.mission || '',
               },
             ]),
           },
@@ -928,8 +940,8 @@ export class TenantProvisioningService {
                 title: metadata.homepageTitle || website.title,
                 subtitle: metadata.homepageSubtitle || '',
                 aboutText: metadata.aboutText || '',
-                buttonText: metadata.primaryCtaText || 'Plan a Visit',
-                buttonUrl: metadata.primaryCtaUrl || '/visit',
+                vision: metadata.vision || '',
+                mission: metadata.mission || '',
               },
             ]),
           },
@@ -940,6 +952,10 @@ export class TenantProvisioningService {
             title: metadata.homepageTitle || website.title,
             description: metadata.homepageSubtitle || website.description,
           },
+        });
+        await this.mergeChurchDetails(tenantId, {
+          vision: metadata.vision || '',
+          mission: metadata.mission || '',
         });
       }
     }
