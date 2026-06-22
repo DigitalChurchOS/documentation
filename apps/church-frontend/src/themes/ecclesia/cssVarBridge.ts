@@ -225,6 +225,30 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
     border = dark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.45)';
   }
 
+  // Base body background with glows depending on style & atmosphere
+  let bgGradient = 'none';
+  if (atmosphere === 'Warm') {
+    bgGradient = `linear-gradient(135deg, color-mix(in srgb, ${primary} 10%, #fff7ed), ${bg} 60%)`;
+  } else if (atmosphere === 'Worship') {
+    bgGradient = `radial-gradient(circle at 50% 20%, color-mix(in srgb, ${primary} 20%, transparent), transparent 70%), linear-gradient(180deg, ${bg}, #020408)`;
+  } else if (atmosphere === 'Prayer') {
+    bgGradient = `linear-gradient(90deg, color-mix(in srgb, ${primary} 2%, #fcfbf9) 0%, ${bg} 50%, color-mix(in srgb, ${primary} 2%, #fcfbf9) 100%)`;
+  } else if (atmosphere === 'Celebration') {
+    bgGradient = `radial-gradient(circle at 10% 20%, color-mix(in srgb, ${primary} 16%, transparent), transparent 45%), radial-gradient(circle at 90% 80%, color-mix(in srgb, ${gold} 12%, transparent), transparent 55%)`;
+  }
+
+  let bodyBg = bg;
+  if (style === 'Soft') {
+    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, ${primary} 8%, transparent), transparent 30%), radial-gradient(circle at 84% 2%, color-mix(in srgb, ${gold} 6%, transparent), transparent 26%), ${bg}`;
+  } else if (style === 'Vibrant') {
+    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, ${primary} 15%, transparent), transparent 30%), radial-gradient(circle at 84% 2%, color-mix(in srgb, ${gold} 10%, transparent), transparent 26%), ${bg}`;
+  } else if (style === 'Rich') {
+    bodyBg = `radial-gradient(circle at 16% -8%, color-mix(in srgb, ${primary} 22%, transparent), transparent 32%), radial-gradient(circle at 84% 2%, color-mix(in srgb, ${gold} 16%, transparent), transparent 28%), ${bg}`;
+  }
+
+  const resolvedBg = bgGradient === 'none' ? bodyBg : bgGradient;
+  root.style.setProperty('--body-bg', resolvedBg);
+
   root.style.setProperty('--primary', primary);
   root.style.setProperty('--primary-soft', `color-mix(in srgb, var(--primary) 12%, transparent)`);
   root.style.setProperty('--accent', primary);
@@ -333,7 +357,7 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   customizerStyle.textContent = `
 body, html, button, input, select, textarea { font-family: var(--font-body), sans-serif !important; }
 h1, h2, h3, h4, h5, h6, .brand, .brand span { font-family: var(--font-title), sans-serif !important; }
-body { color: var(--text) !important; font-size: var(--body-size) !important; }
+body { color: var(--text) !important; font-size: var(--body-size) !important; background: var(--body-bg, var(--bg)) !important; background-attachment: fixed !important; }
 h1 { font-size: clamp(40px, 7vw, var(--title-size)) !important; line-height: 1.05 !important; letter-spacing: var(--title-spacing) !important; }
 h2 { font-size: clamp(30px, 5vw, var(--subtitle-size)) !important; line-height: 1.15 !important; letter-spacing: var(--subtitle-spacing) !important; }
 .lead { font-size: calc(var(--body-size) * 1.2) !important; }
@@ -497,13 +521,14 @@ function applyEcclesiaRuntimeStyle(): void {
 
   runtimeStyle.textContent = `
 html, body, #root { min-height: 100%; }
-body { padding-bottom: 0 !important; background: var(--bg); }
+body { padding-bottom: 0 !important; background: var(--body-bg, var(--bg)) !important; background-attachment: fixed !important; }
 html {
   overflow: visible !important;
 }
 .ecclesia-theme-root, .static-html-stage, .static-html-stage > .shell-wrapper {
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--body-bg, var(--bg)) !important;
+  background-attachment: fixed !important;
 }
 .static-html-stage {
   overflow-x: visible !important;
