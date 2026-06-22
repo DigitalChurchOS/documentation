@@ -1666,9 +1666,17 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                           if (state.railStyle === "light" || state.railStyle === "dark" || state.railStyle === "themed") {
                             updates.railStyle = "full";
                           }
+                          // Map below-header size to sidebar size
+                          if (state.railFontSize === 'tiny' || state.railFontSize === 'medium') {
+                            updates.railFontSize = 'small';
+                          }
                         } else {
                           if (state.railStyle === "full" || state.railStyle === "floating" || state.railStyle === "detached" || state.railStyle === "transparent") {
                             updates.railStyle = "dark";
+                          }
+                          // Map sidebar size to below-header size
+                          if (state.railFontSize === 'small' || !state.railFontSize) {
+                            updates.railFontSize = 'medium';
                           }
                         }
                         onChange(updates);
@@ -1717,6 +1725,136 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                         <strong>{item.name}</strong>
                       </button>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {state.railPosition === "below-header" ? (
+                <>
+                  <div className="edit-box" style={{ marginTop: '24px' }}>
+                    <h4>Rail Font Size</h4>
+                    <p>Adjust the size of the horizontal rail navigation links and icons.</p>
+                    <div className="field-group" style={{ marginBottom: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '12px', fontWeight: 600 }}>
+                        <span>Size</span>
+                        <span style={{ color: 'var(--muted)', textTransform: 'capitalize' }}>
+                          {state.railFontSize || 'medium'}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="1"
+                        max="5"
+                        step="1"
+                        value={
+                          state.railFontSize === 'tiny' ? '1' :
+                          state.railFontSize === 'small' ? '2' :
+                          state.railFontSize === 'medium' ? '3' :
+                          state.railFontSize === 'big' ? '4' :
+                          state.railFontSize === 'large' ? '5' : '3'
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const sizeMap: Record<string, string> = {
+                            '1': 'tiny',
+                            '2': 'small',
+                            '3': 'medium',
+                            '4': 'big',
+                            '5': 'large'
+                          };
+                          onChange({ railFontSize: sizeMap[val] || 'medium' });
+                        }}
+                        style={{ width: '100%', accentColor: 'var(--primary)', margin: 0, display: 'block' }}
+                      />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                        <span>Tiny</span>
+                        <span>Small</span>
+                        <span>Medium</span>
+                        <span>Big</span>
+                        <span>Large</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="edit-box" style={{ marginTop: '24px' }}>
+                    <h4>Rail Font Weight</h4>
+                    <p>Adjust the thickness of the horizontal rail navigation links and icons.</p>
+                    <div className="field-group" style={{ marginBottom: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '12px', fontWeight: 600 }}>
+                        <span>Weight</span>
+                        <span style={{ color: 'var(--muted)', textTransform: 'capitalize' }}>
+                          {state.railFontWeight || 'bold'}
+                        </span>
+                      </div>
+                      <input
+                        type="range"
+                        min="1"
+                        max="4"
+                        step="1"
+                        value={
+                          state.railFontWeight === 'thin' ? '1' :
+                          state.railFontWeight === 'normal' ? '2' :
+                          state.railFontWeight === 'semi-bold' ? '3' :
+                          state.railFontWeight === 'bold' ? '4' : '4'
+                        }
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const weightMap: Record<string, string> = {
+                            '1': 'thin',
+                            '2': 'normal',
+                            '3': 'semi-bold',
+                            '4': 'bold'
+                          };
+                          onChange({ railFontWeight: weightMap[val] || 'bold' });
+                        }}
+                        style={{ width: '100%', accentColor: 'var(--primary)', margin: 0, display: 'block' }}
+                      />
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                        <span>Thin</span>
+                        <span>Normal</span>
+                        <span>Semi-Bold</span>
+                        <span>Bold</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="edit-box" style={{ marginTop: '24px' }}>
+                  <h4>Sidebar Rail Size</h4>
+                  <p>Scale the size of the sidebar rail icons and labels proportionately.</p>
+                  <div className="field-group" style={{ marginBottom: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '12px', fontWeight: 600 }}>
+                      <span>Size</span>
+                      <span style={{ color: 'var(--muted)', textTransform: 'capitalize' }}>
+                        {state.railFontSize === 'big' ? 'big' : state.railFontSize === 'large' ? 'large' : 'small'}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="3"
+                      step="1"
+                      value={
+                        state.railFontSize === 'small' ? '1' :
+                        state.railFontSize === 'big' ? '2' :
+                        state.railFontSize === 'large' ? '3' : '1'
+                      }
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const sizeMap: Record<string, string> = {
+                          '1': 'small',
+                          '2': 'big',
+                          '3': 'large'
+                        };
+                        onChange({ railFontSize: sizeMap[val] || 'small' });
+                      }}
+                      style={{ width: '100%', accentColor: 'var(--primary)', margin: 0, display: 'block' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: 'var(--text-muted)', marginTop: '8px' }}>
+                      <span>Small</span>
+                      <span>Big</span>
+                      <span>Large</span>
+                    </div>
                   </div>
                 </div>
               )}

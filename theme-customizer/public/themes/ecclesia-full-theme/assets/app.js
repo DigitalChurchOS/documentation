@@ -270,6 +270,8 @@ function initShell() {
   const railBorderSize = document.body.getAttribute("data-rail-border-size") || "small";
   const railBorderColor = document.body.getAttribute("data-rail-border-color") || "standard";
   const railVerticalAlign = document.body.getAttribute("data-rail-vertical-align") || "center";
+  const railFontSize = document.body.getAttribute("data-rail-font-size") || "medium";
+  const railFontWeight = document.body.getAttribute("data-rail-font-weight") || "bold";
 
   // Rail Navigation HTML
   let railHtml = '';
@@ -284,7 +286,9 @@ function initShell() {
            data-rail-border="${railBorder}"
            data-rail-border-size="${railBorderSize}"
            data-rail-border-color="${railBorderColor}"
-           data-rail-vertical-align="${railVerticalAlign}">
+           data-rail-vertical-align="${railVerticalAlign}"
+           data-rail-font-size="${railFontSize}"
+           data-rail-font-weight="${railFontWeight}">
         <nav class="horizontal-rail-nav">
     `;
     finalRailItems.forEach(item => {
@@ -310,7 +314,9 @@ function initShell() {
              data-rail-border="${railBorder}"
              data-rail-border-size="${railBorderSize}"
              data-rail-border-color="${railBorderColor}"
-             data-rail-vertical-align="${railVerticalAlign}">
+             data-rail-vertical-align="${railVerticalAlign}"
+             data-rail-font-size="${railFontSize}"
+             data-rail-font-weight="${railFontWeight}">
         <nav class="rail-nav">
     `;
     finalRailItems.forEach(item => {

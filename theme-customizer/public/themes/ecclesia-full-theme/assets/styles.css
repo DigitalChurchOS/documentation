@@ -2076,4 +2076,137 @@ body.dark-mode .mobile-rail-drawer {
   background: color-mix(in srgb, var(--accent) 8%, #141416) !important;
 }
 
+/* Sizing and Proportional Scaling for Sidebar Rails */
+.left-rail, .right-rail {
+  --rail-width: 80px;
+  --rail-icon-size: 22px;
+  --rail-font-size: 10px;
+  --rail-item-padding: 8px 4px;
+  --rail-icon-margin: 4px;
+}
+
+/* Small Sidebar */
+.left-rail[data-rail-font-size="small"],
+.right-rail[data-rail-font-size="small"] {
+  --rail-width: 80px;
+  --rail-icon-size: 20px;
+  --rail-font-size: 10px;
+  --rail-item-padding: 8px 4px;
+  --rail-icon-margin: 4px;
+}
+
+/* Big Sidebar */
+.left-rail[data-rail-font-size="big"],
+.right-rail[data-rail-font-size="big"] {
+  --rail-width: 96px;
+  --rail-icon-size: 25px;
+  --rail-font-size: 12px;
+  --rail-item-padding: 12px 6px;
+  --rail-icon-margin: 6px;
+}
+
+/* Large Sidebar */
+.left-rail[data-rail-font-size="large"],
+.right-rail[data-rail-font-size="large"] {
+  --rail-width: 112px;
+  --rail-icon-size: 30px;
+  --rail-font-size: 14px;
+  --rail-item-padding: 16px 8px;
+  --rail-icon-margin: 8px;
+}
+
+/* Apply CSS Sizing Variables to Sidebar */
+.left-rail,
+.right-rail {
+  width: var(--rail-width) !important;
+}
+.left-rail::after,
+.right-rail::after {
+  width: var(--rail-width) !important;
+}
+.left-rail .rail-item,
+.right-rail .rail-item {
+  font-size: var(--rail-font-size) !important;
+  padding: var(--rail-item-padding) !important;
+}
+.left-rail .rail-item i,
+.right-rail .rail-item i,
+.left-rail .rail-item svg,
+.right-rail .rail-item svg {
+  width: var(--rail-icon-size) !important;
+  height: var(--rail-icon-size) !important;
+  margin-bottom: var(--rail-icon-margin) !important;
+}
+
+/* Horizontal Rail (Below Header) Sizing and Font Weight */
+.rail-menu-horizontal {
+  --rail-horizontal-font-size: 14px;
+  --rail-horizontal-icon-size: 22px;
+  --rail-horizontal-gap: 10px;
+  --rail-horizontal-font-weight: 600;
+  --rail-horizontal-font-weight-active: 700;
+}
+
+/* Sizing Options */
+.rail-menu-horizontal[data-rail-font-size="tiny"] {
+  --rail-horizontal-font-size: 11px;
+  --rail-horizontal-icon-size: 16px;
+  --rail-horizontal-gap: 6px;
+}
+.rail-menu-horizontal[data-rail-font-size="small"] {
+  --rail-horizontal-font-size: 12px;
+  --rail-horizontal-icon-size: 18px;
+  --rail-horizontal-gap: 8px;
+}
+.rail-menu-horizontal[data-rail-font-size="medium"] {
+  --rail-horizontal-font-size: 14px;
+  --rail-horizontal-icon-size: 22px;
+  --rail-horizontal-gap: 10px;
+}
+.rail-menu-horizontal[data-rail-font-size="big"] {
+  --rail-horizontal-font-size: 16px;
+  --rail-horizontal-icon-size: 25px;
+  --rail-horizontal-gap: 12px;
+}
+.rail-menu-horizontal[data-rail-font-size="large"] {
+  --rail-horizontal-font-size: 18px;
+  --rail-horizontal-icon-size: 28px;
+  --rail-horizontal-gap: 14px;
+}
+
+/* Font Weight Options */
+.rail-menu-horizontal[data-rail-font-weight="thin"] {
+  --rail-horizontal-font-weight: 300;
+  --rail-horizontal-font-weight-active: 400;
+}
+.rail-menu-horizontal[data-rail-font-weight="normal"] {
+  --rail-horizontal-font-weight: 400;
+  --rail-horizontal-font-weight-active: 500;
+}
+.rail-menu-horizontal[data-rail-font-weight="semi-bold"] {
+  --rail-horizontal-font-weight: 600;
+  --rail-horizontal-font-weight-active: 700;
+}
+.rail-menu-horizontal[data-rail-font-weight="bold"] {
+  --rail-horizontal-font-weight: 750;
+  --rail-horizontal-font-weight-active: 850;
+}
+
+/* Apply CSS Sizing/Weight Variables to Horizontal Rail */
+.rail-menu-horizontal .rail-item {
+  font-size: var(--rail-horizontal-font-size) !important;
+  gap: var(--rail-horizontal-gap) !important;
+  font-weight: var(--rail-horizontal-font-weight) !important;
+}
+.rail-menu-horizontal .rail-item:hover,
+.rail-menu-horizontal .rail-item.active {
+  font-weight: var(--rail-horizontal-font-weight-active) !important;
+}
+.rail-menu-horizontal .rail-item i,
+.rail-menu-horizontal .rail-item svg {
+  width: var(--rail-horizontal-icon-size) !important;
+  height: var(--rail-horizontal-icon-size) !important;
+  margin-bottom: 0 !important;
+}
+
 

@@ -670,6 +670,8 @@ export function App() {
       railBorderSize: "small",
       railBorderColor: "standard",
       railVerticalAlign: "center",
+      railFontSize: "medium",
+      railFontWeight: "bold",
       copyrightText: "Ecclesia Theme. All rights reserved.",
       privacyLabel: "Privacy Policy",
       privacyHref: "#privacy",
