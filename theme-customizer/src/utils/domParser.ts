@@ -470,12 +470,15 @@ html {
   box-sizing: border-box;
 }
 
+body, .shell-wrapper {
+  background: ${bgGradient === "none" ? bodyBg : bgGradient} !important;
+  background-attachment: fixed !important;
+}
+
 body {
   width: 100%;
   max-width: 100%;
   overflow-x: clip;
-  background: ${bgGradient === "none" ? bodyBg : bgGradient} !important;
-  background-attachment: fixed !important;
   color: var(--text) !important;
   font-size: var(--body-size) !important;
   transition: transform var(--duration) var(--ease);
