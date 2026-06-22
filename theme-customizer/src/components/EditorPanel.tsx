@@ -1591,36 +1591,55 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                 <h4>Base Style</h4>
                 <p>Choose the visual layout style of the rail.</p>
                 <div className="choice-grid">
-                  {[
-                    { key: "full", name: "Full Height", desc: "Edge-to-edge height sidebar" },
-                    { key: "floating", name: "Floating", desc: "Floats off the edges and remains static" },
-                    { key: "detached", name: "Detached", desc: "Detached style attached to the sidebar edge" },
-                    { key: "transparent", name: "Transparent", desc: "Frosted glassmorphism background effect" }
-                  ].map((item) => (
-                    <button
-                      key={item.key}
-                      className={`visual-card ${state.railStyle === item.key || (!state.railStyle && item.key === 'full') ? "active" : ""}`}
-                      onClick={() => onChange({ railStyle: item.key })}
-                    >
-                      <strong>{item.name}</strong>
-                      <span>{item.desc}</span>
-                    </button>
-                  ))}
+                  {state.railPosition === "below-header" ? (
+                    [
+                      { key: "light", name: "Light", desc: "Faint accent background with dark text" },
+                      { key: "dark", name: "Dark", desc: "Dark accent background with bright text" },
+                      { key: "themed", name: "Themed", desc: "Rich solid accent background with bright text" }
+                    ].map((item) => (
+                      <button
+                        key={item.key}
+                        className={`visual-card ${state.railStyle === item.key || (!state.railStyle && item.key === 'dark') ? "active" : ""}`}
+                        onClick={() => onChange({ railStyle: item.key })}
+                      >
+                        <strong>{item.name}</strong>
+                        <span>{item.desc}</span>
+                      </button>
+                    ))
+                  ) : (
+                    [
+                      { key: "full", name: "Full Height", desc: "Edge-to-edge height sidebar" },
+                      { key: "floating", name: "Floating", desc: "Floats off the edges and remains static" },
+                      { key: "detached", name: "Detached", desc: "Detached style attached to the sidebar edge" },
+                      { key: "transparent", name: "Transparent", desc: "Frosted glassmorphism background effect" }
+                    ].map((item) => (
+                      <button
+                        key={item.key}
+                        className={`visual-card ${state.railStyle === item.key || (!state.railStyle && item.key === 'full') ? "active" : ""}`}
+                        onClick={() => onChange({ railStyle: item.key })}
+                      >
+                        <strong>{item.name}</strong>
+                        <span>{item.desc}</span>
+                      </button>
+                    ))
+                  )}
                 </div>
               </div>
 
-              <div className="edit-box" style={{ marginTop: '20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <h4 style={{ margin: 0 }}>Solid Themed Background</h4>
-                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>Use accent color for background and auto-adjust link contrast.</p>
+              {state.railPosition !== "below-header" && (
+                <div className="edit-box" style={{ marginTop: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <h4 style={{ margin: 0 }}>Solid Themed Background</h4>
+                      <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>Use accent color for background and auto-adjust link contrast.</p>
+                    </div>
+                    <button
+                      className={`tiny-switch ${state.railSolidThemed ? "on" : "off"}`}
+                      onClick={() => onChange({ railSolidThemed: !state.railSolidThemed })}
+                    />
                   </div>
-                  <button
-                    className={`tiny-switch ${state.railSolidThemed ? "on" : "off"}`}
-                    onClick={() => onChange({ railSolidThemed: !state.railSolidThemed })}
-                  />
                 </div>
-              </div>
+              )}
             </>
           )}
 
@@ -1642,6 +1661,13 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                         const updates: any = { railPosition: item.key };
                         if (item.key !== "below-header") {
                           updates.railShowIcons = true;
+                          if (state.railStyle === "light" || state.railStyle === "dark" || state.railStyle === "themed") {
+                            updates.railStyle = "full";
+                          }
+                        } else {
+                          if (state.railStyle === "full" || state.railStyle === "floating" || state.railStyle === "detached" || state.railStyle === "transparent") {
+                            updates.railStyle = "dark";
+                          }
                         }
                         onChange(updates);
                       }}

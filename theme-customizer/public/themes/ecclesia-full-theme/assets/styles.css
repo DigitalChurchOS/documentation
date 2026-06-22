@@ -1789,20 +1789,98 @@ body.dark-mode .rail-menu-horizontal[data-rail-style="transparent"] {
   border-left-color: #ffffff !important;
 }
 
-/* Solid Themed for Below Header Horizontal Menu */
-.rail-menu-horizontal[data-rail-solid-themed="true"] {
-  background: var(--accent) !important;
-  border-bottom-color: rgba(255, 255, 255, 0.15) !important;
+/* --- Below Header styles --- */
+
+/* 1. Below Header: Light style */
+.rail-menu-horizontal[data-rail-style="light"] {
+  background: color-mix(in srgb, var(--accent) 6%, #fbf9f6) !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 15%, rgba(0, 0, 0, 0.08)) !important;
+}
+body.dark-mode .rail-menu-horizontal[data-rail-style="light"] {
+  background: color-mix(in srgb, var(--accent) 6%, #18181b) !important;
+  border-bottom-color: color-mix(in srgb, var(--accent) 15%, rgba(255, 255, 255, 0.08)) !important;
 }
 
-.rail-menu-horizontal[data-rail-solid-themed="true"] .rail-item {
+.rail-menu-horizontal[data-rail-style="light"] .rail-item {
+  color: color-mix(in srgb, var(--accent) 70%, #4b5563) !important;
+}
+body.dark-mode .rail-menu-horizontal[data-rail-style="light"] .rail-item {
+  color: color-mix(in srgb, var(--accent) 40%, #d1d5db) !important;
+}
+
+.rail-menu-horizontal[data-rail-style="light"] .rail-item i,
+.rail-menu-horizontal[data-rail-style="light"] .rail-item svg {
+  color: color-mix(in srgb, var(--accent) 80%, #4b5563) !important;
+}
+
+/* Light Active State */
+.rail-menu-horizontal[data-rail-style="light"] .rail-item:hover,
+.rail-menu-horizontal[data-rail-style="light"] .rail-item.active {
+  color: var(--accent) !important;
+  background: color-mix(in srgb, var(--accent) 12%, rgba(0, 0, 0, 0.04)) !important;
+  font-weight: 800 !important;
+}
+.rail-menu-horizontal[data-rail-style="light"] .rail-item.active i,
+.rail-menu-horizontal[data-rail-style="light"] .rail-item.active svg {
+  color: var(--accent) !important;
+}
+
+/* 2. Below Header: Dark style */
+.rail-menu-horizontal[data-rail-style="dark"],
+.rail-menu-horizontal:not([data-rail-style]) { /* Fallback */
+  background: color-mix(in srgb, var(--accent) 12%, #111111) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.rail-menu-horizontal[data-rail-style="dark"] .rail-item,
+.rail-menu-horizontal:not([data-rail-style]) .rail-item {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+.rail-menu-horizontal[data-rail-style="dark"] .rail-item i,
+.rail-menu-horizontal[data-rail-style="dark"] .rail-item svg,
+.rail-menu-horizontal:not([data-rail-style]) .rail-item i,
+.rail-menu-horizontal:not([data-rail-style]) .rail-item svg {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Dark Active State */
+.rail-menu-horizontal[data-rail-style="dark"] .rail-item:hover,
+.rail-menu-horizontal[data-rail-style="dark"] .rail-item.active,
+.rail-menu-horizontal:not([data-rail-style]) .rail-item:hover,
+.rail-menu-horizontal:not([data-rail-style]) .rail-item.active {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  font-weight: 700 !important;
+}
+.rail-menu-horizontal[data-rail-style="dark"] .rail-item.active i,
+.rail-menu-horizontal[data-rail-style="dark"] .rail-item.active svg,
+.rail-menu-horizontal:not([data-rail-style]) .rail-item.active i,
+.rail-menu-horizontal:not([data-rail-style]) .rail-item.active svg {
+  color: #ffffff !important;
+}
+
+/* 3. Below Header: Themed style */
+.rail-menu-horizontal[data-rail-style="themed"] {
+  background: var(--accent) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+.rail-menu-horizontal[data-rail-style="themed"] .rail-item {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+.rail-menu-horizontal[data-rail-style="themed"] .rail-item i,
+.rail-menu-horizontal[data-rail-style="themed"] .rail-item svg {
   color: rgba(255, 255, 255, 0.75) !important;
 }
 
-.rail-menu-horizontal[data-rail-solid-themed="true"] .rail-item:hover,
-.rail-menu-horizontal[data-rail-solid-themed="true"] .rail-item.active {
+/* Themed Active State */
+.rail-menu-horizontal[data-rail-style="themed"] .rail-item:hover,
+.rail-menu-horizontal[data-rail-style="themed"] .rail-item.active {
   color: #ffffff !important;
   background: rgba(255, 255, 255, 0.18) !important;
+  font-weight: 700 !important;
+}
+.rail-menu-horizontal[data-rail-style="themed"] .rail-item.active i,
+.rail-menu-horizontal[data-rail-style="themed"] .rail-item.active svg {
+  color: #ffffff !important;
 }
 
 /* --- borders & shadows --- */
