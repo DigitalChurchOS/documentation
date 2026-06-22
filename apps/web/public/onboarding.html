@@ -1218,25 +1218,27 @@
       const dropdown = el.querySelector('.modern-select-dropdown');
       const trigger = el.querySelector('.modern-select-trigger');
 
-      document.querySelectorAll('.modern-select-wrapper').forEach(item => {
-        if (item !== el) {
-          item.classList.remove('open');
-          const d = item.querySelector('.modern-select-dropdown');
-          if (d) {
-            d.style.position = '';
-            d.style.top = '';
-            d.style.bottom = '';
-            d.style.left = '';
-            d.style.right = '';
-            d.style.width = '';
-            d.style.zIndex = '';
-          }
+      document.querySelectorAll('.modern-select-wrapper.open').forEach(openWrapper => {
+        if (openWrapper !== el) {
+          closeDropdown(openWrapper);
         }
       });
 
       const isOpen = el.classList.toggle('open');
       if (isOpen && dropdown && trigger) {
+        // Remember original wrapper on the dropdown so we know where to return it
+        dropdown.dataset.originalWrapperId = el.id || '';
+        if (!el.id) {
+          el.id = 'select-wrapper-' + Math.random().toString(36).substr(2, 9);
+          dropdown.dataset.originalWrapperId = el.id;
+        }
+
         const rect = trigger.getBoundingClientRect();
+        
+        // Append to body so it escapes containing blocks (e.g. backdrop-filter)
+        document.body.appendChild(dropdown);
+
+        dropdown.style.display = 'block';
         dropdown.style.position = 'fixed';
         dropdown.style.left = rect.left + 'px';
         dropdown.style.right = 'auto'; // override CSS right:0 rule to prevent shifting/stretching
@@ -1262,6 +1264,18 @@
           dropdown.style.top = (rect.bottom + 6) + 'px';
         }
       } else if (!isOpen && dropdown) {
+        closeDropdown(el);
+      }
+      lucide.createIcons();
+    }
+
+    function closeDropdown(wrapper) {
+      wrapper.classList.remove('open');
+      const dropdown = document.querySelector(`.modern-select-dropdown[data-original-wrapper-id="${wrapper.id}"]`);
+      if (dropdown) {
+        // Append it back to its original parent wrapper
+        wrapper.appendChild(dropdown);
+        dropdown.style.display = '';
         dropdown.style.position = '';
         dropdown.style.top = '';
         dropdown.style.bottom = '';
@@ -1269,58 +1283,54 @@
         dropdown.style.right = '';
         dropdown.style.width = '';
         dropdown.style.zIndex = '';
+        delete dropdown.dataset.originalWrapperId;
       }
-      lucide.createIcons();
     }
 
     function selectOption(event, el, inputId, value, textHtml) {
       event.stopPropagation();
-      const customSelect = el.closest('.modern-select-wrapper');
+      const dropdown = el.closest('.modern-select-dropdown');
+      const wrapperId = dropdown?.dataset.originalWrapperId;
+      const customSelect = wrapperId ? document.getElementById(wrapperId) : el.closest('.modern-select-wrapper');
       
       // update hidden input
-      document.getElementById(inputId).value = value;
+      const inputEl = document.getElementById(inputId);
+      if (inputEl) {
+        inputEl.value = value;
+      }
       
       // update selected text HTML
-      customSelect.querySelector('.modern-select-trigger span').innerHTML = textHtml;
+      if (customSelect) {
+        const triggerSpan = customSelect.querySelector('.modern-select-trigger span');
+        if (triggerSpan) {
+          triggerSpan.innerHTML = textHtml;
+        }
+      }
       
       // update selected class
-      customSelect.querySelectorAll('.modern-option').forEach(item => item.classList.remove('selected'));
+      if (dropdown) {
+        dropdown.querySelectorAll('.modern-option').forEach(item => item.classList.remove('selected'));
+      }
       el.classList.add('selected');
       
       // close dropdown
-      customSelect.classList.remove('open');
-      const d = customSelect.querySelector('.modern-select-dropdown');
-      if (d) {
-        d.style.position = '';
-        d.style.top = '';
-        d.style.bottom = '';
-        d.style.left = '';
-        d.style.right = '';
-        d.style.width = '';
-        d.style.zIndex = '';
+      if (customSelect) {
+        closeDropdown(customSelect);
       }
       lucide.createIcons();
       
       // Trigger change event if needed
-      const evt = new Event('change');
-      document.getElementById(inputId).dispatchEvent(evt);
+      if (inputEl) {
+        const evt = new Event('change');
+        inputEl.dispatchEvent(evt);
+      }
     }
 
     // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
-      if (!e.target.closest('.modern-select-wrapper')) {
-        document.querySelectorAll('.modern-select-wrapper').forEach(item => {
-          item.classList.remove('open');
-          const d = item.querySelector('.modern-select-dropdown');
-          if (d) {
-            d.style.position = '';
-            d.style.top = '';
-            d.style.bottom = '';
-            d.style.left = '';
-            d.style.right = '';
-            d.style.width = '';
-            d.style.zIndex = '';
-          }
+      if (!e.target.closest('.modern-select-wrapper') && !e.target.closest('.modern-select-dropdown')) {
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(wrapper => {
+          closeDropdown(wrapper);
         });
         lucide.createIcons();
       }
@@ -3103,18 +3113,8 @@
     // Close dropdowns on scroll to prevent floating fixed menus from becoming misaligned
     document.addEventListener('scroll', function(e) {
       if (e.target.closest('#stepForm') || e.target.id === 'stepForm' || e.target === document) {
-        document.querySelectorAll('.modern-select-wrapper.open').forEach(el => {
-          el.classList.remove('open');
-          const d = el.querySelector('.modern-select-dropdown');
-          if (d) {
-            d.style.position = '';
-            d.style.top = '';
-            d.style.bottom = '';
-            d.style.left = '';
-            d.style.right = '';
-            d.style.width = '';
-            d.style.zIndex = '';
-          }
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(wrapper => {
+          closeDropdown(wrapper);
         });
       }
     }, true);
