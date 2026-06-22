@@ -2343,7 +2343,7 @@
                     ? `<span style="font-size:9px; color:var(--muted); font-weight:800; white-space:nowrap; text-transform:uppercase; margin-right:4px;">Core</span>
                        <input type="checkbox" class="module-chk" value="${m.key}" checked style="display:none;" />`
                     : `<label class="switch" style="flex-shrink:0; scale:0.85;">
-                         <input type="checkbox" class="module-chk" value="${m.key}" ${isChecked ? 'checked' : ''} onchange="this.closest('.module-item').classList.toggle('active', this.checked); this.closest('.module-item').querySelector('i').style.color = this.checked ? 'var(--accent)' : 'var(--muted)';" />
+                         <input type="checkbox" class="module-chk" value="${m.key}" ${isChecked ? 'checked' : ''} onchange="this.closest('.module-item').classList.toggle('active', this.checked); this.closest('.module-item').querySelector('i, svg').style.color = this.checked ? 'var(--accent)' : 'var(--muted)';" />
                          <span class="slider"></span>
                        </label>`
                   }
