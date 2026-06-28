@@ -1,0 +1,16 @@
+{
+  "id": "a364a1b3-b439-426f-a6b7-981f33a8a031",
+  "tenantId": "cf92f897-5326-4dfd-8bdb-be61a03fc300",
+  "websiteId": "demo-church-website",
+  "slug": "store",
+  "title": "store",
+  "content": "[]",
+  "draftContent": null,
+  "status": "published",
+  "isHome": false,
+  "seoTitle": null,
+  "seoDescription": null,
+  "seoKeywords": null,
+  "createdAt": "2026-06-24T10:39:22.563Z",
+  "updatedAt": "2026-06-26T18:37:20.724Z"
+}

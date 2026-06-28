@@ -1,23 +1,13 @@
 import prisma from '../src/lib/prisma';
 
 async function main() {
-  try {
-    const pages = await prisma.page.findMany({
-      select: {
-        id: true,
-        tenantId: true,
-        websiteId: true,
-        slug: true,
-        title: true,
-        status: true
-      }
-    });
-    console.log("Pages currently in database:", pages);
-  } catch (err) {
-    console.error("Error reading database:", err);
-  } finally {
-    await prisma.$disconnect();
-  }
+  const pages = await prisma.page.findMany();
+  console.log("Pages in database:");
+  pages.forEach(p => {
+    console.log(`- Title: "${p.title}", Slug: "${p.slug}", ID: ${p.id}`);
+  });
 }
 
-main();
+main()
+  .catch(err => console.error(err))
+  .finally(async () => await prisma.$disconnect());
