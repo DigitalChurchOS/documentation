@@ -66,40 +66,40 @@
 
           <!-- Variants Configuration -->
           <div style="border-top:1px solid var(--border); padding-top:24px; display:flex; flex-direction:column; gap:20px;">
-            <!-- Size Selector (Apparel only) -->
-            <div class="config-group" id="sizeGroup">
-              <span class="config-label">Select Size</span>
-              <div class="size-selector" id="sizeSelector">
-                <button class="size-btn active">S</button>
-                <button class="size-btn">M</button>
-                <button class="size-btn">L</button>
-                <button class="size-btn">XL</button>
+            <div style="display: flex; gap: 40px; align-items: flex-start; flex-wrap: wrap;">
+              <!-- Size Selector (Apparel only) -->
+              <div class="config-group" id="sizeGroup" style="margin-bottom: 0;">
+                <span class="config-label">Select Size</span>
+                <div class="size-selector" id="sizeSelector">
+                  <button class="size-btn active">S</button>
+                  <button class="size-btn">M</button>
+                  <button class="size-btn">L</button>
+                  <button class="size-btn">XL</button>
+                </div>
+              </div>
+
+              <!-- Color Selector (Apparel only) -->
+              <div class="config-group" id="colorGroup" style="margin-bottom: 0;">
+                <span class="config-label">Select Color</span>
+                <div class="color-selector" id="colorSelector">
+                  <span class="color-dot active" style="background-color: #111827;" data-color="Charcoal Black"></span>
+                  <span class="color-dot" style="background-color: #f3f4f6;" data-color="Classic White"></span>
+                  <span class="color-dot" style="background-color: #1e3a8a;" data-color="Navy Blue"></span>
+                </div>
               </div>
             </div>
 
-            <!-- Color Selector (Apparel only) -->
-            <div class="config-group" id="colorGroup">
-              <span class="config-label">Select Color</span>
-              <div class="color-selector" id="colorSelector">
-                <span class="color-dot active" style="background-color: #111827;" data-color="Charcoal Black"></span>
-                <span class="color-dot" style="background-color: #f3f4f6;" data-color="Classic White"></span>
-                <span class="color-dot" style="background-color: #1e3a8a;" data-color="Navy Blue"></span>
+            <!-- Quantity Counter & Add To Cart -->
+            <div style="display:flex; align-items:flex-end; gap:16px; margin-top:10px;">
+              <div class="config-group" style="margin-bottom: 0;">
+                <span class="config-label">Quantity</span>
+                <div class="qty-counter">
+                  <button class="qty-btn" id="qtyMinus"><i data-lucide="minus" style="width:16px; height:16px;"></i></button>
+                  <input type="text" class="qty-input" id="qtyInput" value="1" readonly>
+                  <button class="qty-btn" id="qtyPlus"><i data-lucide="plus" style="width:16px; height:16px;"></i></button>
+                </div>
               </div>
-            </div>
-
-            <!-- Quantity Counter -->
-            <div class="config-group">
-              <span class="config-label">Quantity</span>
-              <div class="qty-counter">
-                <button class="qty-btn" id="qtyMinus"><i data-lucide="minus" style="width:16px; height:16px;"></i></button>
-                <input type="text" class="qty-input" id="qtyInput" value="1" readonly>
-                <button class="qty-btn" id="qtyPlus"><i data-lucide="plus" style="width:16px; height:16px;"></i></button>
-              </div>
-            </div>
-
-            <!-- Add Actions -->
-            <div style="display:flex; gap:16px; margin-top:10px;">
-              <button class="btn primary" id="detailAddToCartBtn" style="flex-grow:1; height:50px; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <button class="btn primary" id="detailAddToCartBtn" style="flex-grow:1; height:44px; font-weight:800; font-size:15px; display:flex; align-items:center; justify-content:center; gap:8px;">
                 <i data-lucide="shopping-bag" style="width:18px; height:18px;"></i> Add To Cart
               </button>
             </div>
