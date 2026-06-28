@@ -474,16 +474,18 @@
     /* ── Discount Code ── */
     .discount-row {
       display: flex;
+      flex-direction: column;
       gap: 10px;
       padding: 18px 0;
       border-bottom: 1px solid var(--border);
     }
     .discount-row .co-input {
-      flex: 1;
+      width: 100%;
       padding: 11px 14px;
       font-size: 13px;
     }
     .discount-row .btn {
+      width: 100%;
       padding: 11px 18px;
       font-size: 12px;
       font-weight: 800;
@@ -491,6 +493,9 @@
       background: color-mix(in srgb, var(--accent) 10%, transparent);
       color: var(--accent);
       border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* ── Summary Totals ── */
