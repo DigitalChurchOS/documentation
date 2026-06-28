@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Northside Young Couples — Grace City Church</title>
+  <link rel="stylesheet" href="assets/styles.css?v=12" />
+</head>
+<body>
+
+<div class="top-notice"><span>Small Groups:</span> Find fellowship, prayer, and discipleship in a home group near you.</div>
+<header class="header">
+  <div class="nav-wrap">
+    <a href="index.html" class="brand"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+    <nav class="nav">
+      <a class="" href="index.html">Home</a>
+      <a class="" href="about.html">About</a>
+      <a class="" href="sermons.html">Sermons</a>
+      <a class="" href="events.html">Events</a>
+      <a class="" href="ministries.html">Ministries</a>
+      <a class="active" href="groups-archive.html">Groups</a>
+      <a class="" href="prayer.html">Prayer</a>
+      <a class="" href="contact.html">Contact</a>
+      <a class="" href="login.html">Account</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-soft" href="sermons.html"><i data-lucide="play-circle"></i> Watch</a>
+      <a class="btn btn-primary" href="contact.html">Plan Visit</a>
+      <button class="mobile-menu-btn" id="menuBtn"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Group Hero Banner -->
+  <section class="section" style="padding-bottom: 0;">
+    <div class="wide-panel" style="grid-template-columns: 1.1fr 0.9fr; min-height: 400px;">
+      <div class="wide-content">
+        <span class="eyebrow" style="color: var(--accent-2);"><i data-lucide="home"></i> Families & Couples Group</span>
+        <h1 style="color: white; font-size: clamp(34px, 4vw, 52px); margin: 12px 0;">Northside Young Couples Fellowship</h1>
+        <p style="font-size: 16px; line-height: 1.6;">Meeting weekly in the North Zone area for parenting guidance, couples bible study, corporate prayer, and supportive fellowship.</p>
+        <div class="hero-actions" style="margin-top: 24px; flex-direction: row; display: inline-flex; gap: 12px;">
+          <button id="saveGroupBtn" class="btn btn-light" style="background: transparent; color: white; border-color: rgba(255,255,255,0.3);"><i data-lucide="heart"></i> Save Group</button>
+          <a class="btn btn-primary" href="#join"><i data-lucide="users"></i> Request to Join</a>
+        </div>
+      </div>
+      <div class="wide-image" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&w=1200&q=85');"></div>
+    </div>
+  </section>
+
+  <!-- Group Details Grid -->
+  <section class="section">
+    <div class="group-grid">
+      <!-- Main Content Column -->
+      <div>
+        <article class="form-card" style="padding: 30px; margin-bottom: 24px; background: rgba(255, 255, 255, 0.95);">
+          <h2>About this Group</h2>
+          <p style="margin-top: 14px; font-size: 16px;">
+            The Northside Young Couples Fellowship is a cell group dedicated to establishing strong, Christ-centered marriages and families. We meet every Tuesday night to share dinner, discuss Scripture, pray for one another, and build authentic connections.
+          </p>
+          <p style="margin-top: 14px; font-size: 16px;">
+            Whether you are newly married, preparing for marriage, or navigating the parenting of toddlers and teens, you will find a warm, supportive circle of couples here to walk alongside you. Children are welcome; we arrange childcare volunteers during the study.
+          </p>
+
+          <h3 style="margin-top: 30px; margin-bottom: 14px;">Current Discussion & Study</h3>
+          <div style="display: flex; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; align-items: center;">
+            <i data-lucide="book-open" style="width: 36px; height: 36px; color: var(--accent); flex-shrink: 0;"></i>
+            <div>
+              <h4 style="margin: 0 0 4px;">Study: "The Power of a Spirit-Led Life"</h4>
+              <p style="margin: 0; font-size: 14px; color: var(--muted);">Following Pastor Daniel Grace’s sermon series on living with confident faith, bold prayer, and obedience.</p>
+              <a href="#" class="btn btn-soft" style="padding: 6px 12px; font-size: 13px; margin-top: 10px; width: auto; display: inline-flex;"><i data-lucide="download"></i> Download Study Guide (PDF)</a>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 30px; margin-bottom: 14px;">Group Details & Expectations</h3>
+          <ul style="padding-left: 20px; color: var(--muted); font-size: 15px; line-height: 1.8;">
+            <li><strong>Meeting Type:</strong> Hybrid (mostly In-Person, with Zoom links for extreme weather)</li>
+            <li><strong>Format:</strong> 7:00 PM Dinner/Social · 7:45 PM Bible Discussion · 8:30 PM Prayer Partners</li>
+            <li><strong>Childcare:</strong> Provided (onsite volunteer rotations)</li>
+            <li><strong>Frequency:</strong> Weekly on Tuesdays</li>
+          </ul>
+        </article>
+
+        <!-- Interactive Map Placeholder -->
+        <article class="form-card" style="padding: 30px; background: rgba(255, 255, 255, 0.95);">
+          <h2>Meeting Location</h2>
+          <p style="color: var(--muted); font-size: 14px; margin-bottom: 18px;">Meeting in the North Zone residential area (Northcrest Neighborhood). Exact home address shared upon group sign-up for home privacy.</p>
+          <div class="group-map">
+            <!-- Simulated map background grid using CSS/SVGs -->
+            <svg width="100%" height="100%" style="opacity: 0.15; position: absolute; top:0; left:0;">
+              <defs>
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="1"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+            <div class="group-map-pin">
+              <i data-lucide="map-pin" style="width: 48px; height: 48px; stroke-width: 2;"></i>
+            </div>
+            <div style="position: absolute; bottom: 12px; right: 12px; background: var(--header-bg, var(--bg)); padding: 6px 12px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; border: 1px solid var(--border); box-shadow: var(--shadow);">
+              <i data-lucide="navigation" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle; margin-right: 4px;"></i> Northcrest District
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Right Column (Sign-up form & Leader Card) -->
+      <aside>
+        <!-- Group Leader Card -->
+        <article class="form-card" style="padding: 24px; margin-bottom: 24px; background: rgba(255, 255, 255, 0.95);">
+          <h3>Group Leaders</h3>
+          <p style="font-size: 14px; color: var(--muted);">Reach out to your group leaders if you have any questions before attending.</p>
+          <div class="group-leader-card">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Sarah Chen">
+            <div class="group-leader-info">
+              <h4>David & Sarah Chen</h4>
+              <p>Leaders since 2024</p>
+              <p style="margin-top: 4px; font-weight: bold; color: var(--accent);"><i data-lucide="mail" style="width: 12px; height: 12px; display: inline-block; margin-right: 4px; vertical-align: middle;"></i> Message Leader</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sign Up Form Card -->
+        <article id="join" class="form-card" style="padding: 24px; background: rgba(255, 255, 255, 0.95);">
+          <h3>Request to Join</h3>
+          <p style="font-size: 14px; color: var(--muted); margin-bottom: 18px;">Submit your name and email to request group coordinates, contact leaders, and schedule your first visit.</p>
+          
+          <form id="joinForm" class="form-grid" style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+              <label for="joinName" style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">Your Name</label>
+              <input id="joinName" type="text" class="input full" placeholder="E.g. John Doe" required style="width: 100%;" />
+            </div>
+
+            <div>
+              <label for="joinEmail" style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">Email Address</label>
+              <input id="joinEmail" type="email" class="input full" placeholder="E.g. john@example.com" required style="width: 100%;" />
+            </div>
+
+            <div>
+              <label for="joinPhone" style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">Phone Number (Optional)</label>
+              <input id="joinPhone" type="tel" class="input full" placeholder="E.g. +1 (555) 019-2834" style="width: 100%;" />
+            </div>
+
+            <div>
+              <label for="joinNotes" style="font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px;">Notes or Childcare Needs</label>
+              <textarea id="joinNotes" placeholder="E.g. We have a 2-year old; looking forward to visiting." style="width: 100%; min-height: 80px;"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary full" style="width: 100%; margin-top: 8px;"><i data-lucide="send"></i> Send Request</button>
+          </form>
+        </article>
+      </aside>
+    </div>
+  </section>
+
+  <!-- Similar Groups -->
+  <section class="section" style="padding-top: 0;">
+    <div class="section-head" style="margin-bottom: 24px;">
+      <div>
+        <div class="section-kicker">More Options</div>
+        <h2>Explore similar home groups.</h2>
+      </div>
+      <a href="groups-archive.html" class="btn btn-soft">View All Groups</a>
+    </div>
+    <div class="cards-3">
+      <!-- Similar Group 1 -->
+      <article class="group-card" data-category="Families" data-day="Sunday" data-location="East Zone">
+        <img src="https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=900&q=85" alt="Eastside Family Group">
+        <div class="card-body">
+          <div class="meta"><i data-lucide="home"></i> Families & Kids · Sundays 5:00 PM</div>
+          <h3>Eastside Family Cell Fellowship</h3>
+          <p>A multi-generational cell group meeting for dinner, worship, scripture discussions, and kids playtime.</p>
+          <div class="group-leader-row">
+            <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80" alt="Leader Maria">
+            <span>Led by <strong>Joseph & Maria Santos</strong></span>
+          </div>
+          <div class="hero-actions" style="margin-top: 18px; display: flex; gap: 10px;">
+            <a class="btn btn-soft pjax-link" style="flex: 1;" href="group-single.html">View Details</a>
+            <a class="btn btn-primary pjax-link" style="flex: 1;" href="group-single.html#join">Join Group</a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Similar Group 2 -->
+      <article class="group-card" data-category="Young Adults" data-day="Thursday" data-location="Central">
+        <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=900&q=85" alt="Young Adults Downtown">
+        <div class="card-body">
+          <div class="meta"><i data-lucide="compass"></i> Young Adults · Thursdays 7:30 PM</div>
+          <h3>Young Adults Downtown Hangout</h3>
+          <p>Discipleship group for college students and young professionals meeting in downtown cafes and living rooms.</p>
+          <div class="group-leader-row">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Leader Marcus">
+            <span>Led by <strong>Marcus & Joy Sterling</strong></span>
+          </div>
+          <div class="hero-actions" style="margin-top: 18px; display: flex; gap: 10px;">
+            <a class="btn btn-soft pjax-link" style="flex: 1;" href="group-single.html">View Details</a>
+            <a class="btn btn-primary pjax-link" style="flex: 1;" href="group-single.html#join">Join Group</a>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="brand" style="color:white;"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+        <p style="margin-top:18px;max-width:340px;">A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.</p>
+        <div class="socials">
+          <a href="#"><i data-lucide="facebook"></i></a><a href="#"><i data-lucide="youtube"></i></a><a href="#"><i data-lucide="instagram"></i></a>
+        </div>
+      </div>
+      <div><h4>Explore</h4><a href="about.html">About</a><a href="sermons.html">Sermons</a><a href="events.html">Events</a><a href="ministries.html">Ministries</a></div>
+      <div><h4>Connect</h4><a href="login.html">Member Login</a><a href="account.html">My Account</a><a href="contact.html">Plan a Visit</a><a href="prayer.html">Prayer Request</a><a href="groups-archive.html">Join a Group</a><a href="contact.html">Volunteer</a></div>
+      <div><h4>Service Times</h4><p>Sunday Worship<br />9:30 AM</p><p>Midweek Word & Prayer<br />Wednesday 7:00 PM</p></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Grace City Church. All rights reserved.</span><span>Ecclesia Theme · Digital Church OS</span></div>
+  </div>
+</footer>
+
+<aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+  <div class="drawer-close-row">
+    <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+      <i data-lucide="x"></i>
+    </button>
+  </div>
+
+  <nav class="drawer-nav">
+    <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+    <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
+    <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
+    <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
+    <a class="pjax-link" href="ministries.html"><i data-lucide="users-round"></i> Ministries</a>
+    <a class="pjax-link" href="groups-archive.html"><i data-lucide="users"></i> Groups</a>
+    <a class="pjax-link" href="prayer.html"><i data-lucide="heart-handshake"></i> Prayer</a>
+    <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
+    <a class="pjax-link" href="login.html"><i data-lucide="user-circle"></i> Account</a>
+  </nav>
+
+  <div class="drawer-actions">
+    <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+      <i data-lucide="radio"></i> Watch Live
+    </a>
+    <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+      <i data-lucide="map-pin"></i> Plan Visit
+    </a>
+  </div>
+</aside>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="assets/app.js"></script>
+<script src="assets/groups.js"></script>
+</body>
+</html>

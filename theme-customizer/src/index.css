@@ -1504,3 +1504,16 @@ button, input, select, textarea {
 .menu-item-btn:hover .menu-item-close-icon {
   opacity: 1 !important;
 }
+
+/* Mockup Card Interactive Hover Effects */
+.hover-card-preview-container:hover .mockup-card-lift {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3) !important;
+}
+.hover-card-preview-container:hover .mockup-img-zoom {
+  transform: scale(1.15) !important;
+}
+.hover-card-preview-container:hover .mockup-card-glow {
+  border-color: var(--accent, #3b82f6) !important;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4) !important;
+}

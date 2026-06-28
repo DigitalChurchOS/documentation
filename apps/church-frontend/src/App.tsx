@@ -171,7 +171,15 @@ const slugToTemplateMap: Record<string, string> = {
   'testimonies': 'testimony-wall.html',
   'testimonies/sample-story': 'testimony-single.html',
   'testimonies/submit': 'testimony-submit.html',
-  'worship': 'worship.html'
+  'worship': 'worship.html',
+  'cells': 'groups-archive.html',
+  'cells/sample-group': 'group-single.html',
+  'store': 'store-archive.html',
+  'store/sample-product': 'store-single.html',
+  'store/cart': 'cart.html',
+  'store/checkout': 'checkout.html',
+  'store/thank-you': 'checkout-success.html',
+  'store/checkout-failed': 'checkout-failed.html'
 };
 
 function getTemplateFileForSlug(slug: string): string | null {
@@ -212,6 +220,12 @@ function getTemplateFileForSlug(slug: string): string | null {
     if (prefix === 'testimonies') {
       if (subPath === 'submit') return 'testimony-submit.html';
       return 'testimony-single.html';
+    }
+    if (prefix === 'cells') {
+      return 'group-single.html';
+    }
+    if (prefix === 'store') {
+      return 'store-single.html';
     }
   }
 

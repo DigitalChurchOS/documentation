@@ -120,7 +120,7 @@ function getCustomizerRadiusTokens(shape?: string) {
 
 function getCustomizerSectionPadding(density?: string): string {
   if (density === 'Compact') return '20px';
-  if (density === 'Spacious') return '50px';
+  if (density === 'Spacious') return '40px';
   return '30px';
 }
 
@@ -170,6 +170,62 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   const density = coerceCustomizerChoice(settings.density, 'Comfortable', ['Compact', 'Comfortable', 'Spacious']);
   const sectionPadding = getCustomizerSectionPadding(density);
   const buttonPadding = getCustomizerButtonPadding(density);
+  let cardPadding = '20px';
+  if (density === 'Compact') cardPadding = '10px';
+  else if (density === 'Spacious') cardPadding = '30px';
+
+  const thumbnailStyle = settings.cardThumbnailStyle || 'padded';
+  let cardToThumbPadding = '15px'; // Comfortable
+  if (thumbnailStyle === 'padded') {
+    if (density === 'Compact') cardToThumbPadding = '10px';
+    else if (density === 'Spacious') cardToThumbPadding = '20px';
+  } else {
+    cardToThumbPadding = '0px';
+  }
+
+  let cardContentPadding = '20px'; // Comfortable
+  if (density === 'Compact') cardContentPadding = '15px';
+  else if (density === 'Spacious') cardContentPadding = '25px';
+
+  // Card grid gap based on density
+  let cardGridGap = '22px'; // Comfortable
+  if (density === 'Compact') cardGridGap = '15px';
+  else if (density === 'Spacious') cardGridGap = '30px';
+
+  // Apply card grid gap overrides if set
+  const gridGapOverride = settings.cardGridGapOverride || 'medium';
+  if (gridGapOverride === 'small') {
+    cardGridGap = '25px';
+  } else if (gridGapOverride === 'medium') {
+    cardGridGap = '35px';
+  } else if (gridGapOverride === 'big') {
+    cardGridGap = '40px';
+  } else if (gridGapOverride === 'large') {
+    cardGridGap = '45px';
+  }
+
+  // Apply card padding overrides if set
+  const paddingOverride = settings.cardPaddingOverride || 'medium';
+  if (paddingOverride === 'small') {
+    if (thumbnailStyle === 'padded') cardToThumbPadding = '10px';
+    cardContentPadding = '15px';
+  } else if (paddingOverride === 'medium') {
+    if (thumbnailStyle === 'padded') cardToThumbPadding = '15px';
+    cardContentPadding = '20px';
+  } else if (paddingOverride === 'big') {
+    if (thumbnailStyle === 'padded') cardToThumbPadding = '20px';
+    cardContentPadding = '25px';
+  } else if (paddingOverride === 'large') {
+    if (thumbnailStyle === 'padded') cardToThumbPadding = '25px';
+    cardContentPadding = '30px';
+  }
+
+  const cardToContentPadding = cardPadding;
+  let thumbnailBottomMargin = '17px';
+  if (density === 'Compact') thumbnailBottomMargin = '15px';
+  else if (density === 'Spacious') thumbnailBottomMargin = '19px';
+
+
 
   let primary = baseAccent;
   let surface = dark ? '#111827' : '#ffffff';
@@ -214,6 +270,9 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
     muted = '#cbd5e1';
   }
 
+  let backdropFilter = 'none';
+  let borderStyle = dark ? '1px solid rgba(255,255,255,.08)' : '1px solid rgba(29,24,18,.12)';
+
   if (visual === 'Flat') {
     shadow = 'none';
     softShadow = 'none';
@@ -222,7 +281,13 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
     softShadow = `0 4px 12px color-mix(in srgb, var(--primary) 8%, ${dark ? 'rgba(0,0,0,0.25)' : 'rgba(15,23,42,0.03)'})`;
   } else if (visual === 'Glass') {
     surface = dark ? 'rgba(17, 24, 39, 0.65)' : 'rgba(255, 255, 255, 0.72)';
-    border = dark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.45)';
+    backdropFilter = 'blur(18px)';
+    shadow = `0 8px 32px color-mix(in srgb, var(--primary) 10%, ${dark ? 'rgba(0,0,0,0.3)' : 'rgba(15,23,42,0.04)'})`;
+    softShadow = `0 4px 16px color-mix(in srgb, var(--primary) 6%, ${dark ? 'rgba(0,0,0,0.2)' : 'rgba(15,23,42,0.02)'})`;
+    borderStyle = dark ? '1px solid rgba(255,255,255,0.12)' : '1px solid rgba(255,255,255,0.45)';
+  } else if (visual === 'Immersive') {
+    shadow = `0 32px 90px color-mix(in srgb, var(--primary) 22%, ${dark ? 'rgba(0,0,0,0.6)' : 'rgba(15,23,42,0.12)'})`;
+    softShadow = `0 16px 45px color-mix(in srgb, var(--primary) 14%, ${dark ? 'rgba(0,0,0,0.45)' : 'rgba(15,23,42,0.08)'})`;
   }
 
   // Base body background with glows depending on style & atmosphere
@@ -263,6 +328,14 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   root.style.setProperty('--text', text);
   root.style.setProperty('--muted', muted);
   root.style.setProperty('--border', border);
+  root.style.setProperty('--card-border', borderStyle);
+  root.style.setProperty('--card-backdrop-filter', backdropFilter);
+  root.style.setProperty('--card-to-thumb-padding', cardToThumbPadding);
+  root.style.setProperty('--card-to-content-padding', cardToContentPadding);
+  root.style.setProperty('--card-content-padding', cardContentPadding);
+  root.style.setProperty('--card-padding', cardPadding);
+  root.style.setProperty('--card-grid-gap', cardGridGap);
+  root.style.setProperty('--thumbnail-bottom-margin', thumbnailBottomMargin);
   root.style.setProperty('--radius-xl', radius.xl);
   root.style.setProperty('--radius-lg', radius.lg);
   root.style.setProperty('--radius-md', radius.md);
@@ -365,10 +438,170 @@ h2 { font-size: clamp(30px, 5vw, var(--subtitle-size)) !important; line-height: 
 .lead { font-size: calc(var(--body-size) * 1.2) !important; }
 .section, .page-hero { padding-top: var(--section) !important; padding-bottom: var(--section) !important; }
 .btn, .button { border-radius: var(--radius-btn) !important; padding: var(--button-padding) !important; }
-.card, .feature-card, .sermon-card, .event-card, .ministry-card, .person-card, .contact-card, .form-card, .hero-copy, .prayer-box, .testimony-box {
+.card, .feature-card, .sermon-card, .event-card, .ministry-card, .person-card, .contact-card, .form-card, .hero-copy, .prayer-box, .testimony-box, .group-card, .product-card, .checkout-card, .order-card, .post, .blog-card, .blog-post-card, .article-card, .author-card, .video-card, .media-card, .product-item, .cell-card, .course-card, .course-main-card, .lesson-card, .lesson-single-card, .service-card, .mini-card, .audio-card, .audio-episode, .podcast-card, .podcast-episode, .episode-card, .resource-card, .library-card, .location-card, .panel, .solutions-card, .help-card {
   background: var(--surface) !important;
-  border-color: var(--border) !important;
+  border: var(--card-border) !important;
+  border-radius: var(--radius-lg) !important;
   box-shadow: var(--soft-shadow) !important;
+  backdrop-filter: var(--card-backdrop-filter) !important;
+  -webkit-backdrop-filter: var(--card-backdrop-filter) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+}
+.card img, .sermon-card img, .event-card img, .product-thumb img, .postimg, .blog-card img, .course-card img, .lesson-card img {
+  transition: transform 0.4s ease, border-radius 0.25s ease !important;
+}
+
+.card, .feature-card, .contact-card, .form-card, .page-hero-inner, .hero-copy, .prayer-box, .testimony-box, .checkout-card, .order-card, .solutions-card, .help-card {
+  padding: var(--card-padding) !important;
+}
+
+/* Card layout configurations from customizer settings */
+.card, .post, .episode, .course, .resource, .media-card, .event-card, .group-card, .product-card, .service-card, .testimony-card {
+  padding: 0 !important;
+}
+.product-thumb, .card-thumb, .postimg, .course-cover, .media-visual, .episode-cover, .event-img, .event-cover, .cover, .thumb, .group-cover, .library-cover, .service-cover {
+  padding: var(--card-to-thumb-padding) !important;
+  background: transparent !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+}
+/* Store product images are always 1:1 square, masked to that shape */
+.product-thumb {
+  aspect-ratio: 1 / 1 !important;
+  width: 100% !important;
+}
+/* img inside a grid container defaults to centered/natural-size — force stretch to fill */
+.product-thumb img,
+.card-thumb img,
+.postimg img,
+.course-cover img,
+.media-visual img,
+.episode-cover img,
+.event-img img,
+.event-cover img,
+.cover img,
+.thumb img {
+  align-self: stretch !important;
+  justify-self: stretch !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+.card > img, .post > img, .episode > img, .course > img, .resource > img, .media-card > img, .event-card > img, .group-card > img, .product-card > img, .service-card > img {
+  margin: var(--card-to-thumb-padding) var(--card-to-thumb-padding) 0 var(--card-to-thumb-padding) !important;
+  width: calc(100% - calc(var(--card-to-thumb-padding) * 2)) !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+/* Thumbnail bottom margins based on density settings */
+.product-thumb, .card-thumb, .postimg, .course-cover, .media-visual, .episode-cover, .event-img, .event-cover, .cover, .thumb, .group-cover, .library-cover, .service-cover,
+.card > img, .post > img, .episode > img, .course > img, .resource > img, .media-card > img, .event-card > img, .group-card > img, .product-card > img, .service-card > img {
+  margin-bottom: var(--thumbnail-bottom-margin) !important;
+}
+.product-info, .card-body, .postbody, .media-body, .episode-body, .course-body, .group-body, .event-body, .resource .body, .resource-card .body, .service-card .body, .card > .body, .group-card > .body, .group-card .body, .event-card .body, .testimony-card > .body {
+  padding-left: var(--card-content-padding) !important;
+  padding-right: var(--card-content-padding) !important;
+  padding-bottom: var(--card-content-padding) !important;
+  padding-top: var(--card-content-padding) !important;
+}
+/* Reset top padding if preceded by a thumbnail/cover or img */
+.product-thumb + .product-info,
+.card-thumb + .card-body,
+.postimg + .postbody,
+.course-cover + .course-body,
+.media-visual + .media-body,
+.episode-cover + .episode-body,
+.event-img + .event-body,
+.cover + .body,
+.thumb + .body,
+.event-cover + .event-body,
+.group-cover + .group-body,
+.library-cover + .body,
+.service-cover + .body,
+.card > img + .body,
+.post > img + .postbody,
+.episode > img + .episode-body,
+.course > img + .course-body,
+.resource > img + .body,
+.media-card > img + .media-body,
+.event-card > img + .event-body,
+.group-card > img + .group-body,
+.product-card > img + .product-info,
+.service-card > img + .body {
+  padding-top: 0 !important;
+}
+.product-badge {
+  top: calc(var(--card-to-thumb-padding) + 12px) !important;
+  left: calc(var(--card-to-thumb-padding) + 12px) !important;
+}
+
+/* Card inner image rounding based on padded vs full-bleed style */
+${thumbnailStyle === 'padded' ? `
+.product-thumb, .card-thumb, .postimg, .course-cover, .media-visual, .episode-cover, .event-img, .event-cover, .cover, .thumb, .group-cover, .library-cover, .service-cover {
+  border-radius: max(0px, calc(var(--radius-lg) - 3px)) !important;
+  overflow: hidden !important;
+}
+.card img, .feature-card img, .sermon-card img, .event-card img, .ministry-card img, .person-card img, .contact-card img, .form-card img, .group-card img, .product-card img, .product-thumb img, .postimg img, .blog-card img, .blog-post-card img, .article-card img, .author-card img, .video-card img, .media-card img, .product-item img, .cell-card img, .course-card img, .course-main-card img, .lesson-card img, .lesson-single-card img, .service-card img, .mini-card img, .audio-card img, .audio-episode img, .podcast-card img, .podcast-episode img, .episode-card img, .resource-card img, .library-card img, .location-card img, .panel img, .solutions-card img, .help-card img, .avatar, .order-card img {
+  border-radius: max(0px, calc(var(--radius-lg) - 3px)) !important;
+}
+` : `
+.product-thumb, .card-thumb, .postimg, .course-cover, .media-visual, .episode-cover, .event-img, .event-cover, .cover, .thumb, .group-cover, .library-cover, .service-cover {
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+.card img, .feature-card img, .sermon-card img, .event-card img, .ministry-card img, .person-card img, .contact-card img, .form-card img, .group-card img, .product-card img, .product-thumb img, .postimg img, .blog-card img, .blog-post-card img, .article-card img, .author-card img, .video-card img, .media-card img, .product-item img, .cell-card img, .course-card img, .course-main-card img, .lesson-card img, .lesson-single-card img, .service-card img, .mini-card img, .audio-card img, .audio-episode img, .podcast-card img, .podcast-episode img, .episode-card img, .resource-card img, .library-card img, .location-card img, .panel img, .solutions-card img, .help-card img, .avatar, .order-card img {
+  border-radius: 0 !important;
+}
+`}
+
+/* Card Hover Animation Styles */
+${(settings.cardHoverEffect || 'lift') === 'lift' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: var(--shadow) !important;
+}
+` : ''}
+
+${(settings.cardHoverEffect || 'lift') === 'grow' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  transform: scale(1.03) !important;
+}
+` : ''}
+
+${(settings.cardHoverEffect || 'lift') === 'shadow' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  box-shadow: 0 16px 38px color-mix(in srgb, var(--primary) 22%, ${dark ? 'rgba(0,0,0,0.6)' : 'rgba(15,23,42,0.18)'}) !important;
+}
+` : ''}
+
+${(settings.cardHoverEffect || 'lift') === 'zoom' ? `
+.card:hover img, .post:hover img, .episode:hover img, .course:hover img, .resource:hover img, .media-card:hover img, .event-card:hover img, .group-card:hover img, .product-card:hover img, .service-card:hover img, .testimony-card:hover img, .feature-card:hover img, .solutions-card:hover img, .help-card:hover img {
+  transform: scale(1.06) !important;
+}
+` : ''}
+
+${(settings.cardHoverEffect || 'lift') === 'glow' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 24%, transparent) !important;
+}
+` : ''}
+
+${(settings.cardHoverEffect || 'lift') === 'none' ? `
+.card:hover, .feature-card:hover, .sermon-card:hover, .event-card:hover, .ministry-card:hover, .person-card:hover, .group-card:hover, .product-card:hover, .post:hover, .blog-card:hover, .course-card:hover, .lesson-card:hover, .service-card:hover, .podcast-card:hover, .episode-card:hover, .resource-card:hover, .library-card:hover {
+  transform: none !important;
+  box-shadow: var(--soft-shadow) !important;
+}
+` : ''}
+.section[style*="padding-top: 0"], .section[style*="padding-top:0"] {
+  padding-top: 0 !important;
 }
 header[data-header-solid-themed="true"], .header[data-header-solid-themed="true"] {
   background: var(--primary) !important;
@@ -395,6 +628,22 @@ header[data-header-solid-themed="true"] .brand .mark, .header[data-header-solid-
   background: #ffffff !important;
   color: var(--primary) !important;
   box-shadow: none !important;
+}
+
+/* Card Lists & Archives Grid Gap */
+.grid,
+.product-grid,
+.media-grid,
+.episodes,
+.course-grid,
+.events-grid,
+.cards-3,
+.cards-2,
+.resources,
+.services,
+.related-grid,
+.related-posts {
+  gap: var(--card-grid-gap) !important;
 }
 header[data-header-solid-themed="true"] .brand-mark i, .header[data-header-solid-themed="true"] .brand-mark i,
 header[data-header-solid-themed="true"] .brand-mark svg, .header[data-header-solid-themed="true"] .brand-mark svg,
@@ -634,6 +883,28 @@ export function applyEcclesiaCSSVars(settings: ThemeSettings): void {
   document.body.setAttribute('data-mobile-drawer-mode', drawerMode);
   document.body.setAttribute('data-mobile-menu-position', menuPos);
   document.body.setAttribute('data-mobile-drawer-buttons-full-width', fullWidthBtns);
+
+  // ── Rail navigation body attributes ──────────────────────────────────────
+  // app.js reads these from <body> when building the shell. We must set them
+  // here so standalone pages (cart, checkout-failed, etc.) get the correct
+  // rail layout from the active theme settings.
+  document.body.setAttribute('data-rail-position', String((settings as any).railPosition || 'left'));
+  document.body.setAttribute('data-rail-show-icons', String((settings as any).railShowIcons !== false));
+  document.body.setAttribute('data-rail-style', String((settings as any).railStyle || 'full'));
+  document.body.setAttribute('data-rail-shadow', String((settings as any).railShadow || false));
+  document.body.setAttribute('data-rail-shadow-intensity', String((settings as any).railShadowIntensity || 'medium'));
+  document.body.setAttribute('data-rail-shadow-themed', String((settings as any).railShadowThemed || false));
+  document.body.setAttribute('data-rail-solid-themed', String((settings as any).railSolidThemed || false));
+  document.body.setAttribute('data-rail-border', String((settings as any).railBorder !== false));
+  document.body.setAttribute('data-rail-border-size', String((settings as any).railBorderSize || 'small'));
+  document.body.setAttribute('data-rail-border-color', String((settings as any).railBorderColor || 'standard'));
+  document.body.setAttribute('data-rail-vertical-align', String((settings as any).railVerticalAlign || 'center'));
+  document.body.setAttribute('data-rail-font-size', String((settings as any).railFontSize || 'medium'));
+  document.body.setAttribute('data-rail-font-weight', String((settings as any).railFontWeight || 'bold'));
+  document.body.setAttribute('data-mobile-drawer-combine', String(!!(settings as any).mobileDrawerCombine));
+  document.body.setAttribute('data-mobile-drawer-rail-position', String((settings as any).mobileDrawerRailPosition || 'right'));
+  document.body.setAttribute('data-mobile-menu-flip', String(!!(settings as any).mobileMenuFlip));
+
   applyEcclesiaRuntimeStyle();
 
   if (hasCustomizerSettings(settings)) {
@@ -644,6 +915,13 @@ export function applyEcclesiaCSSVars(settings: ThemeSettings): void {
   } else if (customizerStyle) {
     customizerStyle.remove();
     customizerStyle = null;
+  }
+
+  // ── Rebuild shell with correct theme attributes ───────────────────────────
+  // After body attributes are set, tell app.js to rebuild the shell so the
+  // rail menu and header reflect the active customizer settings.
+  if (typeof (window as any).reinitShell === 'function') {
+    (window as any).reinitShell();
   }
 
   // Mark body as Ecclesia-active

@@ -1,0 +1,340 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Payment Failed | Grace City Church</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    /* ── Error / Danger palette ── */
+    :root {
+      --danger:       #dc2626;
+      --danger-light: color-mix(in srgb, var(--danger) 12%, transparent);
+      --danger-mid:   color-mix(in srgb, var(--danger) 20%, transparent);
+      --danger-text:  color-mix(in srgb, var(--danger) 85%, var(--text));
+    }
+
+    /* ── Shake animation ── */
+    @keyframes errorShake {
+      0%, 100% { transform: translateX(0); }
+      10%, 50%, 90% { transform: translateX(-6px); }
+      30%, 70%      { transform: translateX(6px); }
+    }
+    @keyframes errorPulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--danger) 30%, transparent); }
+      50%      { box-shadow: 0 0 0 18px color-mix(in srgb, var(--danger) 0%, transparent); }
+    }
+
+    /* ── Error hero ── */
+    .error-hero { text-align: center; }
+    .error-icon-ring {
+      width: 96px; height: 96px; border-radius: 50%;
+      background: var(--danger-light);
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--danger);
+      animation: errorShake .6s ease-in-out .3s 1, errorPulse 2s ease-in-out .9s infinite;
+      margin-bottom: 24px;
+    }
+    .error-icon-ring i, .error-icon-ring svg { width: 44px; height: 44px; }
+    .error-hero h1 { margin: 0 0 8px; font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 800; }
+    .error-hero .lead { color: var(--muted); margin: 0 0 6px; }
+    .error-hero .ref-code {
+      display: inline-block; margin-top: 10px;
+      font-size: 13px; font-weight: 600; letter-spacing: .04em;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-btn);
+      padding: 5px 14px;
+    }
+
+    /* ── Centered container ── */
+    .fail-container { max-width: 700px; margin: 0 auto; }
+
+    /* ── Alert box (danger) ── */
+    .alert-box {
+      border-radius: var(--radius-lg);
+      padding: 28px 28px 24px;
+      margin-bottom: 28px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--soft-shadow);
+    }
+    .alert-box.danger {
+      border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+      background: color-mix(in srgb, var(--danger) 3%, var(--surface));
+    }
+    .alert-box-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+    }
+    .alert-box-icon {
+      width: 44px; height: 44px; min-width: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .alert-box-icon i, .alert-box-icon svg { width: 22px; height: 22px; }
+    .alert-box.danger .alert-box-icon {
+      background: var(--danger-light); color: var(--danger);
+    }
+    .alert-box-title { font-size: 17px; font-weight: 700; margin: 0; }
+    .alert-box.danger .alert-box-title { color: var(--danger-text); }
+    .alert-box-body { color: var(--muted); font-size: 14.5px; line-height: 1.65; margin: 0; }
+    .alert-box-code {
+      display: inline-block; margin-top: 14px;
+      font-size: 12px; font-family: 'SF Mono', 'Fira Code', monospace;
+      background: var(--danger-mid);
+      color: var(--danger);
+      padding: 4px 12px;
+      border-radius: var(--radius-btn);
+      font-weight: 600; letter-spacing: .04em;
+    }
+
+    /* ── Solutions card ── */
+    .solutions-card {
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 28px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--soft-shadow);
+    }
+    .solutions-card h3 {
+      font-size: 16px; font-weight: 700; margin: 0 0 18px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .solutions-card h3 i, .solutions-card h3 svg { width: 18px; height: 18px; color: var(--accent); }
+    .solution-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+    .solution-list li {
+      display: flex; align-items: flex-start; gap: 12px;
+      font-size: 14.5px; line-height: 1.55; color: var(--text);
+    }
+    .solution-list li .sol-icon {
+      width: 32px; height: 32px; min-width: 32px; border-radius: 50%;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .solution-list li .sol-icon i,
+    .solution-list li .sol-icon svg { width: 16px; height: 16px; }
+
+    /* ── Action stack ── */
+    .action-stack {
+      display: flex; flex-direction: column; gap: 12px;
+      max-width: 420px; margin: 0 auto 28px;
+    }
+    .action-stack .btn { width: 100%; justify-content: center; }
+
+    /* ── Hidden error states (template variety) ── */
+    .alt-error-state { display: none; }
+
+    /* ── Help grid ── */
+    .help-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+      max-width: 700px; margin: 0 auto;
+    }
+    @media (max-width: 600px) { .help-grid { grid-template-columns: 1fr; } }
+    .help-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      text-align: center;
+      box-shadow: var(--soft-shadow);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .help-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+    .help-card-icon {
+      width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 16px;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .help-card-icon i, .help-card-icon svg { width: 24px; height: 24px; }
+    .help-card h4 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+    .help-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.55; }
+    .help-card a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 14px; }
+    .help-card a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="navwrap">
+      <a class="brand" href="store-archive.html">
+        <span class="mark"><i data-lucide="church"></i></span>
+        <span>Grace City Church</span>
+      </a>
+      <nav class="nav">
+        <a href="cart.html">Cart</a>
+        <a href="checkout.html">Checkout</a>
+      </nav>
+      <div class="actions">
+        <a href="store-archive.html" class="btn soft"><i data-lucide="arrow-left"></i> Back to Store</a>
+        <button class="menu" id="menuBtn"><i data-lucide="menu"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ═══════════════════════════════════════════
+         1. ERROR HERO SECTION
+         ═══════════════════════════════════════════ -->
+    <section class="section error-hero">
+      <div class="error-icon-ring">
+        <i data-lucide="x"></i>
+      </div>
+      <h1>Payment Unsuccessful</h1>
+      <p class="lead">Your transaction could not be completed.</p>
+      <span class="ref-code">Order Reference: #GC-482910</span>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         2. ERROR DETAILS SECTION
+         ═══════════════════════════════════════════ -->
+    <section class="section" style="padding-top:0;">
+      <div class="fail-container">
+
+        <!-- a. Error Alert Box -->
+        <div class="alert-box danger">
+          <div class="alert-box-header">
+            <div class="alert-box-icon"><i data-lucide="alert-triangle"></i></div>
+            <h3 class="alert-box-title">Transaction Declined</h3>
+          </div>
+          <p class="alert-box-body">
+            Your payment method was declined by the card issuer. This could be due to insufficient funds, incorrect card details, or a security hold on your account.
+          </p>
+          <span class="alert-box-code">ERR_CARD_DECLINED</span>
+        </div>
+
+        <!-- b. Common Solutions Card -->
+        <div class="solutions-card">
+          <h3><i data-lucide="lightbulb"></i> Common Solutions</h3>
+          <ol class="solution-list">
+            <li>
+              <span class="sol-icon"><i data-lucide="credit-card"></i></span>
+              <span>Check that your card number, expiry date, and CVV are entered correctly</span>
+            </li>
+            <li>
+              <span class="sol-icon"><i data-lucide="wallet"></i></span>
+              <span>Ensure your card has sufficient funds available</span>
+            </li>
+            <li>
+              <span class="sol-icon"><i data-lucide="phone-call"></i></span>
+              <span>Contact your bank to authorize the transaction</span>
+            </li>
+            <li>
+              <span class="sol-icon"><i data-lucide="repeat"></i></span>
+              <span>Try using a different payment method</span>
+            </li>
+            <li>
+              <span class="sol-icon"><i data-lucide="trash-2"></i></span>
+              <span>Clear your browser cache and try again</span>
+            </li>
+          </ol>
+        </div>
+
+        <!-- c. Action Buttons -->
+        <div class="action-stack">
+          <a href="checkout.html" class="btn primary"><i data-lucide="refresh-cw"></i> Try Again</a>
+          <a href="cart.html" class="btn soft"><i data-lucide="shopping-cart"></i> Return to Cart</a>
+          <a href="contact.html" class="btn" style="background:var(--surface);border:1.5px solid var(--border);color:var(--text);"><i data-lucide="life-buoy"></i> Contact Support</a>
+        </div>
+
+        <!-- d. Additional Error States (hidden, for template variety) -->
+        <div class="alt-error-state" id="errorCardExpired">
+          <div class="alert-box danger">
+            <div class="alert-box-header">
+              <div class="alert-box-icon"><i data-lucide="calendar-x"></i></div>
+              <h3 class="alert-box-title">Card Expired</h3>
+            </div>
+            <p class="alert-box-body">Your card has expired. Please update your payment method with a valid card to complete your purchase.</p>
+            <span class="alert-box-code">ERR_CARD_EXPIRED</span>
+          </div>
+        </div>
+
+        <div class="alt-error-state" id="errorNetwork">
+          <div class="alert-box danger">
+            <div class="alert-box-header">
+              <div class="alert-box-icon"><i data-lucide="wifi-off"></i></div>
+              <h3 class="alert-box-title">Network Error</h3>
+            </div>
+            <p class="alert-box-body">A network error occurred during payment processing. Please check your internet connection and try again.</p>
+            <span class="alert-box-code">ERR_NETWORK_TIMEOUT</span>
+          </div>
+        </div>
+
+        <div class="alt-error-state" id="errorSessionExpired">
+          <div class="alert-box danger">
+            <div class="alert-box-header">
+              <div class="alert-box-icon"><i data-lucide="timer-off"></i></div>
+              <h3 class="alert-box-title">Session Expired</h3>
+            </div>
+            <p class="alert-box-body">Your checkout session has expired. Please start again from your cart to ensure your order details and pricing are up to date.</p>
+            <span class="alert-box-code">ERR_SESSION_EXPIRED</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         3. NEED HELP SECTION
+         ═══════════════════════════════════════════ -->
+    <section class="section">
+      <div class="help-grid">
+        <div class="help-card">
+          <div class="help-card-icon"><i data-lucide="phone"></i></div>
+          <h4>Contact Us</h4>
+          <p style="margin-bottom:10px;">Our support team is here to help resolve any payment issues.</p>
+          <p style="margin-bottom:4px;"><a href="mailto:support@gracecity.church">support@gracecity.church</a></p>
+          <p><a href="tel:+15551234567">(555) 123-4567</a></p>
+        </div>
+        <div class="help-card">
+          <div class="help-card-icon"><i data-lucide="help-circle"></i></div>
+          <h4>FAQ</h4>
+          <p style="margin-bottom:10px;">Find answers to common questions about orders, payments, and shipping.</p>
+          <a href="contact.html">View Common Questions →</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand" style="color:white;"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+          <p style="margin-top:18px;max-width:340px;">A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.</p>
+          <div class="socials">
+            <a href="#"><i data-lucide="facebook"></i></a><a href="#"><i data-lucide="youtube"></i></a><a href="#"><i data-lucide="instagram"></i></a>
+          </div>
+        </div>
+        <div><h4>Explore</h4><a href="about.html">About</a><a href="sermons.html">Sermons</a><a href="events-archive.html">Events</a><a href="groups-archive.html">Groups</a><a href="store-archive.html">Store</a><a href="contact.html">Contact</a></div>
+        <div><h4>Connect</h4><a href="login.html">Member Login</a><a href="account.html">My Account</a><a href="contact.html">Plan a Visit</a><a href="prayer.html">Prayer Request</a><a href="groups-archive.html">Join a Group</a><a href="contact.html">Volunteer</a></div>
+        <div><h4>Service Times</h4><p>Sunday Worship<br />9:30 AM</p><p>Midweek Word & Prayer<br />Wednesday 7:00 PM</p></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 Grace City Church. All rights reserved.</span><span>Ecclesia Theme · Digital Church OS</span></div>
+    </div>
+  </footer>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu"><i data-lucide="x"></i></button>
+    </div>
+    <nav class="drawer-nav">
+      <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+      <a class="pjax-link" href="store-archive.html"><i data-lucide="shopping-bag"></i> Store</a>
+      <a class="pjax-link" href="cart.html"><i data-lucide="shopping-cart"></i> Cart</a>
+      <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
+    </nav>
+    <div class="drawer-actions">
+      <a href="checkout.html" class="btn btn-primary btn-full pjax-link"><i data-lucide="refresh-cw"></i> Try Again</a>
+    </div>
+  </aside>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>

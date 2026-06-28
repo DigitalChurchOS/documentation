@@ -800,6 +800,9 @@ const StaticHtmlPage: React.FC<Props> = ({
     payload.bodyClassNames.forEach((className) => document.body.classList.add(className));
     const previousAttributes = new Map<string, string | null>();
     Object.entries(payload.bodyAttributes).forEach(([name, value]) => {
+      if (name.startsWith('data-rail-') || name.startsWith('data-mobile-') || name === 'data-in-customizer') {
+        return;
+      }
       previousAttributes.set(name, document.body.getAttribute(name));
       document.body.setAttribute(name, value);
     });

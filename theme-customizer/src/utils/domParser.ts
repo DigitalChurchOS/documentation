@@ -28,9 +28,14 @@ export interface ThemeState {
   headerFontSize: string;
   headerFontWeight: string;
   mobileMenuPosition: string;
+  mobileMenuFlip: boolean;
+  mobileLogoAlign: 'left' | 'center' | 'right';
   mobileDrawerMode: string;
   mobileHamburgerShape: string;
   mobileDrawerButtonsFullWidth: boolean;
+  mobileDrawerCombine: boolean;
+  mobileDrawerRailPosition: 'left' | 'right';
+  mobileRailVerticalAlign: 'top' | 'center' | 'bottom';
 
   footerStyle: string;
   footerWidgets: 'show' | 'hidden';
@@ -53,6 +58,12 @@ export interface ThemeState {
   railVerticalAlign?: string;
   railFontSize?: string;
   railFontWeight?: string;
+
+  cardThumbnailStyle?: string;
+  cardHoverEffect?: string;
+  cardGridGapOverride?: string;
+  cardPaddingOverride?: string;
+  cardContentSpacing?: string;
 
   copyrightText: string;
   privacyLabel: string;
@@ -138,17 +149,17 @@ export function getTokenStyle(state: ThemeState): string {
 
   // Density paddings
   let sectionPadding = "30px";
-  let cardPadding = "24px";
+  let cardPadding = "20px";
   let btnPadding = "13px 20px";
   let filterGap = "30px";
   if (state.density === "Compact") {
     sectionPadding = "20px";
-    cardPadding = "20px";
+    cardPadding = "10px";
     btnPadding = "9px 15px";
     filterGap = "20px";
   } else if (state.density === "Spacious") {
-    sectionPadding = "50px";
-    cardPadding = "36px";
+    sectionPadding = "40px";
+    cardPadding = "30px";
     btnPadding = "16px 28px";
     filterGap = "40px";
   }
@@ -172,6 +183,56 @@ export function getTokenStyle(state: ThemeState): string {
     radBtn = "50px";
     radPill = "50px";
   }
+
+  let cardToThumbPadding = "15px";
+  if (state.density === "Compact") cardToThumbPadding = "5px";
+  else if (state.density === "Spacious") cardToThumbPadding = "25px";
+
+  // If card thumbnail style is full-bleed, padding is 0
+  if (state.cardThumbnailStyle === "full-bleed") {
+    cardToThumbPadding = "0px";
+  }
+
+  const cardToContentPadding = cardPadding;
+  let thumbnailBottomMargin = "17px";
+  if (state.density === "Compact") thumbnailBottomMargin = "15px";
+  else if (state.density === "Spacious") thumbnailBottomMargin = "19px";
+
+  let cardContentMinPadding = "20px";
+  if (state.density === "Compact") cardContentMinPadding = "15px";
+  else if (state.density === "Spacious") cardContentMinPadding = "25px";
+
+  let cardContentPadding = "20px"; // Comfortable
+  if (state.density === "Compact") cardContentPadding = "15px";
+  else if (state.density === "Spacious") cardContentPadding = "25px";
+
+  // Apply card padding overrides if set
+  const paddingOverride = state.cardPaddingOverride || "medium";
+  if (paddingOverride === "small") {
+    if (state.cardThumbnailStyle !== "full-bleed") cardToThumbPadding = "10px";
+    cardContentPadding = "15px";
+  } else if (paddingOverride === "medium") {
+    if (state.cardThumbnailStyle !== "full-bleed") cardToThumbPadding = "15px";
+    cardContentPadding = "20px";
+  } else if (paddingOverride === "big") {
+    if (state.cardThumbnailStyle !== "full-bleed") cardToThumbPadding = "20px";
+    cardContentPadding = "25px";
+  } else if (paddingOverride === "large") {
+    if (state.cardThumbnailStyle !== "full-bleed") cardToThumbPadding = "25px";
+    cardContentPadding = "30px";
+  }
+  cardContentMinPadding = cardContentPadding;
+
+  let cardGridGap = "22px"; // Comfortable
+  if (state.density === "Compact") cardGridGap = "15px";
+  else if (state.density === "Spacious") cardGridGap = "30px";
+
+  // Override grid gap if set explicitly
+  const gridGapOverride = state.cardGridGapOverride || "medium";
+  if (gridGapOverride === "small") cardGridGap = "25px";
+  else if (gridGapOverride === "medium") cardGridGap = "35px";
+  else if (gridGapOverride === "big") cardGridGap = "40px";
+  else if (gridGapOverride === "large") cardGridGap = "45px";
 
   // Visual card presentation - shadows follow accents using CSS color-mix()
   let shadow = `0 24px 70px color-mix(in srgb, var(--primary) 16%, ${dark ? "rgba(0,0,0,0.5)" : "rgba(15,23,42,0.1)"})`;
@@ -405,6 +466,12 @@ export function getTokenStyle(state: ThemeState): string {
   --shadow: ${shadow};
   --soft-shadow: ${softShadow};
   --section: ${sectionPadding};
+  --card-to-thumb-padding: ${cardToThumbPadding};
+  --card-to-content-padding: ${cardToContentPadding};
+  --card-content-padding: ${cardContentPadding};
+  --card-grid-gap: ${cardGridGap};
+  --thumbnail-bottom-margin: ${thumbnailBottomMargin};
+  --card-content-min-padding: ${cardContentMinPadding};
 
   /* Header following accents */
   --header-bg: color-mix(in srgb, var(--primary) 4%, var(--bg));
@@ -515,14 +582,195 @@ h3, h4, h5, h6, .brand, .brand span {
   padding-bottom: var(--section) !important;
 }
 
-.card, .feature-card, .sermon-card, .event-card, .ministry-card, .person-card, .contact-card, .form-card, .page-hero-inner, .hero-copy, .prayer-box, .testimony-box {
+.card, .feature-card, .sermon-card, .event-card, .ministry-card, .person-card, .contact-card, .form-card, .group-card, .product-card, .checkout-card, .order-card, .post, .blog-card, .blog-post-card, .article-card, .author-card, .video-card, .media-card, .product-item, .cell-card, .course-card, .course-main-card, .lesson-card, .lesson-single-card, .service-card, .mini-card, .audio-card, .audio-episode, .podcast-card, .podcast-episode, .episode-card, .resource-card, .library-card, .location-card, .panel, .solutions-card, .help-card {
   background: var(--surface) !important;
   border: ${borderStyle} !important;
   border-radius: var(--radius-lg) !important;
   box-shadow: var(--soft-shadow) !important;
-  padding: ${cardPadding} !important;
   backdrop-filter: ${backdropFilter} !important;
   -webkit-backdrop-filter: ${backdropFilter} !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease !important;
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  isolation: isolate !important;
+  will-change: transform !important;
+}
+
+.card img, .sermon-card img, .event-card img, .product-thumb img, .postimg, .blog-card img, .course-card img, .lesson-card img {
+  transition: transform 0.4s ease, border-radius 0.25s ease !important;
+}
+
+.card, .feature-card, .contact-card, .form-card, .page-hero-inner, .hero-copy, .prayer-box, .testimony-box, .checkout-card, .order-card, .solutions-card, .help-card {
+  padding: ${cardPadding} !important;
+}
+
+/* Card layout configurations from customizer settings */
+.product-card, .course-card, .course, .lesson-card, .sermon-card, .event-card, .blog-card, .post, .group-card, .media-card, .related-card {
+  padding: 0 !important;
+}
+.product-thumb, .card-thumb, .postimg, .course-cover, .media-visual, .episode-cover {
+  padding: var(--card-to-thumb-padding) !important;
+  background: transparent !important;
+  display: grid !important;
+  place-items: center !important;
+  overflow: hidden !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+}
+/* Store product images are always 1:1 square, masked to that shape */
+.product-thumb {
+  aspect-ratio: 1 / 1 !important;
+  width: 100% !important;
+  display: flex !important;
+  position: relative !important;
+  align-items: center !important;
+  justify-content: center !important;
+  isolation: isolate !important;
+  will-change: transform !important;
+}
+/* img inside a grid container defaults to centered/natural-size — force stretch to fill */
+.product-thumb img,
+.card-thumb img,
+.postimg img,
+.course-cover img,
+.media-visual img,
+.episode-cover img,
+.event-img img,
+.cover img,
+.thumb img {
+  align-self: stretch !important;
+  justify-self: stretch !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+.card > img, .post > img, .episode > img, .course > img, .resource > img, .media-card > img, .event-card > img, .group-card > img, .product-card > img, .service-card > img {
+  margin: var(--card-to-thumb-padding) var(--card-to-thumb-padding) 0 var(--card-to-thumb-padding) !important;
+  width: calc(100% - calc(var(--card-to-thumb-padding) * 2)) !important;
+  box-sizing: border-box !important;
+  display: block !important;
+}
+/* Thumbnail bottom margins based on density settings */
+.product-thumb, .card-thumb, .postimg, .course-cover, .media-visual, .episode-cover, .event-img, .cover, .thumb,
+.card > img, .post > img, .episode > img, .course > img, .resource > img, .media-card > img, .event-card > img, .group-card > img, .product-card > img, .service-card > img {
+  margin-bottom: var(--thumbnail-bottom-margin) !important;
+}
+.product-info, .card-body, .postbody, .media-body, .episode-body, .course-body, .group-body, .event-body, .resource .body, .resource-card .body, .service-card .body, .card > .body, .group-card > .body, .group-card .body, .event-card .body, .testimony-card > .body {
+  padding-left: var(--card-content-padding) !important;
+  padding-right: var(--card-content-padding) !important;
+  padding-bottom: var(--card-content-padding) !important;
+  padding-top: var(--card-content-padding) !important;
+}
+/* Reset top padding if preceded by a thumbnail/cover or img */
+.product-thumb + .product-info,
+.card-thumb + .card-body,
+.postimg + .postbody,
+.course-cover + .course-body,
+.media-visual + .media-body,
+.episode-cover + .episode-body,
+.event-img + .event-body,
+.cover + .body,
+.thumb + .body,
+.event-cover + .event-body,
+.group-cover + .group-body,
+.library-cover + .body,
+.service-cover + .body,
+.card > img + .body,
+.post > img + .postbody,
+.episode > img + .episode-body,
+.course > img + .course-body,
+.resource > img + .body,
+.media-card > img + .media-body,
+.event-card > img + .event-body,
+.group-card > img + .group-body,
+.product-card > img + .product-info,
+.service-card > img + .body {
+  padding-top: 0 !important;
+}
+.product-badge {
+  top: calc(var(--card-to-thumb-padding) + 12px) !important;
+  left: calc(var(--card-to-thumb-padding) + 12px) !important;
+}
+
+/* Card Hover Animation Styles */
+${state.cardHoverEffect === 'lift' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: var(--shadow) !important;
+}
+` : ''}
+
+${state.cardHoverEffect === 'grow' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  transform: scale(1.03) !important;
+}
+` : ''}
+
+${state.cardHoverEffect === 'shadow' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  box-shadow: 0 16px 38px color-mix(in srgb, var(--primary) 22%, ${dark ? "rgba(0,0,0,0.6)" : "rgba(15,23,42,0.18)"}) !important;
+}
+` : ''}
+
+${state.cardHoverEffect === 'zoom' ? `
+.card:hover img, .post:hover img, .episode:hover img, .course:hover img, .resource:hover img, .media-card:hover img, .event-card:hover img, .group-card:hover img, .product-card:hover img, .service-card:hover img, .testimony-card:hover img, .feature-card:hover img, .solutions-card:hover img, .help-card:hover img {
+  transform: scale(1.06) !important;
+}
+` : ''}
+
+${state.cardHoverEffect === 'glow' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 24%, transparent) !important;
+}
+` : ''}
+
+${state.cardHoverEffect === 'none' ? `
+.card:hover, .post:hover, .episode:hover, .course:hover, .resource:hover, .media-card:hover, .event-card:hover, .group-card:hover, .product-card:hover, .service-card:hover, .testimony-card:hover, .feature-card:hover, .solutions-card:hover, .help-card:hover {
+  transform: none !important;
+  box-shadow: var(--soft-shadow) !important;
+}
+` : ''}
+
+/* Card inner image rounding based on padded vs full-bleed style */
+${state.cardThumbnailStyle === 'padded' ? `
+.product-thumb, .card-thumb, .postimg, .course-cover, .media-visual, .episode-cover, .event-img, .event-cover, .cover, .thumb, .group-cover, .library-cover, .service-cover {
+  border-radius: max(0px, calc(var(--radius-lg) - 3px)) !important;
+  overflow: hidden !important;
+}
+.card img, .feature-card img, .sermon-card img, .event-card img, .ministry-card img, .person-card img, .contact-card img, .form-card img, .group-card img, .product-card img, .product-thumb img, .postimg img, .blog-card img, .blog-post-card img, .article-card img, .author-card img, .video-card img, .media-card img, .product-item img, .cell-card img, .course-card img, .course-main-card img, .lesson-card img, .lesson-single-card img, .service-card img, .mini-card img, .audio-card img, .audio-episode img, .podcast-card img, .podcast-episode img, .episode-card img, .resource-card img, .library-card img, .location-card img, .panel img, .solutions-card img, .help-card img, .avatar, .order-card img {
+  border-radius: max(0px, calc(var(--radius-lg) - 3px)) !important;
+}
+` : `
+.product-thumb, .card-thumb, .postimg, .course-cover, .media-visual, .episode-cover, .event-img, .event-cover, .cover, .thumb, .group-cover, .library-cover, .service-cover {
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+.card img, .feature-card img, .sermon-card img, .event-card img, .ministry-card img, .person-card img, .contact-card img, .form-card img, .group-card img, .product-card img, .product-thumb img, .postimg img, .blog-card img, .blog-post-card img, .article-card img, .author-card img, .video-card img, .media-card img, .product-item img, .cell-card img, .course-card img, .course-main-card img, .lesson-card img, .lesson-single-card img, .service-card img, .mini-card img, .audio-card img, .audio-episode img, .podcast-card img, .podcast-episode img, .episode-card img, .resource-card img, .library-card img, .location-card img, .panel img, .solutions-card img, .help-card img, .avatar, .order-card img {
+  border-radius: 0 !important;
+}
+`}
+
+/* Card Lists & Archives Grid Gap */
+.grid,
+.product-grid,
+.media-grid,
+.episodes,
+.course-grid,
+.events-grid,
+.cards-3,
+.cards-2,
+.resources,
+.services,
+.related-grid,
+.related-posts {
+  gap: var(--card-grid-gap) !important;
+}
+
+.section[style*="padding-top: 0"], .section[style*="padding-top:0"] {
+  padding-top: 0 !important;
 }
 
 .btn, .button {
@@ -1025,13 +1273,16 @@ function getLucideIconForMenuLabel(label: string): string {
   return 'link';
 }
 
-export function applyThemeStructure(doc: Document, state: ThemeState, navigationMenus?: any[]): void {
+export function applyThemeStructure(doc: Document, state: ThemeState, navigationMenus?: any[], themeFolder?: string): void {
   // Inject base URL so relative assets (like styles.css) resolve correctly to the theme folder
   let baseEl = doc.querySelector("base");
+  const folder = themeFolder || "ecclesia-full-theme";
   if (!baseEl) {
     baseEl = doc.createElement("base");
-    baseEl.setAttribute("href", "/themes/ecclesia/");
+    baseEl.setAttribute("href", `/themes/${folder}/`);
     doc.head.insertBefore(baseEl, doc.head.firstChild);
+  } else {
+    baseEl.setAttribute("href", `/themes/${folder}/`);
   }
 
   // Cache bust all stylesheets so the preview always loads the latest CSS
@@ -1046,9 +1297,24 @@ export function applyThemeStructure(doc: Document, state: ThemeState, navigation
 
   const body = doc.body;
   if (body) {
+    body.classList.add("ec-preview");
+    const mainDrawerSide = state.mobileMenuFlip 
+      ? (state.mobileMenuPosition === 'left' ? 'right' : 'left')
+      : state.mobileMenuPosition;
+    const railDrawerSide = state.mobileMenuFlip 
+      ? state.mobileMenuPosition
+      : (state.mobileMenuPosition === 'left' ? 'right' : 'left');
+
     body.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
+    body.setAttribute("data-mobile-menu-flip", String(!!state.mobileMenuFlip));
+    body.setAttribute("data-mobile-drawer-side", mainDrawerSide);
+    body.setAttribute("data-mobile-rail-side", railDrawerSide);
+    body.setAttribute("data-mobile-rail-vertical-align", state.mobileRailVerticalAlign || "center");
+    body.setAttribute("data-mobile-logo-align", state.mobileLogoAlign || "center");
     body.setAttribute("data-mobile-drawer-mode", state.mobileDrawerMode);
     body.setAttribute("data-mobile-drawer-buttons-full-width", String(state.mobileDrawerButtonsFullWidth));
+    body.setAttribute("data-mobile-drawer-combine", String(!!state.mobileDrawerCombine));
+    body.setAttribute("data-mobile-drawer-rail-position", state.mobileDrawerRailPosition || "right");
     body.setAttribute("data-rail-position", state.railPosition || "left");
     body.setAttribute("data-rail-show-icons", String(state.railShowIcons !== false));
     body.setAttribute("data-rail-style", state.railStyle || "full");
@@ -1083,6 +1349,7 @@ export function applyThemeStructure(doc: Document, state: ThemeState, navigation
     header.setAttribute("data-header-font-size", state.headerFontSize || "medium");
     header.setAttribute("data-header-font-weight", state.headerFontWeight || "bold");
     header.setAttribute("data-mobile-menu-position", state.mobileMenuPosition);
+    header.setAttribute("data-mobile-logo-align", state.mobileLogoAlign || "center");
     header.setAttribute("data-mobile-hamburger-shape", state.mobileHamburgerShape);
 
     // Rebuild the header links
@@ -1128,30 +1395,41 @@ export function applyThemeStructure(doc: Document, state: ThemeState, navigation
     }
 
     // Ensure Left Hamburger and Right Kebab button layout
-    const navWrap = header.querySelector(".nav-wrap");
+    const navWrap = header.querySelector(".nav-wrap") || header.querySelector(".navwrap");
     if (navWrap) {
-      let leftHam = navWrap.querySelector("#menuBtn");
+      let leftHam = navWrap.querySelector("#menuBtn") || navWrap.querySelector(".mobilebtn") || navWrap.querySelector(".menu");
       if (!leftHam) {
         leftHam = doc.createElement("button");
         leftHam.className = "mobile-menu-btn mobile-hamburger-btn";
         leftHam.id = "menuBtn";
-        leftHam.setAttribute("aria-label", "Open Rail Menu");
+        leftHam.setAttribute("aria-label", "Open Main Menu");
         leftHam.innerHTML = `<i data-lucide="menu"></i>`;
         navWrap.insertBefore(leftHam, navWrap.firstChild);
+      } else {
+        leftHam.id = "menuBtn";
+        leftHam.className = "mobile-menu-btn mobile-hamburger-btn";
+        leftHam.setAttribute("aria-label", "Open Main Menu");
       }
       
-      const headerActions = header.querySelector(".header-actions");
+      const headerActions = header.querySelector(".header-actions") || header.querySelector(".actions");
       if (headerActions) {
         let rightKebab = headerActions.querySelector("#kebabBtn");
-        if (!rightKebab) {
-          rightKebab = doc.createElement("button");
-          rightKebab.className = "mobile-menu-btn mobile-kebab-btn";
-          rightKebab.id = "kebabBtn";
-          rightKebab.setAttribute("aria-label", "Open Main Menu");
-          rightKebab.innerHTML = `<i data-lucide="more-vertical"></i>`;
-          headerActions.appendChild(rightKebab);
+        if (state.mobileDrawerCombine) {
+          if (rightKebab) rightKebab.remove();
+        } else {
+          if (!rightKebab) {
+            rightKebab = doc.createElement("button");
+            rightKebab.className = "mobile-menu-btn mobile-kebab-btn";
+            rightKebab.id = "kebabBtn";
+            rightKebab.setAttribute("aria-label", "Open Rail Menu");
+            rightKebab.innerHTML = `<i data-lucide="more-vertical"></i>`;
+            headerActions.appendChild(rightKebab);
+          } else {
+            rightKebab.setAttribute("aria-label", "Open Rail Menu");
+            rightKebab.className = "mobile-menu-btn mobile-kebab-btn";
+          }
         }
-        const oldMenuBtn = headerActions.querySelector(".mobile-menu-btn:not(#kebabBtn):not(#menuBtn)");
+        const oldMenuBtn = headerActions.querySelector("#menuBtn") || headerActions.querySelector(".mobilebtn") || headerActions.querySelector(".menu") || headerActions.querySelector(".mobile-menu-btn:not(#kebabBtn)");
         if (oldMenuBtn) {
           oldMenuBtn.remove();
         }
@@ -1237,55 +1515,131 @@ export function applyThemeStructure(doc: Document, state: ThemeState, navigation
 
   // Rebuild mobile drawer links and inject mobile rail drawer
   const mobileDrawer = doc.querySelector("#mobileDrawer, .mobile-drawer");
-  if (mobileDrawer && navigationMenus) {
-    const drawerNav = mobileDrawer.querySelector(".drawer-nav");
-    if (drawerNav) {
-      const drawerMenu = navigationMenus.find(m => m.name.toLowerCase() === 'main mobile drawer menu');
-      if (drawerMenu) {
-        const items = typeof drawerMenu.items === 'string' ? JSON.parse(drawerMenu.items) : (drawerMenu.items || []);
-        drawerNav.innerHTML = "";
-        items.forEach((item: any) => {
-          const icon = getLucideIconForMenuLabel(item.label);
-          const a = doc.createElement("a");
-          a.className = "pjax-link";
-          a.setAttribute("href", item.url === "/" ? "index.html" : item.url.replace(/^\//, ""));
-          a.innerHTML = `<i data-lucide="${icon}"></i> ${item.label}`;
-          drawerNav.appendChild(a);
-        });
-      }
-    }
-  }
-
-  // Inject Mobile Rail Drawer and backdrop
-  let mobileRailDrawer = doc.getElementById("mobileRailDrawer");
-  if (!mobileRailDrawer) {
-    mobileRailDrawer = doc.createElement("aside");
-    mobileRailDrawer.setAttribute("class", "mobile-rail-drawer");
-    mobileRailDrawer.setAttribute("id", "mobileRailDrawer");
-    mobileRailDrawer.setAttribute("aria-hidden", "true");
-    doc.body.appendChild(mobileRailDrawer);
-
-    const backdrop = doc.createElement("div");
-    backdrop.className = "rail-drawer-backdrop";
-    doc.body.appendChild(backdrop);
-  }
-
-  if (navigationMenus) {
-    const mobileRailMenu = navigationMenus.find(m => m.name.toLowerCase() === 'mobile rail navigation');
-    if (mobileRailMenu) {
-      const items = typeof mobileRailMenu.items === 'string' ? JSON.parse(mobileRailMenu.items) : (mobileRailMenu.items || []);
-      let navHtml = `<nav class="rail-nav">`;
-      items.forEach((item: any) => {
+  if (mobileDrawer) {
+    if (state.mobileDrawerCombine) {
+      mobileDrawer.setAttribute("data-mobile-drawer-combine", "true");
+      mobileDrawer.setAttribute("data-mobile-drawer-rail-position", state.mobileDrawerRailPosition || "right");
+      
+      const mobileRailMenu = navigationMenus?.find(m => m.name.toLowerCase() === 'mobile rail navigation');
+      const railItems = mobileRailMenu ? (typeof mobileRailMenu.items === 'string' ? JSON.parse(mobileRailMenu.items) : (mobileRailMenu.items || [])) : [];
+      let railHtml = `<div class="drawer-rail-col"><nav class="rail-nav">`;
+      railItems.forEach((item: any) => {
         const icon = getLucideIconForMenuLabel(item.label);
-        navHtml += `
+        railHtml += `
           <a class="rail-item pjax-link" href="${item.url === "/" ? "index.html" : item.url.replace(/^\//, "")}" data-page="${item.url}">
             <i data-lucide="${icon}"></i>
             <span>${item.label}</span>
           </a>
         `;
       });
-      navHtml += `</nav>`;
-      mobileRailDrawer.innerHTML = navHtml;
+      railHtml += `</nav></div>`;
+
+      const drawerMenu = navigationMenus?.find(m => m.name.toLowerCase() === 'main mobile drawer menu');
+      const mainItems = drawerMenu ? (typeof drawerMenu.items === 'string' ? JSON.parse(drawerMenu.items) : (drawerMenu.items || [])) : [];
+      let mainHtml = `<div class="drawer-main-col">
+        <div class="drawer-close-row">
+          <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <nav class="drawer-nav">`;
+      mainItems.forEach((item: any) => {
+        const icon = getLucideIconForMenuLabel(item.label);
+        mainHtml += `
+          <a class="pjax-link" href="${item.url === "/" ? "index.html" : item.url.replace(/^\//, "")}">
+            <i data-lucide="${icon}"></i> ${item.label}
+          </a>
+        `;
+      });
+      mainHtml += `</nav>
+        <div class="drawer-actions">
+          <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+            <i data-lucide="radio"></i>
+            Watch Live
+          </a>
+          <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+            <i data-lucide="map-pin"></i>
+            Plan Visit
+          </a>
+        </div>
+      </div>`;
+
+      mobileDrawer.innerHTML = `<div class="drawer-combined-wrap">${railHtml}${mainHtml}</div>`;
+      
+      // Remove standalone rail drawer if present
+      doc.getElementById("mobileRailDrawer")?.remove();
+      doc.querySelector(".rail-drawer-backdrop")?.remove();
+    } else {
+      mobileDrawer.setAttribute("data-mobile-drawer-combine", "false");
+      mobileDrawer.removeAttribute("data-mobile-drawer-rail-position");
+      
+      mobileDrawer.innerHTML = `
+        <div class="drawer-close-row">
+          <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <nav class="drawer-nav"></nav>
+        <div class="drawer-actions">
+          <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+            <i data-lucide="radio"></i>
+            Watch Live
+          </a>
+          <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+            <i data-lucide="map-pin"></i>
+            Plan Visit
+          </a>
+        </div>
+      `;
+
+      const drawerNav = mobileDrawer.querySelector(".drawer-nav");
+      if (drawerNav && navigationMenus) {
+        const drawerMenu = navigationMenus.find(m => m.name.toLowerCase() === 'main mobile drawer menu');
+        if (drawerMenu) {
+          const items = typeof drawerMenu.items === 'string' ? JSON.parse(drawerMenu.items) : (drawerMenu.items || []);
+          items.forEach((item: any) => {
+            const icon = getLucideIconForMenuLabel(item.label);
+            const a = doc.createElement("a");
+            a.className = "pjax-link";
+            a.setAttribute("href", item.url === "/" ? "index.html" : item.url.replace(/^\//, ""));
+            a.innerHTML = `<i data-lucide="${icon}"></i> ${item.label}`;
+            drawerNav.appendChild(a);
+          });
+        }
+      }
+
+      // Inject Standalone Mobile Rail Drawer and backdrop
+      let mobileRailDrawer = doc.getElementById("mobileRailDrawer");
+      if (!mobileRailDrawer) {
+        mobileRailDrawer = doc.createElement("aside");
+        mobileRailDrawer.setAttribute("class", "mobile-rail-drawer");
+        mobileRailDrawer.setAttribute("id", "mobileRailDrawer");
+        mobileRailDrawer.setAttribute("aria-hidden", "true");
+        doc.body.appendChild(mobileRailDrawer);
+
+        const backdrop = doc.createElement("div");
+        backdrop.className = "rail-drawer-backdrop";
+        doc.body.appendChild(backdrop);
+      }
+
+      if (navigationMenus) {
+        const mobileRailMenu = navigationMenus.find(m => m.name.toLowerCase() === 'mobile rail navigation');
+        if (mobileRailMenu) {
+          const items = typeof mobileRailMenu.items === 'string' ? JSON.parse(mobileRailMenu.items) : (mobileRailMenu.items || []);
+          let navHtml = `<nav class="rail-nav">`;
+          items.forEach((item: any) => {
+            const icon = getLucideIconForMenuLabel(item.label);
+            navHtml += `
+              <a class="rail-item pjax-link" href="${item.url === "/" ? "index.html" : item.url.replace(/^\//, "")}" data-page="${item.url}">
+                <i data-lucide="${icon}"></i>
+                <span>${item.label}</span>
+              </a>
+            `;
+          });
+          navHtml += `</nav>`;
+          mobileRailDrawer.innerHTML = navHtml;
+        }
+      }
     }
   }
 
@@ -1463,7 +1817,7 @@ export function cleanPageForExport(doc: Document): string {
 
   // Remove base tag if it was injected by the customizer
   const baseTag = clone.querySelector("base");
-  if (baseTag && baseTag.getAttribute("href") === "/themes/ecclesia/") {
+  if (baseTag) {
     baseTag.remove();
   }
 

@@ -49,7 +49,7 @@ const DEFAULT_MENUS = [
       { label: 'Blogs', url: '/blog' },
       { label: 'Resources', url: '/library' },
       { label: 'Podcasts', url: '/podcast' },
-      { label: 'Fellowship', url: '/cells' },
+      { label: 'Groups', url: '/cells' },
       { label: 'Store', url: '/store' },
       { label: 'Devotion', url: '/devotion' }
     ]
@@ -89,7 +89,7 @@ const DEFAULT_MENUS = [
       { label: 'Media', url: '/media' },
       { label: 'Connect', url: '/services' },
       { label: 'Devotion', url: '/devotion' },
-      { label: 'Fellowship', url: '/cells' }
+      { label: 'Groups', url: '/cells' }
     ]
   },
   {
@@ -99,7 +99,7 @@ const DEFAULT_MENUS = [
       { label: 'Blogs', url: '/blog' },
       { label: 'Resources', url: '/library' },
       { label: 'Podcasts', url: '/podcast' },
-      { label: 'Fellowship', url: '/cells' },
+      { label: 'Groups', url: '/cells' },
       { label: 'Store', url: '/store' },
       { label: 'Devotion', url: '/devotion' }
     ]

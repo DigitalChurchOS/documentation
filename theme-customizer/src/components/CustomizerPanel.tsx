@@ -13,6 +13,7 @@ import {
   CloudSun,
   Sun,
   Moon,
+  SquareStack,
 } from "lucide-react";
 
 interface CustomizerPanelProps {
@@ -30,6 +31,7 @@ const advancedRailItems = [
   { id: "density", icon: AlignVerticalSpaceAround, label: "Density" },
   { id: "motion", icon: Wand2, label: "Motion" },
   { id: "atmosphere", icon: CloudSun, label: "Aura" },
+  { id: "cards", icon: SquareStack, label: "Cards" },
 ];
 
 const presets = {
@@ -414,6 +416,478 @@ export const CustomizerPanel: React.FC<CustomizerPanelProps> = ({ state, onChang
                         <span>{item.desc}</span>
                       </button>
                     ))}
+                  </div>
+                </section>
+              )}
+
+              {activeRail === "cards" && (
+                <section>
+                  <div className="section-title">
+                    <div className="title-icon">
+                      <SquareStack size={18} />
+                    </div>
+                    <h3>Cards</h3>
+                  </div>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                    {/* Thumbnail Fit Section */}
+                    <div>
+                      <h4 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#71717a", marginBottom: "12px" }}>Thumbnails</h4>
+                      
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                        {/* Padded Option */}
+                        <div 
+                          onClick={() => handleValueChange("cardThumbnailStyle", "padded")}
+                          style={{
+                            cursor: "pointer",
+                            border: `2px solid ${state.cardThumbnailStyle === "padded" ? "var(--accent, #3b82f6)" : "rgba(255,255,255,0.06)"}`,
+                            borderRadius: "10px",
+                            padding: "12px",
+                            background: state.cardThumbnailStyle === "padded" ? "rgba(59,130,246,0.05)" : "rgba(255,255,255,0.02)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            transition: "all 0.25s ease"
+                          }}
+                        >
+                          {/* Visual representation of Padded Card */}
+                          <div style={{
+                            width: "85px",
+                            height: "75px",
+                            borderRadius: "8px",
+                            background: "var(--bg, #1e293b)",
+                            border: "1px solid var(--border, rgba(255,255,255,0.1))",
+                            padding: "6px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            boxShadow: "0 4px 6px rgba(0,0,0,0.15)",
+                            marginBottom: "8px",
+                            boxSizing: "border-box"
+                          }}>
+                            {/* Inner thumbnail */}
+                            <div style={{
+                              width: "100%",
+                              height: "38px",
+                              borderRadius: "5px",
+                              background: "linear-gradient(135deg, var(--accent, #3b82f6) 40%, var(--primary-soft, #60a5fa))",
+                              opacity: 0.95
+                            }}></div>
+                            {/* Text lines */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+                              <div style={{ width: "80%", height: "4px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "2px" }}></div>
+                              <div style={{ width: "50%", height: "4px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "2px" }}></div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "12px", fontWeight: 600, color: state.cardThumbnailStyle === "padded" ? "var(--accent, #3b82f6)" : "var(--text-muted, #71717a)" }}>Padded</span>
+                        </div>
+
+                        {/* Full-bleed Option */}
+                        <div 
+                          onClick={() => handleValueChange("cardThumbnailStyle", "full-bleed")}
+                          style={{
+                            cursor: "pointer",
+                            border: `2px solid ${state.cardThumbnailStyle === "full-bleed" ? "var(--accent, #3b82f6)" : "rgba(255,255,255,0.06)"}`,
+                            borderRadius: "10px",
+                            padding: "12px",
+                            background: state.cardThumbnailStyle === "full-bleed" ? "rgba(59,130,246,0.05)" : "rgba(255,255,255,0.02)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            transition: "all 0.25s ease"
+                          }}
+                        >
+                          {/* Visual representation of Full-bleed Card */}
+                          <div style={{
+                            width: "85px",
+                            height: "75px",
+                            borderRadius: "8px",
+                            background: "var(--bg, #1e293b)",
+                            border: "1px solid var(--border, rgba(255,255,255,0.1))",
+                            overflow: "hidden",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            boxShadow: "0 4px 6px rgba(0,0,0,0.15)",
+                            marginBottom: "8px",
+                            boxSizing: "border-box"
+                          }}>
+                            {/* Inner thumbnail full bleed */}
+                            <div style={{
+                              width: "100%",
+                              height: "46px",
+                              background: "linear-gradient(135deg, var(--accent, #3b82f6) 40%, var(--primary-soft, #60a5fa))",
+                              opacity: 0.95
+                            }}></div>
+                            {/* Text lines */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: "3px", padding: "0 6px 6px 6px" }}>
+                              <div style={{ width: "80%", height: "4px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "2px" }}></div>
+                              <div style={{ width: "50%", height: "4px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "2px" }}></div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "12px", fontWeight: 600, color: state.cardThumbnailStyle === "full-bleed" ? "var(--accent, #3b82f6)" : "var(--text-muted, #71717a)" }}>Full Edge</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Grid Gap Override Section */}
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                        <h4 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#71717a", margin: 0 }}>Grid Gap</h4>
+                        <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--accent, #3b82f6)" }}>
+                          {state.cardGridGapOverride === "small" ? "Small (25px)" :
+                           state.cardGridGapOverride === "medium" ? "Medium (35px)" :
+                           state.cardGridGapOverride === "big" ? "Big (40px)" : "Large (45px)"}
+                        </span>
+                      </div>
+                      
+                      <div style={{ padding: "0 4px", position: "relative" }}>
+                        <input 
+                          type="range" 
+                          min="1" 
+                          max="4" 
+                          step="1"
+                          value={
+                            state.cardGridGapOverride === "small" ? "1" :
+                            state.cardGridGapOverride === "medium" ? "2" :
+                            state.cardGridGapOverride === "big" ? "3" : "4"
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const mapped = val === "1" ? "small" : val === "2" ? "medium" : val === "3" ? "big" : "large";
+                            handleValueChange("cardGridGapOverride", mapped);
+                          }}
+                          style={{
+                            width: "100%",
+                            cursor: "pointer",
+                            accentColor: "var(--accent, #3b82f6)",
+                            background: "rgba(255,255,255,0.08)",
+                            borderRadius: "4px",
+                            height: "6px",
+                            outline: "none",
+                            border: "none"
+                          }}
+                        />
+                        
+                        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px", padding: "0 2px" }}>
+                          <span style={{ fontSize: "10px", fontWeight: 500, color: "#52525b" }}>25px</span>
+                          <span style={{ fontSize: "10px", fontWeight: 500, color: "#52525b" }}>35px</span>
+                          <span style={{ fontSize: "10px", fontWeight: 500, color: "#52525b" }}>40px</span>
+                          <span style={{ fontSize: "10px", fontWeight: 500, color: "#52525b" }}>45px</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Card Padding Override Section */}
+                    <div>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                        <h4 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#71717a", marginBottom: "12px" }}>Padding</h4>
+                        <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--accent, #3b82f6)" }}>
+                          {state.cardPaddingOverride === "small" ? "Small (10px / 15px)" :
+                           state.cardPaddingOverride === "medium" ? "Medium (15px / 20px)" :
+                           state.cardPaddingOverride === "big" ? "Big (20px / 25px)" : "Large (25px / 30px)"}
+                        </span>
+                      </div>
+                      
+                      <div style={{ padding: "0 4px", position: "relative" }}>
+                        <input 
+                          type="range" 
+                          min="1" 
+                          max="4" 
+                          step="1"
+                          value={
+                            state.cardPaddingOverride === "small" ? "1" :
+                            state.cardPaddingOverride === "medium" ? "2" :
+                            state.cardPaddingOverride === "big" ? "3" : "4"
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const mapped = val === "1" ? "small" : val === "2" ? "medium" : val === "3" ? "big" : "large";
+                            handleValueChange("cardPaddingOverride", mapped);
+                          }}
+                          style={{
+                            width: "100%",
+                            cursor: "pointer",
+                            accentColor: "var(--accent, #3b82f6)",
+                            background: "rgba(255,255,255,0.08)",
+                            borderRadius: "4px",
+                            height: "6px",
+                            outline: "none",
+                            border: "none"
+                          }}
+                        />
+                        
+                        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px", padding: "0 2px" }}>
+                          <span style={{ fontSize: "10px", fontWeight: 500, color: "#52525b", display: "inline-block" }}>
+                            <div>10px</div>
+                            <div style={{ opacity: 0.6 }}>15px</div>
+                          </span>
+                          <span style={{ fontSize: "10px", fontWeight: 500, color: "#52525b", display: "inline-block", textAlign: "center" }}>
+                            <div>15px</div>
+                            <div style={{ opacity: 0.6 }}>20px</div>
+                          </span>
+                          <span style={{ fontSize: "10px", fontWeight: 500, color: "#52525b", display: "inline-block", textAlign: "center" }}>
+                            <div>20px</div>
+                            <div style={{ opacity: 0.6 }}>25px</div>
+                          </span>
+                          <span style={{ fontSize: "10px", fontWeight: 500, color: "#52525b", display: "inline-block", textAlign: "right" }}>
+                            <div>25px</div>
+                            <div style={{ opacity: 0.6 }}>30px</div>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hover Effect Section */}
+                    <div>
+                      <h4 style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#71717a", marginBottom: "12px" }}>Hover Effect</h4>
+                      
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+                        {/* None (Static) Option */}
+                        <div 
+                          onClick={() => handleValueChange("cardHoverEffect", "none")}
+                          style={{
+                            cursor: "pointer",
+                            border: `2px solid ${state.cardHoverEffect === "none" ? "var(--accent, #3b82f6)" : "rgba(255,255,255,0.06)"}`,
+                            borderRadius: "10px",
+                            padding: "12px",
+                            background: state.cardHoverEffect === "none" ? "rgba(59,130,246,0.05)" : "rgba(255,255,255,0.02)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            transition: "all 0.25s ease"
+                          }}
+                        >
+                          <div style={{ height: "65px", display: "flex", alignItems: "center" }}>
+                            <div 
+                              style={{
+                                width: "70px",
+                                height: "48px",
+                                borderRadius: "6px",
+                                background: "var(--bg, #1e293b)",
+                                border: "1px solid var(--border, rgba(255,255,255,0.1))",
+                                display: "flex",
+                                flexDirection: "column",
+                                padding: "4px",
+                                gap: "4px",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                                boxSizing: "border-box"
+                              }}
+                            >
+                              <div style={{ width: "100%", height: "22px", background: "var(--primary-soft, rgba(255,255,255,0.05))", borderRadius: "3px" }}></div>
+                              <div style={{ width: "70%", height: "3px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "1.5px" }}></div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "12px", fontWeight: 600, marginTop: "8px", color: state.cardHoverEffect === "none" ? "var(--accent, #3b82f6)" : "var(--text-muted, #71717a)" }}>None</span>
+                        </div>
+
+                        {/* Grow Option */}
+                        <div 
+                          onClick={() => handleValueChange("cardHoverEffect", "grow")}
+                          className="hover-card-preview-container"
+                          style={{
+                            cursor: "pointer",
+                            border: `2px solid ${state.cardHoverEffect === "grow" ? "var(--accent, #3b82f6)" : "rgba(255,255,255,0.06)"}`,
+                            borderRadius: "10px",
+                            padding: "12px",
+                            background: state.cardHoverEffect === "grow" ? "rgba(59,130,246,0.05)" : "rgba(255,255,255,0.02)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            transition: "all 0.25s ease"
+                          }}
+                        >
+                          <div style={{ height: "65px", display: "flex", alignItems: "center" }}>
+                            <div 
+                              className="mockup-card-grow"
+                              style={{
+                                width: "70px",
+                                height: "48px",
+                                borderRadius: "6px",
+                                background: "var(--bg, #1e293b)",
+                                border: "1px solid var(--border, rgba(255,255,255,0.1))",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                                transition: "all 0.3s ease",
+                                display: "flex",
+                                flexDirection: "column",
+                                padding: "4px",
+                                gap: "4px",
+                                boxSizing: "border-box"
+                              }}
+                            >
+                              <div style={{ width: "100%", height: "22px", background: "var(--primary-soft, rgba(255,255,255,0.05))", borderRadius: "3px" }}></div>
+                              <div style={{ width: "70%", height: "3px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "1.5px" }}></div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "12px", fontWeight: 600, marginTop: "8px", color: state.cardHoverEffect === "grow" ? "var(--accent, #3b82f6)" : "var(--text-muted, #71717a)" }}>Grow</span>
+                        </div>
+
+                        {/* Lift Card Option */}
+                        <div 
+                          onClick={() => handleValueChange("cardHoverEffect", "lift")}
+                          className="hover-card-preview-container"
+                          style={{
+                            cursor: "pointer",
+                            border: `2px solid ${state.cardHoverEffect === "lift" ? "var(--accent, #3b82f6)" : "rgba(255,255,255,0.06)"}`,
+                            borderRadius: "10px",
+                            padding: "12px",
+                            background: state.cardHoverEffect === "lift" ? "rgba(59,130,246,0.05)" : "rgba(255,255,255,0.02)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            transition: "all 0.25s ease"
+                          }}
+                        >
+                          <div style={{ height: "65px", display: "flex", alignItems: "center" }}>
+                            <div 
+                              className="mockup-card-lift"
+                              style={{
+                                width: "70px",
+                                height: "48px",
+                                borderRadius: "6px",
+                                background: "var(--bg, #1e293b)",
+                                border: "1px solid var(--border, rgba(255,255,255,0.1))",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                                transition: "all 0.3s ease",
+                                display: "flex",
+                                flexDirection: "column",
+                                padding: "4px",
+                                gap: "4px",
+                                boxSizing: "border-box"
+                              }}
+                            >
+                              <div style={{ width: "100%", height: "22px", background: "var(--primary-soft, rgba(255,255,255,0.05))", borderRadius: "3px" }}></div>
+                              <div style={{ width: "70%", height: "3px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "1.5px" }}></div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "12px", fontWeight: 600, marginTop: "8px", color: state.cardHoverEffect === "lift" ? "var(--accent, #3b82f6)" : "var(--text-muted, #71717a)" }}>Lift Card</span>
+                        </div>
+
+                        {/* Drop Shadow Option */}
+                        <div 
+                          onClick={() => handleValueChange("cardHoverEffect", "shadow")}
+                          className="hover-card-preview-container"
+                          style={{
+                            cursor: "pointer",
+                            border: `2px solid ${state.cardHoverEffect === "shadow" ? "var(--accent, #3b82f6)" : "rgba(255,255,255,0.06)"}`,
+                            borderRadius: "10px",
+                            padding: "12px",
+                            background: state.cardHoverEffect === "shadow" ? "rgba(59,130,246,0.05)" : "rgba(255,255,255,0.02)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            transition: "all 0.25s ease"
+                          }}
+                        >
+                          <div style={{ height: "65px", display: "flex", alignItems: "center" }}>
+                            <div 
+                              className="mockup-card-shadow"
+                              style={{
+                                width: "70px",
+                                height: "48px",
+                                borderRadius: "6px",
+                                background: "var(--bg, #1e293b)",
+                                border: "1px solid var(--border, rgba(255,255,255,0.1))",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                                transition: "all 0.3s ease",
+                                display: "flex",
+                                flexDirection: "column",
+                                padding: "4px",
+                                gap: "4px",
+                                boxSizing: "border-box"
+                              }}
+                            >
+                              <div style={{ width: "100%", height: "22px", background: "var(--primary-soft, rgba(255,255,255,0.05))", borderRadius: "3px" }}></div>
+                              <div style={{ width: "70%", height: "3px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "1.5px" }}></div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "12px", fontWeight: 600, marginTop: "8px", color: state.cardHoverEffect === "shadow" ? "var(--accent, #3b82f6)" : "var(--text-muted, #71717a)" }}>Drop Shadow</span>
+                        </div>
+
+                        {/* Zoom Image Option */}
+                        <div 
+                          onClick={() => handleValueChange("cardHoverEffect", "zoom")}
+                          className="hover-card-preview-container"
+                          style={{
+                            cursor: "pointer",
+                            border: `2px solid ${state.cardHoverEffect === "zoom" ? "var(--accent, #3b82f6)" : "rgba(255,255,255,0.06)"}`,
+                            borderRadius: "10px",
+                            padding: "12px",
+                            background: state.cardHoverEffect === "zoom" ? "rgba(59,130,246,0.05)" : "rgba(255,255,255,0.02)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            transition: "all 0.25s ease"
+                          }}
+                        >
+                          <div style={{ height: "65px", display: "flex", alignItems: "center" }}>
+                            <div 
+                              style={{
+                                width: "70px",
+                                height: "48px",
+                                borderRadius: "6px",
+                                background: "var(--bg, #1e293b)",
+                                border: "1px solid var(--border, rgba(255,255,255,0.1))",
+                                overflow: "hidden",
+                                display: "flex",
+                                flexDirection: "column",
+                                padding: "4px",
+                                gap: "4px",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                                boxSizing: "border-box"
+                              }}
+                            >
+                              <div style={{ width: "100%", height: "22px", overflow: "hidden", borderRadius: "3px" }}>
+                                <div className="mockup-img-zoom" style={{ width: "100%", height: "100%", background: "var(--accent, #3b82f6)", opacity: 0.8, transition: "transform 0.3s ease" }}></div>
+                              </div>
+                              <div style={{ width: "70%", height: "3px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "1.5px" }}></div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "12px", fontWeight: 600, marginTop: "8px", color: state.cardHoverEffect === "zoom" ? "var(--accent, #3b82f6)" : "var(--text-muted, #71717a)" }}>Zoom Image</span>
+                        </div>
+
+                        {/* Accent Glow Option */}
+                        <div 
+                          onClick={() => handleValueChange("cardHoverEffect", "glow")}
+                          className="hover-card-preview-container"
+                          style={{
+                            cursor: "pointer",
+                            border: `2px solid ${state.cardHoverEffect === "glow" ? "var(--accent, #3b82f6)" : "rgba(255,255,255,0.06)"}`,
+                            borderRadius: "10px",
+                            padding: "12px",
+                            background: state.cardHoverEffect === "glow" ? "rgba(59,130,246,0.05)" : "rgba(255,255,255,0.02)",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            transition: "all 0.25s ease"
+                          }}
+                        >
+                          <div style={{ height: "65px", display: "flex", alignItems: "center" }}>
+                            <div 
+                              className="mockup-card-glow"
+                              style={{
+                                width: "70px",
+                                height: "48px",
+                                borderRadius: "6px",
+                                background: "var(--bg, #1e293b)",
+                                border: "1px solid var(--border, rgba(255,255,255,0.1))",
+                                transition: "all 0.3s ease",
+                                display: "flex",
+                                flexDirection: "column",
+                                padding: "4px",
+                                gap: "4px",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                                boxSizing: "border-box"
+                              }}
+                            >
+                              <div style={{ width: "100%", height: "22px", background: "var(--primary-soft, rgba(255,255,255,0.05))", borderRadius: "3px" }}></div>
+                              <div style={{ width: "70%", height: "3px", background: "var(--text, #e4e4e7)", opacity: 0.3, borderRadius: "1.5px" }}></div>
+                            </div>
+                          </div>
+                          <span style={{ fontSize: "12px", fontWeight: 600, marginTop: "8px", color: state.cardHoverEffect === "glow" ? "var(--accent, #3b82f6)" : "var(--text-muted, #71717a)" }}>Accent Glow</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </section>
               )}

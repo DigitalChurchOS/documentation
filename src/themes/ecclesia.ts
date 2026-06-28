@@ -76,6 +76,9 @@ export const ECCLESIA_THEME_SCRIPTS = [
   `${ECCLESIA_THEME_ASSET_BASE}/assets/prayer.js`,
   `${ECCLESIA_THEME_ASSET_BASE}/assets/services.js`,
   `${ECCLESIA_THEME_ASSET_BASE}/assets/worship.js`,
+  `${ECCLESIA_THEME_ASSET_BASE}/assets/groups.js`,
+  `${ECCLESIA_THEME_ASSET_BASE}/assets/store.js`,
+  `${ECCLESIA_THEME_ASSET_BASE}/assets/checkout.js`,
 ];
 
 export const ECCLESIA_THEME_SOURCE_PAGES: EcclesiaSourcePage[] = [
@@ -112,6 +115,14 @@ export const ECCLESIA_THEME_SOURCE_PAGES: EcclesiaSourcePage[] = [
   sourcePage('testimony-single', 'Testimony Single', 'testimonies/sample-story', 'testimony-single.html', 'message-square-heart', 'Testimony', 'Single testimony story page.'),
   sourcePage('testimony-submit', 'Submit Testimony', 'testimonies/submit', 'testimony-submit.html', 'send', 'Testimony', 'Testimony submission form.'),
   sourcePage('worship', 'Worship', 'worship', 'worship.html', 'music', 'Worship', 'Worship resources, songs, audio, and chord chart page.'),
+  sourcePage('groups-archive', 'Groups', 'cells', 'groups-archive.html', 'users', 'Fellowship', 'Connect groups, cells, and home fellowship directory.'),
+  sourcePage('group-single', 'Group Detail', 'cells/sample-group', 'group-single.html', 'user-check', 'Fellowship', 'Single group or cell details with leader and sign-up form.'),
+  sourcePage('store-archive', 'Store', 'store', 'store-archive.html', 'shopping-bag', 'Store', 'Online store product directory.'),
+  sourcePage('store-single', 'Product Details', 'store/sample-product', 'store-single.html', 'shopping-cart', 'Store', 'Single product detailed page with variant selector and cart.'),
+  sourcePage('cart', 'Shopping Cart', 'store/cart', 'cart.html', 'shopping-cart', 'Store', 'Shopping cart review page with order summary.'),
+  sourcePage('checkout', 'Checkout', 'store/checkout', 'checkout.html', 'credit-card', 'Store', 'Checkout form with shipping and payment fields.'),
+  sourcePage('checkout-success', 'Order Confirmed', 'store/thank-you', 'checkout-success.html', 'check-circle', 'Store', 'Order confirmation receipt with tracking timeline.'),
+  sourcePage('checkout-failed', 'Payment Failed', 'store/checkout-failed', 'checkout-failed.html', 'alert-triangle', 'Store', 'Payment declined error page with troubleshooting.'),
 ];
 
 export interface EcclesiaSectionTemplate {

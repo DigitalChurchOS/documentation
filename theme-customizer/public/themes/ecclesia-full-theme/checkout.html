@@ -1,0 +1,947 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Checkout | Grace City Church</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <style>
+    /* ── Checkout-Specific Styles ── */
+
+    .checkout-breadcrumb {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 28px 22px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .checkout-breadcrumb a {
+      color: var(--muted);
+      transition: color .2s;
+      text-decoration: none;
+    }
+    .checkout-breadcrumb a:hover {
+      color: var(--accent);
+    }
+    .checkout-breadcrumb .crumb-active {
+      color: var(--text);
+      font-weight: 900;
+    }
+    .checkout-breadcrumb .crumb-sep {
+      opacity: .4;
+      font-size: 11px;
+    }
+
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    /* ── Card Sections ── */
+    .checkout-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--soft-shadow);
+    }
+    .checkout-card + .checkout-card {
+      margin-top: 22px;
+    }
+    .checkout-card-title {
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      margin: 0 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+    }
+    .checkout-card-title i,
+    .checkout-card-title svg {
+      width: 20px;
+      height: 20px;
+      color: var(--accent);
+    }
+
+    /* ── Form Inputs ── */
+    .co-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .co-field:last-child {
+      margin-bottom: 0;
+    }
+    .co-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .co-input,
+    .co-select {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 13px 15px;
+      font: inherit;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .co-input:focus,
+    .co-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .co-input::placeholder {
+      color: var(--muted);
+      opacity: .6;
+    }
+    .co-row {
+      display: grid;
+      gap: 14px;
+    }
+    .co-row-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+    .co-row-3 {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .co-input-icon-wrap {
+      position: relative;
+    }
+    .co-input-icon-wrap .co-input {
+      padding-right: 42px;
+    }
+    .co-input-icon-wrap .input-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    /* ── Checkbox ── */
+    .co-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      margin-top: 4px;
+    }
+    .co-check input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* ── Shipping Radio Cards ── */
+    .shipping-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      margin-bottom: 10px;
+    }
+    .shipping-option:last-child {
+      margin-bottom: 0;
+    }
+    .shipping-option:hover {
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+    }
+    .shipping-option.selected {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 5%, transparent);
+    }
+    .shipping-option input[type="radio"] {
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      cursor: pointer;
+    }
+    .shipping-option-info {
+      flex: 1;
+      margin-left: 14px;
+    }
+    .shipping-option-info strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .shipping-option-info span {
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .shipping-option-price {
+      font-size: 14px;
+      font-weight: 900;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* ── Payment Selector Options ── */
+    .pay-option {
+      display: flex;
+      align-items: center;
+      padding: 16px 18px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s, opacity .2s;
+      margin-bottom: 10px;
+      position: relative;
+    }
+    .pay-option:last-child {
+      margin-bottom: 0;
+    }
+    .pay-option:hover:not(.disabled) {
+      border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+    }
+    .pay-option.selected {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 5%, transparent);
+    }
+    .pay-option.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .pay-option input[type="radio"] {
+      accent-color: var(--accent);
+      width: 18px;
+      height: 18px;
+      margin: 0;
+      cursor: pointer;
+    }
+    .pay-option-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 14px;
+      flex-shrink: 0;
+    }
+    .pay-option-info {
+      flex: 1;
+      margin-left: 14px;
+    }
+    .pay-option-info strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .pay-option-info span {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .pay-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pay-badge-active {
+      background: rgba(37, 211, 102, 0.12);
+      color: #25D366;
+    }
+    .pay-badge-soon {
+      background: color-mix(in srgb, var(--text) 8%, transparent);
+      color: var(--muted);
+    }
+
+    /* ── Alert Messages ── */
+    .co-alert {
+      display: none;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .co-alert.visible {
+      display: flex;
+    }
+    .co-alert i, .co-alert svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .co-alert-success {
+      background: color-mix(in srgb, #10b981 10%, transparent);
+      color: #065f46;
+      border: 1px solid color-mix(in srgb, #10b981 25%, transparent);
+    }
+    .co-alert-error {
+      background: color-mix(in srgb, #ef4444 10%, transparent);
+      color: #991b1b;
+      border: 1px solid color-mix(in srgb, #ef4444 25%, transparent);
+    }
+    .co-alert-warning {
+      background: color-mix(in srgb, #f59e0b 10%, transparent);
+      color: #92400e;
+      border: 1px solid color-mix(in srgb, #f59e0b 25%, transparent);
+    }
+    .co-alert-info {
+      background: color-mix(in srgb, #3b82f6 10%, transparent);
+      color: #1e40af;
+      border: 1px solid color-mix(in srgb, #3b82f6 25%, transparent);
+    }
+
+    /* ── Simulation Control Panel ── */
+    .sim-panel {
+      background: color-mix(in srgb, var(--accent) 4%, transparent);
+      border: 1.5px dashed color-mix(in srgb, var(--accent) 30%, transparent);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-top: 24px;
+    }
+    .sim-title {
+      font-size: 14px;
+      font-weight: 850;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sim-btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* ── Action Buttons ── */
+    .co-actions {
+      margin-top: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+    }
+    .btn.co-submit {
+      width: 100%;
+      height: 54px;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      border-radius: 16px;
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 16px 34px color-mix(in srgb, var(--accent) 28%, transparent);
+      transition: transform 0.2s, filter 0.2s;
+    }
+    .btn.co-submit:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.05);
+    }
+    .co-return-link {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color .2s;
+      text-decoration: none;
+    }
+    .co-return-link:hover {
+      color: var(--accent);
+    }
+    .co-return-link i, .co-return-link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* ── Order Summary Sidebar ── */
+    .order-summary {
+      position: sticky;
+      top: 24px;
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+    .order-summary-title {
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      margin: 0 0 22px;
+      color: var(--text);
+    }
+
+    /* ── Line Items ── */
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-item:first-of-type {
+      padding-top: 0;
+    }
+    .summary-item-thumb {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .summary-item-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .summary-item-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .summary-item-variant {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .summary-item-qty {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      border-radius: 99px;
+      background: var(--accent);
+      color: white;
+      font-size: 10px;
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+    }
+    .summary-item-thumb-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .summary-item-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* ── Discount Code ── */
+    .discount-row {
+      display: flex;
+      gap: 10px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .discount-row .co-input {
+      flex: 1;
+      padding: 11px 14px;
+      font-size: 13px;
+    }
+    .discount-row .btn {
+      padding: 11px 18px;
+      font-size: 12px;
+      font-weight: 800;
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+
+    /* ── Summary Totals ── */
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .summary-row span:last-child {
+      color: var(--text);
+      font-weight: 700;
+    }
+    .summary-row.total {
+      padding: 16px 0 8px;
+      border-top: 2px solid var(--border);
+      margin-top: 4px;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .summary-row.total span:last-child {
+      font-size: 20px;
+      font-weight: 950;
+      color: var(--accent);
+    }
+
+    /* ── Secure Badge ── */
+    .secure-badge {
+      margin-top: 22px;
+      padding: 14px 18px;
+      background: color-mix(in srgb, var(--accent) 6%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .secure-badge i, .secure-badge svg {
+      width: 16px;
+      height: 16px;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .checkout-layout {
+        grid-template-columns: 1fr;
+      }
+      .order-summary {
+        position: static;
+        order: -1;
+      }
+      .co-row-2,
+      .co-row-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 720px) {
+      .checkout-breadcrumb {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .checkout-card {
+        padding: 22px 18px;
+        border-radius: 20px;
+      }
+      .order-summary {
+        padding: 22px 18px;
+        border-radius: 20px;
+      }
+    }
+
+    /* ── Multi-Step Checkout Styles ── */
+    .checkout-step-container {
+      display: none;
+    }
+    .checkout-step-container.active {
+      display: block;
+      animation: checkoutStepFadeIn 0.35s ease-out;
+    }
+    @keyframes checkoutStepFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .checkout-breadcrumb span.crumb-step {
+      transition: color .2s;
+      cursor: default;
+    }
+    .checkout-breadcrumb span.crumb-step.clickable {
+      cursor: pointer;
+      color: var(--accent);
+    }
+    .checkout-breadcrumb span.crumb-step.clickable:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="navwrap">
+      <a class="brand" href="store-archive.html">
+        <span class="mark"><i data-lucide="church"></i></span>
+        <span>Grace City Church</span>
+      </a>
+      <nav class="nav">
+        <a href="cart.html">Cart</a>
+        <a class="active" href="checkout.html">Checkout</a>
+      </nav>
+      <div class="actions">
+        <a href="store-archive.html" class="btn soft"><i data-lucide="arrow-left"></i> Back to Store</a>
+        <button class="menu" id="menuBtn"><i data-lucide="menu"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Breadcrumb -->
+    <div class="checkout-breadcrumb">
+      <a href="cart.html">Cart</a>
+      <span class="crumb-sep"><i data-lucide="chevron-right" style="width:12px;height:12px;"></i></span>
+      <span class="crumb-step crumb-active" data-step="1">Information</span>
+      <span class="crumb-sep"><i data-lucide="chevron-right" style="width:12px;height:12px;"></i></span>
+      <span class="crumb-step" data-step="2">Shipping</span>
+      <span class="crumb-sep"><i data-lucide="chevron-right" style="width:12px;height:12px;"></i></span>
+      <span class="crumb-step" data-step="3">Payment</span>
+    </div>
+
+    <section class="section">
+      <div class="checkout-layout">
+
+        <!-- ═══════ LEFT COLUMN — FORMS ═══════ -->
+        <div class="checkout-forms">
+
+          <!-- Step 1: Information -->
+          <div class="checkout-step-container active" id="step-1">
+            <!-- Contact Information -->
+            <div class="checkout-card">
+              <h3 class="checkout-card-title"><i data-lucide="user"></i> Contact Information</h3>
+              <div class="co-field">
+                <label class="co-label" for="co-email">Email address</label>
+                <input class="co-input" type="email" id="co-email" placeholder="you@example.com" value="test@example.com">
+              </div>
+              <div class="co-field">
+                <label class="co-label" for="co-phone">Phone number</label>
+                <input class="co-input" type="tel" id="co-phone" placeholder="+256 783 335335" value="+256783335335">
+              </div>
+              <label class="co-check">
+                <input type="checkbox" checked> Email me with news and offers
+              </label>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="checkout-card">
+              <h3 class="checkout-card-title"><i data-lucide="map-pin"></i> Shipping Address</h3>
+              <div class="co-row co-row-2">
+                <div class="co-field">
+                  <label class="co-label" for="co-fname">First name</label>
+                  <input class="co-input" type="text" id="co-fname" placeholder="John" value="David">
+                </div>
+                <div class="co-field">
+                  <label class="co-label" for="co-lname">Last name</label>
+                  <input class="co-input" type="text" id="co-lname" placeholder="Doe" value="Chen">
+                </div>
+              </div>
+              <div class="co-field">
+                <label class="co-label" for="co-addr1">Address line 1</label>
+                <input class="co-input" type="text" id="co-addr1" placeholder="123 Main Street" value="Plot 45 Kampala Road">
+              </div>
+              <div class="co-field">
+                <label class="co-label" for="co-addr2">Address line 2 <span style="font-weight:500;color:var(--muted);font-size:12px;">(optional)</span></label>
+                <input class="co-input" type="text" id="co-addr2" placeholder="Apartment, suite, unit, etc.">
+              </div>
+              <div class="co-row co-row-3">
+                <div class="co-field">
+                  <label class="co-label" for="co-city">City</label>
+                  <input class="co-input" type="text" id="co-city" placeholder="New York" value="Kampala">
+                </div>
+                <div class="co-field">
+                  <label class="co-label" for="co-state">State / Province</label>
+                  <input class="co-input" type="text" id="co-state" placeholder="NY" value="Central">
+                </div>
+                <div class="co-field">
+                  <label class="co-label" for="co-zip">ZIP / Postal code</label>
+                  <input class="co-input" type="text" id="co-zip" placeholder="10001" value="00256">
+                </div>
+              </div>
+              <div class="co-field">
+                <label class="co-label" for="co-country">Country</label>
+                <select class="co-input co-select" id="co-country">
+                  <option value="UG" selected>Uganda</option>
+                  <option value="KE">Kenya</option>
+                  <option value="TZ">Tanzania</option>
+                  <option value="NG">Nigeria</option>
+                  <option value="ZA">South Africa</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="GB">United Kingdom</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="co-actions">
+              <button class="btn primary co-submit" id="nextToShippingBtn">
+                Continue to Shipping <i data-lucide="arrow-right" style="width:18px;height:18px;margin-left:6px;vertical-align:middle;"></i>
+              </button>
+              <a href="cart.html" class="co-return-link">
+                <i data-lucide="arrow-left"></i> Return to Cart
+              </a>
+            </div>
+          </div>
+
+          <!-- Step 2: Shipping -->
+          <div class="checkout-step-container" id="step-2" style="display: none;">
+            <!-- Shipping Method -->
+            <div class="checkout-card">
+              <h3 class="checkout-card-title"><i data-lucide="truck"></i> Shipping Method</h3>
+              <label class="shipping-option selected" id="shipStandard">
+                <input type="radio" name="shipping" value="standard" checked>
+                <div class="shipping-option-info">
+                  <strong>Standard Shipping</strong>
+                  <span>5–7 business days</span>
+                </div>
+                <span class="shipping-option-price">Free</span>
+              </label>
+              <label class="shipping-option" id="shipExpress">
+                <input type="radio" name="shipping" value="express">
+                <div class="shipping-option-info">
+                  <strong>Express Shipping</strong>
+                  <span>2–3 business days</span>
+                </div>
+                <span class="shipping-option-price">$9.99</span>
+              </label>
+              <label class="shipping-option" id="shipPickup">
+                <input type="radio" name="shipping" value="pickup">
+                <div class="shipping-option-info">
+                  <strong>Local Pickup</strong>
+                  <span>Collect from any church campus</span>
+                </div>
+                <span class="shipping-option-price">Free</span>
+              </label>
+
+              <!-- Pickup Campus Dropdown Selector -->
+              <div id="pickupCampusContainer" class="co-field" style="margin-top: 20px; display: none;">
+                <label class="co-label" for="co-pickup-campus">Select Pickup Campus</label>
+                <select class="co-input co-select" id="co-pickup-campus">
+                  <option value="" disabled selected>Choose a campus location...</option>
+                  <option value="main">Grace City Main Campus (Downtown)</option>
+                  <option value="north">Grace City North Campus (Westhaven)</option>
+                  <option value="south">Grace City South Campus (Oakridge)</option>
+                  <option value="east">Grace City East Campus (Riverview)</option>
+                </select>
+                <div id="pickupCampusAddress" style="margin-top: 10px; padding: 12px; border-radius: 10px; background: color-mix(in srgb, var(--accent) 5%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 10%, transparent); font-size: 13px; color: var(--muted); line-height: 1.5; display: none;">
+                </div>
+              </div>
+            </div>
+
+            <div class="co-actions">
+              <button class="btn primary co-submit" id="nextToPaymentBtn">
+                Continue to Payment <i data-lucide="arrow-right" style="width:18px;height:18px;margin-left:6px;vertical-align:middle;"></i>
+              </button>
+              <button class="btn soft co-submit-back" id="backToInfoBtn" style="width: 100%; height: 54px; border-radius: 16px; font-weight: 800; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; transition: background 0.2s, transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Return to Information
+              </button>
+            </div>
+          </div>
+
+          <!-- Step 3: Payment -->
+          <div class="checkout-step-container" id="step-3" style="display: none;">
+            <!-- Payment Gateways Container -->
+            <div class="checkout-card">
+              <h3 class="checkout-card-title"><i data-lucide="wallet"></i> Payment Method</h3>
+              <div id="paymentMethodContainer">
+                <!-- Payment gateways injected here dynamically -->
+              </div>
+
+              <!-- WhatsApp Fields Panel -->
+              <div id="panel-whatsapp" class="pay-panel" style="margin-top: 20px; display: none;">
+                <div class="co-alert co-alert-info visible" style="margin-bottom: 0;">
+                  <i data-lucide="message-circle"></i>
+                  <span>Your order summary will be sent directly to our team via WhatsApp at <strong>+256783335335</strong> to coordinate payment and delivery.</span>
+                </div>
+              </div>
+
+              <!-- Stripe / Generic Credit Card fields (hidden by default unless selected) -->
+              <div id="panel-stripe" class="pay-panel" style="margin-top: 20px; display: none;">
+                <div class="co-field">
+                  <label class="co-label" for="co-cardnum">Card number</label>
+                  <div class="co-input-icon-wrap">
+                    <input class="co-input" type="text" id="co-cardnum" placeholder="1234 5678 9012 3456" maxlength="19">
+                    <i data-lucide="credit-card" class="input-icon"></i>
+                  </div>
+                </div>
+                <div class="co-row co-row-2">
+                  <div class="co-field">
+                    <label class="co-label" for="co-expiry">Expiry date</label>
+                    <input class="co-input" type="text" id="co-expiry" placeholder="MM / YY" maxlength="7">
+                  </div>
+                  <div class="co-field">
+                    <label class="co-label" for="co-cvv">CVV</label>
+                    <div class="co-input-icon-wrap">
+                      <input class="co-input" type="text" id="co-cvv" placeholder="123" maxlength="4">
+                      <i data-lucide="lock" class="input-icon"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="co-field">
+                  <label class="co-label" for="co-cardname">Name on card</label>
+                  <input class="co-input" type="text" id="co-cardname" placeholder="David Chen">
+                </div>
+              </div>
+            </div>
+
+            <!-- Simulation Panel -->
+            <div class="sim-panel">
+              <h4 class="sim-title"><i data-lucide="zap"></i> Developer Payment Simulation</h4>
+              <p style="font-size: 13px; color: var(--muted); margin: 0 0 14px;">Simulate order outcomes directly to verify success and failure workflows before integrating live gateways.</p>
+              <div class="sim-btn-row">
+                <button class="btn success" id="simSuccessBtn" style="background:#10b981; color:white; border-radius:12px; height:44px; font-weight:800; border:none; cursor:pointer;">
+                  <i data-lucide="check-circle" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i> Simulate Success
+                </button>
+                <button class="btn danger" id="simFailBtn" style="background:#ef4444; color:white; border-radius:12px; height:44px; font-weight:800; border:none; cursor:pointer;">
+                  <i data-lucide="x-circle" style="width:16px;height:16px;vertical-align:middle;margin-right:6px;"></i> Simulate Failure
+                </button>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="co-actions">
+              <button class="btn primary co-submit" id="completeOrderBtn">
+                <i data-lucide="message-circle" style="width:18px;height:18px;"></i> Send Order via WhatsApp
+              </button>
+              <button class="btn soft co-submit-back" id="backToShippingBtn" style="width: 100%; height: 54px; border-radius: 16px; font-weight: 800; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; transition: background 0.2s, transform 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Return to Shipping
+              </button>
+            </div>
+          </div>
+
+          <!-- Alert Messages -->
+          <div style="margin-top: 22px;">
+            <div class="co-alert co-alert-success" id="alertSuccess">
+              <i data-lucide="check-circle-2"></i>
+              <span>Payment processed successfully! Redirecting to your order confirmation…</span>
+            </div>
+            <div class="co-alert co-alert-error" id="alertError">
+              <i data-lucide="alert-circle"></i>
+              <span>Your card was declined. Please check your details and try again.</span>
+            </div>
+            <div class="co-alert co-alert-warning" id="alertWarning">
+              <i data-lucide="alert-triangle"></i>
+              <span>Your session is about to expire. Please complete your purchase soon.</span>
+            </div>
+            <div class="co-alert co-alert-info" id="alertInfo">
+              <i data-lucide="shield-check"></i>
+              <span>All transactions are encrypted and secure.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════ RIGHT COLUMN — ORDER SUMMARY ═══════ -->
+        <div class="order-summary">
+          <h3 class="order-summary-title">Order Summary</h3>
+
+          <!-- Items list container -->
+          <div id="orderSummaryItems">
+            <!-- Items injected dynamically -->
+          </div>
+
+          <!-- Discount Code -->
+          <div class="discount-row">
+            <input class="co-input" type="text" placeholder="Discount code">
+            <button class="btn">Apply</button>
+          </div>
+
+          <!-- Totals -->
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="coSubtotal">$0.00</span>
+          </div>
+          <div class="summary-row" id="summaryShipping">
+            <span>Shipping</span>
+            <span id="coShipping">Free</span>
+          </div>
+          <div class="summary-row">
+            <span>Tax</span>
+            <span id="coTax">$0.00</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span id="coTotal">$0.00</span>
+          </div>
+
+          <!-- Secure Badge -->
+          <div class="secure-badge">
+            <i data-lucide="shield-check"></i>
+            <span>All transactions are SSL encrypted and securely processed. Your payment info is never stored.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand" style="color:white;"><span class="brand-mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+          <p style="margin-top:18px;max-width:340px;">A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.</p>
+          <div class="socials">
+            <a href="#"><i data-lucide="facebook"></i></a><a href="#"><i data-lucide="youtube"></i></a><a href="#"><i data-lucide="instagram"></i></a>
+          </div>
+        </div>
+        <div><h4>Explore</h4><a href="about.html">About</a><a href="sermons.html">Sermons</a><a href="events-archive.html">Events</a><a href="groups-archive.html">Groups</a><a href="store-archive.html">Store</a><a href="contact.html">Contact</a></div>
+        <div><h4>Connect</h4><a href="login.html">Member Login</a><a href="account.html">My Account</a><a href="contact.html">Plan a Visit</a><a href="prayer.html">Prayer Request</a><a href="groups-archive.html">Join a Group</a><a href="contact.html">Volunteer</a></div>
+        <div><h4>Service Times</h4><p>Sunday Worship<br />9:30 AM</p><p>Midweek Word & Prayer<br />Wednesday 7:00 PM</p></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 Grace City Church. All rights reserved.</span><span>Ecclesia Theme · Digital Church OS</span></div>
+    </div>
+  </footer>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+    <div class="drawer-close-row">
+      <button class="drawer-close" id="closeDrawer" aria-label="Close menu"><i data-lucide="x"></i></button>
+    </div>
+    <nav class="drawer-nav">
+      <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
+      <a class="pjax-link" href="store-archive.html"><i data-lucide="shopping-bag"></i> Store</a>
+      <a class="pjax-link" href="cart.html"><i data-lucide="shopping-cart"></i> Cart</a>
+      <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
+    </nav>
+    <div class="drawer-actions">
+      <a href="store-archive.html" class="btn btn-light btn-full pjax-link"><i data-lucide="arrow-left"></i> Back to Store</a>
+    </div>
+  </aside>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="assets/app.js"></script>
+  <script src="assets/checkout.js"></script>
+</body>
+</html>

@@ -456,6 +456,7 @@ export const Preview: React.FC<PreviewProps> = ({
     if (!iframe) return;
     const doc = iframe.contentDocument || iframe.contentWindow?.document;
     if (doc && doc.body) {
+      doc.body.setAttribute("data-in-customizer", "true");
       doc.body.classList.toggle("ec-editing", editorMode);
       if (!editorMode) {
         // Clear outline styles if editor mode turned off
@@ -474,6 +475,9 @@ export const Preview: React.FC<PreviewProps> = ({
     if (!iframe) return;
     const doc = iframe.contentDocument || iframe.contentWindow?.document;
     if (doc) {
+      if (doc.body) {
+        doc.body.setAttribute("data-in-customizer", "true");
+      }
       // Create and inject the select handler script
       const scriptEl = doc.createElement("script");
       scriptEl.textContent = captureScript;

@@ -418,6 +418,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
   const [subView, setSubView] = useState<"sections" | "section-detail" | "header" | "footer" | "element" | "rail">("sections");
   const [localTab, setLocalTab] = useState<string>("style");
   const [editorSubTab, setEditorSubTab] = useState<"sections" | "blocks" | "menus">("sections");
+  const [mobileSubTab, setMobileSubTab] = useState<"sidebar" | "rail">("sidebar");
   
   // Element edit fields state
   const [editText, setEditText] = useState("");
@@ -1454,79 +1455,280 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
 
           {localTab === "mobile" && (
             <div>
+              {/* 1. Combine Drawer Menus (Always first, has its own element) */}
               <div className="edit-box">
-                <h4>Mobile Toggle Side</h4>
-                <div className="choice-grid">
-                  {[
-                    { key: "right", name: "Right Hamburger", desc: "Menu icon on right side" },
-                    { key: "left", name: "Left Hamburger", desc: "Menu icon on left side" },
-                  ].map((item) => (
-                    <button
-                      key={item.key}
-                      className={`visual-card ${state.mobileMenuPosition === item.key ? "active" : ""}`}
-                      onClick={() => onChange({ mobileMenuPosition: item.key })}
-                    >
-                      <strong>{item.name}</strong>
-                      <span>{item.desc}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="edit-box">
-                <h4>Shape</h4>
-                <div className="choice-grid">
-                  {[
-                    { key: "plain", name: "Plain Icon", desc: "Hamburger icon without surrounding frame" },
-                    { key: "circle", name: "Circle", desc: "Hamburger inside a circular container" },
-                    { key: "square", name: "Square", desc: "Hamburger inside a square container" },
-                    { key: "rounded", name: "Rounded", desc: "Hamburger inside a rounded container" },
-                  ].map((item) => (
-                    <button
-                      key={item.key}
-                      className={`visual-card ${state.mobileHamburgerShape === item.key ? "active" : ""}`}
-                      onClick={() => onChange({ mobileHamburgerShape: item.key })}
-                    >
-                      <strong>{item.name}</strong>
-                      <span>{item.desc}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="edit-box">
-                <h4>Drawer Transition Behavior</h4>
-                <div className="choice-grid">
-                  {[
-                    { key: "overlay", name: "Overlay", desc: "Mobile drawer sits on top of page content" },
-                    { key: "push", name: "Push", desc: "Drawer pushes page content sideways" },
-                    { key: "reveal", name: "Reveal", desc: "Page slides away to reveal the drawer underneath" },
-                  ].map((item) => (
-                    <button
-                      key={item.key}
-                      className={`visual-card ${state.mobileDrawerMode === item.key ? "active" : ""}`}
-                      onClick={() => onChange({ mobileDrawerMode: item.key })}
-                    >
-                      <strong>{item.name}</strong>
-                      <span>{item.desc}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="edit-box" style={{ marginTop: '24px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                   <div>
-                    <h4 style={{ margin: 0 }}>Full Width Actions</h4>
-                    <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginTop: '2px' }}>Make drawer buttons span full width</span>
+                    <h4 style={{ margin: 0 }}>Combine Drawer Menus</h4>
+                    <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginTop: '2px' }}>Merge main and rail menus in one drawer</span>
                   </div>
                   <button 
-                    className={`tiny-switch ${state.mobileDrawerButtonsFullWidth ? 'on' : 'off'}`}
-                    onClick={() => onChange({ mobileDrawerButtonsFullWidth: !state.mobileDrawerButtonsFullWidth })}
+                    className={`tiny-switch ${state.mobileDrawerCombine ? 'on' : 'off'}`}
+                    onClick={() => onChange({ mobileDrawerCombine: !state.mobileDrawerCombine })}
                     style={{ flexShrink: 0, cursor: 'pointer' }}
                   >
                     <div className="tiny-knob"></div>
                   </button>
+                </div>
+              </div>
+
+              {/* Sub-tabs for separate mode */}
+              {!state.mobileDrawerCombine && (
+                <div className="editor-local-tabs sharp-tabs" style={{ marginTop: '16px', marginBottom: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+                  <button
+                    className={`local-tab ${mobileSubTab === "sidebar" ? "active" : ""}`}
+                    onClick={() => setMobileSubTab("sidebar")}
+                  >
+                    SIDEBAR
+                  </button>
+                  <button
+                    className={`local-tab ${mobileSubTab === "rail" ? "active" : ""}`}
+                    onClick={() => setMobileSubTab("rail")}
+                  >
+                    RAIL MENU
+                  </button>
+                </div>
+              )}
+
+              {/* Conditional Settings based on Combine status */}
+              {state.mobileDrawerCombine ? (
+                <>
+                  {/* Combined settings */}
+                  <div className="edit-box" style={{ marginTop: '24px' }}>
+                    <h4>Rail Position in Drawer</h4>
+                    <p>Position the rail menu column inside the combined drawer.</p>
+                    <div className="choice-grid">
+                      {[
+                        { key: "left", name: "Left Side", desc: "Rail menu on the left side of drawer" },
+                        { key: "right", name: "Right Side", desc: "Rail menu on the right side of drawer" },
+                      ].map((item) => (
+                        <button
+                          key={item.key}
+                          className={`visual-card ${(state.mobileDrawerRailPosition || 'right') === item.key ? "active" : ""}`}
+                          onClick={() => onChange({ mobileDrawerRailPosition: item.key as any })}
+                        >
+                          <strong>{item.name}</strong>
+                          <span>{item.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="edit-box" style={{ marginTop: '24px' }}>
+                    <h4>Mobile Rail Vertical Alignment</h4>
+                    <p>Vertically align the mobile rail menu icons (Top, Center, Bottom).</p>
+                    <div className="choice-grid">
+                      {[
+                        { key: "top", name: "Top", desc: "Align items at the top" },
+                        { key: "center", name: "Center", desc: "Align items in the middle" },
+                        { key: "bottom", name: "Bottom", desc: "Align items at the bottom" },
+                      ].map((item) => (
+                        <button
+                          key={item.key}
+                          className={`visual-card ${(state.mobileRailVerticalAlign || 'center') === item.key ? "active" : ""}`}
+                          onClick={() => onChange({ mobileRailVerticalAlign: item.key as any })}
+                        >
+                          <strong>{item.name}</strong>
+                          <span>{item.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="edit-box" style={{ marginTop: '24px' }}>
+                    <h4>Shape</h4>
+                    <div className="choice-grid">
+                      {[
+                        { key: "plain", name: "Plain Icon", desc: "Hamburger icon without surrounding frame" },
+                        { key: "circle", name: "Circle", desc: "Hamburger inside a circular container" },
+                        { key: "square", name: "Square", desc: "Hamburger inside a square container" },
+                        { key: "rounded", name: "Rounded", desc: "Hamburger inside a rounded container" },
+                      ].map((item) => (
+                        <button
+                          key={item.key}
+                          className={`visual-card ${state.mobileHamburgerShape === item.key ? "active" : ""}`}
+                          onClick={() => onChange({ mobileHamburgerShape: item.key })}
+                        >
+                          <strong>{item.name}</strong>
+                          <span>{item.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="edit-box" style={{ marginTop: '24px' }}>
+                    <h4>Drawer Transition Behavior</h4>
+                    <div className="choice-grid">
+                      {[
+                        { key: "overlay", name: "Overlay", desc: "Mobile drawer sits on top of page content" },
+                        { key: "push", name: "Push", desc: "Drawer pushes page content sideways" },
+                        { key: "reveal", name: "Reveal", desc: "Page slides away to reveal the drawer underneath" },
+                      ].map((item) => (
+                        <button
+                          key={item.key}
+                          className={`visual-card ${state.mobileDrawerMode === item.key ? "active" : ""}`}
+                          onClick={() => onChange({ mobileDrawerMode: item.key })}
+                        >
+                          <strong>{item.name}</strong>
+                          <span>{item.desc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="edit-box" style={{ marginTop: '24px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                      <div>
+                        <h4 style={{ margin: 0 }}>Full Width Actions</h4>
+                        <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginTop: '2px' }}>Make drawer buttons span full width</span>
+                      </div>
+                      <button 
+                        className={`tiny-switch ${state.mobileDrawerButtonsFullWidth ? 'on' : 'off'}`}
+                        onClick={() => onChange({ mobileDrawerButtonsFullWidth: !state.mobileDrawerButtonsFullWidth })}
+                        style={{ flexShrink: 0, cursor: 'pointer' }}
+                      >
+                        <div className="tiny-knob"></div>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Separate settings */}
+                  {mobileSubTab === "sidebar" ? (
+                    <>
+                      {/* Sidebar tab settings */}
+                      <div className="edit-box" style={{ marginTop: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                          <h4 style={{ margin: 0 }}>Mobile Toggle Side</h4>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '12px', color: '#94a3b8' }}>Flip Drawer Sides</span>
+                            <button
+                              className={`tiny-switch ${state.mobileMenuFlip ? 'on' : 'off'}`}
+                              onClick={() => onChange({ mobileMenuFlip: !state.mobileMenuFlip })}
+                            />
+                          </div>
+                        </div>
+                        <div className="choice-grid">
+                          {[
+                            { key: "right", name: "Right Hamburger", desc: "Menu icon on right side" },
+                            { key: "left", name: "Left Hamburger", desc: "Menu icon on left side" },
+                          ].map((item) => (
+                            <button
+                              key={item.key}
+                              className={`visual-card ${state.mobileMenuPosition === item.key ? "active" : ""}`}
+                              onClick={() => onChange({ mobileMenuPosition: item.key })}
+                            >
+                              <strong>{item.name}</strong>
+                              <span>{item.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="edit-box" style={{ marginTop: '24px' }}>
+                        <h4>Shape</h4>
+                        <div className="choice-grid">
+                          {[
+                            { key: "plain", name: "Plain Icon", desc: "Hamburger icon without surrounding frame" },
+                            { key: "circle", name: "Circle", desc: "Hamburger inside a circular container" },
+                            { key: "square", name: "Square", desc: "Hamburger inside a square container" },
+                            { key: "rounded", name: "Rounded", desc: "Hamburger inside a rounded container" },
+                          ].map((item) => (
+                            <button
+                              key={item.key}
+                              className={`visual-card ${state.mobileHamburgerShape === item.key ? "active" : ""}`}
+                              onClick={() => onChange({ mobileHamburgerShape: item.key })}
+                            >
+                              <strong>{item.name}</strong>
+                              <span>{item.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="edit-box" style={{ marginTop: '24px' }}>
+                        <h4>Drawer Transition Behavior</h4>
+                        <div className="choice-grid">
+                          {[
+                            { key: "overlay", name: "Overlay", desc: "Mobile drawer sits on top of page content" },
+                            { key: "push", name: "Push", desc: "Drawer pushes page content sideways" },
+                            { key: "reveal", name: "Reveal", desc: "Page slides away to reveal the drawer underneath" },
+                          ].map((item) => (
+                            <button
+                              key={item.key}
+                              className={`visual-card ${state.mobileDrawerMode === item.key ? "active" : ""}`}
+                              onClick={() => onChange({ mobileDrawerMode: item.key })}
+                            >
+                              <strong>{item.name}</strong>
+                              <span>{item.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="edit-box" style={{ marginTop: '24px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                          <div>
+                            <h4 style={{ margin: 0 }}>Full Width Actions</h4>
+                            <span style={{ fontSize: '12px', color: 'var(--muted)', display: 'block', marginTop: '2px' }}>Make drawer buttons span full width</span>
+                          </div>
+                          <button 
+                            className={`tiny-switch ${state.mobileDrawerButtonsFullWidth ? 'on' : 'off'}`}
+                            onClick={() => onChange({ mobileDrawerButtonsFullWidth: !state.mobileDrawerButtonsFullWidth })}
+                            style={{ flexShrink: 0, cursor: 'pointer' }}
+                          >
+                            <div className="tiny-knob"></div>
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Rail menu tab settings */}
+                      <div className="edit-box" style={{ marginTop: '24px' }}>
+                        <h4>Mobile Rail Vertical Alignment</h4>
+                        <p>Vertically align the mobile rail menu icons (Top, Center, Bottom).</p>
+                        <div className="choice-grid">
+                          {[
+                            { key: "top", name: "Top", desc: "Align items at the top" },
+                            { key: "center", name: "Center", desc: "Align items in the middle" },
+                            { key: "bottom", name: "Bottom", desc: "Align items at the bottom" },
+                          ].map((item) => (
+                            <button
+                              key={item.key}
+                              className={`visual-card ${(state.mobileRailVerticalAlign || 'center') === item.key ? "active" : ""}`}
+                              onClick={() => onChange({ mobileRailVerticalAlign: item.key as any })}
+                            >
+                              <strong>{item.name}</strong>
+                              <span>{item.desc}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* Always at the bottom: Logo alignment */}
+              <div className="edit-box" style={{ marginTop: '24px' }}>
+                <h4>Mobile Logo Alignment</h4>
+                <div className="choice-grid">
+                  {[
+                    { key: "center", name: "Centered", desc: "Logo in the middle, menu buttons on sides" },
+                    { key: "left", name: "Left Aligned", desc: "Logo on the left" },
+                    { key: "right", name: "Right Aligned", desc: "Logo on the right" },
+                  ].map((item) => (
+                    <button
+                      key={item.key}
+                      className={`visual-card ${(state.mobileLogoAlign || 'center') === item.key ? "active" : ""}`}
+                      onClick={() => onChange({ mobileLogoAlign: item.key as any })}
+                    >
+                      <strong>{item.name}</strong>
+                      <span>{item.desc}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>

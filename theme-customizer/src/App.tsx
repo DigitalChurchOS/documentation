@@ -179,7 +179,15 @@ const CUSTOMIZER_PAGES_LIST: CustomizerPageOption[] = [
   { value: "testimony-wall.html", label: "Testimony Wall (testimony-wall.html)" },
   { value: "testimony-single.html", label: "Single Testimony (testimony-single.html)" },
   { value: "testimony-submit.html", label: "Submit Testimony (testimony-submit.html)" },
-  { value: "worship.html", label: "Worship / Style Guide (worship.html)" }
+  { value: "worship.html", label: "Worship / Style Guide (worship.html)" },
+  { value: "groups-archive.html", label: "Groups Directory (groups-archive.html)" },
+  { value: "group-single.html", label: "Single Group Details (group-single.html)" },
+  { value: "store-archive.html", label: "Store Catalog (store-archive.html)" },
+  { value: "store-single.html", label: "Product Details (store-single.html)" },
+  { value: "cart.html", label: "Shopping Cart (cart.html)" },
+  { value: "checkout.html", label: "Checkout (checkout.html)" },
+  { value: "checkout-success.html", label: "Order Confirmed (checkout-success.html)" },
+  { value: "checkout-failed.html", label: "Payment Failed (checkout-failed.html)" }
 ];
 
 
@@ -220,6 +228,14 @@ const CUSTOMIZER_FILE_SLUGS: Record<string, string> = {
   'testimony-single.html': 'testimonies/sample-story',
   'testimony-submit.html': 'testimonies/submit',
   'worship.html': 'worship',
+  'groups-archive.html': 'cells',
+  'group-single.html': 'cells/sample-group',
+  'store-archive.html': 'store',
+  'store-single.html': 'store/sample-product',
+  'cart.html': 'store/cart',
+  'checkout.html': 'store/checkout',
+  'checkout-success.html': 'store/thank-you',
+  'checkout-failed.html': 'store/checkout-failed',
 };
 
 function fileForCmsPage(page: any) {
@@ -649,10 +665,15 @@ export function App() {
       headerEffect: "static",
       headerFontSize: "medium",
       headerFontWeight: "bold",
-      mobileMenuPosition: "right",
+      mobileMenuPosition: "left",
+      mobileMenuFlip: false,
+      mobileLogoAlign: "center",
       mobileDrawerMode: "reveal",
       mobileHamburgerShape: "circle",
       mobileDrawerButtonsFullWidth: false,
+      mobileDrawerCombine: true,
+      mobileDrawerRailPosition: "right",
+      mobileRailVerticalAlign: "center",
       footerStyle: "classic",
       footerWidgets: "show",
       footerWidgetLayout: "feature",
@@ -672,6 +693,11 @@ export function App() {
       railVerticalAlign: "center",
       railFontSize: "medium",
       railFontWeight: "bold",
+      cardThumbnailStyle: "padded",
+      cardHoverEffect: "lift",
+      cardGridGapOverride: "medium",
+      cardPaddingOverride: "medium",
+      cardContentSpacing: "comfortable",
       copyrightText: "Ecclesia Theme. All rights reserved.",
       privacyLabel: "Privacy Policy",
       privacyHref: "#privacy",
@@ -816,7 +842,7 @@ export function App() {
   const renderedHtml = useMemo(() => {
     const doc = parseHtml(rawHtml);
     injectThemeTokens(doc, themeState);
-    applyThemeStructure(doc, themeState, navigationMenus);
+    applyThemeStructure(doc, themeState, navigationMenus, currentTheme);
 
     // Inject base tag so relative assets resolve correctly inside the srcDoc iframe
     let baseTag = doc.querySelector("base");

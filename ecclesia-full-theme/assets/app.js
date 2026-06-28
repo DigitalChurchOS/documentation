@@ -11,7 +11,8 @@ const railItems = [
   { label: 'Services', url: 'services-archive.html', icon: 'calendar' },
   { label: 'Library', url: 'library-archive.html', icon: 'book-open' },
   { label: 'LMS', url: 'courses-archive.html', icon: 'graduation-cap' },
-  { label: 'Worship', url: 'worship.html', icon: 'music' }
+  { label: 'Worship', url: 'worship.html', icon: 'music' },
+  { label: 'Groups', url: 'groups-archive.html', icon: 'users' }
 ];
 
 const headerNavItems = [
@@ -33,7 +34,7 @@ function getLucideIconForMenuLabel(label) {
   if (lbl.includes('library') || lbl.includes('resource')) return 'book-open';
   if (lbl.includes('lms') || lbl.includes('course')) return 'graduation-cap';
   if (lbl.includes('worship') || lbl.includes('study')) return 'music';
-  if (lbl.includes('fellowship') || lbl.includes('cell')) return 'users';
+  if (lbl.includes('fellowship') || lbl.includes('cell') || lbl.includes('group')) return 'users';
   if (lbl.includes('store') || lbl.includes('giving')) return 'shopping-bag';
   if (lbl.includes('devortion') || lbl.includes('prayer')) return 'heart';
   return 'link';
@@ -132,7 +133,12 @@ const ctaConfig = {
   'testimony-wall.html': { primary: 'Submit Testimony', primaryUrl: 'testimony-submit.html', secondary: 'Prayer Requests', secondaryUrl: 'prayer.html' },
   'testimony-submit.html': { primary: 'Submit Testimony', primaryUrl: 'testimony-submit.html', secondary: 'View Wall', secondaryUrl: 'testimony-wall.html' },
   'testimony-single.html': { primary: 'Submit Testimony', primaryUrl: 'testimony-submit.html', secondary: 'View Wall', secondaryUrl: 'testimony-wall.html' },
-  'worship.html': { primary: 'Listen Now', primaryUrl: 'worship.html', secondary: 'Lyrics Sheets', secondaryUrl: '#chord-charts' }
+  'worship.html': { primary: 'Listen Now', primaryUrl: 'worship.html', secondary: 'Lyrics Sheets', secondaryUrl: '#chord-charts' },
+  'checkout.html': { secondary: 'Back to Store', secondaryUrl: 'store-archive.html' },
+  'cart.html': { secondary: 'Back to Store', secondaryUrl: 'store-archive.html' },
+  'checkout-success.html': { secondary: 'Back to Store', secondaryUrl: 'store-archive.html' },
+  'checkout-failed.html': { secondary: 'Back to Store', secondaryUrl: 'store-archive.html' },
+  'store-archive.html': { primary: 'Cart', primaryUrl: 'cart.html', secondary: 'All Products', secondaryUrl: '#catalog' }
 };
 
 // Check if link is a local relative page link
@@ -154,7 +160,17 @@ function isLocalLink(anchor) {
 // Get page file name from URL path
 function getPageFileName(pathname) {
   const parts = pathname.split('/');
-  return parts[parts.length - 1] || 'index.html';
+  let segment = parts[parts.length - 1] || 'index.html';
+  const clean = segment.split('?')[0].split('#')[0];
+  if (clean === 'checkout') return 'checkout.html';
+  if (clean === 'cart') return 'cart.html';
+  if (clean === 'thank-you') return 'checkout-success.html';
+  if (clean === 'checkout-failed') return 'checkout-failed.html';
+  if (clean === 'store') return 'store-archive.html';
+  if (clean && !clean.endsWith('.html') && clean !== 'index.html') {
+    return clean + '.html';
+  }
+  return clean || 'index.html';
 }
 
 const defaultFooterHtml = `
@@ -220,6 +236,9 @@ function initShell() {
       !child.classList.contains('top') &&
       child.id !== 'mobileDrawer' &&
       !child.classList.contains('mobile-drawer') &&
+      child.id !== 'mobileRailDrawer' &&
+      !child.classList.contains('mobile-rail-drawer') &&
+      !child.classList.contains('rail-drawer-backdrop') &&
       child.tagName !== 'SCRIPT'
     ) {
       contentOutlet.appendChild(child);
@@ -385,38 +404,145 @@ function initShell() {
   }
   drawer.className = 'mobile-drawer';
   drawer.setAttribute('aria-hidden', 'true');
-  drawer.innerHTML = `
-    <div class="drawer-close-row">
-      <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
-        <i data-lucide="x"></i>
-      </button>
-    </div>
 
-    <nav class="drawer-nav">
-      <a class="pjax-link" href="index.html"><i data-lucide="home"></i> Home</a>
-      <a class="pjax-link" href="about.html"><i data-lucide="info"></i> About</a>
-      <a class="pjax-link" href="sermons.html"><i data-lucide="play-square"></i> Sermons</a>
-      <a class="pjax-link" href="events.html"><i data-lucide="calendar-days"></i> Events</a>
-      <a class="pjax-link" href="ministries.html"><i data-lucide="users-round"></i> Ministries</a>
-      <a class="pjax-link" href="prayer.html"><i data-lucide="heart-handshake"></i> Prayer</a>
-      <a class="pjax-link" href="contact.html"><i data-lucide="mail"></i> Contact</a>
-    </nav>
+  const mobileDrawerCombine = document.body.getAttribute("data-mobile-drawer-combine") === "true";
+  const mobileDrawerRailPosition = document.body.getAttribute("data-mobile-drawer-rail-position") || "right";
 
-    <div class="drawer-actions">
-      <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
-        <i data-lucide="radio"></i>
-        Watch Live
-      </a>
-      <a href="contact.html" class="btn btn-primary btn-full pjax-link">
-        <i data-lucide="map-pin"></i>
-        Plan Visit
-      </a>
-    </div>
-  `;
+  if (mobileDrawerCombine) {
+    drawer.setAttribute('data-mobile-drawer-combine', 'true');
+    drawer.setAttribute('data-mobile-drawer-rail-position', mobileDrawerRailPosition);
+
+    let railHtml = `<div class="drawer-rail-col"><nav class="rail-nav">`;
+    finalMobileRailItems.forEach(item => {
+      const url = item.url === "/" ? "index.html" : item.url.replace(/^\//, "");
+      railHtml += `
+        <a class="rail-item pjax-link" href="${url}" data-page="${item.url}">
+          <i data-lucide="${item.icon}"></i>
+          <span>${item.label}</span>
+        </a>
+      `;
+    });
+    railHtml += `</nav></div>`;
+
+    let mainHtml = `<div class="drawer-main-col">
+      <div class="drawer-close-row">
+        <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <nav class="drawer-nav">`;
+    finalMobileDrawerItems.forEach(item => {
+      const url = item.url === "/" ? "index.html" : item.url.replace(/^\//, "");
+      const icon = getLucideIconForMenuLabel(item.label);
+      mainHtml += `
+        <a class="pjax-link" href="${url}">
+          <i data-lucide="${icon}"></i> ${item.label}
+        </a>
+      `;
+    });
+    mainHtml += `</nav>
+      <div class="drawer-actions">
+        <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+          <i data-lucide="radio"></i>
+          Watch Live
+        </a>
+        <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+          <i data-lucide="map-pin"></i>
+          Plan Visit
+        </a>
+      </div>
+    </div>`;
+
+    drawer.innerHTML = `<div class="drawer-combined-wrap">${railHtml}${mainHtml}</div>`;
+  } else {
+    drawer.setAttribute('data-mobile-drawer-combine', 'false');
+    drawer.removeAttribute('data-mobile-drawer-rail-position');
+
+    let drawerNavHtml = '<nav class="drawer-nav">';
+    finalMobileDrawerItems.forEach(item => {
+      const url = item.url === "/" ? "index.html" : item.url.replace(/^\//, "");
+      const icon = getLucideIconForMenuLabel(item.label);
+      drawerNavHtml += `
+        <a class="pjax-link" href="${url}">
+          <i data-lucide="${icon}"></i> ${item.label}
+        </a>
+      `;
+    });
+    drawerNavHtml += '</nav>';
+
+    drawer.innerHTML = `
+      <div class="drawer-close-row">
+        <button class="drawer-close" id="closeDrawer" aria-label="Close menu">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      ${drawerNavHtml}
+      <div class="drawer-actions">
+        <a href="livestream-page.html" class="btn btn-light btn-full pjax-link">
+          <i data-lucide="radio"></i>
+          Watch Live
+        </a>
+        <a href="contact.html" class="btn btn-primary btn-full pjax-link">
+          <i data-lucide="map-pin"></i>
+          Plan Visit
+        </a>
+      </div>
+    `;
+  }
+
+  // Create canonical mobile rail drawer
+  let railDrawer = document.getElementById('mobileRailDrawer');
+  let railBackdrop = document.querySelector('.rail-drawer-backdrop');
+
+  if (mobileDrawerCombine) {
+    if (railDrawer) {
+      railDrawer.remove();
+      railDrawer = null;
+    }
+    if (railBackdrop) {
+      railBackdrop.remove();
+      railBackdrop = null;
+    }
+  } else {
+    if (!railDrawer) {
+      railDrawer = document.createElement('aside');
+      railDrawer.id = 'mobileRailDrawer';
+      railDrawer.className = 'mobile-rail-drawer';
+    }
+    railDrawer.setAttribute('aria-hidden', 'true');
+    
+    let railNavHtml = '<nav class="rail-nav">';
+    finalMobileRailItems.forEach(item => {
+      const url = item.url === "/" ? "index.html" : item.url.replace(/^\//, "");
+      railNavHtml += `
+        <a class="rail-item pjax-link" href="${url}" data-page="${item.url}">
+          <i data-lucide="${item.icon}"></i>
+          <span>${item.label}</span>
+        </a>
+      `;
+    });
+    railNavHtml += '</nav>';
+    railDrawer.innerHTML = railNavHtml;
+
+    if (!railBackdrop) {
+      railBackdrop = document.createElement('div');
+      railBackdrop.className = 'rail-drawer-backdrop';
+    }
+  }
 
   document.body.appendChild(shellWrapper);
   document.body.appendChild(drawer);
+  if (railDrawer) document.body.appendChild(railDrawer);
+  if (railBackdrop) document.body.appendChild(railBackdrop);
   document.body.appendChild(tempTab.firstElementChild);
+
+  // Move overlay drawers/modals to root of body to ensure correct stacking context above bottom mobile rail nav
+  const cartBackdrop = document.getElementById('cartBackdrop');
+  const cartDrawer = document.getElementById('cartDrawer');
+  const checkoutBackdrop = document.getElementById('checkoutModalBackdrop');
+  if (cartBackdrop) document.body.appendChild(cartBackdrop);
+  if (cartDrawer) document.body.appendChild(cartDrawer);
+  if (checkoutBackdrop) document.body.appendChild(checkoutBackdrop);
 
   // 4. Bind events
   bindEvents();
@@ -425,10 +551,22 @@ function initShell() {
   updateActiveStates(currentFileName);
   renderHeaderCTAs(currentFileName);
   
-  // 6. Create icons
+  // 6. Initialize Custom Dropdowns
+  if (window.initCustomDropdowns) window.initCustomDropdowns();
+  
+  // Initialize fallbacks/placeholders
+  if (window.initPlaceholders) window.initPlaceholders();
+  
+  // Format card buttons and inject icons
+  if (window.formatCardButtons) window.formatCardButtons();
+  
+  // 7. Create icons
   lucide.createIcons();
 
-  // 7. Trigger show body by adding class
+  // 7. Initialize sort toggles
+  if (window.initSortToggles) window.initSortToggles();
+
+  // 8. Trigger show body by adding class
   document.body.classList.add('shell-loaded');
 }
 
@@ -450,14 +588,14 @@ function setMobileDrawerState(isOpen) {
 
   if (shellWrapper) {
     const drawerMode = document.body.getAttribute('data-mobile-drawer-mode') || 'reveal';
-    const menuPos = document.body.getAttribute('data-mobile-menu-position') || 'right';
+    const drawerSide = document.body.getAttribute('data-mobile-drawer-side') || 'right';
 
     if (drawerMode === 'overlay') {
       shellWrapper.style.transform = '';
       shellWrapper.style.boxShadow = '';
     } else {
       const shift = getMobileDrawerShift(drawer);
-      const sign = menuPos === 'left' ? '' : '-';
+      const sign = drawerSide === 'left' ? '' : '-';
       shellWrapper.style.transform = isOpen ? `translateX(${sign}${shift})` : '';
       shellWrapper.style.boxShadow = isOpen ? '30px 0 80px rgba(15,23,42,.16)' : '';
     }
@@ -474,40 +612,64 @@ function closeMobileDrawer() {
 
 // Bind mobile drawers and account buttons
 function bindMobileMenu() {
-  // 1. Mobile Rail Drawer (Hamburger / Left)
-  const menuBtn = document.getElementById('menuBtn');
+  const mobileDrawerCombine = document.body.getAttribute("data-mobile-drawer-combine") === "true";
+
+  // 1. Mobile Rail Drawer (Kebab / Right)
+  const kebabBtn = document.getElementById('kebabBtn');
   const railDrawer = document.getElementById('mobileRailDrawer');
   const railBackdrop = document.querySelector('.rail-drawer-backdrop');
 
-  if (menuBtn && railDrawer) {
-    const newMenuBtn = menuBtn.cloneNode(true);
-    menuBtn.parentNode.replaceChild(newMenuBtn, menuBtn);
-    newMenuBtn.addEventListener('click', (e) => {
+  const setRailDrawerState = (isOpen) => {
+    if (railDrawer) {
+      railDrawer.classList.toggle('open', isOpen);
+      railDrawer.setAttribute('aria-hidden', String(!isOpen));
+    }
+    if (railBackdrop) {
+      railBackdrop.classList.toggle('show', isOpen);
+    }
+    document.body.classList.toggle('rail-drawer-open', isOpen);
+  };
+
+  if (kebabBtn) {
+    const newKebabBtn = kebabBtn.cloneNode(true);
+    kebabBtn.parentNode.replaceChild(newKebabBtn, kebabBtn);
+    newKebabBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const isOpen = railDrawer.classList.contains('open');
-      if (isOpen) {
-        railDrawer.classList.remove('open');
-        if (railBackdrop) railBackdrop.classList.remove('show');
+      
+      if (mobileDrawerCombine) {
+        // Combined mode: toggle the main mobile drawer
+        const isOpen = document.body.classList.contains('drawer-open');
+        if (isOpen) {
+          closeMobileDrawer();
+        } else {
+          openMobileDrawer();
+        }
       } else {
-        railDrawer.classList.add('open');
-        if (railBackdrop) railBackdrop.classList.add('show');
-        closeMobileDrawer();
+        // Standalone mode: toggle the rail drawer
+        if (railDrawer) {
+          const isOpen = railDrawer.classList.contains('open');
+          if (isOpen) {
+            setRailDrawerState(false);
+          } else {
+            setRailDrawerState(true);
+            closeMobileDrawer();
+          }
+        }
       }
     });
   }
 
-  if (railBackdrop) {
+  if (railBackdrop && !mobileDrawerCombine) {
     const newBackdrop = railBackdrop.cloneNode(true);
     railBackdrop.parentNode.replaceChild(newBackdrop, railBackdrop);
     newBackdrop.addEventListener('click', () => {
-      if (railDrawer) railDrawer.classList.remove('open');
-      newBackdrop.classList.remove('show');
+      setRailDrawerState(false);
     });
   }
 
-  // 2. Main Mobile Drawer (Kebab / Right)
-  const kebabBtn = document.getElementById('kebabBtn');
+  // 2. Main Mobile Drawer (Hamburger / Left)
+  const menuBtn = document.getElementById('menuBtn');
   const drawer = document.getElementById('mobileDrawer');
   if (drawer) {
     drawer.setAttribute('role', 'dialog');
@@ -515,14 +677,14 @@ function bindMobileMenu() {
     drawer.setAttribute('aria-hidden', String(!document.body.classList.contains('drawer-open')));
   }
 
-  if (kebabBtn && drawer) {
-    const newKebabBtn = kebabBtn.cloneNode(true);
-    kebabBtn.parentNode.replaceChild(newKebabBtn, kebabBtn);
-    newKebabBtn.setAttribute('aria-label', 'Open menu');
-    newKebabBtn.setAttribute('aria-controls', 'mobileDrawer');
-    newKebabBtn.setAttribute('aria-expanded', String(document.body.classList.contains('drawer-open')));
+  if (menuBtn && drawer) {
+    const newMenuBtn = menuBtn.cloneNode(true);
+    menuBtn.parentNode.replaceChild(newMenuBtn, menuBtn);
+    newMenuBtn.setAttribute('aria-label', 'Open menu');
+    newMenuBtn.setAttribute('aria-controls', 'mobileDrawer');
+    newMenuBtn.setAttribute('aria-expanded', String(document.body.classList.contains('drawer-open')));
 
-    newKebabBtn.addEventListener('click', (e) => {
+    newMenuBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       const isOpen = document.body.classList.contains('drawer-open');
@@ -530,9 +692,9 @@ function bindMobileMenu() {
         closeMobileDrawer();
       } else {
         openMobileDrawer();
-        if (railDrawer) railDrawer.classList.remove('open');
-        const activeBackdrop = document.querySelector('.rail-drawer-backdrop');
-        if (activeBackdrop) activeBackdrop.classList.remove('show');
+        if (!mobileDrawerCombine) {
+          setRailDrawerState(false);
+        }
       }
     });
   }
@@ -551,9 +713,9 @@ function bindMobileMenu() {
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         closeMobileDrawer();
-        if (railDrawer) railDrawer.classList.remove('open');
-        const activeBackdrop = document.querySelector('.rail-drawer-backdrop');
-        if (activeBackdrop) activeBackdrop.classList.remove('show');
+        if (!mobileDrawerCombine) {
+          setRailDrawerState(false);
+        }
       }
     });
     window.__drawerEscBound = true;
@@ -571,16 +733,15 @@ function bindMobileMenu() {
       
       const activeRailDrawer = document.getElementById('mobileRailDrawer');
       const activeMenuBtn = document.getElementById('menuBtn');
-      const activeBackdrop = document.querySelector('.rail-drawer-backdrop');
-      if (activeRailDrawer && activeRailDrawer.classList.contains('open')) {
+      if (!mobileDrawerCombine && activeRailDrawer && activeRailDrawer.classList.contains('open')) {
         if (!activeRailDrawer.contains(event.target) && (!activeMenuBtn || !activeMenuBtn.contains(event.target))) {
-          activeRailDrawer.classList.remove('open');
-          if (activeBackdrop) activeBackdrop.classList.remove('show');
+          setRailDrawerState(false);
         }
       }
     });
     window.__drawerClickOutsideBound = true;
   }
+
 
   // 3. Member Account Button (Header Actions)
   const accountBtn = document.getElementById('accountBtn');
@@ -595,7 +756,7 @@ function bindMobileMenu() {
       newAccountBtn.setAttribute('href', 'account.html');
       newAccountBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        window.location.href = 'account.html';
+        navigateToPage('account.html');
       });
     } else {
       newAccountBtn.setAttribute('href', 'login.html');
@@ -612,12 +773,8 @@ function bindMobileMenu() {
 
   if (accountMenu && !window.__accountDropdownClickOutsideBound) {
     document.addEventListener('click', (event) => {
-      const activeMenu = document.querySelector('.account-dropdown-menu');
-      const activeBtn = document.getElementById('accountBtn');
-      if (activeMenu && activeMenu.style.display === 'block') {
-        if (activeBtn && !activeBtn.contains(event.target) && !activeMenu.contains(event.target)) {
-          activeMenu.style.display = 'none';
-        }
+      if (accountBtn && !accountBtn.contains(event.target) && accountMenu && !accountMenu.contains(event.target)) {
+        accountMenu.style.display = 'none';
       }
     });
     window.__accountDropdownClickOutsideBound = true;
@@ -632,6 +789,7 @@ function bindMobileMenu() {
         const activeBackdrop = document.querySelector('.rail-drawer-backdrop');
         if (activeRailDrawer) activeRailDrawer.classList.remove('open');
         if (activeBackdrop) activeBackdrop.classList.remove('show');
+        document.body.classList.remove('rail-drawer-open');
       }
     };
 
@@ -646,7 +804,7 @@ function bindMobileMenu() {
 
 // Render Header CTA buttons based on current page
 function renderHeaderCTAs(pageFile) {
-  const actionsContainer = document.querySelector('.header-actions');
+  const actionsContainer = document.querySelector('.header-actions') || document.querySelector('.header .actions');
   if (!actionsContainer) return;
   
   const config = ctaConfig[pageFile] || ctaConfig['index.html'];
@@ -659,12 +817,40 @@ function renderHeaderCTAs(pageFile) {
     ctasHtml += `<a class="btn btn-primary pjax-link" href="${config.primaryUrl}">${config.primary}</a>`;
   }
   
-  // Keep the mobile menu button
-  ctasHtml += `<button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false"><i data-lucide="menu"></i></button>`;
+  // Keep the mobile menu button (Kebab on the right in header actions) only if drawers are NOT combined
+  const mobileDrawerCombine = document.body.getAttribute("data-mobile-drawer-combine") === "true";
+  if (!mobileDrawerCombine) {
+    ctasHtml += `<button class="mobile-menu-btn mobile-kebab-btn" id="kebabBtn" aria-label="Open Rail Menu" aria-controls="mobileRailDrawer" aria-expanded="false"><i data-lucide="more-vertical"></i></button>`;
+  }
   actionsContainer.innerHTML = ctasHtml;
+
+  // Hamburger on the left inside nav-wrap
+  const navWrap = document.querySelector('.header .nav-wrap') || document.querySelector('.header .navwrap');
+  if (navWrap) {
+    let leftHam = navWrap.querySelector('#menuBtn') || navWrap.querySelector('.mobilebtn') || navWrap.querySelector('.menu');
+    if (!leftHam) {
+      leftHam = document.createElement('button');
+      leftHam.className = 'mobile-menu-btn mobile-hamburger-btn';
+      leftHam.id = 'menuBtn';
+      leftHam.setAttribute('aria-label', 'Open Main Menu');
+      leftHam.setAttribute('aria-controls', 'mobileDrawer');
+      leftHam.setAttribute('aria-expanded', 'false');
+      leftHam.innerHTML = `<i data-lucide="menu"></i>`;
+      navWrap.insertBefore(leftHam, navWrap.firstChild);
+    } else {
+      leftHam.id = 'menuBtn';
+      leftHam.className = 'mobile-menu-btn mobile-hamburger-btn';
+      leftHam.setAttribute('aria-controls', 'mobileDrawer');
+      leftHam.setAttribute('aria-expanded', 'false');
+    }
+  }
   
   bindMobileMenu();
   bindPjaxLinks(actionsContainer);
+  if (navWrap) {
+    const leftHam = navWrap.querySelector('#menuBtn');
+    if (leftHam) bindPjaxLinks(leftHam.parentNode);
+  }
 }
 
 // Highlight active links in left rail, header nav, and mobile tab bar
@@ -707,6 +893,10 @@ function bindPjaxLinks(container = document) {
 
 // Fetch and load target page content dynamically
 function navigateToPage(url, isBack = false) {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'ec-navigate', href: url }, '*');
+    return;
+  }
   const contentOutlet = document.getElementById('content-outlet');
   if (!contentOutlet) return;
 
@@ -727,6 +917,11 @@ function navigateToPage(url, isBack = false) {
 
   // Render skeleton instantly to eliminate loading delay feel
   closeMobileDrawer();
+  const activeRailDrawer = document.getElementById('mobileRailDrawer');
+  const activeBackdrop = document.querySelector('.rail-drawer-backdrop');
+  if (activeRailDrawer) activeRailDrawer.classList.remove('open');
+  if (activeBackdrop) activeBackdrop.classList.remove('show');
+  document.body.classList.remove('rail-drawer-open');
   document.body.classList.add('page-loading');
   contentOutlet.innerHTML = skeletonHtml;
   contentOutlet.style.opacity = '1';
@@ -798,10 +993,22 @@ function navigateToPage(url, isBack = false) {
       updateActiveStates(pageFile);
       renderHeaderCTAs(pageFile);
 
-      // 7. Render Lucide icons
+      // 7. Initialize Custom Dropdowns
+      if (window.initCustomDropdowns) window.initCustomDropdowns();
+
+      // Initialize fallbacks/placeholders
+      if (window.initPlaceholders) window.initPlaceholders();
+
+      // Format card buttons and inject icons
+      if (window.formatCardButtons) window.formatCardButtons();
+
+      // 8. Render Lucide icons
       lucide.createIcons();
 
-      // 8. Bind click listeners in new content
+      // 8. Initialize sort toggles
+      if (window.initSortToggles) window.initSortToggles();
+
+      // 9. Bind click listeners in new content
       bindPjaxLinks(contentOutlet);
 
       // Fade in effect
@@ -873,9 +1080,515 @@ function bindHeaderScroll() {
   }, { passive: true });
 }
 
+// Initialize simplified sort toggle buttons
+function initSortToggles() {
+  const dateBtn = document.getElementById('dateSortToggle');
+  const alphaBtn = document.getElementById('alphaSortToggle');
+  const priceBtn = document.getElementById('priceSortToggle');
+  const mobileBtn = document.getElementById('mobileSortToggle');
+  const hiddenSelect = document.getElementById('sortFilter');
+
+  if (!hiddenSelect) return;
+
+  function updateHiddenSelect(value) {
+    hiddenSelect.value = value;
+    hiddenSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    hiddenSelect.dispatchEvent(new Event('input', { bubbles: true }));
+    syncButtonStyles();
+  }
+
+  function updateDateIcon(btn, state) {
+    btn.innerHTML = '<i data-lucide="calendar"></i>' + ` <span class="toggle-label">${state === 'new' ? 'New' : 'Old'}</span>`;
+    lucide.createIcons();
+  }
+
+  function updateAlphaIcon(btn, state) {
+    btn.innerHTML = (state === 'az' ? '<i data-lucide="arrow-down"></i>' : '<i data-lucide="arrow-up"></i>') + ` <span class="toggle-label">${state === 'az' ? 'AZ' : 'ZA'}</span>`;
+    lucide.createIcons();
+  }
+
+  function updatePriceIcon(btn, state) {
+    btn.innerHTML = '<i data-lucide="dollar-sign"></i>' + ` <span class="toggle-label">${state === 'low' ? 'Low' : 'High'}</span>`;
+    lucide.createIcons();
+  }
+
+  function updateMobileIcon(btn, state) {
+    let icon = 'calendar';
+    let label = 'New';
+    if (state === 'new') {
+      icon = 'calendar';
+      label = 'New';
+    } else if (state === 'old') {
+      icon = 'calendar';
+      label = 'Old';
+    } else if (state === 'az') {
+      icon = 'arrow-down';
+      label = 'AZ';
+    } else {
+      icon = 'arrow-up';
+      label = 'ZA';
+    }
+    btn.innerHTML = `<i data-lucide="${icon}"></i> <span class="toggle-label">${label}</span>`;
+    lucide.createIcons();
+  }
+
+  function syncButtonStyles() {
+    const val = hiddenSelect.value;
+    
+    if (dateBtn) dateBtn.classList.remove('active');
+    if (alphaBtn) alphaBtn.classList.remove('active');
+    if (priceBtn) priceBtn.classList.remove('active');
+    if (mobileBtn) mobileBtn.classList.remove('active');
+
+    if (val === 'newest' || val === 'oldest') {
+      if (dateBtn) {
+        dateBtn.classList.add('active');
+        const state = val === 'newest' ? 'new' : 'old';
+        dateBtn.setAttribute('data-sort', state);
+        updateDateIcon(dateBtn, state);
+      }
+    } else if (val === 'az' || val === 'za') {
+      if (alphaBtn) {
+        alphaBtn.classList.add('active');
+        alphaBtn.setAttribute('data-sort', val);
+        updateAlphaIcon(alphaBtn, val);
+      }
+    } else if (val === 'price-low' || val === 'price-high') {
+      if (priceBtn) {
+        priceBtn.classList.add('active');
+        const state = val === 'price-low' ? 'low' : 'high';
+        priceBtn.setAttribute('data-sort', state);
+        updatePriceIcon(priceBtn, state);
+      }
+    }
+
+    if (mobileBtn) {
+      mobileBtn.classList.add('active');
+      let mobState = 'new';
+      if (val === 'oldest') mobState = 'old';
+      else if (val === 'az') mobState = 'az';
+      else if (val === 'za') mobState = 'za';
+      mobileBtn.setAttribute('data-sort', mobState);
+      updateMobileIcon(mobileBtn, mobState);
+    }
+  }
+
+  if (dateBtn) {
+    dateBtn.onclick = (e) => {
+      e.preventDefault();
+      const current = dateBtn.getAttribute('data-sort') || 'new';
+      const nextSort = current === 'new' ? 'old' : 'new';
+      updateHiddenSelect(nextSort === 'new' ? 'newest' : 'oldest');
+    };
+  }
+
+  if (alphaBtn) {
+    alphaBtn.onclick = (e) => {
+      e.preventDefault();
+      const current = alphaBtn.getAttribute('data-sort') || 'az';
+      const nextSort = current === 'az' ? 'za' : 'az';
+      updateHiddenSelect(nextSort);
+    };
+  }
+
+  if (priceBtn) {
+    priceBtn.onclick = (e) => {
+      e.preventDefault();
+      const current = priceBtn.getAttribute('data-sort') || 'low';
+      const nextSort = current === 'low' ? 'high' : 'low';
+      updateHiddenSelect(nextSort === 'low' ? 'price-low' : 'price-high');
+    };
+  }
+
+  if (mobileBtn) {
+    mobileBtn.onclick = (e) => {
+      e.preventDefault();
+      const current = mobileBtn.getAttribute('data-sort') || 'new';
+      let nextSort = 'new';
+      let selectVal = 'newest';
+
+      if (current === 'new') {
+        nextSort = 'old';
+        selectVal = 'oldest';
+      } else if (current === 'old') {
+        nextSort = 'az';
+        selectVal = 'az';
+      } else if (current === 'az') {
+        nextSort = 'za';
+        selectVal = 'za';
+      } else {
+        nextSort = 'new';
+        selectVal = 'newest';
+      }
+
+      updateHiddenSelect(selectVal);
+    };
+  }
+
+  // Initial sync
+  syncButtonStyles();
+
+  // Reset toggles when clear filters is clicked
+  const clearFiltersBtn = document.getElementById('clearFilters');
+  if (clearFiltersBtn) {
+    clearFiltersBtn.addEventListener('click', () => {
+      setTimeout(() => {
+        syncButtonStyles();
+      }, 50);
+    });
+  }
+}
+
+window.initSortToggles = initSortToggles;
+
 // Initialize on DOM load
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initShell);
 } else {
   initShell();
 }
+
+// Expose reinitShell so the React theme bridge (cssVarBridge.ts) can trigger a
+// full shell rebuild after it has written data-rail-* / data-header-* body
+// attributes from saved customizer settings. Without this, cart, checkout-failed
+// and other standalone pages render with default rail/header styling.
+window.reinitShell = function() {
+  const existingShell = document.querySelector('.shell-wrapper');
+  if (existingShell) existingShell.remove();
+  window.__canonicalFooterHtml = null;
+  initShell();
+};
+
+function getIconForOption(text) {
+  const t = text.toLowerCase();
+  if (t.includes('all') || t.includes('category') || t.includes('filter')) return 'filter';
+  if (t.includes('apparel') || t.includes('shirt') || t.includes('clothing') || t.includes('hoodie') || t.includes('tee')) return 'shirt';
+  if (t.includes('book') || t.includes('bible') || t.includes('read') || t.includes('literature') || t.includes('ebook') || t.includes('manual')) return 'book-open';
+  if (t.includes('music') || t.includes('worship') || t.includes('audio') || t.includes('song') || t.includes('track') || t.includes('cd')) return 'music';
+  if (t.includes('resource') || t.includes('study') || t.includes('guide') || t.includes('theology') || t.includes('handbook')) return 'file-text';
+  if (t.includes('sermon') || t.includes('video') || t.includes('watch') || t.includes('movie') || t.includes('media')) return 'video';
+  if (t.includes('podcast') || t.includes('audio') || t.includes('listen') || t.includes('mic')) return 'mic';
+  if (t.includes('blog') || t.includes('news') || t.includes('article') || t.includes('paper') || t.includes('devotional') || t.includes('inspiration') || t.includes('announcement')) return 'newspaper';
+  if (t.includes('event') || t.includes('calendar') || t.includes('date') || t.includes('conference') || t.includes('service')) return 'calendar';
+  if (t.includes('group') || t.includes('cell') || t.includes('community') || t.includes('fellowship') || t.includes('men') || t.includes('women') || t.includes('youth') || t.includes('marry') || t.includes('married') || t.includes('family')) return 'users';
+  if (t.includes('outreach') || t.includes('kid') || t.includes('pray') || t.includes('heart') || t.includes('love') || t.includes('faith') || t.includes('culture') || t.includes('ministry')) return 'heart-handshake';
+  if (t.includes('course') || t.includes('class') || t.includes('teach') || t.includes('learn') || t.includes('leadership')) return 'graduation-cap';
+  return 'tag';
+}
+
+function initCustomDropdowns() {
+  const selectWraps = document.querySelectorAll('.filtertop .selectwrap');
+  selectWraps.forEach(wrap => {
+    const select = wrap.querySelector('select');
+    if (!select) return;
+
+    // Hide duplicate category/channel/type dropdown filters if big cards (.cats) are present on the page
+    const hasBigCards = document.querySelector('.cats, .channels, .types, .tracks');
+    const isDuplicateSelect = select.id === 'categoryFilter' || select.id === 'channelFilter' || select.id === 'trackFilter' || select.id === 'typeFilter';
+    if (hasBigCards && isDuplicateSelect) {
+      wrap.style.setProperty('display', 'none', 'important');
+      return;
+    }
+
+    if (select.classList.contains('customized')) return;
+    select.classList.add('customized');
+    wrap.classList.add('has-custom-dropdown');
+    
+    // Hide original select
+    select.style.display = 'none';
+    
+    // Hide default absolute icon if any
+    const originalIcon = wrap.querySelector('i:not(.radio-icon i), svg:not(.radio-icon svg)');
+    if (originalIcon) originalIcon.style.display = 'none';
+    
+    // Create new custom dropdown wrapper
+    const customDropdown = document.createElement('div');
+    customDropdown.className = 'custom-dropdown';
+    
+    const options = Array.from(select.options);
+    const selectedOption = select.options[select.selectedIndex] || select.options[0];
+    const selectedIcon = getIconForOption(selectedOption.text);
+    
+    // Build trigger
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'custom-dropdown-trigger';
+    trigger.innerHTML = `
+      <i class="trigger-icon" data-lucide="${selectedIcon}"></i>
+      <span class="trigger-label">${selectedOption.text}</span>
+      <i class="trigger-chevron" data-lucide="chevron-down"></i>
+    `;
+    
+    // Build options list
+    const optionsList = document.createElement('div');
+    optionsList.className = 'custom-dropdown-list';
+    
+    options.forEach(opt => {
+      const optIcon = getIconForOption(opt.text);
+      const optItem = document.createElement('div');
+      optItem.className = `custom-dropdown-item${opt.value === select.value ? ' active' : ''}`;
+      optItem.setAttribute('data-value', opt.value);
+      optItem.innerHTML = `
+        <i data-lucide="${optIcon}"></i>
+        <span>${opt.text}</span>
+      `;
+      
+      optItem.addEventListener('click', (e) => {
+        e.stopPropagation();
+        select.value = opt.value;
+        // Trigger change event
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        
+        // Update trigger UI
+        trigger.querySelector('.trigger-icon').setAttribute('data-lucide', optIcon);
+        trigger.querySelector('.trigger-label').textContent = opt.text;
+        lucide.createIcons();
+        
+        // Close dropdown
+        customDropdown.classList.remove('open');
+        
+        // Update active class on items
+        optionsList.querySelectorAll('.custom-dropdown-item').forEach(item => {
+          item.classList.toggle('active', item.getAttribute('data-value') === opt.value);
+        });
+      });
+      
+      optionsList.appendChild(optItem);
+    });
+    
+    customDropdown.appendChild(trigger);
+    customDropdown.appendChild(optionsList);
+    wrap.appendChild(customDropdown);
+    
+    // Toggle dropdown open
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Close other open custom dropdowns
+      document.querySelectorAll('.custom-dropdown.open').forEach(d => {
+        if (d !== customDropdown) d.classList.remove('open');
+      });
+      customDropdown.classList.toggle('open');
+    });
+  });
+  
+  // Close custom dropdowns on click outside
+  if (!window.__customDropdownsBound) {
+    window.__customDropdownsBound = true;
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.custom-dropdown.open').forEach(d => {
+        d.classList.remove('open');
+      });
+    });
+  }
+}
+
+window.initCustomDropdowns = initCustomDropdowns;
+
+function initPlaceholders() {
+  // Resolve primary and accent colors from CSS custom properties
+  let primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+  let accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+  
+  if (!primaryColor || primaryColor.startsWith('color-mix') || primaryColor.startsWith('var')) {
+    primaryColor = '#1d1812';
+  }
+  if (!accentColor || accentColor.startsWith('color-mix') || accentColor.startsWith('var')) {
+    accentColor = '#f97316';
+  }
+
+  const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${primaryColor}"/><stop offset="100%" stop-color="${accentColor}"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)" opacity="0.85"/><g transform="translate(200, 130)" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6"><path d="M-20,-15 L20,-15 L20,20 L-20,20 Z"/><circle cx="-6" cy="-2" r="4"/><path d="M-20,12 L-6,-2 L6,10 L12,4 L20,12"/></g><text x="50%" y="75%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="900" fill="#ffffff" letter-spacing="1.5" opacity="0.8">THE CHURCH</text></svg>`;
+  const placeholderSvg = `data:image/svg+xml;base64,${btoa(svgContent)}`;
+
+
+  // 1. Process img tags
+  document.querySelectorAll('img').forEach(img => {
+    // If src is empty or missing, set placeholder
+    if (!img.getAttribute('src') || img.getAttribute('src') === '') {
+      img.src = placeholderSvg;
+    }
+    // Set onerror fallback
+    img.onerror = () => {
+      img.src = placeholderSvg;
+    };
+    // Force trigger if already failed
+    if (img.naturalWidth === 0 && img.src) {
+      img.src = placeholderSvg;
+    }
+  });
+
+  // 2. Process all elements with background images (including cards, thumbs, covers, heroes)
+  document.querySelectorAll('*').forEach(el => {
+    if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return;
+    
+    // Check if it's one of our target card visual covers
+    const isCardCover = el.classList.contains('postimg') ||
+                        el.classList.contains('media-visual') ||
+                        el.classList.contains('episode-cover') ||
+                        el.classList.contains('thumb') ||
+                        el.classList.contains('cover') ||
+                        el.classList.contains('course-cover') ||
+                        el.classList.contains('event-cover') ||
+                        el.classList.contains('event-img') ||
+                        el.classList.contains('group-cover') ||
+                        el.classList.contains('library-cover') ||
+                        el.classList.contains('product-thumb') ||
+                        el.classList.contains('card-thumb') ||
+                        el.classList.contains('service-cover') ||
+                        el.classList.contains('hero-feature');
+                        
+    const style = el.style.backgroundImage || getComputedStyle(el).backgroundImage;
+    
+    if (!style || style === 'none' || style === 'initial' || style === 'url("")') {
+      // If it's a known card cover container but has no background-image, set placeholder
+      if (isCardCover) {
+        el.style.backgroundImage = `url("${placeholderSvg}")`;
+      }
+    } else {
+      // Extract URL
+      const match = style.match(/url\((['"]?)(.*?)\1\)/);
+      if (match && match[2]) {
+        const url = match[2];
+        if (url.startsWith('http') || url.startsWith('/')) {
+          const img = new Image();
+          let loaded = false;
+          img.onload = () => {
+            loaded = true;
+          };
+          img.onerror = () => {
+            loaded = true;
+            el.style.setProperty('background-image', `url("${placeholderSvg}")`, 'important');
+          };
+          img.src = url;
+          // Timeout after 3 seconds to handle very slow or hanging requests in offline/restricted sandbox environments
+          setTimeout(() => {
+            if (!loaded) {
+              el.style.setProperty('background-image', `url("${placeholderSvg}")`, 'important');
+            }
+          }, 3000);
+        }
+      }
+    }
+  });
+}
+
+window.initPlaceholders = initPlaceholders;
+
+// Run initially as fallback
+initPlaceholders();
+
+function formatCardButtons() {
+  const cards = document.querySelectorAll('.card, .post, .episode, .course, .resource, .media-card, .event-card, .group-card, .product-card');
+  
+  cards.forEach(card => {
+    // 1. Make entire cover/thumbnail and title clickable
+    const title = card.querySelector('h3');
+    const thumbnail = card.querySelector('.cover, .thumb, .postimg, .event-img, .course-cover, .media-visual, .episode-cover, .mini-play');
+    const openBtn = card.querySelector('a.pjax-link, a[href*="-single"], a[href*="single"], a[href*="-main"], a[href*="main"], .open-page, .open-course, .open-event, .open-lesson');
+    
+    if (openBtn) {
+      const targetUrl = openBtn.getAttribute('href') || openBtn.getAttribute('data-url') || '';
+      
+      // Click handler callback helper
+      const triggerDetails = (e) => {
+        if (e.target.tagName !== 'A' && !e.target.closest('button, .play-audio, .play-media, .download-btn, .send-btn, .enroll-btn')) {
+          e.preventDefault();
+          e.stopPropagation();
+          openBtn.click();
+        }
+      };
+      
+      if (title && !title.classList.contains('has-click-trigger')) {
+        title.style.cursor = 'pointer';
+        title.classList.add('has-click-trigger');
+        title.addEventListener('click', triggerDetails);
+      }
+      
+      if (thumbnail && !thumbnail.classList.contains('has-click-trigger')) {
+        thumbnail.style.cursor = 'pointer';
+        thumbnail.classList.add('has-click-trigger');
+        thumbnail.addEventListener('click', triggerDetails);
+      }
+    }
+    
+    // 2. Hide "open", "details", "view", or "continue" buttons, ensuring exactly 2 buttons max with icons
+    const actionsContainer = card.querySelector('.res-actions, .card-actions, .episode-actions, .course-actions, .hero-actions, .postbody > .row:last-child, .body > .row:last-child, .product-info > .row:last-child, .card-body > .row:last-child');
+    if (actionsContainer) {
+      const buttons = Array.from(actionsContainer.querySelectorAll('button, a'));
+      buttons.forEach(btn => {
+        const text = btn.textContent.trim().toLowerCase();
+        const isDetailsBtn = text === 'open' || 
+                            text === 'details' || 
+                            text === 'view' || 
+                            text.includes('open page') || 
+                            text.includes('open course') || 
+                            text.includes('open event') || 
+                            text.includes('view details') || 
+                            text.includes('read article') || 
+                            text.includes('view article') ||
+                            btn.classList.contains('open-page') ||
+                            btn.classList.contains('open-course') ||
+                            btn.classList.contains('open-event') ||
+                            btn.classList.contains('open-lesson');
+        
+        if (isDetailsBtn) {
+          btn.style.setProperty('display', 'none', 'important');
+        }
+      });
+      
+      // Re-query currently visible buttons
+      let visibleButtons = buttons.filter(btn => btn.style.display !== 'none');
+      
+      // If we have fewer than 2 visible buttons and we hid an open button, repurpose the hidden button as a Share button
+      if (visibleButtons.length < 2) {
+        const hiddenOpenBtn = buttons.find(btn => btn.style.display === 'none');
+        if (hiddenOpenBtn) {
+          hiddenOpenBtn.style.setProperty('display', 'inline-flex', 'important');
+          hiddenOpenBtn.innerHTML = '<i data-lucide="share-2"></i> Share';
+          hiddenOpenBtn.className = 'btn light share-btn';
+          
+          const newShareBtn = hiddenOpenBtn.cloneNode(true);
+          hiddenOpenBtn.parentNode.replaceChild(newShareBtn, hiddenOpenBtn);
+          
+          newShareBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const toast = document.getElementById('toast');
+            if (toast) {
+              toast.innerText = 'Link copied to clipboard!';
+              toast.classList.add('show');
+              setTimeout(() => toast.classList.remove('show'), 2000);
+            }
+          });
+          
+          visibleButtons.push(newShareBtn);
+        }
+      }
+      
+      // Ensure all visible buttons have appropriate icons
+      visibleButtons.forEach(btn => {
+        if (btn.querySelector('i, svg')) return;
+        
+        const text = btn.textContent.toLowerCase();
+        let iconName = 'tag';
+        if (text.includes('download')) iconName = 'download';
+        else if (text.includes('send') || text.includes('email') || text.includes('submit')) iconName = 'send';
+        else if (text.includes('play') || text.includes('watch') || text.includes('listen')) iconName = 'play-circle';
+        else if (text.includes('share')) iconName = 'share-2';
+        else if (text.includes('add') || text.includes('buy') || text.includes('cart')) iconName = 'shopping-cart';
+        else if (text.includes('enroll') || text.includes('join') || text.includes('register') || text.includes('rsvp')) iconName = 'check-circle';
+        else if (text.includes('calendar')) iconName = 'calendar';
+        
+        btn.innerHTML = `<i data-lucide="${iconName}"></i> ` + btn.innerHTML;
+      });
+    }
+  });
+  
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
+}
+
+window.formatCardButtons = formatCardButtons;
+formatCardButtons();
+
+

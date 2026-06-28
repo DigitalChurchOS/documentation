@@ -35,6 +35,14 @@ const SOURCE_FILE_SLUGS: Record<string, string> = {
   'testimony-single.html': 'testimonies/sample-story',
   'testimony-submit.html': 'testimonies/submit',
   'worship.html': 'worship',
+  'groups-archive.html': 'cells',
+  'group-single.html': 'cells/sample-group',
+  'store-archive.html': 'store',
+  'store-single.html': 'store/sample-product',
+  'cart.html': 'store/cart',
+  'checkout.html': 'store/checkout',
+  'checkout-success.html': 'store/thank-you',
+  'checkout-failed.html': 'store/checkout-failed',
 };
 
 const INTERNAL_PATH_PREFIXES = [

@@ -46,12 +46,27 @@
 <option>Locked</option>
 </select>
 </div>
-<div class="selectwrap">
-<i data-lucide="arrow-down-up"></i>
-<select class="select" id="sortFilter">
-<option value="newest">Newest</option>
-<option value="oldest">Oldest</option>
-</select>
+<div class="sort-group">
+  <!-- Hidden native select for JS sorting compatibility -->
+  <select id="sortFilter" class="select" style="display: none;">
+    <option value="newest">Newest first</option>
+    <option value="oldest">Oldest first</option>
+    <option value="az">A-Z</option>
+    <option value="za">Z-A</option>
+  </select>
+
+  <!-- Custom Sort Toggles (Desktop/Tablet) -->
+  <button type="button" class="sort-toggle-btn date-toggle" id="dateSortToggle" data-sort="new" title="Sort by Date">
+    <i data-lucide="calendar"></i> <span class="toggle-label">New</span>
+  </button>
+  <button type="button" class="sort-toggle-btn alpha-toggle" id="alphaSortToggle" data-sort="az" title="Sort Alphabetically">
+    <i data-lucide="arrow-down"></i> <span class="toggle-label">AZ</span>
+  </button>
+
+  <!-- Combined Flick Button (Mobile only) -->
+  <button type="button" class="mobile-sort-toggle-btn" id="mobileSortToggle" data-sort="new" title="Cycle Sort Mode">
+    <i data-lucide="calendar"></i> <span class="toggle-label">New</span>
+  </button>
 </div>
 <div class="radiogroup">
 <label class="radio-icon">
