@@ -284,7 +284,7 @@ function renderFooterHtml(ecContext: EcclesiaContextValue): string {
       </div>
       <div class="footer-bottom">
         <span>${copyright}</span>
-        <span>Ecclesia Theme · Digital Church OS</span>
+        <span>Ecclesia Theme · Churchtell</span>
       </div>
     </div>
   `;

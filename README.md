@@ -1,6 +1,6 @@
-# Digital Church Documentation
+# Churchtell Documentation
 
-This repository contains the planning and architecture documentation for Digital Church OS before main project development begins.
+This repository contains the planning and architecture documentation for Churchtell before main project development begins.
 
 ## Contents
 

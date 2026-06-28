@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ChurchOS Extensions & Marketplace</title>
+  <title>Churchtell Extensions & Marketplace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -111,7 +111,7 @@
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    /* Core Styles matching ChurchOS Dashboard exactly */
+    /* Core Styles matching Churchtell Dashboard exactly */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -634,7 +634,7 @@
               <button class="btn btn-sm w-full" style="justify-content: flex-start;" onclick="triggerSandboxProvisioning()">
                 <i data-lucide="terminal"></i>Provision Temporary Sandbox
               </button>
-              <a href="https://churchos.dev/docs" target="_blank" class="btn btn-sm w-full" style="justify-content: flex-start; text-decoration: none;">
+              <a href="https://churchtell.dev/docs" target="_blank" class="btn btn-sm w-full" style="justify-content: flex-start; text-decoration: none;">
                 <i data-lucide="external-link"></i>View API Documentation
               </a>
             </div>
@@ -1759,7 +1759,7 @@
         return `
           <tr>
             <td style="padding:14px 18px;">${escapeHtml(sb.developer?.companyName)}</td>
-            <td style="padding:14px 18px; font-weight:700; color:var(--accent);"><code>${escapeHtml(sb.tenant?.subdomain)}.churchos.com</code></td>
+            <td style="padding:14px 18px; font-weight:700; color:var(--accent);"><code>${escapeHtml(sb.tenant?.subdomain)}.churchtell.com</code></td>
             <td style="padding:14px 18px; color:${expired ? 'var(--danger)' : 'var(--text)'};">${expiry.toLocaleString()}</td>
             <td style="padding:14px 18px;"><span class="badge" style="background:${expired ? 'var(--danger)' : 'var(--success)'}; color:#111827;">${expired ? 'Expired' : 'Active'}</span></td>
             <td style="padding:14px 18px;">

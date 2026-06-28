@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const themeDir = 'c:\\Users\\Administrator\\Documents\\ChurchOS\\ecclesia-full-theme';
+const themeDir = 'c:\\Users\\Administrator\\Documents\\Churchtell\\ecclesia-full-theme';
 
 const newDrawerHtml = `
   <aside class="mobile-drawer" id="mobileDrawer">

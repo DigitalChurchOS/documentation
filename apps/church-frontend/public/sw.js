@@ -22,7 +22,7 @@ const OFFLINE_HTML = `<!doctype html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ChurchOS Offline</title>
+  <title>Churchtell Offline</title>
   <style>
     body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:#fffaf3; color:#1d1812; }
     main { max-width:480px; padding:32px; text-align:center; }
@@ -30,7 +30,7 @@ const OFFLINE_HTML = `<!doctype html>
     p { margin:0; color:#74685e; line-height:1.6; }
   </style>
 </head>
-<body><main><h1>Offline</h1><p>This page has not been cached yet. Reconnect once, open it, and ChurchOS will keep a local copy for later.</p></main></body>
+<body><main><h1>Offline</h1><p>This page has not been cached yet. Reconnect once, open it, and Churchtell will keep a local copy for later.</p></main></body>
 </html>`;
 
 self.addEventListener('install', (event) => {

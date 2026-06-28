@@ -1,6 +1,6 @@
 {
-  "name": "Digital Church OS Portal",
-  "short_name": "ChurchOS",
+  "name": "Churchtell Portal",
+  "short_name": "Churchtell",
   "description": "CMS-driven modern church website with native application feel and offline support.",
   "start_url": "/",
   "display": "standalone",

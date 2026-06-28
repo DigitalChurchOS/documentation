@@ -15,7 +15,7 @@ const GenericPage: React.FC<Props> = ({ title, contentBlocks = [] }) => {
       <header className="page-header" style={{ padding: '80px 24px', background: 'var(--surface-soft)', borderBottom: '1px solid var(--border)', textAlign: 'center' }}>
         <div style={{ maxWidth: 'var(--max)', margin: '0 auto' }}>
           <h1 style={{ fontSize: '3.2rem', fontFamily: 'var(--font-heading)', margin: '0 0 12px 0' }}>{title}</h1>
-          <p style={{ color: 'var(--muted)', fontSize: '1.1rem', margin: 0 }}>Digital Church OS · Ecclesia Theme</p>
+          <p style={{ color: 'var(--muted)', fontSize: '1.1rem', margin: 0 }}>Churchtell · Ecclesia Theme</p>
         </div>
       </header>
 

@@ -98,7 +98,7 @@ const defaultFooterHtml = `
       <div><h4>Connect</h4><a class="pjax-link" href="contact.html">Plan a Visit</a><a class="pjax-link" href="prayer.html">Prayer Request</a><a class="pjax-link" href="ministries.html">Join a Group</a><a class="pjax-link" href="contact.html">Volunteer</a></div>
       <div><h4>Service Times</h4><p>Sunday Worship<br />9:30 AM</p><p>Midweek Word & Prayer<br />Wednesday 7:00 PM</p></div>
     </div>
-    <div class="footer-bottom"><span>© 2026 Grace City Church. All rights reserved.</span><span>Ecclesia Theme · Digital Church OS</span></div>
+    <div class="footer-bottom"><span>© 2026 Grace City Church. All rights reserved.</span><span>Ecclesia Theme · Churchtell</span></div>
   </div>
 `;
 

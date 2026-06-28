@@ -1,6 +1,6 @@
-# Digital Church OS - Platform Kernel Specification
+# Churchtell - Platform Kernel Specification
 
-This document defines the core shared entities, database schemas, access controls, automation, and privacy compliance layers that form the foundation of the Digital Church OS. 
+This document defines the core shared entities, database schemas, access controls, automation, and privacy compliance layers that form the foundation of Churchtell. 
 
 Before implementing any of the 43+ user-facing product modules, developers must build and stabilize this Core Platform Kernel. Doing so ensures uniform multi-tenant isolation, strong security boundaries, secure API key management, and asynchronous event flows across the entire ecosystem.
 

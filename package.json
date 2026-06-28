@@ -1,7 +1,7 @@
 {
   "name": "churchos",
   "version": "1.0.0",
-  "description": "This repository contains the planning and architecture documentation for Digital Church OS before main project development begins.",
+  "description": "This repository contains the planning and architecture documentation for Churchtell before main project development begins.",
   "main": "index.js",
   "scripts": {
     "build": "node scripts/build-cloudflare-assets.js",

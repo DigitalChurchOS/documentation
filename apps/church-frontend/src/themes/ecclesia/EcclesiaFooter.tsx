@@ -92,7 +92,7 @@ const EcclesiaFooter: React.FC = () => {
 
         <div className="footer-bottom">
           <span dangerouslySetInnerHTML={{ __html: copyright }} />
-          <span>Ecclesia Theme · Digital Church OS</span>
+          <span>Ecclesia Theme · Churchtell</span>
         </div>
       </div>
     </footer>

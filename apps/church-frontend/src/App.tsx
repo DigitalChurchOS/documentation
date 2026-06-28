@@ -523,7 +523,7 @@ const App: React.FC = () => {
         <div style={{ background: 'white', padding: '40px', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', maxWidth: '480px', width: '100%', textAlign: 'center' }}>
           <h1 style={{ fontSize: '1.5rem', color: '#ef4444', marginBottom: '16px', fontWeight: 600 }}>Connection Offline</h1>
           <p style={{ color: '#475569', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '24px' }}>
-            We're having trouble connecting to Digital Church OS. Please verify your connection or try again.
+            We're having trouble connecting to Churchtell. Please verify your connection or try again.
           </p>
           <button className="btn btn-primary" onClick={() => window.location.reload()} style={{ cursor: 'pointer' }}>Retry Connection</button>
         </div>

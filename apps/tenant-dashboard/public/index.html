@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ChurchOS Tenant Dashboard</title>
+  <title>Churchtell Tenant Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
@@ -3045,7 +3045,7 @@
     }
   
 /* ==========================================================
-   Digital Church OS — Blueish Purple Modern Theme Override
+   Churchtell — Blueish Purple Modern Theme Override
    Safe visual layer only: no body HTML, module markup, or JS changes.
    ========================================================== */
 :root {
@@ -4912,7 +4912,7 @@ body.customizer-open { overflow: hidden; }
       <div class="brand-lockup">
         <div class="brand-mark"><i data-lucide="church"></i></div>
         <div class="brand-copy">
-          <strong>ChurchOS</strong>
+          <strong>Churchtell</strong>
           <span>Tenant command center</span>
         </div>
       </div>
@@ -4943,7 +4943,7 @@ body.customizer-open { overflow: hidden; }
 
       <form id="signupForm" class="login-card hidden">
         <h2>Create Church Account</h2>
-        <p>Set up your ministry on ChurchOS.</p>
+        <p>Set up your ministry on Churchtell.</p>
         <div class="field">
           <label for="regChurchName">Church Name</label>
           <input id="regChurchName" type="text" placeholder="e.g. Grace Community Church" required>
@@ -4969,7 +4969,7 @@ body.customizer-open { overflow: hidden; }
     <div class="sidebar-wrapper">
       <!-- Column A: Module Category Sidebar (thin vertical bar on the left) -->
       <aside class="sidebar-column-a">
-        <div class="sidebar-a-logo" onclick="selectSidebarCategory('home')" style="cursor: pointer;" title="ChurchOS">
+        <div class="sidebar-a-logo" onclick="selectSidebarCategory('home')" style="cursor: pointer;" title="Churchtell">
           <i data-lucide="church"></i>
         </div>
         <div class="sidebar-a-nav" id="sidebarCategoriesA">
@@ -5014,7 +5014,7 @@ body.customizer-open { overflow: hidden; }
           </button>
           <div class="topbar-title-wrapper" style="min-width: 0;">
             <h1 id="viewTitle">Tenant Dashboard</h1>
-            <p id="viewSubtitle">Unified backend for all ChurchOS modules.</p>
+            <p id="viewSubtitle">Unified backend for all Churchtell modules.</p>
           </div>
         </div>
         <div class="top-actions" style="display: flex; align-items: center; gap: 8px;">
@@ -5567,7 +5567,7 @@ body.customizer-open { overflow: hidden; }
                   <div class="section-head">
                     <div>
                       <h2>Staff Invitations</h2>
-                      <p>Invite ministry leaders, finance managers, or media coordinators to join your ChurchOS dashboard.</p>
+                      <p>Invite ministry leaders, finance managers, or media coordinators to join your Churchtell dashboard.</p>
                     </div>
                     <button class="btn" onclick="openInviteStaffModal()"><i data-lucide="plus"></i>Invite Staff</button>
                   </div>
@@ -6659,7 +6659,7 @@ body.customizer-open { overflow: hidden; }
                       <hr style="border: 0; border-top: 1px solid var(--platform-border); margin: 12px 0; width: 100%;" />
                       <div class="mini-stats">
                         <div class="stat"><span>Theme</span><strong id="activeThemeVersion">1.0.0</strong></div>
-                        <div class="stat"><span>Author</span><strong id="activeThemeAuthor">Church OS</strong></div>
+                        <div class="stat"><span>Author</span><strong id="activeThemeAuthor">Churchtell</strong></div>
                         <div class="stat"><span>Compatibility</span><strong id="activeThemeCompatibility">98%</strong></div>
                         <div class="stat"><span>Settings</span><strong id="activeThemeSettingsCount">Full</strong></div>
                       </div>
@@ -8112,7 +8112,7 @@ body.customizer-open { overflow: hidden; }
                       <div class="field" style="margin-top:16px;">
                         <label for="analyticsProviderMode">Provider Mode</label>
                         <select id="analyticsProviderMode" class="form-control">
-                          <option value="internal">ChurchOS Event API</option>
+                          <option value="internal">Churchtell Event API</option>
                           <option value="posthog">PostHog</option>
                           <option value="ga4">Google Analytics 4</option>
                           <option value="plausible">Plausible</option>
@@ -13365,7 +13365,7 @@ body.customizer-open { overflow: hidden; }
                   <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
                     <div style="width: 100%;">
                       <strong>Platform API Key</strong>
-                      <span class="muted">Use this key to authorize external requests to ChurchOS endpoints.</span>
+                      <span class="muted">Use this key to authorize external requests to Churchtell endpoints.</span>
                     </div>
                     <div style="display: flex; gap: 8px; width: 100%; max-width: 500px; margin-top: 4px;">
                       <input type="text" id="platformApiKey" class="input" style="flex: 1; font-family: monospace; font-size: 13px;" value="pk_live_51Nv928JkHw2..." readonly>
@@ -15003,7 +15003,7 @@ body.customizer-open { overflow: hidden; }
       }
 
       const titles = {
-        overview: ['Tenant Dashboard', 'Unified backend for all ChurchOS modules.'],
+        overview: ['Tenant Dashboard', 'Unified backend for all Churchtell modules.'],
         modules: ['Module Hub', 'Preview and configure every installed or available module.'],
         settings: ['Central Settings', 'Global dashboard controls and per-module configuration.'],
         profile: ['Profile', 'User profile, role, and activity for the logged-in admin.'],
@@ -19044,7 +19044,7 @@ body.customizer-open { overflow: hidden; }
         if (versionEl) versionEl.textContent = settings.marketplace?.version || '1.0.0';
         
         const authorEl = document.getElementById('activeThemeAuthor');
-        if (authorEl) authorEl.textContent = settings.marketplace?.author || 'Church OS';
+        if (authorEl) authorEl.textContent = settings.marketplace?.author || 'Churchtell';
 
         const compEl = document.getElementById('activeThemeCompatibility');
         if (compEl) compEl.textContent = settings.compatibilityScore || '98%';
@@ -19565,7 +19565,7 @@ body.customizer-open { overflow: hidden; }
     };
 
     window.installTenantAsset = async function(assetId, assetName, type) {
-      const confirmInstall = confirm(`Would you like to purchase and install ${assetName} to your ChurchOS workspace?`);
+      const confirmInstall = confirm(`Would you like to purchase and install ${assetName} to your Churchtell workspace?`);
       if (!confirmInstall) return;
 
       showToast(`Installing ${assetName}...`);
@@ -21025,7 +21025,7 @@ body.customizer-open { overflow: hidden; }
 
       const websiteRes = await cmsApiRequest('POST', '/api/cms/websites', {
         title: 'Demo Church',
-        description: 'Digital-first demo church for testing every ChurchOS website and ministry workflow.',
+        description: 'Digital-first demo church for testing every Churchtell website and ministry workflow.',
         domain: 'nextchurch.local',
         themeId: themeId
       });
@@ -21042,7 +21042,7 @@ body.customizer-open { overflow: hidden; }
           isHome: true,
           status: 'published',
           seoTitle: 'Demo Church | Home',
-          seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and ministry features.',
+          seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing Churchtell website, CMS, and ministry features.',
           content: [
             { type: 'hero', title: 'Demo Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },
             { type: 'service_times', title: 'Weekly Service Rhythm', sundayTimes: 'Sunday Celebration Service - 9:00 AM and 11:30 AM', midweekTimes: 'Wednesday Word & Prayer - 7:00 PM, Friday Youth Ignite - 6:30 PM', address: 'Next Church Campus, 221 Victory Avenue, Lagos' },
@@ -24745,7 +24745,7 @@ body.customizer-open { overflow: hidden; }
         const lines = analyticsReportCatalog
           .filter((report) => category === 'all' || report.category === category || report.area === category)
           .map((report) => `${report.name}: ${report.status} | ${report.cadence} | ${report.description}`);
-        const pdf = buildAnalyticsPdf('ChurchOS Analytics Board Pack', [`Range: ${start} to ${end}`, `Category: ${category}`, ...lines]);
+        const pdf = buildAnalyticsPdf('Churchtell Analytics Board Pack', [`Range: ${start} to ${end}`, `Category: ${category}`, ...lines]);
         downloadAnalyticsBlob(`analytics_${category}_board_pack.pdf`, pdf, 'application/pdf');
         showToast('PDF board pack downloaded.');
         return;
@@ -35123,7 +35123,29 @@ function renderOutreachTab(tab) {
     function renderCommandCenter() {
       // 1. Welcome
       const welcomeTenantName = document.getElementById('welcomeTenantName');
-      if (welcomeTenantName) welcomeTenantName.textContent = state.tenant.name;
+      if (welcomeTenantName) {
+        const firstLoadKey = 'churchos.first_dashboard_load.' + state.tenant.id;
+        const sessionKey = 'churchos.session_is_first.' + state.tenant.id;
+        
+        if (localStorage.getItem(firstLoadKey) === 'true') {
+          sessionStorage.setItem(sessionKey, 'true');
+          localStorage.removeItem(firstLoadKey);
+        }
+        
+        const isFirstSession = sessionStorage.getItem(sessionKey) === 'true';
+        const name = state.user.name || 'Admin User';
+        const welcomeHeading = welcomeTenantName.parentElement;
+        
+        if (welcomeHeading) {
+          if (isFirstSession) {
+            welcomeHeading.innerHTML = `Welcome <span id="welcomeTenantName">${escapeHtml(name)}</span>`;
+          } else {
+            welcomeHeading.innerHTML = `Welcome back, <span id="welcomeTenantName">${escapeHtml(name)}</span>`;
+          }
+        } else {
+          welcomeTenantName.textContent = name;
+        }
+      }
 
       // 2. Action Required
       const actionList = document.getElementById('actionList');

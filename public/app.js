@@ -1,4 +1,4 @@
-// Digital Church OS Client Application Engine
+// Churchtell Client Application Engine
 'use strict';
 
 // ── State Management ─────────────────────────────────────────
@@ -98,7 +98,7 @@ async function resolveDnsContext() {
   const parts = host.split('.');
   
   // If subdomain is present (excluding main platform domains)
-  if (parts.length > 1 && !['localhost', 'churchos', 'com', 'local'].includes(parts[0])) {
+  if (parts.length > 1 && !['localhost', 'churchos', 'churchtell', 'com', 'local'].includes(parts[0])) {
     const subdomain = parts[0];
     try {
       // Fetch dynamic published layout
@@ -189,7 +189,7 @@ function renderLandingPage() {
     <div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center;">
       <i data-lucide="church" style="width: 80px; height: 80px; color: var(--accent); margin-bottom: 24px;"></i>
       <h1 style="font-family: var(--font-display); font-size: 3rem; font-weight: 800; color: var(--text-strong); margin-bottom: 16px;">
-        Digital Church OS
+        Churchtell
       </h1>
       <p style="color: var(--text-muted); font-size: 1.25rem; max-width: 600px; margin-bottom: 40px;">
         The next-generation multi-tenant platform powering church management, ministries, media delivery, and automation.
@@ -219,7 +219,7 @@ function renderSuperAdminLayout() {
         <div class="sidebar-header">
           <a href="/" class="logo">
             <i data-lucide="cpu"></i>
-            <span>ChurchOS Admin</span>
+            <span>Churchtell Admin</span>
           </a>
         </div>
         <ul class="sidebar-nav">
@@ -630,7 +630,7 @@ function renderAdminLoginView(titleText) {
         <div style="text-align: center; margin-bottom: 32px;">
           <i data-lucide="church" style="width: 56px; height: 56px; color: var(--accent); margin-bottom: 16px;"></i>
           <h2 style="font-family: var(--font-display); font-weight: 700; color: var(--text-strong);">${titleText}</h2>
-          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;">Login to manage the Digital Church platform</p>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 8px;">Login to manage the Churchtell platform</p>
         </div>
         
         <div id="loginErrorMsg" style="display: none; background-color: var(--danger-soft); color: var(--danger); padding: 12px; border-radius: var(--radius-md); font-size: 0.85rem; margin-bottom: 20px; border: 1px solid rgba(239, 68, 68, 0.2);"></div>
@@ -688,7 +688,7 @@ function renderThemeBedrock() {
       </main>
 
       <footer style="padding: 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 60px; color: var(--text-muted); font-size: 0.85rem;">
-        Powered by Digital Church OS Theme Bedrock Engine
+        Powered by Churchtell Theme Bedrock Engine
       </footer>
     </div>
   `;

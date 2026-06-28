@@ -266,7 +266,7 @@ function getSubdomainFromHostname(): string | null {
   const host = window.location.hostname.toLowerCase();
   const parts = host.split('.');
   
-  const BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'localhost'];
+  const BASE_DOMAINS = ['churched.online', 'churchos.local', 'churchos.com', 'churchtell.online', 'churchtell.local', 'churchtell.com', 'localhost'];
   
   for (const base of BASE_DOMAINS) {
     if (host === base) {
