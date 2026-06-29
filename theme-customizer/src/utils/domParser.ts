@@ -227,6 +227,10 @@ export function getTokenStyle(state: ThemeState): string {
   if (state.density === "Compact") cardGridGap = "15px";
   else if (state.density === "Spacious") cardGridGap = "30px";
 
+  let eventsSeparatorMargin = "25px"; // Comfortable
+  if (state.density === "Compact") eventsSeparatorMargin = "15px";
+  else if (state.density === "Spacious") eventsSeparatorMargin = "30px";
+
   // Override grid gap if set explicitly
   const gridGapOverride = state.cardGridGapOverride || "medium";
   if (gridGapOverride === "small") cardGridGap = "25px";
@@ -472,6 +476,7 @@ export function getTokenStyle(state: ThemeState): string {
   --card-grid-gap: ${cardGridGap};
   --thumbnail-bottom-margin: ${thumbnailBottomMargin};
   --card-content-min-padding: ${cardContentMinPadding};
+  --events-separator-margin: ${eventsSeparatorMargin};
 
   /* Header following accents */
   --header-bg: color-mix(in srgb, var(--primary) 4%, var(--bg));

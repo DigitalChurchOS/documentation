@@ -192,6 +192,10 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   if (density === 'Compact') cardGridGap = '15px';
   else if (density === 'Spacious') cardGridGap = '30px';
 
+  let eventsSeparatorMargin = '25px'; // Comfortable
+  if (density === 'Compact') eventsSeparatorMargin = '15px';
+  else if (density === 'Spacious') eventsSeparatorMargin = '30px';
+
   // Apply card grid gap overrides if set
   const gridGapOverride = settings.cardGridGapOverride || 'medium';
   if (gridGapOverride === 'small') {
@@ -335,6 +339,7 @@ function applyCustomizerSettings(root: HTMLElement, settings: ThemeSettings): vo
   root.style.setProperty('--card-content-padding', cardContentPadding);
   root.style.setProperty('--card-padding', cardPadding);
   root.style.setProperty('--card-grid-gap', cardGridGap);
+  root.style.setProperty('--events-separator-margin', eventsSeparatorMargin);
   root.style.setProperty('--thumbnail-bottom-margin', thumbnailBottomMargin);
   root.style.setProperty('--radius-xl', radius.xl);
   root.style.setProperty('--radius-lg', radius.lg);
@@ -850,6 +855,12 @@ export function applyEcclesiaCSSVars(settings: ThemeSettings): void {
   if (settings.layout?.sectionPadding) {
     root.style.setProperty('--section', settings.layout.sectionPadding);
   }
+
+  const density = (settings as any).density || 'Comfortable';
+  let eventsSeparatorMarginVal = '25px';
+  if (density === 'Compact') eventsSeparatorMarginVal = '15px';
+  else if (density === 'Spacious') eventsSeparatorMarginVal = '30px';
+  root.style.setProperty('--events-separator-margin', eventsSeparatorMarginVal);
 
   // Font injection
   const heading = settings.fonts?.heading || settings.typography?.headingFont || 'Outfit';

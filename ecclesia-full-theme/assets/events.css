@@ -599,5 +599,5 @@
 .events-separator {
   border: 0 !important;
   border-top: 1px solid var(--border) !important;
-  margin: calc(var(--filter-gap, 30px) - 5px) 0 !important;
+  margin: var(--events-separator-margin, 25px) 0 !important;
 }
