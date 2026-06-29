@@ -1,5 +1,136 @@
 <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Event Detail</title><link rel="stylesheet" href="assets/events.css">  <link rel="stylesheet" href="assets/styles.css" />
-</head><body><div class="top"><strong>Upcoming Event:</strong> Kingdom Leadership Conference · Registration is open now.</div><header class="header"><div class="navwrap"><a class="brand" href="events-archive.html"><span class="mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a><nav class="nav"><a>Home</a><a>Services</a><a class="active">Events</a><a>Media</a><a>Prayer</a><a>Contact</a></nav><div class="actions"><button class="btn soft" data-calendar><i data-lucide="calendar-plus"></i> Add Calendar</button><button class="btn primary open-register"><i data-lucide="ticket"></i> Register</button><button class="menu" id="menuBtn"><i data-lucide="menu"></i></button></div></div></header><main><section class="single-hero"><div class="single-media"><div class="date-chip"><div><strong>28</strong><span>JUN</span></div></div><div><span class="eyebrow" style="background:rgba(255,255,255,.13);color:white">Conference</span><h1>Kingdom Leadership Conference</h1><p class="lead">A full-day leadership gathering for pastors, workers, ministry leaders, cell leaders, entrepreneurs and emerging church leaders.</p><div class="row"><span class="pill"><i data-lucide="map-pin"></i> Main Auditorium</span><span class="pill"><i data-lucide="clock"></i> 9:00 AM</span><span class="pill"><i data-lucide="monitor-play"></i> Hybrid</span></div></div></div><aside class="register-card"><span class="eyebrow"><i data-lucide="ticket"></i> Registration</span><h3 style="margin-top:16px">Reserve your seat</h3><div class="price">$35</div><p>Includes entry, conference materials, lunch and access to event replay.</p><div class="row"><button class="btn primary open-register">Register Now</button><button class="btn light" data-calendar>Add Calendar</button></div><div class="row" style="margin-top:12px"><button class="btn soft" data-reminder>Send Reminder</button><button class="btn soft" data-share>Share</button></div></aside></section><section class="section" style="padding-top:0"><div class="event-main"><div class="content-stack"><article class="rich"><div class="kicker">About Event</div><h2 style="font-size:42px">Equipping leaders for ministry impact.</h2><p>This event page supports event details, speakers, schedule, media, registration, tickets, reminders, livestream or meeting links, map, FAQs and follow-up actions.</p></article><article class="rich"><div class="kicker">Schedule</div><div class="schedule"><div class="schedule-row"><strong>9:00 AM</strong><div><h3>Opening Worship</h3><p>Welcome, worship and prayer.</p></div></div><div class="schedule-row"><strong>10:00 AM</strong><div><h3>Leadership Session One</h3><p>Vision, structure and spiritual leadership.</p></div></div><div class="schedule-row"><strong>1:00 PM</strong><div><h3>Breakout Workshops</h3><p>Ministry, media, cells, operations and outreach.</p></div></div></div></article><article class="rich"><div class="kicker">Speakers</div><div class="speaker-grid"><div class="speaker"><div class="speaker-img" style="background-image:url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=85')"></div><div class="speaker-body"><h3>Pastor Daniel Grace</h3><p>Lead Pastor</p></div></div><div class="speaker"><div class="speaker-img" style="background-image:url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=85')"></div><div class="speaker-body"><h3>Sarah Grace</h3><p>Leadership Coach</p></div></div><div class="speaker"><div class="speaker-img" style="background-image:url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=85')"></div><div class="speaker-body"><h3>Rachel Adams</h3><p>Youth Director</p></div></div></div></article><article class="rich"><div class="kicker">Event Media</div><div class="media-grid"><div class="promo"><button class="btn primary"><i data-lucide="play"></i> Play Promo</button></div><div class="gallery"><div></div><div></div></div></div></article></div><aside class="side"><div class="panel"><div class="kicker">Event Access</div><div class="quick-list"><div><span><i data-lucide="ticket"></i></span><strong>PDF ticket</strong></div><div><span><i data-lucide="qr-code"></i></span><strong>QR check-in</strong></div><div><span><i data-lucide="video"></i></span><strong>Livestream link</strong></div><div><span><i data-lucide="bell"></i></span><strong>Reminder email</strong></div></div></div><div class="panel"><div class="kicker">Location</div><p><strong>Main Auditorium</strong></p><p>Parking instructions and Google Maps embed can appear here.</p><button class="btn light">Open Map</button></div><div class="panel"><div class="kicker">Questions</div><p>Need help with registration, payment, ticket or check-in?</p><button class="btn soft">Contact Team</button></div></aside></div></section></main><div class="sticky-event"><div class="sticky-info"><div class="sticky-icon"><i data-lucide="calendar-days"></i></div><div><strong>Kingdom Leadership Conference</strong><span>June 28 · 9:00 AM · Register now</span></div></div><div class="sticky-actions"><button class="btn light" data-share>Share</button><button class="btn primary open-register">Register</button></div></div><div class="toast" id="toast">Saved</div><script src="https://unpkg.com/lucide@latest"></script><script src="assets/events.js"></script><script src="assets/app.js"></script>
+</head>
+<body>
+<div class="top"><strong>Upcoming Event:</strong> Kingdom Leadership Conference · Registration is open now.</div>
+<header class="header">
+  <div class="navwrap">
+    <a class="brand" href="events-archive.html"><span class="mark"><i data-lucide="church"></i></span><span>Grace City Church</span></a>
+    <nav class="nav"><a>Home</a><a>Services</a><a class="active">Events</a><a>Media</a><a>Prayer</a><a>Contact</a></nav>
+    <div class="actions">
+      <button class="btn soft" data-calendar><i data-lucide="calendar-plus"></i> Add Calendar</button>
+      <button class="btn primary open-register"><i data-lucide="ticket"></i> Register</button>
+      <button class="menu" id="menuBtn"><i data-lucide="menu"></i></button>
+    </div>
+  </div>
+</header>
+<main>
+  <section class="single-hero">
+    <div class="single-media">
+      <div class="date-chip"><div style="display: flex; flex-direction: column; align-items: center; justify-content: center;"><span style="font-size: 12px; font-weight: 850; text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.2;">JUL</span><strong style="font-size: 34px; line-height: 0.9; font-weight: 950; margin-top: 2px;">28</strong></div></div>
+      <div>
+        <span class="eyebrow" style="background:rgba(255,255,255,.13);color:white">Conference</span>
+        <h1>Kingdom Leadership Conference</h1>
+        <p class="lead">A full-day leadership gathering for pastors, workers, ministry leaders, cell leaders, entrepreneurs and emerging church leaders.</p>
+        <div class="row" style="margin-top:15px">
+          <span class="pill"><i data-lucide="map-pin"></i> Main Auditorium</span>
+          <span class="pill"><i data-lucide="clock"></i> 9:00 AM</span>
+          <span class="pill"><i data-lucide="monitor-play"></i> Hybrid</span>
+        </div>
+      </div>
+    </div>
+    <aside class="register-card">
+      <div class="featured-event-countdown" data-time="2026-07-28T09:00:00">
+        <div class="countdown-label">Event starts in:</div>
+        <div class="countdown-timer">
+          <div class="countdown-item"><strong id="days">00</strong><span>Days</span></div>
+          <div class="countdown-item"><strong id="hours">00</strong><span>Hrs</span></div>
+          <div class="countdown-item"><strong id="minutes">00</strong><span>Mins</span></div>
+          <div class="countdown-item"><strong id="seconds">00</strong><span>Secs</span></div>
+        </div>
+      </div>
+      <h3 style="margin-top:20px">Reserve your seat</h3>
+      <div class="price">$35</div>
+      <p>Includes entry, conference materials, lunch and access to event replay.</p>
+      <div class="row">
+        <button class="btn primary open-register">Register Now</button>
+        <button class="btn light" data-calendar>Add Calendar</button>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn soft" data-reminder>Send Reminder</button>
+        <button class="btn soft" data-share>Share</button>
+      </div>
+    </aside>
+  </section>
+  <section class="section" style="padding-top:0">
+    <div class="event-main">
+      <div class="content-stack">
+        <article class="rich">
+          <div class="kicker">About Event</div>
+          <h2 style="font-size:42px">Equipping leaders for ministry impact.</h2>
+          <p>This event page supports event details, speakers, schedule, media, registration, tickets, reminders, livestream or meeting links, map, FAQs and follow-up actions.</p>
+        </article>
+        <article class="rich">
+          <div class="kicker">Schedule</div>
+          <div class="schedule">
+            <div class="schedule-row"><strong>9:00 AM</strong><div><h3>Opening Worship</h3><p>Welcome, worship and prayer.</p></div></div>
+            <div class="schedule-row"><strong>10:00 AM</strong><div><h3>Leadership Session One</h3><p>Leadership, vision and structure.</p></div></div>
+            <div class="schedule-row"><strong>1:00 PM</strong><div><h3>Breakout Workshops</h3><p>Workshops on cells, media, and outreach.</p></div></div>
+          </div>
+        </article>
+        <article class="rich">
+          <div class="kicker">Speakers</div>
+          <div class="speaker-grid">
+            <div class="speaker">
+              <div class="speaker-img" style="background-image:url('https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=85')"></div>
+              <div class="speaker-body"><h3>Pastor Daniel Grace</h3><p>Lead Pastor</p></div>
+            </div>
+            <div class="speaker">
+              <div class="speaker-img" style="background-image:url('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=85')"></div>
+              <div class="speaker-body"><h3>Sarah Grace</h3><p>Leadership Coach</p></div>
+            </div>
+            <div class="speaker">
+              <div class="speaker-img" style="background-image:url('https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=85')"></div>
+              <div class="speaker-body"><h3>Rachel Adams</h3><p>Youth Director</p></div>
+            </div>
+          </div>
+        </article>
+        <article class="rich">
+          <div class="kicker">Event Media</div>
+          <div class="media-grid">
+            <div class="promo"><button class="btn primary"><i data-lucide="play"></i> Play Promo</button></div>
+            <div class="gallery"><div></div><div></div></div>
+          </div>
+        </article>
+      </div>
+      <aside class="side">
+        <div class="panel">
+          <div class="kicker">Event Access</div>
+          <div class="quick-list">
+            <div><span><i data-lucide="ticket"></i></span><strong>PDF ticket</strong></div>
+            <div><span><i data-lucide="qr-code"></i></span><strong>QR check-in</strong></div>
+            <div><span><i data-lucide="video"></i></span><strong>Livestream link</strong></div>
+            <div><span><i data-lucide="bell"></i></span><strong>Reminder email</strong></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="kicker">Location</div>
+          <p><strong>Main Auditorium</strong></p>
+          <p>Parking instructions and Google Maps details here.</p>
+          <button class="btn light">Open Map</button>
+        </div>
+        <div class="panel">
+          <div class="kicker">Questions</div>
+          <p>Need help with registration, payments or tickets?</p>
+          <button class="btn soft">Contact Team</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+<div class="sticky-event">
+  <div class="sticky-info">
+    <div class="sticky-icon"><i data-lucide="calendar-days"></i></div>
+    <div><strong>Kingdom Leadership Conference</strong><span>July 28 · 9:00 AM · Register now</span></div>
+  </div>
+  <div class="sticky-actions">
+    <button class="btn light" data-share>Share</button>
+    <button class="btn primary open-register">Register</button>
+  </div>
+</div>
+<div class="toast" id="toast">Saved</div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="assets/events.js"></script>
+<script src="assets/app.js"></script>
 
   <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
     <div class="drawer-close-row">
@@ -30,6 +161,388 @@
         Plan Visit
       </a>
     </div>
+  </aside>
+
+  <!-- Modal Styles -->
+  <style>
+    /* Modal Backdrop Overlay */
+    .modal-overlay {
+      position: fixed !important;
+      inset: 0 !important;
+      background: rgba(15, 23, 42, 0.45) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      z-index: 1000 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transition: opacity 0.3s ease !important;
+    }
+
+    .modal-overlay.open {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    /* Modal Content Box */
+    .modal-box {
+      background: var(--surface, #ffffff) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--xl, 34px) !important;
+      padding: 32px !important;
+      width: 90% !important;
+      max-width: 520px !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+      transform: scale(0.9) translateY(20px) !important;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+      position: relative !important;
+    }
+    [data-theme="dark"] .modal-box,
+    .dark .modal-box {
+      background: rgba(24, 24, 27, 0.95) !important;
+      border-color: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .modal-overlay.open .modal-box {
+      transform: scale(1) translateY(0) !important;
+    }
+
+    /* Close Button */
+    .modal-close-btn {
+      position: absolute !important;
+      top: 24px !important;
+      right: 24px !important;
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 99px !important;
+      border: 1px solid var(--border) !important;
+      background: var(--surface, #ffffff) !important;
+      color: var(--text-muted, #71717a) !important;
+      display: grid !important;
+      place-items: center !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+      z-index: 10 !important;
+    }
+    .modal-close-btn:hover {
+      background: color-mix(in srgb, var(--accent) 8%, var(--surface, #ffffff)) !important;
+      color: var(--accent) !important;
+      border-color: color-mix(in srgb, var(--accent) 25%, transparent) !important;
+    }
+    [data-theme="dark"] .modal-close-btn,
+    .dark .modal-close-btn {
+      background: rgba(255, 255, 255, 0.03) !important;
+    }
+
+    /* Modal Title */
+    .modal-title {
+      font-size: 26px !important;
+      font-weight: 900 !important;
+      letter-spacing: -0.04em !important;
+      margin: 0 0 8px 0 !important;
+      color: var(--text, #18181b) !important;
+    }
+    [data-theme="dark"] .modal-title,
+    .dark .modal-title {
+      color: var(--text-main, #f8fafc) !important;
+    }
+
+    .modal-subtitle {
+      font-size: 14px !important;
+      color: var(--text-muted, #71717a) !important;
+      margin: 0 0 24px 0 !important;
+      line-height: 1.5 !important;
+    }
+
+    /* Form Styles */
+    .modal-form {
+      display: grid !important;
+      gap: 16px !important;
+    }
+    .modal-form-group {
+      display: grid !important;
+      gap: 6px !important;
+    }
+    .modal-form-group label {
+      font-size: 11px !important;
+      font-weight: 850 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.05em !important;
+      color: var(--accent) !important;
+    }
+    .modal-input {
+      width: 100% !important;
+      height: 48px !important;
+      border: 1px solid var(--border) !important;
+      background: var(--bg, #fffaf3) !important;
+      border-radius: 16px !important;
+      padding: 0 16px !important;
+      font-size: 14px !important;
+      color: var(--text, #18181b) !important;
+      outline: none !important;
+      transition: border-color 0.2s ease !important;
+    }
+    [data-theme="dark"] .modal-input,
+    .dark .modal-input {
+      background: rgba(255, 255, 255, 0.02) !important;
+      color: var(--text-main, #f8fafc) !important;
+    }
+    .modal-input:focus {
+      border-color: var(--accent) !important;
+    }
+
+    /* Radio/Ticket Options in Modal */
+    .modal-ticket-options {
+      display: grid !important;
+      gap: 10px !important;
+      margin-bottom: 8px !important;
+    }
+    .modal-ticket-card {
+      border: 1px solid var(--border) !important;
+      border-radius: 18px !important;
+      background: var(--surface, #ffffff) !important;
+      padding: 14px 16px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      cursor: pointer !important;
+      transition: all 0.2s ease !important;
+    }
+    [data-theme="dark"] .modal-ticket-card,
+    .dark .modal-ticket-card {
+      background: rgba(255, 255, 255, 0.01) !important;
+    }
+    .modal-ticket-card:hover {
+      border-color: color-mix(in srgb, var(--accent) 35%, transparent) !important;
+    }
+    .modal-ticket-card.selected {
+      border-color: var(--accent) !important;
+      background: color-mix(in srgb, var(--accent) 5%, var(--surface, #ffffff)) !important;
+    }
+    [data-theme="dark"] .modal-ticket-card.selected,
+    .dark .modal-ticket-card.selected {
+      background: color-mix(in srgb, var(--accent) 8%, rgba(24, 24, 27, 0.95)) !important;
+    }
+    .modal-ticket-info {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+    }
+    .modal-ticket-name {
+      font-size: 14px !important;
+      font-weight: 800 !important;
+      color: var(--text, #18181b) !important;
+    }
+    [data-theme="dark"] .modal-ticket-name,
+    .dark .modal-ticket-name {
+      color: var(--text-main, #f8fafc) !important;
+    }
+    .modal-ticket-desc {
+      font-size: 11px !important;
+      color: var(--text-muted, #71717a) !important;
+    }
+    .modal-ticket-price {
+      font-size: 16px !important;
+      font-weight: 900 !important;
+      color: var(--accent) !important;
+    }
+
+    /* Calendar options layout */
+    .calendar-option-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 16px !important;
+      margin-top: 12px !important;
+    }
+    .calendar-option-btn {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 12px !important;
+      padding: 24px !important;
+      border-radius: 22px !important;
+      border: 1px solid var(--border) !important;
+      background: var(--surface, #ffffff) !important;
+      cursor: pointer !important;
+      transition: all 0.25s ease !important;
+    }
+    [data-theme="dark"] .calendar-option-btn,
+    .dark .calendar-option-btn {
+      background: rgba(255, 255, 255, 0.02) !important;
+    }
+    .calendar-option-btn:hover {
+      transform: translateY(-4px) !important;
+      border-color: var(--accent) !important;
+      box-shadow: var(--soft-shadow) !important;
+    }
+    .calendar-option-btn i,
+    .calendar-option-btn svg {
+      width: 32px !important;
+      height: 32px !important;
+      color: var(--accent) !important;
+    }
+    .calendar-option-btn span {
+      font-size: 13px !important;
+      font-weight: 800 !important;
+      color: var(--text, #18181b) !important;
+    }
+    [data-theme="dark"] .calendar-option-btn span,
+    .dark .calendar-option-btn span {
+      color: var(--text-main, #f8fafc) !important;
+    }
+  </style>
+
+  <!-- Registration Modal Overlay -->
+  <div class="modal-overlay" id="registerModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" aria-label="Close modal"><i data-lucide="x"></i></button>
+      <h2 class="modal-title">Register for Event</h2>
+      <p class="modal-subtitle">Secure your ticket for the Kingdom Leadership Conference.</p>
+      
+      <form class="modal-form" id="registerForm">
+        <div class="modal-form-group">
+          <label for="regName">Full Name</label>
+          <input type="text" id="regName" class="modal-input" placeholder="Enter your full name" required />
+        </div>
+        <div class="modal-form-group">
+          <label for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" class="modal-input" placeholder="Enter your email" required />
+        </div>
+        <div class="modal-form-group">
+          <label>Select Ticket Type</label>
+          <div class="modal-ticket-options">
+            <div class="modal-ticket-card selected" data-price="$35.00">
+              <input type="radio" name="ticketType" value="standard" checked style="display:none" />
+              <div class="modal-ticket-info">
+                <span class="modal-ticket-name">Standard Admission</span>
+                <span class="modal-ticket-desc">Lunch & access to event replay</span>
+              </div>
+              <span class="modal-ticket-price">$35</span>
+            </div>
+            <div class="modal-ticket-card" data-price="$100.00">
+              <input type="radio" name="ticketType" value="premium" style="display:none" />
+              <div class="modal-ticket-info">
+                <span class="modal-ticket-name">Premium VIP</span>
+                <span class="modal-ticket-desc">Front row seats, VIP lunch & Q&A session</span>
+              </div>
+              <span class="modal-ticket-price">$100</span>
+            </div>
+          </div>
+        </div>
+        <button type="submit" class="btn primary" style="width:100%; height:50px; margin-top:8px;">Complete Registration</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add to Calendar Modal Overlay -->
+  <div class="modal-overlay" id="calendarModal">
+    <div class="modal-box">
+      <button class="modal-close-btn" aria-label="Close modal"><i data-lucide="x"></i></button>
+      <h2 class="modal-title">Add to Calendar</h2>
+      <p class="modal-subtitle">Choose your preferred calendar service to save this event.</p>
+      
+      <div class="calendar-option-grid">
+        <button class="calendar-option-btn" data-service="Google">
+          <i data-lucide="calendar"></i>
+          <span>Google Calendar</span>
+        </button>
+        <button class="calendar-option-btn" data-service="Microsoft">
+          <i data-lucide="calendar-plus"></i>
+          <span>Outlook / Teams</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Script Handlers -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const registerModal = document.getElementById('registerModal');
+      const calendarModal = document.getElementById('calendarModal');
+
+      function openModal(modal) {
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal(modal) {
+        modal.classList.remove('open');
+        document.body.style.overflow = '';
+      }
+
+      // Bind all open-register triggers (including headers and sticky bars)
+      document.querySelectorAll('.open-register').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openModal(registerModal);
+        });
+      });
+
+      // Bind all data-calendar triggers
+      document.querySelectorAll('[data-calendar]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openModal(calendarModal);
+        });
+      });
+
+      // Bind close buttons and clicking on backdrop overlay to dismiss modal
+      document.querySelectorAll('.modal-close-btn, .modal-overlay').forEach(el => {
+        el.addEventListener('click', (e) => {
+          if (e.target === el || el.classList.contains('modal-close-btn') || el.closest('.modal-close-btn')) {
+            closeModal(el.closest('.modal-overlay'));
+          }
+        });
+      });
+
+      // Stop propagation so clicking inside the modal box doesn't close it
+      document.querySelectorAll('.modal-box').forEach(box => {
+        box.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      });
+
+      // Ticket Selection Visual State Toggle
+      const ticketCards = document.querySelectorAll('.modal-ticket-card');
+      ticketCards.forEach(card => {
+        card.addEventListener('click', () => {
+          ticketCards.forEach(c => c.classList.remove('selected'));
+          card.classList.add('selected');
+          const input = card.querySelector('input');
+          if (input) input.checked = true;
+        });
+      });
+
+      // Registration Form Submission Handler
+      const registerForm = document.getElementById('registerForm');
+      if (registerForm) {
+        registerForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('regName').value;
+          showToast(`Successfully registered! Welcome, ${name}.`);
+          closeModal(registerModal);
+          registerForm.reset();
+        });
+      }
+
+      // Calendar Choice Handler
+      document.querySelectorAll('.calendar-option-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const service = btn.getAttribute('data-service');
+          showToast(`Redirecting to ${service} Calendar...`);
+          closeModal(calendarModal);
+        });
+      });
+      
+      // Ensure icons are correctly initialized inside our dynamically loaded modals
+      lucide.createIcons();
+    });
+  </script>
   </aside>
 
 </body></html>

@@ -3820,7 +3820,7 @@ body:has(.cats, .channels, .types, .tracks) .filtertop .selectwrap:has(#typeFilt
 }
 
 .event-card .event-img {
-  margin: var(--card-to-thumb-padding, 12px) var(--card-to-thumb-padding, 12px) 0 var(--card-to-thumb-padding, 12px) !important;
+  margin: var(--card-to-thumb-padding, 12px) var(--card-to-thumb-padding, 12px) var(--thumbnail-bottom-margin, 17px) var(--card-to-thumb-padding, 12px) !important;
   width: calc(100% - calc(var(--card-to-thumb-padding, 12px) * 2)) !important;
   box-sizing: border-box !important;
   height: 200px !important;
@@ -3829,6 +3829,7 @@ body:has(.cats, .channels, .types, .tracks) .filtertop .selectwrap:has(#typeFilt
   background-position: center;
   position: relative;
   flex-shrink: 0;
+  display: block !important;
 }
 
 .event-card .event-body {
@@ -3934,71 +3935,26 @@ body:has(.cats, .channels, .types, .tracks) .filtertop .selectwrap:has(#typeFilt
   stroke-width: 2.5px !important;
 }
 
-/* Theme color definitions for cards */
-.event-card.theme-burgundy .event-day,
-.event-card.theme-burgundy .event-title {
-  color: #881337 !important;
-}
-[data-theme="dark"] .event-card.theme-burgundy .event-day,
-[data-theme="dark"] .event-card.theme-burgundy .event-title,
-.dark .event-card.theme-burgundy .event-day,
-.dark .event-card.theme-burgundy .event-title {
-  color: #fda4af !important;
+/* Date Day accent color mapping */
+.event-day {
+  color: var(--accent) !important;
 }
 
-.event-card.theme-green .event-day,
-.event-card.theme-green .event-title {
-  color: #16a34a !important;
+/* Event title colors & hover effects using standard theme variables */
+.event-title {
+  color: var(--text, #18181b) !important;
 }
-[data-theme="dark"] .event-card.theme-green .event-day,
-[data-theme="dark"] .event-card.theme-green .event-title,
-.dark .event-card.theme-green .event-day,
-.dark .event-card.theme-green .event-title {
-  color: #86efac !important;
+.event-title a {
+  color: inherit !important;
+  text-decoration: none !important;
 }
-
-.event-card.theme-orange .event-day,
-.event-card.theme-orange .event-title {
-  color: #ea580c !important;
+[data-theme="dark"] .event-title,
+.dark .event-title {
+  color: var(--text-main, #f8fafc) !important;
 }
-[data-theme="dark"] .event-card.theme-orange .event-day,
-[data-theme="dark"] .event-card.theme-orange .event-title,
-.dark .event-card.theme-orange .event-day,
-.dark .event-card.theme-orange .event-title {
-  color: #fed7aa !important;
-}
-
-.event-card.theme-teal .event-day,
-.event-card.theme-teal .event-title {
-  color: #0d9488 !important;
-}
-[data-theme="dark"] .event-card.theme-teal .event-day,
-[data-theme="dark"] .event-card.theme-teal .event-title,
-.dark .event-card.theme-teal .event-day,
-.dark .event-card.theme-teal .event-title {
-  color: #99f6e4 !important;
-}
-
-.event-card.theme-purple .event-day,
-.event-card.theme-purple .event-title {
-  color: #7c3aed !important;
-}
-[data-theme="dark"] .event-card.theme-purple .event-day,
-[data-theme="dark"] .event-card.theme-purple .event-title,
-.dark .event-card.theme-purple .event-day,
-.dark .event-card.theme-purple .event-title {
-  color: #ddd6fe !important;
-}
-
-.event-card.theme-blue .event-day,
-.event-card.theme-blue .event-title {
-  color: #2563eb !important;
-}
-[data-theme="dark"] .event-card.theme-blue .event-day,
-[data-theme="dark"] .event-card.theme-blue .event-title,
-.dark .event-card.theme-blue .event-day,
-.dark .event-card.theme-blue .event-title {
-  color: #bfdbfe !important;
+.event-title a:hover {
+  color: var(--accent) !important;
+  text-decoration: underline !important;
 }
 
 /* List View support for event card */
@@ -4036,5 +3992,257 @@ body:has(.cats, .channels, .types, .tracks) .filtertop .selectwrap:has(#typeFilt
     border-radius: max(0px, calc(var(--radius-lg, 24px) - 3px)) !important;
   }
 }
+
+/* Event Share Button below the date */
+.event-share-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 99px !important;
+  border: 1px solid var(--border) !important;
+  background: var(--surface) !important;
+  color: var(--text-muted) !important;
+  cursor: pointer !important;
+  margin-top: 12px !important;
+  transition: all 0.2s ease !important;
+  outline: none !important;
+  flex-shrink: 0 !important;
+}
+.event-share-btn:hover {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface)) !important;
+  color: var(--accent) !important;
+  border-color: color-mix(in srgb, var(--accent) 25%, transparent) !important;
+  transform: scale(1.05) !important;
+}
+.event-share-btn svg,
+.event-share-btn i {
+  width: 13px !important;
+  height: 13px !important;
+  stroke-width: 2.2px !important;
+}
+
+/* Time Badge styling on thumbnail cover */
+.time-badge {
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: var(--text, #18181b) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+[data-theme="dark"] .time-badge,
+.dark .time-badge {
+  background: rgba(24, 24, 27, 0.9) !important;
+  color: var(--text-main, #f8fafc) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.time-badge svg,
+.time-badge i {
+  width: 11px !important;
+  height: 11px !important;
+  stroke-width: 2.5px !important;
+}
+
+/* Dynamic Event Mode Badges on top-right of thumbnail */
+.event-mode-badge {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  z-index: 3 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 5px 10px !important;
+  border-radius: 99px !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em !important;
+  text-transform: uppercase !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+.event-mode-badge svg,
+.event-mode-badge i {
+  width: 11px !important;
+  height: 11px !important;
+}
+
+/* Online Mode: Soft Accent themed background */
+.event-mode-badge.mode-online {
+  background: color-mix(in srgb, var(--accent) 12%, rgba(255,255,255,0.92)) !important;
+  color: var(--accent) !important;
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent) !important;
+}
+
+/* Physical / On-site Mode: Muted surface background */
+.event-mode-badge.mode-onsite {
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: var(--text, #18181b) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+[data-theme="dark"] .event-mode-badge.mode-onsite,
+.dark .event-mode-badge.mode-onsite {
+  background: rgba(24, 24, 27, 0.9) !important;
+  color: var(--text-main, #f8fafc) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Hybrid Mode: Gold/Warm accent theme background */
+.event-mode-badge.mode-hybrid {
+  background: color-mix(in srgb, var(--gold, #facc15) 12%, rgba(255,255,255,0.92)) !important;
+  color: color-mix(in srgb, var(--gold, #facc15) 75%, #000) !important;
+  border: 1px solid color-mix(in srgb, var(--gold, #facc15) 35%, transparent) !important;
+}
+[data-theme="dark"] .event-mode-badge.mode-hybrid,
+.dark .event-mode-badge.mode-hybrid {
+  background: color-mix(in srgb, var(--gold, #facc15) 10%, rgba(24, 24, 27, 0.9)) !important;
+  color: #fde047 !important;
+  border: 1px solid color-mix(in srgb, var(--gold, #facc15) 20%, transparent) !important;
+}
+
+/* ====================================================
+   FEATURED CARD — Horizontal Hero Layout
+   ==================================================== */
+.featured-card {
+  --featured-radius: calc(var(--radius-lg, 24px) + 10px);
+  --featured-padding: calc(var(--card-content-padding, 20px) + 10px);
+  --featured-thumb-padding: min(calc(var(--card-to-thumb-padding, 12px) * 999), calc(var(--card-to-thumb-padding, 12px) + 10px));
+
+  display: grid !important;
+  grid-template-columns: 45% 1fr !important;
+  background: var(--surface, #ffffff) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--featured-radius) !important;
+  overflow: hidden !important;
+  box-shadow: var(--soft-shadow) !important;
+  transition: transform .25s ease, box-shadow .25s ease !important;
+  
+  /* Browser composite layer fixes for rounded overflow clipping */
+  isolation: isolate !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  will-change: transform !important;
+}
+.featured-card:hover {
+  transform: translateY(-5px) translateZ(0) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+/* Cover image */
+.featured-card-img {
+  display: block !important;
+  margin: var(--featured-thumb-padding) !important;
+  height: calc(100% - calc(var(--featured-thumb-padding) * 2)) !important;
+  width: calc(100% - calc(var(--featured-thumb-padding) * 2)) !important;
+  min-height: 380px !important;
+  border-radius: max(0px, calc(var(--featured-radius) - var(--featured-thumb-padding))) min(max(0px, calc(var(--featured-radius) - var(--featured-thumb-padding))), calc(var(--featured-thumb-padding) * 999)) min(max(0px, calc(var(--featured-radius) - var(--featured-thumb-padding))), calc(var(--featured-thumb-padding) * 999)) max(0px, calc(var(--featured-radius) - var(--featured-thumb-padding))) !important;
+  background-size: cover !important;
+  background-position: center !important;
+  position: relative !important;
+  cursor: pointer !important;
+}
+.featured-card-img::before {
+  content: "" !important;
+  position: absolute !important;
+  inset: 0 !important;
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.45)) !important;
+  border-radius: 0 !important;
+}
+.featured-card-img .badges {
+  position: absolute !important;
+  left: 16px !important;
+  top: 16px !important;
+  z-index: 3 !important;
+}
+
+/* Body */
+.featured-card-body {
+  padding: var(--featured-padding) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 24px !important;
+}
+
+/* Meta layout */
+.featured-card-meta {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 20px !important;
+  align-items: flex-start !important;
+}
+.featured-card-date {
+  width: 72px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  flex-shrink: 0 !important;
+  border-right: 1px solid rgba(0,0,0,0.08) !important;
+  padding-right: 20px !important;
+}
+[data-theme="dark"] .featured-card-date,
+.dark .featured-card-date {
+  border-right-color: rgba(255,255,255,0.1) !important;
+}
+.featured-card-date .event-month {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  color: var(--text-muted, #71717a) !important;
+  letter-spacing: 0.08em !important;
+  margin-bottom: 2px !important;
+}
+.featured-card-date .event-day {
+  font-size: 42px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  color: var(--accent) !important;
+  letter-spacing: -0.04em !important;
+}
+.featured-card-details {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .featured-card {
+    grid-template-columns: 1fr !important;
+  }
+  .featured-card-img {
+    margin: var(--featured-thumb-padding) var(--featured-thumb-padding) 0 var(--featured-thumb-padding) !important;
+    width: calc(100% - calc(var(--featured-thumb-padding) * 2)) !important;
+    border-radius: max(0px, calc(var(--featured-radius) - var(--featured-thumb-padding))) max(0px, calc(var(--featured-radius) - var(--featured-thumb-padding))) min(max(0px, calc(var(--featured-radius) - var(--featured-thumb-padding))), calc(var(--featured-thumb-padding) * 999)) min(max(0px, calc(var(--featured-radius) - var(--featured-thumb-padding))), calc(var(--featured-thumb-padding) * 999)) !important;
+    height: 240px !important;
+    min-height: 240px !important;
+  }
+  .featured-card-body {
+    padding: var(--featured-padding) !important;
+  }
+}
+@media (max-width: 480px) {
+  .featured-card-body {
+    padding: var(--featured-padding) !important;
+    gap: 16px !important;
+  }
+  .featured-card-meta {
+    flex-direction: column !important;
+  }
+  .featured-card-date {
+    flex-direction: row !important;
+    width: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+    padding-right: 0 !important;
+    padding-bottom: 12px !important;
+    gap: 8px !important;
+  }
+}
+
+
 
 

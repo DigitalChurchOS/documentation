@@ -1008,7 +1008,12 @@ function navigateToPage(url, isBack = false) {
       // 8. Initialize sort toggles
       if (window.initSortToggles) window.initSortToggles();
 
-      // 9. Bind click listeners in new content
+      // 9. Initialize featured event card (events pages)
+      if (window.setupFeaturedEvent) {
+        setTimeout(function() { window.setupFeaturedEvent(); }, 150);
+      }
+
+      // 10. Bind click listeners in new content
       bindPjaxLinks(contentOutlet);
 
       // Fade in effect
@@ -1590,5 +1595,398 @@ function formatCardButtons() {
 
 window.formatCardButtons = formatCardButtons;
 formatCardButtons();
+
+// ====================================================
+// UNIVERSAL SHARE MODULE
+// ====================================================
+function initUniversalShare() {
+  if (!document.body || !document.head) {
+    document.addEventListener('DOMContentLoaded', initUniversalShare);
+    return;
+  }
+  // 1. Inject Styles
+  if (!document.getElementById('universal-share-styles')) {
+    const style = document.createElement('style');
+    style.id = 'universal-share-styles';
+    style.innerHTML = `
+      .share-modal-overlay {
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(15, 23, 42, 0.45) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        z-index: 10000 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.25s ease !important;
+      }
+      .share-modal-overlay.open {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+      }
+      .share-modal-box {
+        background: var(--surface, #ffffff) !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--xl, 34px) !important;
+        padding: 32px !important;
+        width: 90% !important;
+        max-width: 460px !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        transform: scale(0.9) translateY(15px) !important;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        position: relative !important;
+      }
+      [data-theme="dark"] .share-modal-box,
+      .dark .share-modal-box {
+        background: rgba(24, 24, 27, 0.95) !important;
+        border-color: rgba(255, 255, 255, 0.08) !important;
+      }
+      .share-modal-overlay.open .share-modal-box {
+        transform: scale(1) translateY(0) !important;
+      }
+      .share-modal-close {
+        position: absolute !important;
+        top: 24px !important;
+        right: 24px !important;
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 99px !important;
+        border: 1px solid var(--border) !important;
+        background: var(--surface, #ffffff) !important;
+        color: var(--text-muted, #71717a) !important;
+        display: grid !important;
+        place-items: center !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        z-index: 10 !important;
+      }
+      .share-modal-close:hover {
+        background: color-mix(in srgb, var(--accent) 8%, var(--surface, #ffffff)) !important;
+        color: var(--accent) !important;
+        border-color: color-mix(in srgb, var(--accent) 25%, transparent) !important;
+      }
+      [data-theme="dark"] .share-modal-close,
+      .dark .share-modal-close {
+        background: rgba(255, 255, 255, 0.03) !important;
+      }
+      .share-modal-title {
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        letter-spacing: -0.04em !important;
+        margin: 0 0 8px 0 !important;
+        color: var(--text, #18181b) !important;
+      }
+      [data-theme="dark"] .share-modal-title,
+      .dark .share-modal-title {
+        color: var(--text-main, #f8fafc) !important;
+      }
+      .share-modal-subtitle {
+        font-size: 14px !important;
+        color: var(--text-muted, #71717a) !important;
+        margin: 0 0 24px 0 !important;
+      }
+      .share-app-grid {
+        display: grid !important;
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 24px !important;
+      }
+      .share-app-btn {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        padding: 16px 4px !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 18px !important;
+        background: var(--surface, #ffffff) !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        text-decoration: none !important;
+      }
+      [data-theme="dark"] .share-app-btn,
+      .dark .share-app-btn {
+        background: rgba(255, 255, 255, 0.02) !important;
+      }
+      .share-app-btn:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.15) !important;
+      }
+      .share-app-btn.brand-wa:hover {
+        border-color: rgba(37, 211, 102, 0.45) !important;
+        background: rgba(37, 211, 102, 0.08) !important;
+      }
+      .share-app-btn.brand-wa:hover svg {
+        color: #25D366 !important;
+      }
+      .share-app-btn.brand-fb:hover {
+        border-color: rgba(24, 119, 242, 0.45) !important;
+        background: rgba(24, 119, 242, 0.08) !important;
+      }
+      .share-app-btn.brand-fb:hover svg {
+        color: #1877F2 !important;
+      }
+      .share-app-btn.brand-tg:hover {
+        border-color: rgba(0, 136, 204, 0.45) !important;
+        background: rgba(0, 136, 204, 0.08) !important;
+      }
+      .share-app-btn.brand-tg:hover svg {
+        color: #0088cc !important;
+      }
+      .share-app-btn.brand-x:hover {
+        border-color: var(--text) !important;
+        background: color-mix(in srgb, var(--text) 5%, transparent) !important;
+      }
+      .share-app-btn.brand-x:hover svg {
+        color: var(--text) !important;
+      }
+      [data-theme="dark"] .share-app-btn.brand-x:hover,
+      .dark .share-app-btn.brand-x:hover {
+        border-color: var(--text-main, #f8fafc) !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+      }
+      [data-theme="dark"] .share-app-btn.brand-x:hover svg,
+      .dark .share-app-btn.brand-x:hover svg {
+        color: var(--text-main, #f8fafc) !important;
+      }
+      .share-app-btn.brand-mail:hover {
+        border-color: color-mix(in srgb, var(--accent) 45%, transparent) !important;
+        background: color-mix(in srgb, var(--accent) 8%, transparent) !important;
+      }
+      .share-app-btn.brand-mail:hover svg {
+        color: var(--accent) !important;
+      }
+      .share-app-btn i,
+      .share-app-btn svg {
+        width: 24px !important;
+        height: 24px !important;
+        color: var(--text, #18181b) !important;
+        transition: color 0.25s ease !important;
+      }
+      [data-theme="dark"] .share-app-btn i,
+      [data-theme="dark"] .share-app-btn svg,
+      .dark .share-app-btn i,
+      .dark .share-app-btn svg {
+        color: var(--text-main, #f8fafc) !important;
+      }
+      .share-app-btn span {
+        font-size: 11px !important;
+        font-weight: 800 !important;
+        color: var(--text-muted, #71717a) !important;
+      }
+      .share-input-group {
+        display: flex !important;
+        position: relative !important;
+        align-items: center !important;
+      }
+      .share-url-input {
+        width: 100% !important;
+        height: 48px !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 16px !important;
+        background: var(--bg, #fffaf3) !important;
+        padding: 0 90px 0 16px !important;
+        font-size: 13px !important;
+        color: var(--text-muted, #71717a) !important;
+        outline: none !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+      }
+      [data-theme="dark"] .share-url-input,
+      .dark .share-url-input {
+        background: rgba(255, 255, 255, 0.02) !important;
+        color: rgba(255, 255, 255, 0.6) !important;
+      }
+      .share-copy-btn {
+        position: absolute !important;
+        right: 6px !important;
+        height: 36px !important;
+        border-radius: 12px !important;
+        padding: 0 14px !important;
+        background: var(--accent) !important;
+        color: white !important;
+        border: 0 !important;
+        font-size: 12px !important;
+        font-weight: 850 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+      }
+      .share-copy-btn svg,
+      .share-copy-btn i {
+        width: 18px !important;
+        height: 18px !important;
+      }
+      .share-copy-btn:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 25%, transparent) !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // 2. Inject Modal HTML
+  if (!document.getElementById('universalShareModal')) {
+    const modal = document.createElement('div');
+    modal.id = 'universalShareModal';
+    modal.className = 'share-modal-overlay';
+    modal.innerHTML = `
+      <div class="share-modal-box">
+        <button class="share-modal-close" aria-label="Close modal"><i data-lucide="x"></i></button>
+        <h2 class="share-modal-title">Share this</h2>
+        <p class="share-modal-subtitle">Choose where you'd like to share this link.</p>
+        
+        <div class="share-app-grid">
+          <a href="#" class="share-app-btn brand-wa" id="share-wa" target="_blank">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M12.004 2C6.48 2 2 6.48 2 12.004c0 1.765.46 3.42 1.258 4.877L2 22l5.244-1.218a9.98 9.98 0 0 0 4.76 1.222c5.524 0 10.004-4.48 10.004-10.004C22.008 6.48 17.528 2 12.004 2zm0 18.007c-1.57 0-3.058-.42-4.348-1.15l-.312-.18-3.23.75.764-3.136-.2-.317a7.973 7.973 0 0 1-1.226-4.22c0-4.413 3.59-8.003 8.003-8.003 4.413 0 8.003 3.59 8.003 8.003 0 4.413-3.59 8.003-8.003 8.003zm4.386-5.99c-.24-.12-1.42-.7-1.64-.78c-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06a6.55 6.55 0 0 1-1.92-1.18c-.76-.67-1.27-1.51-1.42-1.76-.14-.24-.02-.37.1-.49.1-.1.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.48-.39-.41-.54-.42-.14 0-.3 0-.46.02a.88.88 0 0 0-.66.3c-.22.24-.86.84-.86 2.04 0 1.2.88 2.36 1 2.52.12.16 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.6.19 1.14.16 1.57.1.48-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.2-.16-.44-.28z"/>
+            </svg>
+            <span>WhatsApp</span>
+          </a>
+          <a href="#" class="share-app-btn brand-tg" id="share-tg" target="_blank">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.94-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27 0 .05.01.17 0 .28z"/>
+            </svg>
+            <span>Telegram</span>
+          </a>
+          <a href="#" class="share-app-btn brand-fb" id="share-fb" target="_blank">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1V12h3v3h-3v6.8c4.56-.93 8-4.96 8-9.8z"/>
+            </svg>
+            <span>Facebook</span>
+          </a>
+          <a href="#" class="share-app-btn brand-x" id="share-tw" target="_blank">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            <span>X (Twitter)</span>
+          </a>
+          <a href="#" class="share-app-btn brand-mail" id="share-mail">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+            <span>Email</span>
+          </a>
+        </div>
+        
+        <div class="share-input-group">
+          <input type="text" class="share-url-input" id="share-url-field" readonly />
+          <button class="share-copy-btn" id="share-copy-btn">
+            <i data-lucide="copy"></i>
+            <span>Copy</span>
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    if (window.lucide) window.lucide.createIcons({ node: modal });
+  }
+
+  // 3. Link Detection and Click Listeners
+  const modal = document.getElementById('universalShareModal');
+  const copyBtn = document.getElementById('share-copy-btn');
+  const urlField = document.getElementById('share-url-field');
+  const closeBtn = modal.querySelector('.share-modal-close');
+
+  function openShare(url) {
+    urlField.value = url;
+    
+    // Set up social share links
+    document.getElementById('share-wa').href = `https://api.whatsapp.com/send?text=${encodeURIComponent(url)}`;
+    document.getElementById('share-tg').href = `https://t.me/share/url?url=${encodeURIComponent(url)}`;
+    document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    document.getElementById('share-tw').href = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`;
+    document.getElementById('share-mail').href = `mailto:?body=${encodeURIComponent(url)}`;
+
+    // Reset copy button state
+    const copyText = copyBtn.querySelector('span');
+    if (copyText) copyText.textContent = 'Copy';
+    const copyIcon = copyBtn.querySelector('i');
+    if (copyIcon) copyIcon.setAttribute('data-lucide', 'copy');
+    if (window.lucide) window.lucide.createIcons({ node: copyBtn });
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeShare() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // Intercept all clicks on share triggers globally
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-share], .event-share-btn, .share-btn, [data-action="share"]');
+    if (btn) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Find the URL to share
+      let shareUrl = btn.getAttribute('data-share-url') || btn.getAttribute('data-url');
+      if (!shareUrl) {
+        const card = btn.closest('.event-card, .blog-card, .sermon-card, .ministry-card, .product-card, .group-card, .resource-card, .card');
+        if (card) {
+          const link = card.querySelector('a.open-event, a.open-sermon, a.open-group, a.open-product, a.open-blog, a[href]');
+          if (link) {
+            const href = link.getAttribute('href');
+            if (href && href !== '#' && !href.startsWith('javascript:')) {
+              shareUrl = new URL(href, window.location.href).href;
+            }
+          }
+        }
+      }
+      if (!shareUrl) {
+        shareUrl = window.location.href;
+      }
+
+      openShare(shareUrl);
+    }
+  }, true);
+
+  // Close triggers
+  closeBtn.addEventListener('click', closeShare);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeShare();
+  });
+
+  // Copy click trigger
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard?.writeText(urlField.value).then(() => {
+      const copyText = copyBtn.querySelector('span');
+      if (copyText) copyText.textContent = 'Copied!';
+      const copyIcon = copyBtn.querySelector('i');
+      if (copyIcon) copyIcon.setAttribute('data-lucide', 'check');
+      if (window.lucide) window.lucide.createIcons({ node: copyBtn });
+      
+      const toastFn = window.showToast || (typeof showToast === 'function' ? showToast : null);
+      if (toastFn) {
+        toastFn('Link copied to clipboard!');
+      } else {
+        const toast = document.getElementById('toast');
+        if (toast) {
+          toast.textContent = 'Link copied to clipboard!';
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 1800);
+        }
+      }
+    });
+  });
+}
+
+// Initialize on DOM load or immediately if already loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initUniversalShare);
+} else {
+  initUniversalShare();
+}
+
 
 
