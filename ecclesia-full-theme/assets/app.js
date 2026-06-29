@@ -817,6 +817,9 @@ function renderHeaderCTAs(pageFile) {
     ctasHtml += `<a class="btn btn-primary pjax-link" href="${config.primaryUrl}">${config.primary}</a>`;
   }
   
+  // Account icon (visible on both desktop and mobile)
+  ctasHtml += `<a class="member-account-icon-only-link pjax-link" href="login.html" title="My Account"><i data-lucide="user-circle"></i></a>`;
+
   // Keep the mobile menu button (Kebab on the right in header actions) only if drawers are NOT combined
   const mobileDrawerCombine = document.body.getAttribute("data-mobile-drawer-combine") === "true";
   if (!mobileDrawerCombine) {

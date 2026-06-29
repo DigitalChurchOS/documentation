@@ -1,4 +1,4 @@
-const CACHE_NAME = 'churchos-cache-v6';
+const CACHE_NAME = 'churchos-cache-v7';
 const APP_SHELL_URLS = [
   '/',
   '/index.html',
@@ -135,12 +135,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  if (isSameOrigin && requestUrl.pathname.startsWith('/themes/')) {
+    event.respondWith(networkFirst(event.request));
+    return;
+  }
+
   const destination = event.request.destination;
   const isRuntimeAsset =
     ['image', 'font', 'audio', 'video', 'style', 'script'].includes(destination) ||
     (isSameOrigin && (
       requestUrl.pathname.startsWith('/assets/') ||
-      requestUrl.pathname.startsWith('/themes/') ||
       requestUrl.pathname.startsWith('/media/') ||
       requestUrl.pathname.startsWith('/uploads/')
     ));
