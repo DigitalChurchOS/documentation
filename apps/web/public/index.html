@@ -915,6 +915,27 @@
       }
     }
 
+    .step-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .step-container {
+        grid-template-columns: 1fr !important;
+      }
+      .step-container > * {
+        grid-column: span 1 !important;
+      }
+      .shell {
+        width: calc(100% - 24px) !important;
+      }
+      #signup {
+        padding: 40px 0 !important;
+      }
+    }
+
     /* Form Background and Centered Layout */
     .signup-wrapper {
       position: relative;
@@ -1009,7 +1030,8 @@
     @media (max-width: 900px) {
       .signup-container { grid-template-columns: 1fr !important; gap: 40px !important; }
       .signup-left h2 { font-size: 2.5rem !important; }
-      #step1, #step2 { grid-template-columns: 1fr !important; }
+      .step-container { grid-template-columns: 1fr !important; }
+      .step-container > * { grid-column: span 1 !important; }
       .field.full { grid-column: span 1 !important; }
     }
 
@@ -1383,7 +1405,7 @@
         <div class="signup-right">
           <div class="signup-wrapper" style="max-width: 100%; margin: 0;">
             <div class="form-tabs" style="margin-bottom: 30px;">
-              <button class="form-tab active" id="tabRegister" type="button">Register Church</button>
+              <button class="form-tab active" id="tabRegister" type="button">Register</button>
               <button class="form-tab" id="tabLogin" type="button">Sign In</button>
             </div>
 
@@ -1391,7 +1413,7 @@
             <form id="signupForm">
               
               <!-- Step 1 -->
-              <div id="step1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div id="step1" class="step-container">
                 <div class="step-header" style="grid-column: span 2;">
                   <h3 style="margin: 0;">Step 1: Church Details</h3>
                   <div class="step-count">1 of 2</div>
@@ -1403,7 +1425,7 @@
                 </div>
 
                 <div class="field">
-                  <label for="ownerName">Pastor/Owner Full Name</label>
+                  <label for="ownerName">Pastor/Leader Name</label>
                   <input id="ownerName" placeholder="e.g. Pastor David Cole" required />
                 </div>
 
@@ -1443,7 +1465,7 @@
               </div>
 
               <!-- Step 2 -->
-              <div id="step2" style="display: none; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div id="step2" class="step-container" style="display: none;">
                 <div class="step-header" style="grid-column: span 2;">
                   <h3 style="margin: 0;">Step 2: Workspace Setup</h3>
                   <div class="step-count">2 of 2</div>
