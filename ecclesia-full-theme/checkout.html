@@ -206,6 +206,16 @@
       white-space: nowrap;
     }
 
+    #paymentMethodContainer {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    #paymentMethodContainer .pay-option {
+      margin-bottom: 0;
+    }
+
     /* ── Payment Selector Options ── */
     .pay-option {
       display: flex;
@@ -560,6 +570,9 @@
       .co-row-3 {
         grid-template-columns: 1fr;
         gap: 0;
+      }
+      #paymentMethodContainer {
+        grid-template-columns: 1fr;
       }
     }
     @media (max-width: 720px) {
