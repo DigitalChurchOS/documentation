@@ -39,6 +39,13 @@ import {
 } from "lucide-react";
 
 const ECCLESIA_THEME_FOLDER = "ecclesia-full-theme";
+const DEMO_TENANT_ID = "demo-church-local";
+const DEMO_TENANT_SUBDOMAIN = "demo";
+const DEMO_WEBSITE_IDS = new Set(["website-demo", "website-main"]);
+
+function isDemoWebsiteId(value: string | null) {
+  return Boolean(value && DEMO_WEBSITE_IDS.has(value));
+}
 
 function escapeHtml(value: unknown) {
   return String(value || "")
@@ -255,8 +262,11 @@ function labelForCmsPage(page: any, file: string) {
 
 const apiFetch = async (method: string, path: string, body?: any) => {
   const params = new URLSearchParams(window.location.search);
-  const tenantId = localStorage.getItem("churchos.tenantId") || params.get("tenantId") || "";
-  const tenantSubdomain = localStorage.getItem("churchos.subdomain") || params.get("subdomain") || getSubdomainFromHostname() || "";
+  const queryTenantId = params.get("tenantId") || "";
+  const queryWebsiteId = params.get("websiteId");
+  const shouldUseDemoWorkspace = queryTenantId === DEMO_TENANT_ID || isDemoWebsiteId(queryWebsiteId);
+  const tenantId = queryTenantId || (shouldUseDemoWorkspace ? DEMO_TENANT_ID : "") || localStorage.getItem("churchos.tenantId") || "";
+  const tenantSubdomain = params.get("subdomain") || (shouldUseDemoWorkspace ? DEMO_TENANT_SUBDOMAIN : "") || getSubdomainFromHostname() || localStorage.getItem("churchos.subdomain") || "";
   const token = localStorage.getItem("churchos.token") || "local-preview-token";
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -355,17 +365,26 @@ export function App() {
 
         if (queryTenantId) {
           resolvedTenantId = queryTenantId;
+          if (queryTenantId === DEMO_TENANT_ID) {
+            resolvedSubdomain = DEMO_TENANT_SUBDOMAIN;
+          }
         } else if (queryWebsiteId) {
-          try {
-            const res = await fetch(`/api/public/resolve-website-tenant?websiteId=${encodeURIComponent(queryWebsiteId)}`);
-            if (res.ok) {
-              const json = await res.json();
-              if (json.data && json.data.tenantId) {
-                resolvedTenantId = json.data.tenantId;
+          if (isDemoWebsiteId(queryWebsiteId)) {
+            resolvedTenantId = DEMO_TENANT_ID;
+            resolvedSubdomain = DEMO_TENANT_SUBDOMAIN;
+          } else {
+            try {
+              const res = await fetch(`/api/public/resolve-website-tenant?websiteId=${encodeURIComponent(queryWebsiteId)}`);
+              if (res.ok) {
+                const json = await res.json();
+                if (json.data && json.data.tenantId) {
+                  resolvedTenantId = json.data.tenantId;
+                  resolvedSubdomain = json.data.tenant?.subdomain || json.data.subdomain || "";
+                }
               }
+            } catch (e) {
+              console.warn("Could not resolve tenant from websiteId:", e);
             }
-          } catch (e) {
-            console.warn("Could not resolve tenant from websiteId:", e);
           }
         } else if (querySubdomain) {
           const res = await fetch(`/api/public/resolve-subdomain?subdomain=${encodeURIComponent(querySubdomain)}`);

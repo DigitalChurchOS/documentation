@@ -158,7 +158,7 @@ const demoEcclesiaTheme = {
 };
 
 const demoWebsite = {
-  id: 'website-main',
+  id: 'website-demo',
   tenantId: demoTenant.id,
   themeId: demoEcclesiaTheme.id,
   title: `${demoTenant.name} Website`,
@@ -174,7 +174,7 @@ const demoWebsite = {
 
 const demoPages = [
   {
-    id: 'page-home',
+    id: 'page-demo-home',
     tenantId: demoTenant.id,
     websiteId: demoWebsite.id,
     title: 'Home',
@@ -187,6 +187,11 @@ const demoPages = [
     updatedAt: '2026-06-18T00:00:00.000Z',
   },
 ];
+
+function isDemoWebsiteId(value: unknown) {
+  const websiteId = String(value || '');
+  return websiteId === demoWebsite.id || websiteId === 'website-main';
+}
 
 type TenantPageRecord = {
   id: string;
@@ -504,6 +509,9 @@ function titleFromSubdomain(subdomain: string) {
 
 function subdomainFromTenantId(value: unknown) {
   const tenantId = String(value || '');
+  if (tenantId === demoTenant.id) {
+    return demoTenant.subdomain;
+  }
   if (tenantId.startsWith('tenant-') && tenantId.length > 'tenant-'.length) {
     return tenantId.slice('tenant-'.length);
   }
@@ -560,7 +568,7 @@ function getRequestContext(request: Request, url: URL, body: Record<string, unkn
   const tenant = {
     ...defaultTenantValues,
     ...storedTenant,
-    id: headerTenantId || storedTenant.id || (subdomain ? `tenant-${subdomain}` : 'tenant-unresolved'),
+    id: headerTenantId || storedTenant.id || String(body.id || '') || (subdomain ? `tenant-${subdomain}` : 'tenant-unresolved'),
     name,
     subdomain,
     subdomainHost: subdomain ? makeSubdomainHost(subdomain) : '',
@@ -680,14 +688,18 @@ function makeBrandingForContext(context: ReturnType<typeof getRequestContext>) {
 
 function makeWebsiteForContext(context: ReturnType<typeof getRequestContext>, theme = makeThemeForContext(context)) {
   const website = getStep(context, 'website');
+  const websiteSubdomain = context.tenant.subdomain || subdomainFromTenantId(context.tenant.id);
+  const websiteId = context.tenant.id === demoTenant.id || websiteSubdomain === demoTenant.subdomain
+    ? demoWebsite.id
+    : `website-${cleanSubdomain(websiteSubdomain || context.tenant.id) || 'workspace'}`;
   return {
     ...demoWebsite,
-    id: `website-${context.tenant.subdomain}`,
+    id: websiteId,
     tenantId: context.tenant.id,
     themeId: theme.id,
     title: context.tenant.name,
     description: website.homepageSubtitle || `${context.tenant.name} church website`,
-    domain: context.tenant.customDomain || context.tenant.subdomainHost,
+    domain: context.tenant.customDomain || context.tenant.subdomainHost || (websiteSubdomain ? makeSubdomainHost(websiteSubdomain) : ''),
     theme,
   };
 }
@@ -952,12 +964,15 @@ function collectionResponse(pathname: string): JsonValue {
 async function routeGet(request: Request, pathname: string, url: URL, env: Env) {
   const hostSubdomain = subdomainFromHost(url.hostname);
   const hostCustomDomain = customDomainFromHost(url.hostname);
+  const websiteTenantHint = pathname === '/api/public/resolve-website-tenant' && isDemoWebsiteId(url.searchParams.get('websiteId'))
+    ? demoTenant
+    : null;
   const resolvedHostTenant = hostSubdomain
     ? await readRegisteredTenant(env, hostSubdomain)
     : hostCustomDomain
       ? await readRegisteredTenantByDomain(env, hostCustomDomain)
       : null;
-  const context = getRequestContext(request, url, resolvedHostTenant || {});
+  const context = getRequestContext(request, url, (websiteTenantHint || resolvedHostTenant || {}) as unknown as Record<string, unknown>);
   const tenant = context.tenant;
   const themeState = await readTenantThemeState(env, context);
   const theme = makeThemeForContext(context, themeState);
