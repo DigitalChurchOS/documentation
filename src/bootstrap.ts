@@ -111,6 +111,20 @@ async function main() {
     });
   }
 
+  // Seed default group types for Demo Church
+  console.log('\n👥 Seeding GroupTypes for Demo Church...');
+  const groupTypes = [
+    { name: 'Cells', tierLevel: 1 },
+    { name: 'Fellowships', tierLevel: 2 },
+  ];
+  for (const gt of groupTypes) {
+    await prisma.groupType.upsert({
+      where: { tenantId_name: { tenantId, name: gt.name } },
+      update: { tierLevel: gt.tierLevel },
+      create: { tenantId, name: gt.name, tierLevel: gt.tierLevel },
+    });
+  }
+
   // 3. Create the Platform Super Admin Account
   console.log('\n👑 Seeding Platform Super Admin account...');
   const platformTenantId = 'platform-super-admin';

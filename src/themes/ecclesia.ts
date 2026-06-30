@@ -89,6 +89,8 @@ export const ECCLESIA_THEME_SOURCE_PAGES: EcclesiaSourcePage[] = [
   sourcePage('ministries', 'Ministries', 'ministries', 'ministries.html', 'network', 'Ministries', 'Ministry directory and serving pathways.'),
   sourcePage('prayer', 'Prayer', 'prayer', 'prayer.html', 'heart-handshake', 'Prayer', 'Prayer request and care entry point.'),
   sourcePage('contact', 'Contact', 'contact', 'contact.html', 'mail', 'Core', 'Contact, visit planning, and location details.'),
+  sourcePage('login', 'Member Login / Register', 'login', 'login.html', 'log-in', 'Core', 'Member registration and authentication portal.'),
+  sourcePage('account', 'Member Account', 'account', 'account.html', 'user', 'Core', 'Member profile management and account settings.'),
   sourcePage('giving', 'Giving', 'giving', 'giving.html', 'hand-coins', 'Giving', 'Giving page with generosity prompts and secure giving entry.'),
   sourcePage('giving-partnership', 'Partnership', 'partnership', 'giving-partnership.html', 'handshake', 'Giving', 'Partnership campaign and recurring support page.'),
   sourcePage('livestream-page', 'Livestream', 'livestream', 'livestream-page.html', 'radio-tower', 'Livestream', 'Live worship page with stream, prayer, and service actions.'),
@@ -842,11 +844,11 @@ export function getEcclesiaPageTemplates(): EcclesiaPageTemplate[] {
       ministries('Serving Teams'),
       cta('Join A Team', 'Tell us where you would love to serve.', 'Volunteer', '#volunteer'),
     ]),
-    page('cell-groups', 'Cell Groups', 'cell-groups', 'users', 'Small groups, cell finder, and join CTA.', ['hero', 'ministries_list'], [
+    page('cell-groups', 'Groups', 'cells', 'users', 'Small groups, cell finder, and join CTA.', ['hero', 'ministries_list'], [
       hero('Find Community', 'Life is better when faith is shared in community.'),
       ministries('Groups Near You'),
     ]),
-    page('group-detail', 'Group Detail', 'cell-groups/sample-group', 'users-round', 'Single group page with meeting details and join CTA.', ['hero', 'cta_section'], [
+    page('group-detail', 'Group Detail', 'cells/sample-group', 'users-round', 'Single group page with meeting details and join CTA.', ['hero', 'cta_section'], [
       hero('Group Name', 'Meeting rhythm, leader details, and group description.'),
       cta('Join This Group', 'A group leader can follow up after signup.', 'Request To Join', '#join'),
     ]),

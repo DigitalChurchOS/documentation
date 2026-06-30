@@ -113,260 +113,376 @@ function escapeHtml(value: string): string {
     .replace(/"/g, '&quot;');
 }
 
-const COLLECTION_ROUTE_CONFIG: Record<string, {
+type CollectionBinding = {
   key: string;
-  eyebrow: string;
-  title: string;
-  description: string;
-  detailBase: string;
-  empty: string;
-}> = {
-  blog: {
-    key: 'articles',
-    eyebrow: 'Articles',
-    title: 'Church Articles',
-    description: 'News, devotionals, testimonies, and pastoral notes from the church dashboard.',
-    detailBase: '/blog',
-    empty: 'No articles have been published yet.',
-  },
-  media: {
-    key: 'media',
-    eyebrow: 'Media',
-    title: 'Media Library',
-    description: 'Videos, audio messages, worship moments, and ministry highlights.',
-    detailBase: '/media',
-    empty: 'No media items have been published yet.',
-  },
-  sermons: {
-    key: 'sermons',
-    eyebrow: 'Sermons',
-    title: 'Sermon Archive',
-    description: 'Recent messages, series, speakers, and teaching notes.',
-    detailBase: '/sermons',
-    empty: 'No sermons have been published yet.',
-  },
-  services: {
-    key: 'services',
-    eyebrow: 'Services',
-    title: 'Services',
-    description: 'Gathering times, service formats, and worship details.',
-    detailBase: '/services',
-    empty: 'No services have been published yet.',
-  },
-  library: {
-    key: 'resources',
-    eyebrow: 'Resources',
-    title: 'Resource Library',
-    description: 'Downloadable guides, devotionals, ministry documents, and study material.',
-    detailBase: '/library',
-    empty: 'No resources have been published yet.',
-  },
-  courses: {
-    key: 'courses',
-    eyebrow: 'Courses',
-    title: 'Discipleship Courses',
-    description: 'Courses, modules, lessons, and quizzes published from the dashboard.',
-    detailBase: '/courses',
-    empty: 'No courses have been published yet.',
-  },
-  podcast: {
-    key: 'podcasts',
-    eyebrow: 'Podcasts',
-    title: 'Podcast Episodes',
-    description: 'Audio conversations, teachings, and recurring church podcast episodes.',
-    detailBase: '/podcast',
-    empty: 'No podcast episodes have been published yet.',
-  },
-  store: {
-    key: 'products',
-    eyebrow: 'Store',
-    title: 'Church Store',
-    description: 'Books, apparel, course materials, and ministry resources available from the dashboard.',
-    detailBase: '/store',
-    empty: 'No products have been published yet.',
-  },
-  events: {
-    key: 'events',
-    eyebrow: 'Events',
-    title: 'Events',
-    description: 'Upcoming services, conferences, trainings, and community gatherings.',
-    detailBase: '/events',
-    empty: 'No events have been published yet.',
-  },
+  routeBase: string;
+  archiveSlugs: string[];
+  detailPrefix: string;
+  cardSelector: string;
+  countLabel: string;
+  emptyText: string;
 };
 
-function itemSlug(item: any): string {
+const COLLECTION_BINDINGS: CollectionBinding[] = [
+  {
+    key: 'articles',
+    routeBase: '/blog',
+    archiveSlugs: ['blog'],
+    detailPrefix: 'blog',
+    cardSelector: '#postGrid .post',
+    countLabel: 'articles',
+    emptyText: 'No articles have been published yet.',
+  },
+  {
+    key: 'media',
+    routeBase: '/media',
+    archiveSlugs: ['media'],
+    detailPrefix: 'media',
+    cardSelector: '#mediaGrid .media-card',
+    countLabel: 'media items',
+    emptyText: 'No media items have been published yet.',
+  },
+  {
+    key: 'sermons',
+    routeBase: '/sermons',
+    archiveSlugs: ['sermons'],
+    detailPrefix: 'sermons',
+    cardSelector: '.sermon-card',
+    countLabel: 'sermons',
+    emptyText: 'No sermons have been published yet.',
+  },
+  {
+    key: 'services',
+    routeBase: '/services',
+    archiveSlugs: ['services'],
+    detailPrefix: 'services',
+    cardSelector: '#servicesGrid .card',
+    countLabel: 'services',
+    emptyText: 'No services have been published yet.',
+  },
+  {
+    key: 'resources',
+    routeBase: '/library',
+    archiveSlugs: ['library'],
+    detailPrefix: 'library',
+    cardSelector: '#resourceGrid .resource',
+    countLabel: 'resources',
+    emptyText: 'No resources have been published yet.',
+  },
+  {
+    key: 'courses',
+    routeBase: '/courses',
+    archiveSlugs: ['courses'],
+    detailPrefix: 'courses',
+    cardSelector: '#courseGrid .course',
+    countLabel: 'courses',
+    emptyText: 'No courses have been published yet.',
+  },
+  {
+    key: 'podcasts',
+    routeBase: '/podcast',
+    archiveSlugs: ['podcast'],
+    detailPrefix: 'podcast',
+    cardSelector: '#episodeGrid .episode',
+    countLabel: 'episodes',
+    emptyText: 'No podcast episodes have been published yet.',
+  },
+  {
+    key: 'products',
+    routeBase: '/store',
+    archiveSlugs: ['store'],
+    detailPrefix: 'store',
+    cardSelector: '#productGrid .product-card',
+    countLabel: 'products',
+    emptyText: 'No products have been published yet.',
+  },
+  {
+    key: 'events',
+    routeBase: '/events',
+    archiveSlugs: ['events/archive'],
+    detailPrefix: 'events',
+    cardSelector: '#eventGrid .event-card',
+    countLabel: 'events',
+    emptyText: 'No events have been published yet.',
+  },
+];
+
+function itemSlug(item: Record<string, any>): string {
   return String(item?.slug || item?.id || '').replace(/^\/+/, '');
 }
 
-function itemTitle(item: any): string {
+function itemTitle(item: Record<string, any>): string {
   return String(item?.title || item?.name || item?.episodeTitle || item?.productName || 'Untitled');
 }
 
-function itemDescription(item: any): string {
+function itemDescription(item: Record<string, any>): string {
   return String(item?.summary || item?.description || item?.excerpt || item?.notes || item?.content || '');
 }
 
-function itemMeta(item: any, configKey: string): string {
-  const bits = [
-    item?.date || item?.publishedAt || item?.startDate || item?.createdAt,
-    item?.speaker || item?.author || item?.host || item?.instructor || item?.type,
-    item?.duration,
-    item?.price,
-    item?.location,
-  ].filter(Boolean).map(String);
+function itemDate(item: Record<string, any>): string {
+  return String(item?.date || item?.publishedAt || item?.startDate || item?.createdAt || '');
+}
 
-  if (configKey === 'courses' && Array.isArray(item?.modules)) {
-    bits.push(`${item.modules.length} modules`);
+function itemPerson(item: Record<string, any>): string {
+  return String(item?.speaker || item?.author || item?.host || item?.instructor || item?.team || '');
+}
+
+function itemKind(item: Record<string, any>, binding: CollectionBinding): string {
+  return String(item?.category || item?.type || item?.series || (binding.key === 'products' ? 'Product' : binding.countLabel.replace(/s$/, '')) || '');
+}
+
+function itemPrice(item: Record<string, any>): string {
+  const value = item?.price;
+  if (typeof value === 'number') return `$${value.toFixed(2)}`;
+  return String(value || '');
+}
+
+function itemDuration(item: Record<string, any>): string {
+  return String(item?.duration || '');
+}
+
+function itemImage(item: Record<string, any>): string {
+  return String(item?.imageUrl || item?.thumbnailUrl || item?.coverUrl || '');
+}
+
+function detailUrl(binding: CollectionBinding, item: Record<string, any>): string {
+  const slug = itemSlug(item);
+  return slug ? `${binding.routeBase}/${slug}` : binding.routeBase;
+}
+
+function setText(selectorRoot: ParentNode, selector: string, value: string | number | null | undefined): void {
+  const element = selectorRoot.querySelector<HTMLElement>(selector);
+  if (element && value !== undefined && value !== null && String(value).trim()) {
+    element.textContent = String(value);
   }
-  return bits.slice(0, 3).join(' - ');
 }
 
-function isExternalMediaUrl(value: unknown): boolean {
-  return typeof value === 'string' && /^https?:\/\//i.test(value);
+function setHtml(selectorRoot: ParentNode, selector: string, value: string): void {
+  const element = selectorRoot.querySelector<HTMLElement>(selector);
+  if (element && value.trim()) element.innerHTML = value;
 }
 
-function mediaButton(item: any): string {
-  const mediaUrl = item?.videoUrl || item?.audioUrl || item?.downloadUrl || item?.url;
-  if (!isExternalMediaUrl(mediaUrl)) return '';
-  return `<a class="dashboard-archive__button secondary" href="${escapeHtml(String(mediaUrl))}" target="_blank" rel="noopener noreferrer">Open media</a>`;
+function setBackgroundImage(element: HTMLElement | null, url: string): void {
+  if (!element || !url) return;
+  element.style.backgroundImage = `url("${url.replace(/"/g, '%22')}")`;
 }
 
-function renderArchiveCards(items: any[], config: typeof COLLECTION_ROUTE_CONFIG[string]): string {
-  return items.map((item) => {
-    const slug = itemSlug(item);
-    const detailUrl = slug ? `${config.detailBase}/${slug}` : config.detailBase;
-    const image = item?.imageUrl || item?.thumbnailUrl || item?.coverUrl;
-    const title = itemTitle(item);
-    const description = itemDescription(item);
-    const meta = itemMeta(item, config.key);
-    const courseDetails = config.key === 'courses' && Array.isArray(item.modules)
-      ? `<ul class="dashboard-archive__mini-list">${item.modules.slice(0, 3).map((module: any) => `<li>${escapeHtml(module.title || module.name || 'Module')} - ${(module.lessons || []).length} lessons - ${(module.quizzes || []).length} quizzes</li>`).join('')}</ul>`
-      : '';
-
-    return `
-      <article class="dashboard-archive__card">
-        ${image ? `<img src="${escapeHtml(String(image))}" alt="">` : `<div class="dashboard-archive__media-fallback">${escapeHtml(config.eyebrow.slice(0, 2).toUpperCase())}</div>`}
-        <div class="dashboard-archive__card-body">
-          ${meta ? `<p class="dashboard-archive__meta">${escapeHtml(meta)}</p>` : ''}
-          <h2>${escapeHtml(title)}</h2>
-          ${description ? `<p>${escapeHtml(description)}</p>` : ''}
-          ${courseDetails}
-          <div class="dashboard-archive__actions">
-            <a class="dashboard-archive__button" href="${escapeHtml(detailUrl)}">View details</a>
-            ${mediaButton(item)}
-          </div>
-        </div>
-      </article>
-    `;
-  }).join('');
+function setImage(element: HTMLElement | null, url: string, alt: string): void {
+  if (!element || !url) return;
+  if (element instanceof HTMLImageElement) {
+    element.src = url;
+    element.alt = alt;
+  } else {
+    setBackgroundImage(element, url);
+  }
 }
 
-function renderArchivePage(config: typeof COLLECTION_ROUTE_CONFIG[string], items: any[], tenantName: string): string {
-  const cards = items.length
-    ? `<div class="dashboard-archive__grid">${renderArchiveCards(items, config)}</div>`
-    : `<div class="dashboard-archive__empty">${escapeHtml(config.empty)}</div>`;
-
-  return `
-    <section class="dashboard-archive">
-      <div class="dashboard-archive__hero">
-        <p class="dashboard-archive__eyebrow">${escapeHtml(config.eyebrow)}</p>
-        <h1>${escapeHtml(config.title)}</h1>
-        <p>${escapeHtml(config.description)}</p>
-        <span>${escapeHtml(tenantName)}</span>
-      </div>
-      ${cards}
-    </section>
-  `;
+function setCardLink(card: HTMLElement, binding: CollectionBinding, item: Record<string, any>): void {
+  const url = detailUrl(binding, item);
+  card.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
+    const href = link.getAttribute('href') || '';
+    const shouldPointToDetail = href === '#' ||
+      /single\.html|episode\.html|course-main\.html|service-single\.html|resource-single\.html|event-single\.html/i.test(href);
+    if (shouldPointToDetail) {
+      link.href = url;
+      link.setAttribute('href', url);
+    }
+  });
+  card.querySelectorAll<HTMLElement>('button, .play-media, .play-audio, .open-page').forEach((button) => {
+    button.dataset.title = itemTitle(item);
+    button.dataset.href = url;
+    button.dataset.url = url;
+    button.setAttribute('data-route', url);
+  });
 }
 
-function renderDetailPage(config: typeof COLLECTION_ROUTE_CONFIG[string], item: any, tenantName: string): string {
-  if (!item) return renderArchivePage(config, [], tenantName);
-  const image = item?.imageUrl || item?.thumbnailUrl || item?.coverUrl;
+function setPills(root: ParentNode, values: string[]): void {
+  const pills = Array.from(root.querySelectorAll<HTMLElement>('.pill, .tags span')).filter((pill) => !pill.closest('.channel-strip, .cats, .tagcloud'));
+  values.filter(Boolean).slice(0, pills.length).forEach((value, index) => {
+    const pill = pills[index];
+    const icon = pill.querySelector('[data-lucide]')?.outerHTML || '';
+    pill.innerHTML = icon ? `${icon} ${escapeHtml(value)}` : escapeHtml(value);
+  });
+}
+
+function cardMetaHtml(item: Record<string, any>, binding: CollectionBinding): string {
+  const date = itemDate(item);
+  const person = itemPerson(item);
+  const kind = itemKind(item, binding);
+  const duration = itemDuration(item);
+  const parts = [date, person || kind, duration].filter(Boolean);
+  return parts.join(' · ');
+}
+
+function hydrateArchiveCard(card: HTMLElement, item: Record<string, any>, binding: CollectionBinding, index: number): void {
   const title = itemTitle(item);
   const description = itemDescription(item);
-  const meta = itemMeta(item, config.key);
-  const modules = config.key === 'courses' && Array.isArray(item.modules)
-    ? `<div class="dashboard-archive__detail-block"><h2>Course Outline</h2>${item.modules.map((module: any) => `
-        <section>
-          <h3>${escapeHtml(module.title || module.name || 'Module')}</h3>
-          <p>${escapeHtml(module.description || '')}</p>
-          <ul>${(module.lessons || []).map((lesson: any) => `<li>${escapeHtml(lesson.title || lesson.name || 'Lesson')}</li>`).join('')}</ul>
-          ${(module.quizzes || []).length ? `<p class="dashboard-archive__meta">${(module.quizzes || []).length} quizzes</p>` : ''}
-        </section>
-      `).join('')}</div>`
-    : '';
+  const kind = itemKind(item, binding);
+  const person = itemPerson(item);
+  const date = itemDate(item);
+  const duration = itemDuration(item);
+  const price = itemPrice(item);
+  const image = itemImage(item);
 
-  return `
-    <article class="dashboard-archive dashboard-archive--detail">
-      <a class="dashboard-archive__back" href="${escapeHtml(config.detailBase)}">Back to ${escapeHtml(config.title)}</a>
-      <div class="dashboard-archive__detail">
-        <div>
-          <p class="dashboard-archive__eyebrow">${escapeHtml(config.eyebrow)}</p>
-          <h1>${escapeHtml(title)}</h1>
-          ${meta ? `<p class="dashboard-archive__meta">${escapeHtml(meta)}</p>` : ''}
-          ${description ? `<p>${escapeHtml(description)}</p>` : ''}
-          <div class="dashboard-archive__actions">${mediaButton(item)}</div>
-        </div>
-        ${image ? `<img src="${escapeHtml(String(image))}" alt="">` : `<div class="dashboard-archive__media-fallback">${escapeHtml(config.eyebrow.slice(0, 2).toUpperCase())}</div>`}
-      </div>
-      ${modules}
-    </article>
-  `;
+  card.dataset.order = String(index + 1);
+  card.dataset.title = title;
+  if (kind) card.dataset.category = kind;
+  if (person) card.dataset.author = person;
+  if (person) card.dataset.speaker = person;
+  if (price) card.dataset.price = price.replace(/[^0-9.]/g, '');
+  card.dataset.tags = [kind, person, title].filter(Boolean).join(',');
+
+  setText(card, '.product-title, h3, h2', title);
+  setText(card, '.product-desc, .media-body p, .episode-body p, .body p, .card-body p, .postbody p, p', description);
+  setText(card, '.product-cat', kind);
+  setText(card, '.product-price', price);
+  setText(card, '.badge, .product-badge', duration || kind);
+  setHtml(card, '.meta', cardMetaHtml(item, binding));
+  setPills(card, [kind, person, date, duration, price]);
+  setImage(card.querySelector<HTMLElement>('img, .postimg, .media-visual, .product-thumb, .cover, .episode-cover'), image, title);
+  setCardLink(card, binding, item);
 }
 
-function dashboardArchiveStyles(): string {
-  return `
-    .dashboard-archive{padding:clamp(56px,8vw,104px) clamp(22px,6vw,80px);max-width:1280px;margin:0 auto;color:var(--text,var(--site-text,#1d1812))}
-    .dashboard-archive__hero{max-width:780px;margin-bottom:34px}
-    .dashboard-archive__eyebrow,.dashboard-archive__meta{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--accent,var(--primary,#0877aa));margin:0 0 10px}
-    .dashboard-archive h1{font-family:var(--font-heading,var(--font-title,inherit));font-size:clamp(42px,7vw,88px);line-height:.98;margin:0 0 16px}
-    .dashboard-archive h2{font-family:var(--font-heading,var(--font-title,inherit));font-size:clamp(24px,3vw,34px);line-height:1.05;margin:0 0 12px}
-    .dashboard-archive p{font-size:clamp(16px,1.8vw,20px);line-height:1.55;color:var(--muted,var(--site-muted,#74685e));margin:0 0 16px}
-    .dashboard-archive__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
-    .dashboard-archive__card{background:var(--surface,var(--site-surface,#fff));border:1px solid var(--border,var(--site-border,rgba(0,0,0,.1)));border-radius:var(--radius-xl,var(--radius,20px));overflow:hidden;box-shadow:var(--shadow,0 16px 40px rgba(0,0,0,.08))}
-    .dashboard-archive__card img,.dashboard-archive__detail img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}
-    .dashboard-archive__card-body{padding:22px}
-    .dashboard-archive__media-fallback{aspect-ratio:16/10;display:grid;place-items:center;background:var(--surface-soft,var(--site-soft,#eef6fb));color:var(--accent,var(--primary,#0877aa));font-size:42px;font-weight:900}
-    .dashboard-archive__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
-    .dashboard-archive__button,.dashboard-archive__back{display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-btn,999px);padding:12px 16px;background:var(--accent,var(--primary,#0877aa));color:#fff;text-decoration:none;font-weight:900;border:0}
-    .dashboard-archive__button.secondary{background:var(--surface-soft,var(--site-soft,#eef6fb));color:var(--text,var(--site-text,#1d1812))}
-    .dashboard-archive__empty{padding:34px;border:1px dashed var(--border,var(--site-border,rgba(0,0,0,.15)));border-radius:var(--radius-xl,var(--radius,20px));background:var(--surface,var(--site-surface,#fff));color:var(--muted,var(--site-muted,#74685e))}
-    .dashboard-archive__detail{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,520px);gap:34px;align-items:start;margin-top:22px}
-    .dashboard-archive__detail-block{margin-top:34px;display:grid;gap:16px}
-    .dashboard-archive__detail-block section{background:var(--surface,var(--site-surface,#fff));border:1px solid var(--border,var(--site-border,rgba(0,0,0,.1)));border-radius:var(--radius-xl,var(--radius,20px));padding:22px}
-    .dashboard-archive__mini-list{margin:12px 0 0;padding-left:18px;color:var(--muted,var(--site-muted,#74685e))}
-    @media(max-width:760px){.dashboard-archive{padding:42px 18px 96px}.dashboard-archive__detail{grid-template-columns:1fr}.dashboard-archive__grid{grid-template-columns:1fr}}
-  `;
+function updateArchiveFeature(doc: Document, binding: CollectionBinding, item: Record<string, any> | null): void {
+  if (!item) return;
+  const feature = doc.querySelector<HTMLElement>('.hero-feature, .feature-media, .event-feature, .featured, .featured-card');
+  if (!feature) return;
+  const title = itemTitle(item);
+  const description = itemDescription(item);
+  setText(feature, 'h2, h3', title);
+  setText(feature, 'p', description);
+  setPills(feature, [itemPerson(item), itemDuration(item), itemDate(item), itemKind(item, binding)]);
+  setCardLink(feature, binding, item);
+  setImage(feature.querySelector<HTMLElement>('img, .postimg, .media-visual, .event-image, .cover'), itemImage(item), title);
 }
 
-function applyDashboardCollections(doc: Document, pathname: string, collections?: DashboardCollections, tenantName = 'Church'): void {
+function syncArchiveCards(doc: Document, binding: CollectionBinding, items: Record<string, any>[]): void {
+  const cards = Array.from(doc.querySelectorAll<HTMLElement>(binding.cardSelector));
+  if (!cards.length) return;
+  const container = cards[0].parentElement;
+  const emptyState = doc.querySelector<HTMLElement>('#emptyState, .empty');
+  const resultCount = doc.querySelector<HTMLElement>('#resultCount');
+
+  if (resultCount) resultCount.textContent = `${items.length} ${binding.countLabel}`;
+  if (!items.length) {
+    cards.forEach((card) => card.remove());
+    if (emptyState) {
+      emptyState.style.display = '';
+      setText(emptyState, 'h3', binding.emptyText);
+      setText(emptyState, 'p', 'Content published from the tenant dashboard will appear here.');
+    }
+    return;
+  }
+
+  if (emptyState) emptyState.style.display = 'none';
+  if (!container) return;
+
+  const template = cards[0];
+  while (cards.length < items.length) {
+    const clone = template.cloneNode(true) as HTMLElement;
+    container.appendChild(clone);
+    cards.push(clone);
+  }
+  cards.slice(items.length).forEach((card) => card.remove());
+  items.forEach((item, index) => hydrateArchiveCard(cards[index], item, binding, index));
+  updateArchiveFeature(doc, binding, items[0]);
+}
+
+function hydrateDetailPage(doc: Document, binding: CollectionBinding, item: Record<string, any>): void {
+  const title = itemTitle(item);
+  const description = itemDescription(item);
+  const kind = itemKind(item, binding);
+  const person = itemPerson(item);
+  const date = itemDate(item);
+  const duration = itemDuration(item);
+  const price = itemPrice(item);
+  const image = itemImage(item);
+
+  setText(doc, 'main h1, #productTitle', title);
+  setText(doc, 'main .lead', description);
+  setText(doc, '.single-info .eyebrow, .main-info .eyebrow, .article-hero .eyebrow', kind || binding.countLabel);
+  setText(doc, '#downTitle, #nowTitle, #nowSpeaker, .learn-info strong', title);
+  setText(doc, '#downType, #nowType', kind || binding.countLabel);
+  setText(doc, '.product-category, .product-cat', kind);
+  setText(doc, '.product-price, #productPrice', price);
+  setPills(doc, [person, duration, date, kind, price]);
+  setImage(doc.querySelector<HTMLElement>('main img, .single-cover, .preview-cover, .course-preview, .product-gallery .main-image, .single-player, .stage'), image, title);
+
+  doc.querySelectorAll<HTMLElement>('[data-title]').forEach((element) => {
+    element.dataset.title = title;
+  });
+  doc.querySelectorAll<HTMLElement>('[data-speaker]').forEach((element) => {
+    if (person) element.dataset.speaker = person;
+  });
+
+  const firstRich = doc.querySelector<HTMLElement>('.article-content, .rich, .content-stack article');
+  if (firstRich) {
+    setText(firstRich, 'h2', title);
+    setText(firstRich, 'p', item?.content || description);
+  }
+
+  if (binding.key === 'courses' && Array.isArray(item.modules)) {
+    hydrateCourseModules(doc, item.modules);
+  }
+}
+
+function hydrateCourseModules(doc: Document, modules: Record<string, any>[]): void {
+  const moduleCards = Array.from(doc.querySelectorAll<HTMLElement>('.module-card'));
+  if (!moduleCards.length || !modules.length) return;
+  const container = moduleCards[0].parentElement;
+  const template = moduleCards[0];
+  while (moduleCards.length < modules.length) {
+    const clone = template.cloneNode(true) as HTMLElement;
+    container?.appendChild(clone);
+    moduleCards.push(clone);
+  }
+  moduleCards.slice(modules.length).forEach((card) => card.remove());
+  modules.forEach((module, moduleIndex) => {
+    const card = moduleCards[moduleIndex];
+    setText(card, 'h3', module.title || module.name || `Module ${moduleIndex + 1}`);
+    const lessons = Array.isArray(module.lessons) ? module.lessons : [];
+    const rows = Array.from(card.querySelectorAll<HTMLElement>('.lesson-row'));
+    const rowTemplate = rows[0];
+    if (rowTemplate) {
+      while (rows.length < lessons.length) {
+        const clone = rowTemplate.cloneNode(true) as HTMLElement;
+        rowTemplate.parentElement?.appendChild(clone);
+        rows.push(clone);
+      }
+      rows.slice(lessons.length).forEach((row) => row.remove());
+      lessons.forEach((lesson, lessonIndex) => {
+        const row = rows[lessonIndex];
+        setText(row, '.lesson-no', String(lessonIndex + 1));
+        setText(row, 'strong', lesson.title || lesson.name || `Lesson ${lessonIndex + 1}`);
+        setText(row, 'p', lesson.description || 'Lesson');
+      });
+    }
+  });
+}
+
+function applyDashboardContent(doc: Document, pathname: string, collections?: DashboardCollections): void {
   if (!collections) return;
   const slug = slugFromPathname(pathname);
-  const [prefix, ...rest] = slug.split('/');
-  const config = COLLECTION_ROUTE_CONFIG[prefix || ''];
-  if (!config) return;
-  if (prefix === 'store' && ['cart', 'checkout', 'thank-you', 'checkout-failed'].includes(rest.join('/'))) return;
-  if (prefix === 'events' && rest.join('/') === 'register') return;
+  const binding = COLLECTION_BINDINGS.find((candidate) => (
+    candidate.archiveSlugs.includes(slug) ||
+    slug === candidate.detailPrefix ||
+    slug.startsWith(`${candidate.detailPrefix}/`)
+  ));
+  if (!binding) return;
 
-  const items = Array.isArray(collections[config.key]) ? collections[config.key] : [];
-  const item = rest.length
-    ? items.find((entry) => itemSlug(entry) === rest.join('/') || itemSlug(entry) === rest[0])
-    : null;
-  const html = rest.length && rest.join('/') !== 'archive'
-    ? renderDetailPage(config, item, tenantName)
-    : renderArchivePage(config, items, tenantName);
+  const rest = slug === binding.detailPrefix ? '' : slug.replace(new RegExp(`^${binding.detailPrefix}/?`), '');
+  if (binding.detailPrefix === 'store' && ['cart', 'checkout', 'thank-you', 'checkout-failed'].includes(rest)) return;
+  if (binding.detailPrefix === 'events' && rest === 'register') return;
 
-  let style = doc.getElementById('dashboard-archive-styles') as HTMLStyleElement | null;
-  if (!style) {
-    style = doc.createElement('style');
-    style.id = 'dashboard-archive-styles';
-    doc.head.appendChild(style);
+  const items = Array.isArray(collections[binding.key]) ? collections[binding.key] as Record<string, any>[] : [];
+  const isArchive = binding.archiveSlugs.includes(slug) || !rest;
+  if (isArchive) {
+    syncArchiveCards(doc, binding, items);
+    return;
   }
-  style.textContent = dashboardArchiveStyles();
 
-  const main = doc.getElementById('content-outlet') || doc.querySelector('main') || doc.body;
-  main.innerHTML = html;
+  const item = items.find((entry) => itemSlug(entry) === rest || itemSlug(entry) === rest.split('/')[0]);
+  if (item) hydrateDetailPage(doc, binding, item);
 }
 
 function readText(value: unknown): string {
@@ -645,23 +761,6 @@ function renderDefaultMobileDrawerHtml(): string {
   return `${closeRow}${navHtml}${actionsHtml}`;
 }
 
-function renderMobileRailDrawerHtml(pathname: string, settings?: ThemeSettings | null, entitlements?: ModuleEntitlement[], navigationMenus?: NavigationMenu[]): string {
-  const railItems = getRailItems(settings, navigationMenus).filter((item) => isUrlEntitled(item.path, entitlements));
-  const links = railItems.map((item) => {
-    const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`);
-    return `<a class="rail-item pjax-link${isActive ? ' active' : ''}" href="${escapeHtml(item.path)}"><i data-lucide="${item.icon}"></i><span>${escapeHtml(item.label)}</span></a>`;
-  }).join('');
-
-  return `
-    <div class="drawer-close-row">
-      <button class="drawer-close" type="button" aria-label="Close rail menu">
-        <i data-lucide="x"></i>
-      </button>
-    </div>
-    <nav class="rail-nav mobile-rail-drawer-nav">${links}</nav>
-  `;
-}
-
 function themeSetting(settings: ThemeSettings | null | undefined, key: string, fallback: string): string {
   const value = settings?.[key];
   return typeof value === 'string' && value.trim() ? value : fallback;
@@ -848,19 +947,6 @@ function normalizeShellHrefs(doc: Document): void {
   });
 }
 
-function normalizeMobileControls(doc: Document): void {
-  doc.querySelectorAll<HTMLElement>('#menuBtn, .mobile-hamburger-btn').forEach((button) => {
-    button.setAttribute('type', 'button');
-    button.setAttribute('aria-controls', 'mobileDrawer');
-    button.setAttribute('aria-expanded', 'false');
-  });
-  doc.querySelectorAll<HTMLElement>('#kebabBtn, .mobile-kebab-btn').forEach((button) => {
-    button.setAttribute('type', 'button');
-    button.setAttribute('aria-controls', 'mobileRailDrawer');
-    button.setAttribute('aria-expanded', 'false');
-  });
-}
-
 async function loadPublishedPageHtml(route: string, assetBase?: string): Promise<string | null> {
   const nextUrl = new URL(route, window.location.origin);
   const slug = slugFromPathname(nextUrl.pathname);
@@ -1009,12 +1095,11 @@ function buildStaticPayload(
   }
 
   applyTenantContent(doc, options.ecContext);
-  applyDashboardCollections(doc, options.pathname, options.ecContext?.collections, options.ecContext?.tenant?.name);
+  applyDashboardContent(doc, options.pathname, options.ecContext?.collections);
   normalizeShellHrefs(doc);
-  normalizeMobileControls(doc);
 
   // Strip existing mobile drawers from parsed/theme-transformed documents to avoid duplicates.
-  doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer, .mobile-rail-drawer, #mobileRailDrawer, .rail-drawer-backdrop').forEach((el) => el.remove());
+  doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach((el) => el.remove());
 
   // Extract header actions before we strip/process elements
   const headerActionsEl = doc.querySelector('.header-actions');
@@ -1241,15 +1326,6 @@ function buildStaticPayload(
       drawerElement.innerHTML = renderDefaultMobileDrawerHtml();
     }
     stage.appendChild(drawerElement);
-
-    if (activeThemeSettings.mobileDrawerCombine === false) {
-      const railDrawerElement = doc.createElement('aside');
-      railDrawerElement.className = 'mobile-rail-drawer';
-      railDrawerElement.id = 'mobileRailDrawer';
-      railDrawerElement.setAttribute('aria-hidden', 'true');
-      railDrawerElement.innerHTML = renderMobileRailDrawerHtml(options.pathname, activeThemeSettings, options.moduleEntitlements, activeNavigationMenus);
-      stage.appendChild(railDrawerElement);
-    }
   }
 
   const bodyClassNames = (doc.body.getAttribute('class') || '')
@@ -1277,30 +1353,17 @@ function buildStaticPayload(
 }
 
 function bindStaticDrawer(root: HTMLElement): () => void {
-  const mainDrawer = root.querySelector<HTMLElement>('#mobileDrawer, .mobile-drawer');
-  const railDrawer = root.querySelector<HTMLElement>('#mobileRailDrawer, .mobile-rail-drawer');
-  if (!mainDrawer && !railDrawer) return () => undefined;
+  const drawer = root.querySelector<HTMLElement>('#mobileDrawer, .mobile-drawer');
+  if (!drawer) return () => undefined;
 
-  const mainButtons = Array.from(root.querySelectorAll<HTMLElement>('#menuBtn, .mobile-hamburger-btn, [aria-controls="mobileDrawer"]'));
-  const railButtons = Array.from(root.querySelectorAll<HTMLElement>('#kebabBtn, .mobile-kebab-btn, [aria-controls="mobileRailDrawer"]'));
+  const menuButtons = Array.from(root.querySelectorAll<HTMLElement>('#menuBtn, .mobile-menu-btn, [aria-controls="mobileDrawer"]'));
   const closeButtons = Array.from(root.querySelectorAll<HTMLElement>('#closeDrawer, .drawer-close'));
   const cleanups: Array<() => void> = [];
 
-  const setDrawerOpen = (
-    drawer: HTMLElement | null,
-    buttons: HTMLElement[],
-    className: string,
-    open: boolean
-  ) => {
-    if (!drawer) return;
-    document.body.classList.toggle(className, open);
+  const setOpen = (open: boolean) => {
+    document.body.classList.toggle('drawer-open', open);
     drawer.setAttribute('aria-hidden', String(!open));
-    buttons.forEach((button) => button.setAttribute('aria-expanded', String(open)));
-  };
-
-  const closeAll = () => {
-    setDrawerOpen(mainDrawer, mainButtons, 'drawer-open', false);
-    setDrawerOpen(railDrawer, railButtons, 'rail-drawer-open', false);
+    menuButtons.forEach((button) => button.setAttribute('aria-expanded', String(open)));
   };
 
   const addListener = <K extends keyof HTMLElementEventMap>(
@@ -1312,60 +1375,46 @@ function bindStaticDrawer(root: HTMLElement): () => void {
     cleanups.push(() => element.removeEventListener(type, listener as EventListener));
   };
 
-  mainButtons.forEach((button) => {
+  menuButtons.forEach((button) => {
     addListener(button, 'click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      setDrawerOpen(railDrawer, railButtons, 'rail-drawer-open', false);
-      setDrawerOpen(mainDrawer, mainButtons, 'drawer-open', true);
-    });
-  });
-
-  railButtons.forEach((button) => {
-    addListener(button, 'click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      setDrawerOpen(mainDrawer, mainButtons, 'drawer-open', false);
-      setDrawerOpen(railDrawer || mainDrawer, railDrawer ? railButtons : mainButtons, railDrawer ? 'rail-drawer-open' : 'drawer-open', true);
+      setOpen(true);
     });
   });
 
   closeButtons.forEach((button) => {
     addListener(button, 'click', (event) => {
       event.preventDefault();
-      closeAll();
+      setOpen(false);
     });
   });
 
   const onDrawerClick = (event: Event) => {
-    if ((event.target as HTMLElement).closest('a')) closeAll();
+    if ((event.target as HTMLElement).closest('a')) setOpen(false);
   };
-  [mainDrawer, railDrawer].forEach((drawer) => {
-    if (!drawer) return;
-    drawer.addEventListener('click', onDrawerClick);
-    cleanups.push(() => drawer.removeEventListener('click', onDrawerClick));
-  });
+  drawer.addEventListener('click', onDrawerClick);
+  cleanups.push(() => drawer.removeEventListener('click', onDrawerClick));
 
   const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') closeAll();
+    if (event.key === 'Escape') setOpen(false);
   };
   document.addEventListener('keydown', onKeyDown);
   cleanups.push(() => document.removeEventListener('keydown', onKeyDown));
 
   const onDocumentClick = (event: MouseEvent) => {
-    if (!document.body.classList.contains('drawer-open') && !document.body.classList.contains('rail-drawer-open')) return;
+    if (!document.body.classList.contains('drawer-open')) return;
     const target = event.target as Node;
-    const clickedMenuButton = [...mainButtons, ...railButtons].some((button) => button.contains(target));
-    const clickedDrawer = [mainDrawer, railDrawer].some((drawer) => drawer?.contains(target));
-    if (!clickedDrawer && !clickedMenuButton) closeAll();
+    const clickedMenuButton = menuButtons.some((button) => button.contains(target));
+    if (!drawer.contains(target) && !clickedMenuButton) setOpen(false);
   };
   document.addEventListener('click', onDocumentClick);
   cleanups.push(() => document.removeEventListener('click', onDocumentClick));
 
-  closeAll();
+  setOpen(false);
 
   return () => {
-    closeAll();
+    setOpen(false);
     cleanups.forEach((cleanup) => cleanup());
   };
 }
