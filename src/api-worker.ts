@@ -336,6 +336,10 @@ function tenantNavigationStateKey(tenantId: string) {
   return `tenant-navigation:${tenantId}`;
 }
 
+function tenantMembersStateKey(tenantId: string) {
+  return `tenant-members:${tenantId}`;
+}
+
 function pageIdFromSlug(context: ReturnType<typeof getRequestContext>, slug: string) {
   const slugKey = cleanSubdomain(slug || 'home') || 'home';
   const tenantKey = cleanSubdomain(context.tenant.subdomain || context.tenant.id) || 'tenant';
@@ -609,6 +613,10 @@ async function resolveRequestTenant(
 ) {
   const hostSubdomain = subdomainFromHost(url.hostname);
   const hostCustomDomain = customDomainFromHost(url.hostname);
+
+  if (hostSubdomain === demoTenant.subdomain) {
+    return demoTenant;
+  }
 
   if (hostSubdomain) {
     const tenant = await readRegisteredTenant(env, hostSubdomain);
@@ -1148,6 +1156,7 @@ function makeSiteContextForContext(
       secondaryLinks: footerItems.length ? footerItems : createEcclesiaFooterLinks(),
     },
     navigationMenus,
+    collections: getTenantDashboardCollections(context),
     announcement: {
       id: `announcement-${context.tenant.subdomain}`,
       isActive: false,
@@ -1184,6 +1193,7 @@ function makeRenderForContext(
     navigation: siteContext.navigation,
     footer: siteContext.footer,
     navigationMenus,
+    collections: getTenantDashboardCollections(context),
     theme: {
       name: siteContext.theme.name,
       settings: siteContext.theme.settings,
@@ -1213,7 +1223,389 @@ function makeSessionToken(tenantId: string, userId: string) {
   return `churchos-session-${encoded.replace(/=+$/g, '')}`;
 }
 
-function collectionResponse(pathname: string): JsonValue {
+function isDemoShowcaseContext(context: ReturnType<typeof getRequestContext>) {
+  return context.tenant.id === demoTenant.id || cleanSubdomain(context.tenant.subdomain) === demoTenant.subdomain;
+}
+
+function createDemoDashboardCollections() {
+  const now = '2026-06-30T10:00:00.000Z';
+  return {
+    media: [
+      {
+        id: 'media-sunday-worship-recap',
+        slug: 'sunday-worship-recap',
+        title: 'Sunday Worship Recap',
+        type: 'Video',
+        duration: '18 min',
+        publishedAt: 'Jun 28, 2026',
+        speaker: 'Media Team',
+        description: 'Highlights from worship, testimonies, and the Word during our latest Sunday service.',
+        videoUrl: 'https://example.com/demo/sunday-worship-recap.mp4',
+      },
+      {
+        id: 'media-prayer-audio',
+        slug: 'midweek-prayer-audio',
+        title: 'Midweek Prayer Audio',
+        type: 'Audio',
+        duration: '42 min',
+        publishedAt: 'Jun 25, 2026',
+        speaker: 'Prayer Team',
+        description: 'A focused prayer session for families, leaders, and city outreach.',
+        audioUrl: 'https://example.com/demo/midweek-prayer-audio.mp3',
+      },
+    ],
+    sermons: [
+      {
+        id: 'sermon-faith-that-builds',
+        slug: 'faith-that-builds',
+        title: 'Faith That Builds',
+        speaker: 'Pastor Daniel Stone',
+        series: 'Kingdom Foundations',
+        duration: '48 min',
+        publishedAt: 'Jun 23, 2026',
+        description: 'A message on building a resilient life of faith, service, and obedience.',
+        videoUrl: 'https://example.com/demo/faith-that-builds.mp4',
+      },
+      {
+        id: 'sermon-light-in-the-city',
+        slug: 'light-in-the-city',
+        title: 'Light in the City',
+        speaker: 'Pastor Miriam Cole',
+        series: 'Witness',
+        duration: '39 min',
+        publishedAt: 'Jun 16, 2026',
+        description: 'A teaching on evangelism, compassion, and becoming visible hope in the city.',
+        audioUrl: 'https://example.com/demo/light-in-the-city.mp3',
+      },
+    ],
+    services: [
+      {
+        id: 'service-sunday-celebration',
+        slug: 'sunday-celebration',
+        title: 'Sunday Celebration Service',
+        date: 'Every Sunday',
+        location: 'Main Auditorium',
+        duration: '9:30 AM',
+        description: 'Worship, the Word, prayer, children ministry, and fellowship for the whole family.',
+      },
+      {
+        id: 'service-midweek-word-prayer',
+        slug: 'midweek-word-prayer',
+        title: 'Midweek Word & Prayer',
+        date: 'Every Wednesday',
+        location: 'Online and Prayer Hall',
+        duration: '7:00 PM',
+        description: 'A focused midweek gathering for teaching, intercession, and spiritual growth.',
+      },
+    ],
+    resources: [
+      {
+        id: 'resource-new-believers-guide',
+        slug: 'new-believers-guide',
+        title: 'New Believers Guide',
+        type: 'PDF',
+        publishedAt: 'Jun 20, 2026',
+        description: 'A starter guide for salvation, prayer, Bible reading, and next steps in church life.',
+        downloadUrl: 'https://example.com/demo/new-believers-guide.pdf',
+      },
+      {
+        id: 'resource-cell-leader-toolkit',
+        slug: 'cell-leader-toolkit',
+        title: 'Cell Leader Toolkit',
+        type: 'Toolkit',
+        publishedAt: 'Jun 14, 2026',
+        description: 'Meeting agenda, follow-up checklist, and discussion prompts for cell leaders.',
+        downloadUrl: 'https://example.com/demo/cell-leader-toolkit.pdf',
+      },
+    ],
+    articles: [
+      {
+        id: 'article-growing-in-prayer',
+        slug: 'growing-in-prayer',
+        title: 'Growing in Prayer This Month',
+        author: 'Pastoral Team',
+        publishedAt: 'Jun 29, 2026',
+        excerpt: 'Simple rhythms to help members build a consistent prayer life and pray with confidence.',
+        content: 'Simple rhythms to help members build a consistent prayer life and pray with confidence.',
+      },
+      {
+        id: 'article-serving-with-joy',
+        slug: 'serving-with-joy',
+        title: 'Serving With Joy',
+        author: 'Volunteer Team',
+        publishedAt: 'Jun 21, 2026',
+        excerpt: 'A short encouragement for every volunteer carrying ministry with excellence and love.',
+        content: 'A short encouragement for every volunteer carrying ministry with excellence and love.',
+      },
+    ],
+    courses: [
+      {
+        id: 'course-foundations',
+        slug: 'foundations-of-faith',
+        title: 'Foundations of Faith',
+        instructor: 'Discipleship School',
+        duration: '4 weeks',
+        description: 'A beginner-friendly discipleship course covering salvation, prayer, the Word, and service.',
+        modules: [
+          {
+            title: 'New Life in Christ',
+            description: 'Identity, assurance, and the gift of salvation.',
+            lessons: [{ title: 'Assurance of Salvation' }, { title: 'Your New Identity' }],
+            quizzes: [{ title: 'Foundations Quiz 1' }],
+          },
+          {
+            title: 'Prayer and the Word',
+            description: 'Building daily spiritual habits.',
+            lessons: [{ title: 'How to Pray' }, { title: 'How to Study Scripture' }],
+            quizzes: [{ title: 'Foundations Quiz 2' }],
+          },
+        ],
+      },
+      {
+        id: 'course-leadership',
+        slug: 'cell-leadership-basics',
+        title: 'Cell Leadership Basics',
+        instructor: 'Growth Track',
+        duration: '3 weeks',
+        description: 'Practical training for hosting, shepherding, and multiplying healthy cell groups.',
+        modules: [
+          {
+            title: 'Shepherding People',
+            description: 'Care, follow-up, and pastoral sensitivity.',
+            lessons: [{ title: 'Leading Conversations' }, { title: 'Follow-up Systems' }],
+            quizzes: [{ title: 'Care Quiz' }],
+          },
+        ],
+      },
+    ],
+    podcasts: [
+      {
+        id: 'podcast-family-table',
+        slug: 'family-table-prayer',
+        title: 'Family Table: Prayer at Home',
+        host: 'Grace & Home Podcast',
+        duration: '31 min',
+        publishedAt: 'Jun 27, 2026',
+        description: 'A practical conversation about leading prayer rhythms with children and young adults.',
+        audioUrl: 'https://example.com/demo/family-table-prayer.mp3',
+      },
+      {
+        id: 'podcast-serving-teams',
+        slug: 'healthy-serving-teams',
+        title: 'Healthy Serving Teams',
+        host: 'Ministry Lab',
+        duration: '26 min',
+        publishedAt: 'Jun 18, 2026',
+        description: 'How ministry teams can serve with clarity, rest, and spiritual focus.',
+        audioUrl: 'https://example.com/demo/healthy-serving-teams.mp3',
+      },
+    ],
+    products: [
+      {
+        id: 'product-prayer-journal',
+        slug: 'prayer-journal',
+        title: 'Prayer Journal',
+        price: '$14.00',
+        type: 'Book',
+        description: 'A guided journal for prayer requests, testimonies, scriptures, and weekly reflections.',
+      },
+      {
+        id: 'product-discipleship-workbook',
+        slug: 'discipleship-workbook',
+        title: 'Discipleship Workbook',
+        price: '$22.00',
+        type: 'Workbook',
+        description: 'Companion workbook for the Foundations of Faith course.',
+      },
+    ],
+    events: [
+      {
+        id: 'event-youth-night',
+        slug: 'youth-night',
+        title: 'Youth Night',
+        startDate: 'Jul 12, 2026',
+        location: 'Youth Hall',
+        price: 'Free',
+        description: 'Worship, games, teaching, and small groups for teenagers and young adults.',
+      },
+      {
+        id: 'event-leaders-retreat',
+        slug: 'leaders-retreat',
+        title: 'Leaders Retreat',
+        startDate: 'Aug 02, 2026',
+        location: 'Retreat Center',
+        price: '$45.00',
+        description: 'A one-day training and refreshing retreat for cell leaders, workers, and ministry heads.',
+      },
+    ],
+    updatedAt: now,
+  };
+}
+
+function getTenantDashboardCollections(context: ReturnType<typeof getRequestContext>) {
+  if (!isDemoShowcaseContext(context)) {
+    return {
+      media: [],
+      sermons: [],
+      services: [],
+      resources: [],
+      articles: [],
+      courses: [],
+      podcasts: [],
+      products: [],
+      events: [],
+    };
+  }
+  return createDemoDashboardCollections();
+}
+
+function normalizeEmail(value: unknown) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function makeMemberAccount(context: ReturnType<typeof getRequestContext>, body: Record<string, any>) {
+  const email = normalizeEmail(body.email);
+  const firstName = String(body.firstName || 'Member').trim() || 'Member';
+  const lastName = String(body.lastName || 'Account').trim() || 'Account';
+  const now = new Date().toISOString();
+  return {
+    id: String(body.id || `account-${cleanSubdomain(email) || makeId('member')}`),
+    user: {
+      id: String(body.userId || `user-${cleanSubdomain(email) || makeId('member')}`),
+      email,
+      member: {
+        id: String(body.memberId || `member-${cleanSubdomain(email) || makeId('member')}`),
+        firstName,
+        lastName,
+      },
+    },
+    password: String(body.password || ''),
+    member: {
+      id: String(body.memberId || `member-${cleanSubdomain(email) || makeId('member')}`),
+      tenantId: context.tenant.id,
+      userId: String(body.userId || `user-${cleanSubdomain(email) || makeId('member')}`),
+      firstName,
+      lastName,
+      email,
+      phone: String(body.phone || ''),
+      birthday: body.birthday || null,
+      address: String(body.address || ''),
+      membershipStatus: String(body.membershipStatus || 'member'),
+      createdAt: String(body.createdAt || now),
+      notificationPref: {
+        preferEmail: true,
+        preferSms: Boolean(body.phone),
+        preferPush: true,
+        preferWhatsapp: false,
+      },
+      groupMemberships: body.groupMemberships || [],
+      lmsEnrollments: body.lmsEnrollments || [],
+      eventRegistrations: body.eventRegistrations || [],
+      checkIns: body.checkIns || [],
+    },
+    giving: body.giving || {
+      donations: [],
+      partnerships: [],
+      recurringGivings: [],
+      recurringPartnerships: [],
+      totalGiven: 0,
+    },
+    settings: body.settings || {
+      memberPortalEnabled: true,
+      allowPublicRegistration: true,
+      showGivingHistory: true,
+      showGroupMemberships: true,
+      showCourseProgress: true,
+      showAttendanceHistory: true,
+      showEventRegistrations: true,
+      memberOnlyContent: true,
+    },
+  };
+}
+
+function demoMemberAccount(context: ReturnType<typeof getRequestContext>) {
+  return makeMemberAccount(context, {
+    id: 'account-demo-member',
+    userId: 'user-demo-member',
+    memberId: 'member-demo-profile',
+    firstName: 'Demo',
+    lastName: 'Member',
+    email: 'demo@churched.online',
+    password: 'Pass1234',
+    phone: '+1 555 010 2026',
+    birthday: '1994-10-14T00:00:00.000Z',
+    address: '101 Fellowship Way, Demo City',
+    membershipStatus: 'Cell Leader',
+    createdAt: '2026-06-17T00:00:00.000Z',
+    groupMemberships: [
+      { id: 'group-membership-youth', role: 'Leader', joinedAt: '2026-06-17T00:00:00.000Z', group: { name: 'Young Adults Cell' } },
+      { id: 'group-membership-outreach', role: 'Member', joinedAt: '2026-06-20T00:00:00.000Z', group: { name: 'Outreach Team' } },
+    ],
+    lmsEnrollments: [
+      { id: 'enrollment-foundations', status: 'active', progressPercent: 62, course: { title: 'Foundations of Faith' } },
+      { id: 'enrollment-leadership', status: 'active', progressPercent: 35, course: { title: 'Cell Leadership Basics' } },
+    ],
+    eventRegistrations: [
+      { id: 'registration-youth-night', paymentStatus: 'confirmed', createdAt: '2026-06-26T00:00:00.000Z', event: { title: 'Youth Night', startDate: '2026-07-12T18:00:00.000Z' } },
+    ],
+    checkIns: [
+      { id: 'checkin-sunday', type: 'Sunday Service', targetId: 'Main Auditorium', checkedInAt: '2026-06-28T09:20:00.000Z' },
+      { id: 'checkin-midweek', type: 'Midweek Word & Prayer', targetId: 'Prayer Hall', checkedInAt: '2026-06-25T18:55:00.000Z' },
+    ],
+    giving: {
+      donations: [
+        { id: 'giving-tithe-june', amount: 150, currency: 'USD', status: 'success', createdAt: '2026-06-28T00:00:00.000Z', category: { name: 'Weekly Tithes' } },
+        { id: 'giving-missions-june', amount: 400, currency: 'USD', status: 'success', createdAt: '2026-06-15T00:00:00.000Z', category: { name: 'Missions Fund' } },
+      ],
+      partnerships: [
+        { id: 'partnership-building', amount: 250, currency: 'USD', status: 'success', createdAt: '2026-06-10T00:00:00.000Z', category: { name: 'Building Fund' } },
+      ],
+      recurringGivings: [],
+      recurringPartnerships: [],
+      totalGiven: 800,
+    },
+  });
+}
+
+async function readTenantMemberAccounts(env: Env, context: ReturnType<typeof getRequestContext>) {
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantMembersStateKey(context.tenant.id));
+  const stored = parseStoredJson<Record<string, any>[]>(raw, []);
+  const accounts = Array.isArray(stored) ? stored : [];
+  if (!isDemoShowcaseContext(context)) return accounts;
+
+  const hasDemo = accounts.some((account) => normalizeEmail(account?.user?.email || account?.member?.email) === 'demo@churched.online');
+  return hasDemo ? accounts : [demoMemberAccount(context), ...accounts];
+}
+
+async function writeTenantMemberAccounts(env: Env, context: ReturnType<typeof getRequestContext>, accounts: Record<string, any>[]) {
+  await env.CHURCHOS_TENANTS?.put(tenantMembersStateKey(context.tenant.id), JSON.stringify(accounts));
+}
+
+function makeMemberSessionToken(tenantId: string, userId: string) {
+  return makeSessionToken(tenantId, userId);
+}
+
+function userIdFromSessionToken(token: string) {
+  const clean = String(token || '').replace(/^Bearer\s+/i, '').replace(/^churchos-session-/, '');
+  if (!clean) return '';
+  try {
+    const padded = clean.padEnd(Math.ceil(clean.length / 4) * 4, '=');
+    const decoded = atob(padded);
+    return decoded.split(':')[1] || '';
+  } catch {
+    return '';
+  }
+}
+
+async function findMemberAccountFromRequest(env: Env, context: ReturnType<typeof getRequestContext>, request: Request) {
+  const token = request.headers.get('authorization') || '';
+  const userId = userIdFromSessionToken(token);
+  if (!userId) return null;
+  const accounts = await readTenantMemberAccounts(env, context);
+  return accounts.find((account) => account?.user?.id === userId || account?.member?.userId === userId) || null;
+}
+
+function collectionResponse(pathname: string, context: ReturnType<typeof getRequestContext>): JsonValue {
   if (pathname.includes('/users')) return [demoUser];
   if (pathname.includes('/roles')) return demoRoles;
   if (pathname.includes('/invitations')) return [];
@@ -1221,6 +1613,16 @@ function collectionResponse(pathname: string): JsonValue {
   if (pathname.includes('/websites')) return [demoWebsite] as JsonValue;
   if (pathname.includes('/themes')) return [demoEcclesiaTheme] as JsonValue;
   if (pathname.includes('/assets')) return demoMarketplaceAssets;
+  const collections = getTenantDashboardCollections(context);
+  if (pathname.includes('/media')) return collections.media as JsonValue;
+  if (pathname.includes('/sermons')) return collections.sermons as JsonValue;
+  if (pathname.includes('/services')) return collections.services as JsonValue;
+  if (pathname.includes('/resources') || pathname.includes('/library')) return collections.resources as JsonValue;
+  if (pathname.includes('/articles') || pathname.includes('/blogs') || pathname.includes('/posts')) return collections.articles as JsonValue;
+  if (pathname.includes('/podcasts')) return collections.podcasts as JsonValue;
+  if (pathname.includes('/products') || pathname.includes('/store')) return collections.products as JsonValue;
+  if (pathname.includes('/events')) return collections.events as JsonValue;
+  if (pathname.includes('/courses') || pathname.includes('/modules') || pathname.includes('/lessons') || pathname.includes('/quizzes')) return collections.courses as JsonValue;
   if (pathname.includes('/plans')) {
     return [
       { id: 'starter', name: 'Starter', priceMonthly: 29 },
@@ -1233,16 +1635,11 @@ function collectionResponse(pathname: string): JsonValue {
     pathname.includes('/tags') ||
     pathname.includes('/playlists') ||
     pathname.includes('/speakers') ||
-    pathname.includes('/products') ||
     pathname.includes('/orders') ||
-    pathname.includes('/events') ||
     pathname.includes('/members') ||
     pathname.includes('/contacts') ||
     pathname.includes('/tasks') ||
     pathname.includes('/streams') ||
-    pathname.includes('/courses') ||
-    pathname.includes('/modules') ||
-    pathname.includes('/lessons') ||
     pathname.includes('/jobs') ||
     pathname.includes('/logs') ||
     pathname.includes('/reports')
@@ -1260,7 +1657,9 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
   const hostSubdomain = subdomainFromHost(url.hostname);
   const hostCustomDomain = customDomainFromHost(url.hostname);
   const resolvedHostTenant = hostSubdomain
-    ? await readRegisteredTenant(env, hostSubdomain)
+    ? hostSubdomain === demoTenant.subdomain
+      ? demoTenant
+      : await readRegisteredTenant(env, hostSubdomain)
     : hostCustomDomain
       ? await readRegisteredTenantByDomain(env, hostCustomDomain)
       : null;
@@ -1289,6 +1688,13 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
 
   if (pathname === '/api/public/resolve-subdomain') {
     const subdomain = cleanSubdomain(url.searchParams.get('subdomain') || hostSubdomain);
+    if (subdomain === demoTenant.subdomain) {
+      return withJson({
+        tenantId: demoTenant.id,
+        tenant: demoTenant as unknown as JsonValue,
+        data: demoTenant as unknown as JsonValue,
+      });
+    }
     const resolvedTenant = await readRegisteredTenant(env, subdomain);
     if (!resolvedTenant) {
       return withJson({ error: 'Church workspace not found' }, { status: 404 });
@@ -1481,6 +1887,20 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
     });
   }
 
+  if (pathname === '/api/members/me') {
+    const account = await findMemberAccountFromRequest(env, context, request);
+    if (!account) {
+      return withJson({ error: 'Member session not found' }, { status: 401 });
+    }
+    return withJson({
+      data: {
+        member: account.member,
+        giving: account.giving,
+        settings: account.settings,
+      } as JsonValue,
+    });
+  }
+
   if (pathname === '/api/public/resolve-website-tenant') {
     return withJson({
       data: {
@@ -1492,7 +1912,7 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
   }
 
   return withJson({
-    data: collectionResponse(pathname),
+    data: collectionResponse(pathname, context),
     meta: { source: 'churchos-api-worker', mock: true },
   });
 }
@@ -1853,19 +2273,125 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
     return withJson({ ...session, data: session }, { status: 201 });
   }
 
-  if (pathname === '/api/auth/login' || pathname === '/api/super-admin/login') {
-    const token = makeSessionToken(tenant.id, demoUser.id);
+  if (pathname === '/api/auth/member-register') {
+    const email = normalizeEmail(body.email);
+    const password = String(body.password || '');
+    const firstName = String(body.firstName || '').trim();
+    const lastName = String(body.lastName || '').trim();
+    if (!email || !password || !firstName || !lastName) {
+      return withJson({ error: 'email, password, firstName, lastName are required' }, { status: 400 });
+    }
+    const accounts = await readTenantMemberAccounts(env, context);
+    if (accounts.some((account) => normalizeEmail(account?.user?.email || account?.member?.email) === email)) {
+      return withJson({ error: 'Email already registered in this church' }, { status: 409 });
+    }
+    const account = makeMemberAccount(context, {
+      ...body,
+      email,
+      password,
+      firstName,
+      lastName,
+    });
+    await writeTenantMemberAccounts(env, context, [account, ...accounts]);
+    const token = makeMemberSessionToken(context.tenant.id, account.user.id);
     return withJson({
       token,
+      user: account.user as JsonValue,
       data: {
         token,
-        user: {
-          ...demoUser,
-          tenantId: tenant.id,
-          email: tenant.subdomain ? `admin@${tenant.subdomain}.${platformDomain}` : 'admin@churched.online',
-        },
+        user: account.user,
+      } as JsonValue,
+    }, { status: 201 });
+  }
+
+  if (pathname === '/api/auth/login' || pathname === '/api/super-admin/login') {
+    if (pathname === '/api/auth/login') {
+      const email = normalizeEmail(body.email);
+      const password = String(body.password || '');
+      const accounts = await readTenantMemberAccounts(env, context);
+      const account = accounts.find((entry) => normalizeEmail(entry?.user?.email || entry?.member?.email) === email);
+      if (account) {
+        if (String(account.password || '') !== password) {
+          return withJson({ error: 'Invalid credentials' }, { status: 401 });
+        }
+        const token = makeMemberSessionToken(context.tenant.id, account.user.id);
+        return withJson({
+          token,
+          user: account.user as JsonValue,
+          data: {
+            token,
+            user: account.user,
+            tenant,
+          } as JsonValue,
+        });
+      }
+    }
+
+    const token = makeSessionToken(tenant.id, demoUser.id);
+    const user = {
+      ...demoUser,
+      tenantId: tenant.id,
+      email: tenant.subdomain ? `admin@${tenant.subdomain}.${platformDomain}` : 'admin@churched.online',
+    };
+    return withJson({
+      token,
+      user: user as JsonValue,
+      data: {
+        token,
+        user,
         tenant,
       },
+    });
+  }
+
+  if (pathname === '/api/members/me' || pathname === '/api/members/me/preferences') {
+    const account = await findMemberAccountFromRequest(env, context, request);
+    if (!account) {
+      return withJson({ error: 'Member session not found' }, { status: 401 });
+    }
+    const accounts = await readTenantMemberAccounts(env, context);
+    const nextAccounts = accounts.map((entry) => {
+      if (entry?.user?.id !== account.user.id) return entry;
+      if (pathname.endsWith('/preferences')) {
+        return {
+          ...entry,
+          member: {
+            ...entry.member,
+            notificationPref: {
+              ...(entry.member?.notificationPref || {}),
+              ...(body as Record<string, unknown>),
+            },
+          },
+        };
+      }
+      return {
+        ...entry,
+        member: {
+          ...entry.member,
+          firstName: String(body.firstName || entry.member?.firstName || ''),
+          lastName: String(body.lastName || entry.member?.lastName || ''),
+          email: normalizeEmail(body.email || entry.member?.email || entry.user?.email),
+          phone: String(body.phone || entry.member?.phone || ''),
+          birthday: body.birthday || entry.member?.birthday || null,
+          address: String(body.address || entry.member?.address || ''),
+        },
+        user: {
+          ...entry.user,
+          email: normalizeEmail(body.email || entry.user?.email),
+          member: {
+            ...(entry.user?.member || {}),
+            firstName: String(body.firstName || entry.member?.firstName || ''),
+            lastName: String(body.lastName || entry.member?.lastName || ''),
+          },
+        },
+      };
+    });
+    await writeTenantMemberAccounts(env, context, nextAccounts);
+    const updated = nextAccounts.find((entry) => entry?.user?.id === account.user.id) || account;
+    return withJson({
+      data: pathname.endsWith('/preferences')
+        ? updated.member.notificationPref as JsonValue
+        : updated.member as JsonValue,
     });
   }
 

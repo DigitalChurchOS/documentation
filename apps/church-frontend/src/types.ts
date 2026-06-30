@@ -118,12 +118,15 @@ export interface ModuleEntitlement {
   enabled: boolean;
 }
 
+export type DashboardCollections = Record<string, any[]>;
+
 export interface SiteContext {
   tenant: Tenant;
   theme: ThemeInfo;
   moduleEntitlements: ModuleEntitlement[];
   navigation: NavigationData | null;
   navigationMenus?: NavigationMenu[];
+  collections?: DashboardCollections;
   footer: FooterData | null;
   announcement: { id: string; isActive: boolean; text: string; ctaUrl?: string; ctaLabel?: string };
   enabledPlugins: string[];
@@ -191,6 +194,7 @@ export interface PageRenderResponse {
     globalContent: GlobalContent;
     navigation: NavigationData | null;
     navigationMenus?: NavigationMenu[];
+    collections?: DashboardCollections;
     footer: FooterData | null;
     theme: { name: string; settings: ThemeSettings };
   };

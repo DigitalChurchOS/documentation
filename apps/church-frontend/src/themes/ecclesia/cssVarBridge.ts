@@ -790,6 +790,35 @@ html {
   overflow-x: visible !important;
 }
 @media (max-width: 1050px) {
+  .static-html-stage header .mobile-menu-btn,
+  .static-html-stage .header .mobile-menu-btn,
+  .static-html-stage header .mobile-hamburger-btn,
+  .static-html-stage .header .mobile-hamburger-btn,
+  .static-html-stage header .mobile-kebab-btn,
+  .static-html-stage .header .mobile-kebab-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 auto !important;
+    width: 42px !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 80 !important;
+  }
+  .static-html-stage header .mobile-menu-btn svg,
+  .static-html-stage .header .mobile-menu-btn svg,
+  .static-html-stage header .mobile-menu-btn [data-lucide],
+  .static-html-stage .header .mobile-menu-btn [data-lucide] {
+    display: block !important;
+    width: 20px !important;
+    height: 20px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
   .static-html-stage .mobile-drawer[aria-hidden="true"] {
     visibility: hidden !important;
     pointer-events: none !important;
@@ -801,10 +830,45 @@ html {
   body[data-mobile-drawer-mode="reveal"] .static-html-stage .mobile-drawer {
     z-index: 1 !important;
   }
+  .static-html-stage .mobile-rail-drawer {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    width: min(86vw, 360px) !important;
+    height: 100dvh !important;
+    padding: 22px !important;
+    background: var(--surface, #ffffff) !important;
+    color: var(--text, #111827) !important;
+    box-shadow: -20px 0 60px rgba(15, 23, 42, 0.18) !important;
+    transform: translateX(100%) !important;
+    transition: transform 220ms ease, visibility 220ms ease !important;
+    z-index: 70 !important;
+    overflow-y: auto !important;
+  }
+  .static-html-stage .mobile-rail-drawer[aria-hidden="true"] {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  .static-html-stage .mobile-rail-drawer[aria-hidden="false"],
+  body.rail-drawer-open .static-html-stage .mobile-rail-drawer {
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateX(0) !important;
+  }
+  .static-html-stage .mobile-rail-drawer .rail-nav {
+    display: grid !important;
+    gap: 10px !important;
+  }
+  .static-html-stage .mobile-rail-drawer .rail-item {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
 }
 @media (min-width: 1051px) {
   .static-html-stage .mobile-drawer,
   .static-html-stage #mobileDrawer,
+  .static-html-stage .mobile-rail-drawer,
+  .static-html-stage #mobileRailDrawer,
   .static-html-stage .drawer,
   .static-html-stage #drawer {
     display: none !important;

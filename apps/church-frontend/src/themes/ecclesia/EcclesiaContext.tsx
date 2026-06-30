@@ -1,12 +1,13 @@
 /* ── Ecclesia Context Provider ──────────────────────── */
 import React, { createContext, useContext } from 'react';
-import type { SiteContext, ThemeSettings, GlobalContent, NavigationData, FooterData, ModuleEntitlement, NavigationMenu } from '../../types';
+import type { SiteContext, ThemeSettings, GlobalContent, NavigationData, FooterData, ModuleEntitlement, NavigationMenu, DashboardCollections } from '../../types';
 
 export interface EcclesiaContextValue {
   tenant: SiteContext['tenant'];
   themeSettings: ThemeSettings;
   navigation: NavigationData | null;
   navigationMenus?: NavigationMenu[];
+  collections?: DashboardCollections;
   footer: FooterData | null;
   globalContent: GlobalContent | null;
   isPreviewMode: boolean;

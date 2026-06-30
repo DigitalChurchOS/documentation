@@ -274,6 +274,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     themeSettings,
     navigation: pageData?.navigation || siteContext.navigation,
     navigationMenus: pageData?.navigationMenus || siteContext.navigationMenus || [],
+    collections: pageData?.collections || siteContext.collections || {},
     footer: pageData?.footer || siteContext.footer,
     globalContent: pageData?.globalContent || null,
     isPreviewMode: !!getQueryParams().previewToken,
@@ -296,6 +297,20 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     );
   }
 
+  if (memberPortalRoute) {
+    return (
+      <EcclesiaProvider value={contextValue}>
+        <EcclesiaLayout useStaticLayout={false}>
+          {memberPortalRoute === 'login' ? (
+            <MemberAuthPage tenant={siteContext.tenant} />
+          ) : (
+            <MemberAccountPage tenant={siteContext.tenant} />
+          )}
+        </EcclesiaLayout>
+      </EcclesiaProvider>
+    );
+  }
+
   const fullHtml = getFullHtml(pageData?.contentBlocks);
 
   if (fullHtml) {
@@ -310,20 +325,6 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
           preserveDocument
           ecContextOverride={contextValue}
         />
-      </EcclesiaProvider>
-    );
-  }
-
-  if (memberPortalRoute) {
-    return (
-      <EcclesiaProvider value={contextValue}>
-        <EcclesiaLayout useStaticLayout={false}>
-          {memberPortalRoute === 'login' ? (
-            <MemberAuthPage tenant={siteContext.tenant} />
-          ) : (
-            <MemberAccountPage tenant={siteContext.tenant} />
-          )}
-        </EcclesiaLayout>
       </EcclesiaProvider>
     );
   }

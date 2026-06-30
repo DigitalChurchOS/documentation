@@ -149,9 +149,10 @@ export function routeFromHref(href: string): string | null {
   if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('javascript:')) return null;
   if (/^(mailto|tel|sms):/i.test(trimmed)) return null;
 
+  const isRootRelativeThemeLink = !/^(?:[a-z][a-z0-9+.-]*:|\/|\.\/|\.\.\/|\?|#)/i.test(trimmed);
   let url: URL;
   try {
-    url = new URL(trimmed, window.location.href);
+    url = new URL(trimmed, isRootRelativeThemeLink ? window.location.origin : window.location.href);
   } catch {
     return null;
   }

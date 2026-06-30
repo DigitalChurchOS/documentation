@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getTemplateFileForSlug, routeFromHref, slugFromPathname } from '../../routing';
-import type { ModuleEntitlement, NavigationMenu, NavItem, ThemeSettings } from '../../types';
+import type { DashboardCollections, ModuleEntitlement, NavigationMenu, NavItem, ThemeSettings } from '../../types';
 import { isUrlEntitled } from '../../entitlements';
 import { httpRequest } from '../../http';
 import { useEcclesia, EcclesiaContextValue } from './EcclesiaContext';
@@ -111,6 +111,262 @@ function escapeHtml(value: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+const COLLECTION_ROUTE_CONFIG: Record<string, {
+  key: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  detailBase: string;
+  empty: string;
+}> = {
+  blog: {
+    key: 'articles',
+    eyebrow: 'Articles',
+    title: 'Church Articles',
+    description: 'News, devotionals, testimonies, and pastoral notes from the church dashboard.',
+    detailBase: '/blog',
+    empty: 'No articles have been published yet.',
+  },
+  media: {
+    key: 'media',
+    eyebrow: 'Media',
+    title: 'Media Library',
+    description: 'Videos, audio messages, worship moments, and ministry highlights.',
+    detailBase: '/media',
+    empty: 'No media items have been published yet.',
+  },
+  sermons: {
+    key: 'sermons',
+    eyebrow: 'Sermons',
+    title: 'Sermon Archive',
+    description: 'Recent messages, series, speakers, and teaching notes.',
+    detailBase: '/sermons',
+    empty: 'No sermons have been published yet.',
+  },
+  services: {
+    key: 'services',
+    eyebrow: 'Services',
+    title: 'Services',
+    description: 'Gathering times, service formats, and worship details.',
+    detailBase: '/services',
+    empty: 'No services have been published yet.',
+  },
+  library: {
+    key: 'resources',
+    eyebrow: 'Resources',
+    title: 'Resource Library',
+    description: 'Downloadable guides, devotionals, ministry documents, and study material.',
+    detailBase: '/library',
+    empty: 'No resources have been published yet.',
+  },
+  courses: {
+    key: 'courses',
+    eyebrow: 'Courses',
+    title: 'Discipleship Courses',
+    description: 'Courses, modules, lessons, and quizzes published from the dashboard.',
+    detailBase: '/courses',
+    empty: 'No courses have been published yet.',
+  },
+  podcast: {
+    key: 'podcasts',
+    eyebrow: 'Podcasts',
+    title: 'Podcast Episodes',
+    description: 'Audio conversations, teachings, and recurring church podcast episodes.',
+    detailBase: '/podcast',
+    empty: 'No podcast episodes have been published yet.',
+  },
+  store: {
+    key: 'products',
+    eyebrow: 'Store',
+    title: 'Church Store',
+    description: 'Books, apparel, course materials, and ministry resources available from the dashboard.',
+    detailBase: '/store',
+    empty: 'No products have been published yet.',
+  },
+  events: {
+    key: 'events',
+    eyebrow: 'Events',
+    title: 'Events',
+    description: 'Upcoming services, conferences, trainings, and community gatherings.',
+    detailBase: '/events',
+    empty: 'No events have been published yet.',
+  },
+};
+
+function itemSlug(item: any): string {
+  return String(item?.slug || item?.id || '').replace(/^\/+/, '');
+}
+
+function itemTitle(item: any): string {
+  return String(item?.title || item?.name || item?.episodeTitle || item?.productName || 'Untitled');
+}
+
+function itemDescription(item: any): string {
+  return String(item?.summary || item?.description || item?.excerpt || item?.notes || item?.content || '');
+}
+
+function itemMeta(item: any, configKey: string): string {
+  const bits = [
+    item?.date || item?.publishedAt || item?.startDate || item?.createdAt,
+    item?.speaker || item?.author || item?.host || item?.instructor || item?.type,
+    item?.duration,
+    item?.price,
+    item?.location,
+  ].filter(Boolean).map(String);
+
+  if (configKey === 'courses' && Array.isArray(item?.modules)) {
+    bits.push(`${item.modules.length} modules`);
+  }
+  return bits.slice(0, 3).join(' - ');
+}
+
+function isExternalMediaUrl(value: unknown): boolean {
+  return typeof value === 'string' && /^https?:\/\//i.test(value);
+}
+
+function mediaButton(item: any): string {
+  const mediaUrl = item?.videoUrl || item?.audioUrl || item?.downloadUrl || item?.url;
+  if (!isExternalMediaUrl(mediaUrl)) return '';
+  return `<a class="dashboard-archive__button secondary" href="${escapeHtml(String(mediaUrl))}" target="_blank" rel="noopener noreferrer">Open media</a>`;
+}
+
+function renderArchiveCards(items: any[], config: typeof COLLECTION_ROUTE_CONFIG[string]): string {
+  return items.map((item) => {
+    const slug = itemSlug(item);
+    const detailUrl = slug ? `${config.detailBase}/${slug}` : config.detailBase;
+    const image = item?.imageUrl || item?.thumbnailUrl || item?.coverUrl;
+    const title = itemTitle(item);
+    const description = itemDescription(item);
+    const meta = itemMeta(item, config.key);
+    const courseDetails = config.key === 'courses' && Array.isArray(item.modules)
+      ? `<ul class="dashboard-archive__mini-list">${item.modules.slice(0, 3).map((module: any) => `<li>${escapeHtml(module.title || module.name || 'Module')} - ${(module.lessons || []).length} lessons - ${(module.quizzes || []).length} quizzes</li>`).join('')}</ul>`
+      : '';
+
+    return `
+      <article class="dashboard-archive__card">
+        ${image ? `<img src="${escapeHtml(String(image))}" alt="">` : `<div class="dashboard-archive__media-fallback">${escapeHtml(config.eyebrow.slice(0, 2).toUpperCase())}</div>`}
+        <div class="dashboard-archive__card-body">
+          ${meta ? `<p class="dashboard-archive__meta">${escapeHtml(meta)}</p>` : ''}
+          <h2>${escapeHtml(title)}</h2>
+          ${description ? `<p>${escapeHtml(description)}</p>` : ''}
+          ${courseDetails}
+          <div class="dashboard-archive__actions">
+            <a class="dashboard-archive__button" href="${escapeHtml(detailUrl)}">View details</a>
+            ${mediaButton(item)}
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+function renderArchivePage(config: typeof COLLECTION_ROUTE_CONFIG[string], items: any[], tenantName: string): string {
+  const cards = items.length
+    ? `<div class="dashboard-archive__grid">${renderArchiveCards(items, config)}</div>`
+    : `<div class="dashboard-archive__empty">${escapeHtml(config.empty)}</div>`;
+
+  return `
+    <section class="dashboard-archive">
+      <div class="dashboard-archive__hero">
+        <p class="dashboard-archive__eyebrow">${escapeHtml(config.eyebrow)}</p>
+        <h1>${escapeHtml(config.title)}</h1>
+        <p>${escapeHtml(config.description)}</p>
+        <span>${escapeHtml(tenantName)}</span>
+      </div>
+      ${cards}
+    </section>
+  `;
+}
+
+function renderDetailPage(config: typeof COLLECTION_ROUTE_CONFIG[string], item: any, tenantName: string): string {
+  if (!item) return renderArchivePage(config, [], tenantName);
+  const image = item?.imageUrl || item?.thumbnailUrl || item?.coverUrl;
+  const title = itemTitle(item);
+  const description = itemDescription(item);
+  const meta = itemMeta(item, config.key);
+  const modules = config.key === 'courses' && Array.isArray(item.modules)
+    ? `<div class="dashboard-archive__detail-block"><h2>Course Outline</h2>${item.modules.map((module: any) => `
+        <section>
+          <h3>${escapeHtml(module.title || module.name || 'Module')}</h3>
+          <p>${escapeHtml(module.description || '')}</p>
+          <ul>${(module.lessons || []).map((lesson: any) => `<li>${escapeHtml(lesson.title || lesson.name || 'Lesson')}</li>`).join('')}</ul>
+          ${(module.quizzes || []).length ? `<p class="dashboard-archive__meta">${(module.quizzes || []).length} quizzes</p>` : ''}
+        </section>
+      `).join('')}</div>`
+    : '';
+
+  return `
+    <article class="dashboard-archive dashboard-archive--detail">
+      <a class="dashboard-archive__back" href="${escapeHtml(config.detailBase)}">Back to ${escapeHtml(config.title)}</a>
+      <div class="dashboard-archive__detail">
+        <div>
+          <p class="dashboard-archive__eyebrow">${escapeHtml(config.eyebrow)}</p>
+          <h1>${escapeHtml(title)}</h1>
+          ${meta ? `<p class="dashboard-archive__meta">${escapeHtml(meta)}</p>` : ''}
+          ${description ? `<p>${escapeHtml(description)}</p>` : ''}
+          <div class="dashboard-archive__actions">${mediaButton(item)}</div>
+        </div>
+        ${image ? `<img src="${escapeHtml(String(image))}" alt="">` : `<div class="dashboard-archive__media-fallback">${escapeHtml(config.eyebrow.slice(0, 2).toUpperCase())}</div>`}
+      </div>
+      ${modules}
+    </article>
+  `;
+}
+
+function dashboardArchiveStyles(): string {
+  return `
+    .dashboard-archive{padding:clamp(56px,8vw,104px) clamp(22px,6vw,80px);max-width:1280px;margin:0 auto;color:var(--text,var(--site-text,#1d1812))}
+    .dashboard-archive__hero{max-width:780px;margin-bottom:34px}
+    .dashboard-archive__eyebrow,.dashboard-archive__meta{font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--accent,var(--primary,#0877aa));margin:0 0 10px}
+    .dashboard-archive h1{font-family:var(--font-heading,var(--font-title,inherit));font-size:clamp(42px,7vw,88px);line-height:.98;margin:0 0 16px}
+    .dashboard-archive h2{font-family:var(--font-heading,var(--font-title,inherit));font-size:clamp(24px,3vw,34px);line-height:1.05;margin:0 0 12px}
+    .dashboard-archive p{font-size:clamp(16px,1.8vw,20px);line-height:1.55;color:var(--muted,var(--site-muted,#74685e));margin:0 0 16px}
+    .dashboard-archive__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+    .dashboard-archive__card{background:var(--surface,var(--site-surface,#fff));border:1px solid var(--border,var(--site-border,rgba(0,0,0,.1)));border-radius:var(--radius-xl,var(--radius,20px));overflow:hidden;box-shadow:var(--shadow,0 16px 40px rgba(0,0,0,.08))}
+    .dashboard-archive__card img,.dashboard-archive__detail img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}
+    .dashboard-archive__card-body{padding:22px}
+    .dashboard-archive__media-fallback{aspect-ratio:16/10;display:grid;place-items:center;background:var(--surface-soft,var(--site-soft,#eef6fb));color:var(--accent,var(--primary,#0877aa));font-size:42px;font-weight:900}
+    .dashboard-archive__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .dashboard-archive__button,.dashboard-archive__back{display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-btn,999px);padding:12px 16px;background:var(--accent,var(--primary,#0877aa));color:#fff;text-decoration:none;font-weight:900;border:0}
+    .dashboard-archive__button.secondary{background:var(--surface-soft,var(--site-soft,#eef6fb));color:var(--text,var(--site-text,#1d1812))}
+    .dashboard-archive__empty{padding:34px;border:1px dashed var(--border,var(--site-border,rgba(0,0,0,.15)));border-radius:var(--radius-xl,var(--radius,20px));background:var(--surface,var(--site-surface,#fff));color:var(--muted,var(--site-muted,#74685e))}
+    .dashboard-archive__detail{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,520px);gap:34px;align-items:start;margin-top:22px}
+    .dashboard-archive__detail-block{margin-top:34px;display:grid;gap:16px}
+    .dashboard-archive__detail-block section{background:var(--surface,var(--site-surface,#fff));border:1px solid var(--border,var(--site-border,rgba(0,0,0,.1)));border-radius:var(--radius-xl,var(--radius,20px));padding:22px}
+    .dashboard-archive__mini-list{margin:12px 0 0;padding-left:18px;color:var(--muted,var(--site-muted,#74685e))}
+    @media(max-width:760px){.dashboard-archive{padding:42px 18px 96px}.dashboard-archive__detail{grid-template-columns:1fr}.dashboard-archive__grid{grid-template-columns:1fr}}
+  `;
+}
+
+function applyDashboardCollections(doc: Document, pathname: string, collections?: DashboardCollections, tenantName = 'Church'): void {
+  if (!collections) return;
+  const slug = slugFromPathname(pathname);
+  const [prefix, ...rest] = slug.split('/');
+  const config = COLLECTION_ROUTE_CONFIG[prefix || ''];
+  if (!config) return;
+  if (prefix === 'store' && ['cart', 'checkout', 'thank-you', 'checkout-failed'].includes(rest.join('/'))) return;
+  if (prefix === 'events' && rest.join('/') === 'register') return;
+
+  const items = Array.isArray(collections[config.key]) ? collections[config.key] : [];
+  const item = rest.length
+    ? items.find((entry) => itemSlug(entry) === rest.join('/') || itemSlug(entry) === rest[0])
+    : null;
+  const html = rest.length && rest.join('/') !== 'archive'
+    ? renderDetailPage(config, item, tenantName)
+    : renderArchivePage(config, items, tenantName);
+
+  let style = doc.getElementById('dashboard-archive-styles') as HTMLStyleElement | null;
+  if (!style) {
+    style = doc.createElement('style');
+    style.id = 'dashboard-archive-styles';
+    doc.head.appendChild(style);
+  }
+  style.textContent = dashboardArchiveStyles();
+
+  const main = doc.getElementById('content-outlet') || doc.querySelector('main') || doc.body;
+  main.innerHTML = html;
 }
 
 function readText(value: unknown): string {
@@ -384,6 +640,23 @@ function renderDefaultMobileDrawerHtml(): string {
   return `${closeRow}${navHtml}${actionsHtml}`;
 }
 
+function renderMobileRailDrawerHtml(pathname: string, settings?: ThemeSettings | null, entitlements?: ModuleEntitlement[], navigationMenus?: NavigationMenu[]): string {
+  const railItems = getRailItems(settings, navigationMenus).filter((item) => isUrlEntitled(item.path, entitlements));
+  const links = railItems.map((item) => {
+    const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`);
+    return `<a class="rail-item pjax-link${isActive ? ' active' : ''}" href="${escapeHtml(item.path)}"><i data-lucide="${item.icon}"></i><span>${escapeHtml(item.label)}</span></a>`;
+  }).join('');
+
+  return `
+    <div class="drawer-close-row">
+      <button class="drawer-close" type="button" aria-label="Close rail menu">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+    <nav class="rail-nav mobile-rail-drawer-nav">${links}</nav>
+  `;
+}
+
 function themeSetting(settings: ThemeSettings | null | undefined, key: string, fallback: string): string {
   const value = settings?.[key];
   return typeof value === 'string' && value.trim() ? value : fallback;
@@ -561,6 +834,28 @@ function syncActiveLinks(root: HTMLElement, route: string): void {
   });
 }
 
+function normalizeShellHrefs(doc: Document): void {
+  doc.querySelectorAll<HTMLAnchorElement>('header a[href], .header a[href], footer a[href], .footer a[href], .mobile-drawer a[href], .mobile-tab-rail a[href], .left-rail a[href], .right-rail a[href], .rail-menu-horizontal a[href]').forEach((link) => {
+    const href = link.getAttribute('href');
+    if (!href) return;
+    const route = routeFromHref(href);
+    if (route) link.setAttribute('href', route);
+  });
+}
+
+function normalizeMobileControls(doc: Document): void {
+  doc.querySelectorAll<HTMLElement>('#menuBtn, .mobile-hamburger-btn').forEach((button) => {
+    button.setAttribute('type', 'button');
+    button.setAttribute('aria-controls', 'mobileDrawer');
+    button.setAttribute('aria-expanded', 'false');
+  });
+  doc.querySelectorAll<HTMLElement>('#kebabBtn, .mobile-kebab-btn').forEach((button) => {
+    button.setAttribute('type', 'button');
+    button.setAttribute('aria-controls', 'mobileRailDrawer');
+    button.setAttribute('aria-expanded', 'false');
+  });
+}
+
 async function loadPublishedPageHtml(route: string, assetBase?: string): Promise<string | null> {
   const nextUrl = new URL(route, window.location.origin);
   const slug = slugFromPathname(nextUrl.pathname);
@@ -709,9 +1004,12 @@ function buildStaticPayload(
   }
 
   applyTenantContent(doc, options.ecContext);
+  applyDashboardCollections(doc, options.pathname, options.ecContext?.collections, options.ecContext?.tenant?.name);
+  normalizeShellHrefs(doc);
+  normalizeMobileControls(doc);
 
   // Strip existing mobile drawers from parsed/theme-transformed documents to avoid duplicates.
-  doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach((el) => el.remove());
+  doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer, .mobile-rail-drawer, #mobileRailDrawer, .rail-drawer-backdrop').forEach((el) => el.remove());
 
   // Extract header actions before we strip/process elements
   const headerActionsEl = doc.querySelector('.header-actions');
@@ -938,6 +1236,15 @@ function buildStaticPayload(
       drawerElement.innerHTML = renderDefaultMobileDrawerHtml();
     }
     stage.appendChild(drawerElement);
+
+    if (activeThemeSettings.mobileDrawerCombine === false) {
+      const railDrawerElement = doc.createElement('aside');
+      railDrawerElement.className = 'mobile-rail-drawer';
+      railDrawerElement.id = 'mobileRailDrawer';
+      railDrawerElement.setAttribute('aria-hidden', 'true');
+      railDrawerElement.innerHTML = renderMobileRailDrawerHtml(options.pathname, activeThemeSettings, options.moduleEntitlements, activeNavigationMenus);
+      stage.appendChild(railDrawerElement);
+    }
   }
 
   const bodyClassNames = (doc.body.getAttribute('class') || '')
@@ -965,17 +1272,30 @@ function buildStaticPayload(
 }
 
 function bindStaticDrawer(root: HTMLElement): () => void {
-  const drawer = root.querySelector<HTMLElement>('#mobileDrawer, .mobile-drawer');
-  if (!drawer) return () => undefined;
+  const mainDrawer = root.querySelector<HTMLElement>('#mobileDrawer, .mobile-drawer');
+  const railDrawer = root.querySelector<HTMLElement>('#mobileRailDrawer, .mobile-rail-drawer');
+  if (!mainDrawer && !railDrawer) return () => undefined;
 
-  const menuButtons = Array.from(root.querySelectorAll<HTMLElement>('#menuBtn, .mobile-menu-btn, [aria-controls="mobileDrawer"]'));
+  const mainButtons = Array.from(root.querySelectorAll<HTMLElement>('#menuBtn, .mobile-hamburger-btn, [aria-controls="mobileDrawer"]'));
+  const railButtons = Array.from(root.querySelectorAll<HTMLElement>('#kebabBtn, .mobile-kebab-btn, [aria-controls="mobileRailDrawer"]'));
   const closeButtons = Array.from(root.querySelectorAll<HTMLElement>('#closeDrawer, .drawer-close'));
   const cleanups: Array<() => void> = [];
 
-  const setOpen = (open: boolean) => {
-    document.body.classList.toggle('drawer-open', open);
+  const setDrawerOpen = (
+    drawer: HTMLElement | null,
+    buttons: HTMLElement[],
+    className: string,
+    open: boolean
+  ) => {
+    if (!drawer) return;
+    document.body.classList.toggle(className, open);
     drawer.setAttribute('aria-hidden', String(!open));
-    menuButtons.forEach((button) => button.setAttribute('aria-expanded', String(open)));
+    buttons.forEach((button) => button.setAttribute('aria-expanded', String(open)));
+  };
+
+  const closeAll = () => {
+    setDrawerOpen(mainDrawer, mainButtons, 'drawer-open', false);
+    setDrawerOpen(railDrawer, railButtons, 'rail-drawer-open', false);
   };
 
   const addListener = <K extends keyof HTMLElementEventMap>(
@@ -987,46 +1307,60 @@ function bindStaticDrawer(root: HTMLElement): () => void {
     cleanups.push(() => element.removeEventListener(type, listener as EventListener));
   };
 
-  menuButtons.forEach((button) => {
+  mainButtons.forEach((button) => {
     addListener(button, 'click', (event) => {
       event.preventDefault();
       event.stopPropagation();
-      setOpen(true);
+      setDrawerOpen(railDrawer, railButtons, 'rail-drawer-open', false);
+      setDrawerOpen(mainDrawer, mainButtons, 'drawer-open', true);
+    });
+  });
+
+  railButtons.forEach((button) => {
+    addListener(button, 'click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      setDrawerOpen(mainDrawer, mainButtons, 'drawer-open', false);
+      setDrawerOpen(railDrawer || mainDrawer, railDrawer ? railButtons : mainButtons, railDrawer ? 'rail-drawer-open' : 'drawer-open', true);
     });
   });
 
   closeButtons.forEach((button) => {
     addListener(button, 'click', (event) => {
       event.preventDefault();
-      setOpen(false);
+      closeAll();
     });
   });
 
   const onDrawerClick = (event: Event) => {
-    if ((event.target as HTMLElement).closest('a')) setOpen(false);
+    if ((event.target as HTMLElement).closest('a')) closeAll();
   };
-  drawer.addEventListener('click', onDrawerClick);
-  cleanups.push(() => drawer.removeEventListener('click', onDrawerClick));
+  [mainDrawer, railDrawer].forEach((drawer) => {
+    if (!drawer) return;
+    drawer.addEventListener('click', onDrawerClick);
+    cleanups.push(() => drawer.removeEventListener('click', onDrawerClick));
+  });
 
   const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') setOpen(false);
+    if (event.key === 'Escape') closeAll();
   };
   document.addEventListener('keydown', onKeyDown);
   cleanups.push(() => document.removeEventListener('keydown', onKeyDown));
 
   const onDocumentClick = (event: MouseEvent) => {
-    if (!document.body.classList.contains('drawer-open')) return;
+    if (!document.body.classList.contains('drawer-open') && !document.body.classList.contains('rail-drawer-open')) return;
     const target = event.target as Node;
-    const clickedMenuButton = menuButtons.some((button) => button.contains(target));
-    if (!drawer.contains(target) && !clickedMenuButton) setOpen(false);
+    const clickedMenuButton = [...mainButtons, ...railButtons].some((button) => button.contains(target));
+    const clickedDrawer = [mainDrawer, railDrawer].some((drawer) => drawer?.contains(target));
+    if (!clickedDrawer && !clickedMenuButton) closeAll();
   };
   document.addEventListener('click', onDocumentClick);
   cleanups.push(() => document.removeEventListener('click', onDocumentClick));
 
-  setOpen(false);
+  closeAll();
 
   return () => {
-    setOpen(false);
+    closeAll();
     cleanups.forEach((cleanup) => cleanup());
   };
 }
