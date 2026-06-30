@@ -423,6 +423,8 @@ function applyTenantContent(doc: Document, ecContext?: EcclesiaContextValue | nu
 
   if (doc.title) {
     doc.title = doc.title
+      .split('CE Ggaba 2').join(churchName)
+      .split('CE Entebbe').join(churchName)
       .split('Grace City Church').join(churchName)
       .split('Grace City').join(churchName);
   }
@@ -441,10 +443,11 @@ function applyTenantContent(doc: Document, ecContext?: EcclesiaContextValue | nu
   }
 
   doc.querySelectorAll<HTMLElement>('.brand').forEach((brand) => {
-    const label = Array.from(brand.querySelectorAll('span')).find((span) => {
+    const spans = Array.from(brand.querySelectorAll('span'));
+    const label = spans.find((span) => {
       const text = readText(span.textContent);
-      return text.includes('Grace City') || text.includes('Church');
-    });
+      return text.includes('Grace City') || text.includes('Church') || text.startsWith('CE ');
+    }) || spans[spans.length - 1];
     if (label) label.textContent = churchName;
   });
 
@@ -466,6 +469,8 @@ function applyTenantContent(doc: Document, ecContext?: EcclesiaContextValue | nu
   }
 
   replaceTextNodes(doc, [
+    ['CE Ggaba 2', churchName],
+    ['CE Entebbe', churchName],
     ['Grace City Church', churchName],
     ['Grace City', churchName],
     ['A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.', description],
