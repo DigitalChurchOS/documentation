@@ -9,6 +9,7 @@ import {
   parseHtml,
   serializeHtml,
   injectThemeTokens,
+  applyTenantContent,
   applyThemeStructure,
   cssPath,
   changeElementTag,
@@ -263,9 +264,11 @@ function labelForCmsPage(page: any, file: string) {
 const apiFetch = async (method: string, path: string, body?: any) => {
   const params = new URLSearchParams(window.location.search);
   const queryTenantId = params.get("tenantId") || "";
+  const queryTenantName = params.get("tenantName") || "";
   const queryWebsiteId = params.get("websiteId");
-  const shouldUseDemoWorkspace = queryTenantId === DEMO_TENANT_ID || isDemoWebsiteId(queryWebsiteId);
+  const shouldUseDemoWorkspace = queryTenantId === DEMO_TENANT_ID || (!queryTenantId && isDemoWebsiteId(queryWebsiteId));
   const tenantId = queryTenantId || (shouldUseDemoWorkspace ? DEMO_TENANT_ID : "") || localStorage.getItem("churchos.tenantId") || "";
+  const tenantName = queryTenantName || localStorage.getItem("churchos.tenantName") || "";
   const tenantSubdomain = params.get("subdomain") || (shouldUseDemoWorkspace ? DEMO_TENANT_SUBDOMAIN : "") || getSubdomainFromHostname() || localStorage.getItem("churchos.subdomain") || "";
   const token = localStorage.getItem("churchos.token") || "local-preview-token";
   const headers: Record<string, string> = {
@@ -273,6 +276,7 @@ const apiFetch = async (method: string, path: string, body?: any) => {
     "Authorization": `Bearer ${token}`
   };
   if (tenantId) headers["x-tenant-id"] = tenantId;
+  if (tenantName) headers["x-tenant-name"] = encodeURIComponent(tenantName);
   if (tenantSubdomain) headers["x-tenant-subdomain"] = tenantSubdomain;
   const options: RequestInit = {
     method,
@@ -338,6 +342,7 @@ export function App() {
   const [resolvingTenant, setResolvingTenant] = useState(true);
   const [tenantError, setTenantError] = useState<string | null>(null);
   const [tenantSubdomain, setTenantSubdomain] = useState<string>(() => localStorage.getItem("churchos.subdomain") || "");
+  const [tenantContent, setTenantContent] = useState<any | null>(null);
   
   const [pagesList, setPagesList] = useState<any[]>([]);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
@@ -356,6 +361,7 @@ export function App() {
     const initTenantAndEntities = async () => {
       try {
         const queryTenantId = urlParams.get("tenantId");
+        const queryTenantName = urlParams.get("tenantName");
         const querySubdomain = urlParams.get("subdomain");
         const queryWebsiteId = urlParams.get("websiteId") || "";
         const hostSubdomain = getSubdomainFromHostname();
@@ -408,6 +414,9 @@ export function App() {
 
         if (resolvedTenantId) {
           localStorage.setItem("churchos.tenantId", resolvedTenantId);
+          if (queryTenantName) {
+            localStorage.setItem("churchos.tenantName", queryTenantName);
+          }
           if (resolvedSubdomain) {
             localStorage.setItem("churchos.subdomain", resolvedSubdomain);
             setTenantSubdomain(resolvedSubdomain);
@@ -445,6 +454,13 @@ export function App() {
 
         if (pagesRes && pagesRes.data) {
           setPagesList(pagesRes.data);
+        }
+
+        try {
+          const globalContentRes = await apiFetch("GET", "/api/cms/global-content");
+          setTenantContent(globalContentRes?.data || null);
+        } catch (contentErr) {
+          console.warn("Could not fetch tenant website content for template hydration:", contentErr);
         }
 
         // 2. Resolve websiteId
@@ -860,6 +876,7 @@ export function App() {
   // Compute live HTML to render in iframe (applies theme styling dynamically)
   const renderedHtml = useMemo(() => {
     const doc = parseHtml(rawHtml);
+    applyTenantContent(doc, tenantContent);
     injectThemeTokens(doc, themeState);
     applyThemeStructure(doc, themeState, navigationMenus, currentTheme);
 
@@ -872,7 +889,7 @@ export function App() {
     baseTag.setAttribute("href", `${window.location.origin}/themes/${currentTheme}/`);
 
     return serializeHtml(doc);
-  }, [rawHtml, themeState, currentTheme]);
+  }, [rawHtml, themeState, currentTheme, navigationMenus, tenantContent]);
 
   const pageOptions = useMemo<CustomizerPageOption[]>(() => {
     const options = new Map<string, CustomizerPageOption>();
@@ -1213,6 +1230,7 @@ export function App() {
       }
       if (pageId) {
         const doc = parseHtml(latestHtml);
+        applyTenantContent(doc, tenantContent);
         injectThemeTokens(doc, latestThemeState);
         applyThemeStructure(doc, latestThemeState, navigationMenus);
         const cleanedHtml = cleanPageForExport(doc);
@@ -1291,6 +1309,7 @@ export function App() {
 
       if (pageId) {
         const doc = parseHtml(renderedHtml);
+        applyTenantContent(doc, tenantContent);
         const cleanedHtml = cleanPageForExport(doc);
         const blocksPayload = [{ html: cleanedHtml }];
         await apiFetch("PATCH", `/api/cms/pages/${pageId}/draft`, { draftContent: blocksPayload });

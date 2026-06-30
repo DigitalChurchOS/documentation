@@ -72,6 +72,148 @@ export interface ThemeState {
   termsHref: string;
 }
 
+type TenantGlobalContent = {
+  churchIdentity?: {
+    churchName?: string;
+    logoUrl?: string;
+    faviconUrl?: string;
+    tagline?: string;
+    description?: string;
+  };
+  contact?: {
+    phone?: string;
+    email?: string;
+    address?: string;
+  };
+  services?: {
+    serviceTimes?: Array<{ label?: string; time?: string; location?: string }>;
+  };
+};
+
+function tenantText(value: unknown): string {
+  return String(value || "").trim();
+}
+
+function serviceTimesSummary(globalContent: TenantGlobalContent): string {
+  const serviceTimes = Array.isArray(globalContent.services?.serviceTimes)
+    ? globalContent.services?.serviceTimes || []
+    : [];
+  return serviceTimes
+    .filter((item) => tenantText(item.label) || tenantText(item.time))
+    .slice(0, 2)
+    .map((item) => {
+      const label = tenantText(item.label || "Service");
+      const time = tenantText(item.time);
+      return time ? `${label}: ${time}` : label;
+    })
+    .join(" · ");
+}
+
+function replaceTenantText(root: ParentNode, replacements: Array<[string, string]>): void {
+  const filtered = replacements.filter(([from, to]) => from && to && from !== to);
+  if (!filtered.length) return;
+
+  const rootNode = root as unknown as Node;
+  const ownerDoc = rootNode.nodeType === 9 ? rootNode as Document : rootNode.ownerDocument || document;
+  const walker = ownerDoc.createTreeWalker(rootNode, 4);
+  const textNodes: Text[] = [];
+  let current = walker.nextNode();
+  while (current) {
+    textNodes.push(current as Text);
+    current = walker.nextNode();
+  }
+
+  textNodes.forEach((node) => {
+    let value = node.nodeValue || "";
+    filtered.forEach(([from, to]) => {
+      value = value.split(from).join(to);
+    });
+    node.nodeValue = value;
+  });
+}
+
+export function applyTenantContent(doc: Document, globalContent?: TenantGlobalContent | null): void {
+  if (!globalContent) return;
+
+  const churchName = tenantText(globalContent.churchIdentity?.churchName);
+  if (!churchName) return;
+
+  const logoUrl = tenantText(globalContent.churchIdentity?.logoUrl);
+  const faviconUrl = tenantText(globalContent.churchIdentity?.faviconUrl);
+  const description = tenantText(globalContent.churchIdentity?.description);
+  const email = tenantText(globalContent.contact?.email);
+  const phone = tenantText(globalContent.contact?.phone);
+  const address = tenantText(globalContent.contact?.address);
+  const serviceSummary = serviceTimesSummary(globalContent);
+
+  if (doc.title) {
+    doc.title = doc.title
+      .split("Grace City Church").join(churchName)
+      .split("Grace City").join(churchName);
+  }
+
+  const metaDescription = doc.querySelector<HTMLMetaElement>('meta[name="description"]');
+  if (metaDescription && description) {
+    metaDescription.setAttribute("content", description);
+  }
+
+  if (faviconUrl) {
+    let favicon = doc.querySelector<HTMLLinkElement>('link[rel~="icon"]');
+    if (!favicon) {
+      favicon = doc.createElement("link");
+      favicon.setAttribute("rel", "icon");
+      doc.head.appendChild(favicon);
+    }
+    favicon.setAttribute("href", faviconUrl);
+  }
+
+  doc.querySelectorAll<HTMLElement>(".brand").forEach((brand) => {
+    const label = Array.from(brand.querySelectorAll("span")).find((span) => {
+      const text = tenantText(span.textContent);
+      return text.includes("Grace City") || text.includes("Church");
+    });
+    if (label) label.textContent = churchName;
+  });
+
+  if (logoUrl) {
+    doc.querySelectorAll<HTMLElement>(".brand .brand-mark, .brand .mark, .site-brand .site-mark").forEach((mark) => {
+      mark.innerHTML = "";
+      const img = doc.createElement("img");
+      img.setAttribute("src", logoUrl);
+      img.setAttribute("alt", `${churchName} logo`);
+      img.setAttribute("style", "width:100%;height:100%;object-fit:contain;display:block;");
+      mark.appendChild(img);
+    });
+  }
+
+  if (serviceSummary) {
+    doc.querySelectorAll<HTMLElement>(".top-notice").forEach((notice) => {
+      notice.textContent = serviceSummary;
+    });
+  }
+
+  replaceTenantText(doc.body || doc, [
+    ["Grace City Church", churchName],
+    ["Grace City", churchName],
+    ["A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.", description],
+    ["Grace City Church is a vibrant, Spirit-filled community where people worship, grow, serve, pray, and discover God’s purpose for their lives.", description],
+    ["Grace City Church exists to help people know Jesus, grow in the Word, build strong families, and serve their city with compassion and excellence.", description],
+    ["hello@example.church", email],
+    ["hello@gracecitychurch.org", email],
+    ["hello@gracecity.church", email],
+    ["+1 555 000 0000", phone],
+    ["+1 000 000 0000", phone],
+    ["+1 555 010 2026", phone],
+    ["(555) 123-4567", phone],
+    ["123 Worship Avenue, Your City", address],
+    ["123 Kingdom Avenue, Edmonton, AB", address],
+    ["101 Fellowship Way, Grace City", address],
+    ["Sunday Service: 9:30 AM · Midweek Word & Prayer: Wednesday 7:00 PM", serviceSummary],
+    ["Sunday Worship: 9:30 AM · Midweek Word & Prayer: Wednesday 7:00 PM", serviceSummary],
+    ["Sunday 9:30 AM · Wednesday 7:00 PM", serviceSummary],
+  ]);
+}
+
 export const colorMap: Record<string, string> = {
   Blue: "#2563eb",
   "Ocean": "#0284c7",

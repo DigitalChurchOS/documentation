@@ -55,6 +55,7 @@ interface Props {
   isShellStatic?: boolean;
   preserveDocument?: boolean;
   assetBase?: string;
+  ecContextOverride?: EcclesiaContextValue | null;
 }
 
 declare global {
@@ -81,6 +82,124 @@ function escapeHtml(value: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function readText(value: unknown): string {
+  return String(value || '').trim();
+}
+
+function getServiceSummary(ecContext?: EcclesiaContextValue | null): string {
+  const serviceTimes = ecContext?.globalContent?.services?.serviceTimes || [];
+  return serviceTimes
+    .filter((item) => readText(item.label) || readText(item.time))
+    .slice(0, 2)
+    .map((item) => {
+      const label = readText(item.label || 'Service');
+      const time = readText(item.time);
+      return time ? `${label}: ${time}` : label;
+    })
+    .join(' · ');
+}
+
+function replaceTextNodes(doc: Document, replacements: Array<[string, string]>): void {
+  const filtered = replacements.filter(([from, to]) => from && to && from !== to);
+  if (!filtered.length || !doc.body) return;
+
+  const walker = doc.createTreeWalker(doc.body, 4);
+  const textNodes: Text[] = [];
+  let node = walker.nextNode();
+  while (node) {
+    textNodes.push(node as Text);
+    node = walker.nextNode();
+  }
+
+  textNodes.forEach((textNode) => {
+    let text = textNode.nodeValue || '';
+    filtered.forEach(([from, to]) => {
+      text = text.split(from).join(to);
+    });
+    textNode.nodeValue = text;
+  });
+}
+
+function applyTenantContent(doc: Document, ecContext?: EcclesiaContextValue | null): void {
+  const churchName = readText(ecContext?.globalContent?.churchIdentity?.churchName || ecContext?.tenant?.name);
+  if (!churchName) return;
+
+  const identity = ecContext?.globalContent?.churchIdentity;
+  const contact = ecContext?.globalContent?.contact;
+  const logoUrl = readText(identity?.logoUrl);
+  const faviconUrl = readText(identity?.faviconUrl);
+  const description = readText(identity?.description);
+  const email = readText(contact?.email);
+  const phone = readText(contact?.phone);
+  const address = readText(contact?.address);
+  const serviceSummary = getServiceSummary(ecContext);
+
+  if (doc.title) {
+    doc.title = doc.title
+      .split('Grace City Church').join(churchName)
+      .split('Grace City').join(churchName);
+  }
+
+  const metaDescription = doc.querySelector<HTMLMetaElement>('meta[name="description"]');
+  if (metaDescription && description) metaDescription.setAttribute('content', description);
+
+  if (faviconUrl) {
+    let favicon = doc.querySelector<HTMLLinkElement>('link[rel~="icon"]');
+    if (!favicon) {
+      favicon = doc.createElement('link');
+      favicon.setAttribute('rel', 'icon');
+      doc.head.appendChild(favicon);
+    }
+    favicon.setAttribute('href', faviconUrl);
+  }
+
+  doc.querySelectorAll<HTMLElement>('.brand').forEach((brand) => {
+    const label = Array.from(brand.querySelectorAll('span')).find((span) => {
+      const text = readText(span.textContent);
+      return text.includes('Grace City') || text.includes('Church');
+    });
+    if (label) label.textContent = churchName;
+  });
+
+  if (logoUrl) {
+    doc.querySelectorAll<HTMLElement>('.brand .brand-mark, .brand .mark, .site-brand .site-mark').forEach((mark) => {
+      mark.innerHTML = '';
+      const img = doc.createElement('img');
+      img.setAttribute('src', logoUrl);
+      img.setAttribute('alt', `${churchName} logo`);
+      img.setAttribute('style', 'width:100%;height:100%;object-fit:contain;display:block;');
+      mark.appendChild(img);
+    });
+  }
+
+  if (serviceSummary) {
+    doc.querySelectorAll<HTMLElement>('.top-notice').forEach((notice) => {
+      notice.textContent = serviceSummary;
+    });
+  }
+
+  replaceTextNodes(doc, [
+    ['Grace City Church', churchName],
+    ['Grace City', churchName],
+    ['A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.', description],
+    ['Grace City Church is a vibrant, Spirit-filled community where people worship, grow, serve, pray, and discover God’s purpose for their lives.', description],
+    ['Grace City Church exists to help people know Jesus, grow in the Word, build strong families, and serve their city with compassion and excellence.', description],
+    ['hello@example.church', email],
+    ['hello@gracecitychurch.org', email],
+    ['hello@gracecity.church', email],
+    ['+1 555 000 0000', phone],
+    ['+1 000 000 0000', phone],
+    ['+1 555 010 2026', phone],
+    ['(555) 123-4567', phone],
+    ['123 Worship Avenue, Your City', address],
+    ['123 Kingdom Avenue, Edmonton, AB', address],
+    ['101 Fellowship Way, Grace City', address],
+    ['Sunday Service: 9:30 AM · Midweek Word & Prayer: Wednesday 7:00 PM', serviceSummary],
+    ['Sunday Worship: 9:30 AM · Midweek Word & Prayer: Wednesday 7:00 PM', serviceSummary],
+    ['Sunday 9:30 AM · Wednesday 7:00 PM', serviceSummary],
+  ]);
 }
 
 function renderRailHtml(pathname: string, entitlements?: ModuleEntitlement[]): string {
@@ -423,6 +542,7 @@ function buildStaticPayload(
 ): StaticPayload {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
+  applyTenantContent(doc, options.ecContext);
 
   if (!options.preserveDocument) {
     // Strip any existing mobile drawers from the parsed document to avoid duplicates.
@@ -890,6 +1010,7 @@ const StaticHtmlPage: React.FC<Props> = ({
   isShellStatic = false,
   preserveDocument = false,
   assetBase,
+  ecContextOverride = null,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -897,9 +1018,9 @@ const StaticHtmlPage: React.FC<Props> = ({
   const dynamicHeadElementsRef = useRef<HTMLElement[]>([]);
   const dynamicPageScriptsRef = useRef<HTMLScriptElement[]>([]);
 
-  let ecContext: EcclesiaContextValue | null = null;
+  let ecContext: EcclesiaContextValue | null = ecContextOverride;
   try {
-    ecContext = useEcclesia();
+    ecContext = ecContext || useEcclesia();
   } catch (e) {
     // ignore
   }

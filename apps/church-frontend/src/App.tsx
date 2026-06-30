@@ -299,14 +299,17 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
 
   if (fullHtml) {
     return (
-      <StaticHtmlPage
-        html={fullHtml}
-        themeSettings={themeSettings}
-        assetBase={getStaticHtmlAssetBase(pageData?.theme?.settings || themeSettings)}
-        enableModuleRails={false}
-        moduleEntitlements={siteContext.moduleEntitlements}
-        preserveDocument
-      />
+      <EcclesiaProvider value={contextValue}>
+        <StaticHtmlPage
+          html={fullHtml}
+          themeSettings={themeSettings}
+          assetBase={getStaticHtmlAssetBase(pageData?.theme?.settings || themeSettings)}
+          enableModuleRails={false}
+          moduleEntitlements={siteContext.moduleEntitlements}
+          preserveDocument
+          ecContextOverride={contextValue}
+        />
+      </EcclesiaProvider>
     );
   }
 

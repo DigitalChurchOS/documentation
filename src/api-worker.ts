@@ -537,10 +537,21 @@ function customDomainFromHost(hostname: string) {
   return host;
 }
 
-function getRequestContext(request: Request, url: URL, body: Record<string, unknown> = {}) {
+function getRequestContext(
+  request: Request,
+  url: URL,
+  body: Record<string, unknown> = {},
+  resolvedTenant: Record<string, any> = {},
+) {
   const stored = parseContextHeader(request);
-  const storedTenant = stored.tenant || {};
-  const storedSteps = stored.steps || {};
+  const storedTenant = {
+    ...resolvedTenant,
+    ...(stored.tenant || {}),
+  };
+  const storedSteps = {
+    ...(resolvedTenant.steps || {}),
+    ...(stored.steps || {}),
+  };
   const headerTenantId = request.headers.get('x-tenant-id') || '';
   const headerName = decodeHeaderValue(request.headers.get('x-tenant-name'));
   const headerSubdomain = decodeHeaderValue(request.headers.get('x-tenant-subdomain'));
@@ -584,6 +595,62 @@ function getRequestContext(request: Request, url: URL, body: Record<string, unkn
     steps: storedSteps,
     completedAt: stored.completedAt || null,
   };
+}
+
+async function resolveRequestTenant(
+  env: Env,
+  request: Request,
+  url: URL,
+  body: Record<string, unknown> = {},
+) {
+  const hostSubdomain = subdomainFromHost(url.hostname);
+  const hostCustomDomain = customDomainFromHost(url.hostname);
+
+  if (hostSubdomain) {
+    const tenant = await readRegisteredTenant(env, hostSubdomain);
+    if (tenant) return tenant;
+  }
+
+  if (hostCustomDomain) {
+    const tenant = await readRegisteredTenantByDomain(env, hostCustomDomain);
+    if (tenant) return tenant;
+  }
+
+  const stored = parseContextHeader(request);
+  const storedTenant = stored.tenant || {};
+  const headerSubdomain = decodeHeaderValue(request.headers.get('x-tenant-subdomain'));
+  const headerTenantId = request.headers.get('x-tenant-id') || '';
+  const bodyTenant = body.tenant && typeof body.tenant === 'object'
+    ? body.tenant as Record<string, unknown>
+    : {};
+
+  const candidates = [
+    headerSubdomain,
+    body.subdomain,
+    bodyTenant.subdomain,
+    storedTenant.subdomain,
+    subdomainFromTenantId(headerTenantId),
+    subdomainFromTenantId(body.tenantId),
+    subdomainFromTenantId(bodyTenant.id),
+    subdomainFromTenantId(storedTenant.id),
+  ]
+    .map(cleanSubdomain)
+    .filter(Boolean);
+
+  for (const subdomain of Array.from(new Set(candidates))) {
+    const tenant = await readRegisteredTenant(env, subdomain);
+    if (tenant) return tenant;
+  }
+
+  if (isDemoWebsiteId(url.searchParams.get('websiteId'))) {
+    return demoTenant;
+  }
+
+  if (headerTenantId === demoTenant.id) {
+    return demoTenant;
+  }
+
+  return null;
 }
 
 function getStep(context: ReturnType<typeof getRequestContext>, key: string) {
@@ -660,7 +727,7 @@ function makeBrandingForContext(context: ReturnType<typeof getRequestContext>) {
   const profile = getStep(context, 'profile');
   const logo = getStep(context, 'logo');
   const website = getStep(context, 'website');
-  const phone = [profile.phoneCode, profile.phone].filter(Boolean).join(' ').trim();
+  const phone = [profile.phoneCode, profile.phone].filter(Boolean).join(' ').trim() || profile.phone || '';
 
   return {
     churchName: context.tenant.name,
@@ -670,13 +737,13 @@ function makeBrandingForContext(context: ReturnType<typeof getRequestContext>) {
     isVenueDifferent: Boolean(profile.isVenueDifferent),
     phone,
     phoneCode: profile.phoneCode || '',
-    publicEmail: profile.email || '',
+    publicEmail: profile.publicEmail || profile.email || '',
     email: profile.email || '',
     timezone: profile.timezone || 'UTC',
     serviceTimes: Array.isArray(profile.serviceTimes) ? profile.serviceTimes : [],
-    logo: logo.logoUrl || '',
-    darkLogo: logo.darkLogoUrl || '',
-    favicon: logo.faviconUrl || '',
+    logo: logo.logoUrl || logo.logo || '',
+    darkLogo: logo.darkLogoUrl || logo.darkLogo || '',
+    favicon: logo.faviconUrl || logo.favicon || '',
     accent: '#4f46e5',
     language: 'en',
     city: context.tenant.city,
@@ -792,21 +859,22 @@ function makeGlobalContentForContext(context: ReturnType<typeof getRequestContex
   const profile = getStep(context, 'profile');
   const logo = getStep(context, 'logo');
   const website = getStep(context, 'website');
+  const phone = [profile.phoneCode, profile.phone].filter(Boolean).join(' ').trim() || profile.phone;
   const globalContent = createEcclesiaGlobalContent(context.tenant.name);
   return {
     ...globalContent,
     churchIdentity: {
       ...globalContent.churchIdentity,
       churchName: context.tenant.name,
-      logoUrl: logo.logoUrl || globalContent.churchIdentity.logoUrl,
-      faviconUrl: logo.faviconUrl || globalContent.churchIdentity.faviconUrl,
+      logoUrl: logo.logoUrl || logo.logo || globalContent.churchIdentity.logoUrl,
+      faviconUrl: logo.faviconUrl || logo.favicon || globalContent.churchIdentity.faviconUrl,
       tagline: website.homepageTitle || globalContent.churchIdentity.tagline,
       description: website.homepageSubtitle || globalContent.churchIdentity.description,
     },
     contact: {
       ...globalContent.contact,
-      phone: [profile.phoneCode, profile.phone].filter(Boolean).join(' ').trim() || globalContent.contact.phone,
-      email: profile.email || globalContent.contact.email,
+      phone: phone || globalContent.contact.phone,
+      email: profile.publicEmail || profile.email || globalContent.contact.email,
       address: profile.venueAddress || profile.address || globalContent.contact.address,
     },
     services: {
@@ -820,6 +888,57 @@ function makeGlobalContentForContext(context: ReturnType<typeof getRequestContex
         : globalContent.services.serviceTimes,
     },
   };
+}
+
+function mergeBrandingBodyIntoSteps(
+  steps: Record<string, any>,
+  body: Record<string, unknown>,
+) {
+  const nextSteps = {
+    ...steps,
+    profile: { ...(steps.profile || {}) },
+    logo: { ...(steps.logo || {}) },
+    website: { ...(steps.website || {}) },
+  };
+
+  if (body.address != null) nextSteps.profile.address = body.address;
+  if (body.venueAddress != null) nextSteps.profile.venueAddress = body.venueAddress;
+  if (body.isVenueDifferent != null) nextSteps.profile.isVenueDifferent = Boolean(body.isVenueDifferent);
+  if (body.phone != null) nextSteps.profile.phone = body.phone;
+  if (body.phoneCode != null) nextSteps.profile.phoneCode = body.phoneCode;
+  if (body.email != null) nextSteps.profile.email = body.email;
+  if (body.publicEmail != null) nextSteps.profile.publicEmail = body.publicEmail;
+  if (body.timezone != null) nextSteps.profile.timezone = body.timezone;
+  if (Array.isArray(body.serviceTimes)) nextSteps.profile.serviceTimes = body.serviceTimes;
+
+  if (body.logo != null) nextSteps.logo.logoUrl = body.logo;
+  if (body.logoUrl != null) nextSteps.logo.logoUrl = body.logoUrl;
+  if (body.darkLogo != null) nextSteps.logo.darkLogoUrl = body.darkLogo;
+  if (body.darkLogoUrl != null) nextSteps.logo.darkLogoUrl = body.darkLogoUrl;
+  if (body.favicon != null) nextSteps.logo.faviconUrl = body.favicon;
+  if (body.faviconUrl != null) nextSteps.logo.faviconUrl = body.faviconUrl;
+
+  if (body.description != null) nextSteps.website.homepageSubtitle = body.description;
+  if (body.homepageSubtitle != null) nextSteps.website.homepageSubtitle = body.homepageSubtitle;
+  if (body.tagline != null) nextSteps.website.homepageTitle = body.tagline;
+  if (body.homepageTitle != null) nextSteps.website.homepageTitle = body.homepageTitle;
+  if (body.aboutText != null) nextSteps.website.aboutText = body.aboutText;
+
+  return nextSteps;
+}
+
+async function persistTenantSteps(
+  env: Env,
+  tenant: Record<string, any>,
+  steps: Record<string, any>,
+  extra: Record<string, any> = {},
+) {
+  if (!tenant.subdomain) return tenant;
+  return writeRegisteredTenant(env, {
+    ...tenant,
+    ...extra,
+    steps,
+  });
 }
 
 function makeSiteContextForContext(context: ReturnType<typeof getRequestContext>, theme = makeThemeForContext(context)) {
@@ -964,15 +1083,13 @@ function collectionResponse(pathname: string): JsonValue {
 async function routeGet(request: Request, pathname: string, url: URL, env: Env) {
   const hostSubdomain = subdomainFromHost(url.hostname);
   const hostCustomDomain = customDomainFromHost(url.hostname);
-  const websiteTenantHint = pathname === '/api/public/resolve-website-tenant' && isDemoWebsiteId(url.searchParams.get('websiteId'))
-    ? demoTenant
-    : null;
   const resolvedHostTenant = hostSubdomain
     ? await readRegisteredTenant(env, hostSubdomain)
     : hostCustomDomain
       ? await readRegisteredTenantByDomain(env, hostCustomDomain)
       : null;
-  const context = getRequestContext(request, url, (websiteTenantHint || resolvedHostTenant || {}) as unknown as Record<string, unknown>);
+  const resolvedRequestTenant = resolvedHostTenant || await resolveRequestTenant(env, request, url);
+  const context = getRequestContext(request, url, {}, (resolvedRequestTenant || {}) as Record<string, any>);
   const tenant = context.tenant;
   const themeState = await readTenantThemeState(env, context);
   const theme = makeThemeForContext(context, themeState);
@@ -1206,7 +1323,8 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
 async function routeMutation(request: Request, pathname: string, env: Env) {
   const body = await readBody(request);
   const url = new URL(request.url);
-  const context = getRequestContext(request, url, body);
+  const resolvedRequestTenant = await resolveRequestTenant(env, request, url, body);
+  const context = getRequestContext(request, url, body, (resolvedRequestTenant || {}) as Record<string, any>);
   const tenant = context.tenant;
   const themeState = await readTenantThemeState(env, context);
   const theme = makeThemeForContext(context, themeState);
@@ -1405,14 +1523,20 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
   }
 
   if (pathname === '/api/tenant/branding') {
+    const nextTenantName = String(body.churchName || body.name || tenant.name);
+    const nextSteps = mergeBrandingBodyIntoSteps(context.steps || {}, body);
+    const nextTenant = await persistTenantSteps(env, tenant, nextSteps, {
+      name: nextTenantName,
+    });
+    const nextContext = getRequestContext(request, url, {}, nextTenant as Record<string, any>);
     return withJson({
       data: {
         tenant: {
-          ...tenant,
-          name: String(body.name || tenant.name),
+          ...nextTenant,
+          name: nextTenantName,
         },
         branding: {
-          ...makeBrandingForContext(context),
+          ...makeBrandingForContext(nextContext),
           ...(body as Record<string, JsonValue>),
         },
       } as unknown as JsonValue,
@@ -1547,11 +1671,21 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
   if (pathname.startsWith('/api/onboarding')) {
     const stepKey = pathname.split('/').filter(Boolean).pop() || 'profile';
     const normalizedStepKey = stepKey === 'website-basics' ? 'website' : stepKey;
+    const nextSteps = {
+      ...(context.steps || {}),
+      [normalizedStepKey]: {
+        ...getStep(context, normalizedStepKey),
+        ...(body as Record<string, unknown>),
+      },
+    };
+    const nextTenant = await persistTenantSteps(env, tenant, nextSteps, {
+      onboardingStatus: pathname.endsWith('/complete') ? 'completed' : 'in_progress',
+    });
     return withJson({
       ok: true,
       data: {
         id: makeId('onboarding'),
-        tenant,
+        tenant: nextTenant,
         steps: onboardingSteps.map((step) => step.stepKey === normalizedStepKey
           ? { ...step, status: 'completed', metadataJson: JSON.stringify(body) }
           : step),

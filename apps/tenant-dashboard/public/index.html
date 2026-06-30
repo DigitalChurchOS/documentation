@@ -19258,7 +19258,17 @@ body.customizer-open { overflow: hidden; }
             pageId = homePage ? homePage.id : window.cmsState.pages[0].id;
           }
           
-          window.open(`/customizer/?themeId=${themeId}&websiteId=${websiteId}&pageId=${pageId}`, '_blank');
+          const customizerUrl = new URL('/customizer/', window.location.origin);
+          customizerUrl.searchParams.set('themeId', themeId);
+          customizerUrl.searchParams.set('websiteId', websiteId);
+          if (pageId) customizerUrl.searchParams.set('pageId', pageId);
+          const tenantId = state.tenant?.id || localStorage.getItem('churchos.tenantId') || '';
+          const tenantName = state.tenant?.name || localStorage.getItem('churchos.tenantName') || '';
+          const subdomain = state.tenant?.subdomain || localStorage.getItem('churchos.subdomain') || '';
+          if (tenantId) customizerUrl.searchParams.set('tenantId', tenantId);
+          if (tenantName) customizerUrl.searchParams.set('tenantName', tenantName);
+          if (subdomain) customizerUrl.searchParams.set('subdomain', subdomain);
+          window.open(customizerUrl.toString(), '_blank');
         };
       }
 
