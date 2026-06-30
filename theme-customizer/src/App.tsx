@@ -572,7 +572,11 @@ export function App() {
 
         try {
           const navRes = await apiFetch("GET", "/api/cms/navigation");
-          const fetchedMenus = navRes && navRes.data ? navRes.data : [];
+          const fetchedMenus = Array.isArray(navRes?.data)
+            ? navRes.data
+            : Array.isArray(navRes?.data?.menus)
+            ? navRes.data.menus
+            : [];
           const finalMenus = defaultMenus.map(def => {
             const existing = fetchedMenus.find((m: any) => m.name.toLowerCase() === def.name.toLowerCase());
             if (existing) {

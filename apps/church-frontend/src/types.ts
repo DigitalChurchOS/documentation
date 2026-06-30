@@ -105,6 +105,14 @@ export interface NavigationData {
   items: NavItem[];
 }
 
+export interface NavigationMenu {
+  id?: string;
+  websiteId?: string;
+  name: string;
+  items: NavItem[];
+  isActive?: boolean;
+}
+
 export interface ModuleEntitlement {
   moduleKey: string;
   enabled: boolean;
@@ -115,6 +123,7 @@ export interface SiteContext {
   theme: ThemeInfo;
   moduleEntitlements: ModuleEntitlement[];
   navigation: NavigationData | null;
+  navigationMenus?: NavigationMenu[];
   footer: FooterData | null;
   announcement: { id: string; isActive: boolean; text: string; ctaUrl?: string; ctaLabel?: string };
   enabledPlugins: string[];
@@ -181,6 +190,7 @@ export interface PageRenderResponse {
     seoKeywords: string | null;
     globalContent: GlobalContent;
     navigation: NavigationData | null;
+    navigationMenus?: NavigationMenu[];
     footer: FooterData | null;
     theme: { name: string; settings: ThemeSettings };
   };

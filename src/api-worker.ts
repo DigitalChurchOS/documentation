@@ -332,6 +332,10 @@ function tenantPagesStateKey(tenantId: string) {
   return `tenant-pages:${tenantId}`;
 }
 
+function tenantNavigationStateKey(tenantId: string) {
+  return `tenant-navigation:${tenantId}`;
+}
+
 function pageIdFromSlug(context: ReturnType<typeof getRequestContext>, slug: string) {
   const slugKey = cleanSubdomain(slug || 'home') || 'home';
   const tenantKey = cleanSubdomain(context.tenant.subdomain || context.tenant.id) || 'tenant';
@@ -855,6 +859,136 @@ async function writeTenantPages(
   await env.CHURCHOS_TENANTS?.put(tenantPagesStateKey(context.tenant.id), JSON.stringify(pages));
 }
 
+function normalizeNavigationItems(items: unknown) {
+  const rawItems = typeof items === 'string'
+    ? parseStoredJson<Record<string, any>[]>(items, [])
+    : Array.isArray(items)
+      ? items
+      : [];
+
+  return rawItems
+    .filter((item) => item && typeof item === 'object')
+    .map((item: any) => ({
+      label: String(item.label || item.name || 'Page'),
+      url: String(item.url || item.href || '/'),
+      icon: item.icon ? String(item.icon) : undefined,
+    }));
+}
+
+function defaultTenantNavigationMenus(websiteId: string) {
+  const menu = (name: string, items: Array<{ label: string; url: string; icon?: string }>) => ({
+    id: `nav-${cleanSubdomain(name) || makeId('nav')}`,
+    websiteId,
+    name,
+    items,
+    isActive: true,
+  });
+
+  return [
+    menu('Header Menu', [
+      { label: 'Home', url: '/' },
+      { label: 'Connect', url: '/connect' },
+      { label: 'About', url: '/about' },
+      { label: 'Events', url: '/events' },
+      { label: 'Ministries', url: '/ministries' },
+      { label: 'Contact', url: '/contact' },
+    ]),
+    menu('Rail Navigation', [
+      { label: 'Media', url: '/media', icon: 'tv' },
+      { label: 'Blogs', url: '/blogs', icon: 'newspaper' },
+      { label: 'Resources', url: '/resources', icon: 'book-open' },
+      { label: 'Podcasts', url: '/podcasts', icon: 'mic' },
+      { label: 'Fellowship', url: '/fellowship', icon: 'users' },
+      { label: 'Store', url: '/store', icon: 'shopping-bag' },
+      { label: 'Devortion', url: '/devortion', icon: 'heart' },
+    ]),
+    menu('Footer Menu 1', [
+      { label: 'Connect', url: '/connect' },
+      { label: 'Plan a Visit', url: '/plan-a-visit' },
+      { label: 'Get in touch', url: '/get-in-touch' },
+    ]),
+    menu('Footer Menu 2', [
+      { label: 'Prayer', url: '/prayer' },
+      { label: 'Worship', url: '/worship' },
+      { label: 'Study', url: '/study' },
+      { label: 'Cells', url: '/cells' },
+      { label: 'Giving', url: '/giving' },
+    ]),
+    menu('Main Mobile Drawer Menu', [
+      { label: 'Connect', url: '/connect' },
+      { label: 'About', url: '/about' },
+      { label: 'Events', url: '/events' },
+      { label: 'Ministries', url: '/ministries' },
+      { label: 'Contact', url: '/contact' },
+    ]),
+    menu('Bottom Mobile Menu', [
+      { label: 'Home', url: '/' },
+      { label: 'Media', url: '/media' },
+      { label: 'Connect', url: '/connect' },
+      { label: 'Devortion', url: '/devortion' },
+      { label: 'Fellowship', url: '/fellowship' },
+    ]),
+    menu('Mobile Rail Navigation', [
+      { label: 'Media', url: '/media', icon: 'tv' },
+      { label: 'Blogs', url: '/blogs', icon: 'newspaper' },
+      { label: 'Resources', url: '/resources', icon: 'book-open' },
+      { label: 'Podcasts', url: '/podcasts', icon: 'mic' },
+      { label: 'Fellowship', url: '/fellowship', icon: 'users' },
+      { label: 'Store', url: '/store', icon: 'shopping-bag' },
+      { label: 'Devortion', url: '/devortion', icon: 'heart' },
+    ]),
+    menu('Footer Menu 3', [
+      { label: 'Prayer', url: '/prayer' },
+      { label: 'Worship', url: '/worship' },
+      { label: 'Study', url: '/study' },
+      { label: 'Cells', url: '/cells' },
+      { label: 'Giving', url: '/giving' },
+    ]),
+  ];
+}
+
+function normalizeNavigationMenu(
+  menu: Record<string, any>,
+  fallbackWebsiteId: string,
+) {
+  return {
+    id: String(menu.id || `nav-${cleanSubdomain(menu.name) || makeId('nav')}`),
+    websiteId: String(menu.websiteId || fallbackWebsiteId),
+    name: String(menu.name || 'Navigation Menu'),
+    items: normalizeNavigationItems(menu.items),
+    isActive: menu.isActive == null ? true : Boolean(menu.isActive),
+    updatedAt: String(menu.updatedAt || new Date().toISOString()),
+  };
+}
+
+async function readTenantNavigationMenus(
+  env: Env,
+  context: ReturnType<typeof getRequestContext>,
+  website = makeWebsiteForContext(context),
+) {
+  const defaults = defaultTenantNavigationMenus(website.id);
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantNavigationStateKey(context.tenant.id));
+  const stored = parseStoredJson<Record<string, any>[]>(raw, []);
+  const byName = new Map(defaults.map((menu) => [menu.name.toLowerCase(), menu]));
+
+  if (Array.isArray(stored)) {
+    stored.forEach((menu) => {
+      const normalized = normalizeNavigationMenu(menu, website.id);
+      byName.set(normalized.name.toLowerCase(), normalized);
+    });
+  }
+
+  return Array.from(byName.values()).map((menu) => normalizeNavigationMenu(menu, website.id));
+}
+
+async function writeTenantNavigationMenus(
+  env: Env,
+  context: ReturnType<typeof getRequestContext>,
+  menus: Array<Record<string, any>>,
+) {
+  await env.CHURCHOS_TENANTS?.put(tenantNavigationStateKey(context.tenant.id), JSON.stringify(menus));
+}
+
 function makeGlobalContentForContext(context: ReturnType<typeof getRequestContext>) {
   const profile = getStep(context, 'profile');
   const logo = getStep(context, 'logo');
@@ -941,7 +1075,23 @@ async function persistTenantSteps(
   });
 }
 
-function makeSiteContextForContext(context: ReturnType<typeof getRequestContext>, theme = makeThemeForContext(context)) {
+function findNavigationMenuItems(navigationMenus: Array<Record<string, any>>, name: string) {
+  const menu = navigationMenus.find((item) => item.name?.toLowerCase() === name.toLowerCase());
+  return normalizeNavigationItems(menu?.items);
+}
+
+function makeSiteContextForContext(
+  context: ReturnType<typeof getRequestContext>,
+  theme = makeThemeForContext(context),
+  navigationMenus: Array<Record<string, any>> = defaultTenantNavigationMenus(makeWebsiteForContext(context, theme).id),
+) {
+  const headerItems = findNavigationMenuItems(navigationMenus, 'Header Menu');
+  const footerItems = [
+    ...findNavigationMenuItems(navigationMenus, 'Footer Menu 1'),
+    ...findNavigationMenuItems(navigationMenus, 'Footer Menu 2'),
+    ...findNavigationMenuItems(navigationMenus, 'Footer Menu 3'),
+  ];
+
   return {
     tenant: {
       id: context.tenant.id,
@@ -989,14 +1139,15 @@ function makeSiteContextForContext(context: ReturnType<typeof getRequestContext>
     ].map((moduleKey) => ({ moduleKey, enabled: true })),
     navigation: {
       id: `nav-${context.tenant.subdomain}`,
-      items: createEcclesiaNavigationItems(),
+      items: headerItems.length ? headerItems : createEcclesiaNavigationItems(),
     },
     footer: {
       id: `footer-${context.tenant.subdomain}`,
       copyrightText: `Copyright ${new Date().getFullYear()} ${context.tenant.name}`,
       socialLinks: [],
-      secondaryLinks: createEcclesiaFooterLinks(),
+      secondaryLinks: footerItems.length ? footerItems : createEcclesiaFooterLinks(),
     },
+    navigationMenus,
     announcement: {
       id: `announcement-${context.tenant.subdomain}`,
       isActive: false,
@@ -1013,10 +1164,11 @@ function makeRenderForContext(
   theme = makeThemeForContext(context),
   website = makeWebsiteForContext(context, theme),
   pages = makePagesForContext(context, website),
+  navigationMenus: Array<Record<string, any>> = defaultTenantNavigationMenus(website.id),
 ) {
   const normalizedSlug = String(slug || '').replace(/^\/+/, '');
   const page = findDemoPage(normalizedSlug, pages);
-  const siteContext = makeSiteContextForContext(context, theme);
+  const siteContext = makeSiteContextForContext(context, theme, navigationMenus);
   const contentBlocks = parseStoredJson<JsonValue>(page.content, []);
   return {
     pageId: page.id,
@@ -1031,6 +1183,7 @@ function makeRenderForContext(
     globalContent: makeGlobalContentForContext(context),
     navigation: siteContext.navigation,
     footer: siteContext.footer,
+    navigationMenus,
     theme: {
       name: siteContext.theme.name,
       settings: siteContext.theme.settings,
@@ -1118,6 +1271,7 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
   const theme = makeThemeForContext(context, themeState);
   const website = makeWebsiteForContext(context, theme);
   const pages = await readTenantPages(env, context, website);
+  const navigationMenus = await readTenantNavigationMenus(env, context, website);
 
   if (pathname === '/health' || pathname === '/api/health') {
     return withJson({
@@ -1181,11 +1335,11 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
   }
 
   if (pathname === '/api/cms/site-context') {
-    return withJson({ data: makeSiteContextForContext(context, theme) as unknown as JsonValue });
+    return withJson({ data: makeSiteContextForContext(context, theme, navigationMenus) as unknown as JsonValue });
   }
 
   if (pathname === '/api/cms/render') {
-    return withJson({ data: makeRenderForContext(context, url.searchParams.get('slug') || '', theme, website, pages) as unknown as JsonValue });
+    return withJson({ data: makeRenderForContext(context, url.searchParams.get('slug') || '', theme, website, pages, navigationMenus) as unknown as JsonValue });
   }
 
   if (pathname === '/api/theme-engine/themes') {
@@ -1314,7 +1468,7 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
   }
 
   if (pathname === '/api/cms/navigation') {
-    return withJson({ data: { items: createEcclesiaNavigationItems() } as JsonValue });
+    return withJson({ data: navigationMenus as unknown as JsonValue });
   }
 
   if (pathname === '/api/cms/footer') {
@@ -1356,6 +1510,29 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
 
   if (pathname === '/api/cms/websites') {
     return withJson({ data: { ...website, ...(body as Record<string, JsonValue>) } as unknown as JsonValue }, { status: 201 });
+  }
+
+  if (pathname === '/api/cms/navigation') {
+    const incoming = normalizeNavigationMenu(body as Record<string, any>, website.id);
+    const index = navigationMenus.findIndex((menu) => (
+      String(menu.id || '') === incoming.id ||
+      String(menu.name || '').toLowerCase() === incoming.name.toLowerCase()
+    ));
+    const nextMenus = [...navigationMenus];
+    if (index >= 0) {
+      nextMenus[index] = {
+        ...nextMenus[index],
+        ...incoming,
+        updatedAt: new Date().toISOString(),
+      };
+    } else {
+      nextMenus.push({
+        ...incoming,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    await writeTenantNavigationMenus(env, context, nextMenus);
+    return withJson({ data: incoming as unknown as JsonValue }, { status: 201 });
   }
 
   if (pathname === '/api/cms/pages') {

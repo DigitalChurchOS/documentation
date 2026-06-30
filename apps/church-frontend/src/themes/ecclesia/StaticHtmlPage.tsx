@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getTemplateFileForSlug, routeFromHref, slugFromPathname } from '../../routing';
-import type { ModuleEntitlement, ThemeSettings } from '../../types';
+import type { ModuleEntitlement, NavigationMenu, NavItem, ThemeSettings } from '../../types';
 import { isUrlEntitled } from '../../entitlements';
 import { httpRequest } from '../../http';
 import { useEcclesia, EcclesiaContextValue } from './EcclesiaContext';
+import { applyThemeStructure, injectThemeTokens } from '../../../../../theme-customizer/src/utils/domParser';
 
 const ASSET_BASE = '/themes/ecclesia';
 const LUCIDE_CDN = 'https://unpkg.com/lucide@latest';
@@ -75,6 +76,34 @@ const RAIL_ITEMS = [
   { label: 'LMS', path: '/courses', icon: 'graduation-cap' },
   { label: 'Worship', path: '/worship', icon: 'music' },
 ];
+
+function menuByName(menus: NavigationMenu[] | undefined, name: string): NavigationMenu | null {
+  return menus?.find((menu) => menu.name?.toLowerCase() === name.toLowerCase()) || null;
+}
+
+function iconForMenuLabel(label: string): string {
+  const normalized = label.toLowerCase();
+  if (normalized.includes('media')) return 'tv';
+  if (normalized.includes('live')) return 'video';
+  if (normalized.includes('podcast')) return 'mic';
+  if (normalized.includes('article') || normalized.includes('blog')) return 'newspaper';
+  if (normalized.includes('service') || normalized.includes('event')) return 'calendar';
+  if (normalized.includes('library') || normalized.includes('resource')) return 'book-open';
+  if (normalized.includes('lms') || normalized.includes('course') || normalized.includes('study')) return 'graduation-cap';
+  if (normalized.includes('worship')) return 'music';
+  if (normalized.includes('fellowship') || normalized.includes('cell') || normalized.includes('group')) return 'users';
+  if (normalized.includes('store') || normalized.includes('giving')) return 'shopping-bag';
+  if (normalized.includes('devortion') || normalized.includes('devotion') || normalized.includes('prayer')) return 'heart';
+  if (normalized.includes('contact') || normalized.includes('connect')) return 'mail';
+  if (normalized.includes('home')) return 'home';
+  return 'link';
+}
+
+function normalizeMenuPath(item: NavItem): string {
+  const rawUrl = String(item.url || '').trim();
+  if (!rawUrl) return '/';
+  return routeFromHref(rawUrl) || (rawUrl.startsWith('/') ? rawUrl : `/${rawUrl.replace(/\.html$/i, '')}`);
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -208,16 +237,16 @@ type RailNavItem = {
   icon: string;
 };
 
-function getRailItems(settings?: ThemeSettings | null): RailNavItem[] {
-  const configuredItems = Array.isArray(settings?.moduleRail) ? settings.moduleRail : [];
+function getRailItems(settings?: ThemeSettings | null, navigationMenus?: NavigationMenu[]): RailNavItem[] {
+  const railMenu = menuByName(navigationMenus, 'Rail Navigation') || menuByName(navigationMenus, 'Mobile Rail Navigation');
+  const configuredItems = railMenu?.items?.length ? railMenu.items : Array.isArray(settings?.moduleRail) ? settings.moduleRail : [];
   const items = configuredItems.length > 0
     ? configuredItems.map((item: any) => {
-        const rawUrl = String(item.url || item.path || '').trim();
-        const route = routeFromHref(rawUrl) || (rawUrl.startsWith('/') ? rawUrl : `/${rawUrl.replace(/\.html$/i, '')}`);
+        const route = normalizeMenuPath(item);
         return {
           label: String(item.label || 'Page'),
           path: route,
-          icon: String(item.icon || 'link'),
+          icon: String(item.icon || iconForMenuLabel(String(item.label || 'Page'))),
         };
       })
     : RAIL_ITEMS;
@@ -230,8 +259,8 @@ function getRailItems(settings?: ThemeSettings | null): RailNavItem[] {
   });
 }
 
-function renderRailHtml(pathname: string, settings?: ThemeSettings | null, entitlements?: ModuleEntitlement[]): string {
-  const items = getRailItems(settings).filter((item) => isUrlEntitled(item.path, entitlements));
+function renderRailHtml(pathname: string, settings?: ThemeSettings | null, entitlements?: ModuleEntitlement[], navigationMenus?: NavigationMenu[]): string {
+  const items = getRailItems(settings, navigationMenus).filter((item) => isUrlEntitled(item.path, entitlements));
   if (items.length === 0) return '';
 
   const links = items.map((item) => {
@@ -242,9 +271,15 @@ function renderRailHtml(pathname: string, settings?: ThemeSettings | null, entit
   return `<nav class="rail-nav">${links}</nav>`;
 }
 
-function renderMobileTabHtml(pathname: string, settings?: ThemeSettings | null, entitlements?: ModuleEntitlement[]): string {
-  const items = getRailItems(settings)
-    .filter((item) => ['Media', 'Podcast', 'Articles', 'Services', 'Library', 'Worship'].includes(item.label))
+function renderMobileTabHtml(pathname: string, settings?: ThemeSettings | null, entitlements?: ModuleEntitlement[], navigationMenus?: NavigationMenu[]): string {
+  const bottomMenu = menuByName(navigationMenus, 'Bottom Mobile Menu');
+  const items = (bottomMenu?.items?.length
+    ? bottomMenu.items.map((item) => ({
+        label: item.label,
+        path: normalizeMenuPath(item),
+        icon: item.icon || iconForMenuLabel(item.label),
+      }))
+    : getRailItems(settings, navigationMenus).filter((item) => ['Media', 'Podcast', 'Articles', 'Services', 'Library', 'Worship'].includes(item.label)))
     .filter((item) => isUrlEntitled(item.path, entitlements));
   if (items.length === 0) return '';
 
@@ -255,8 +290,10 @@ function renderMobileTabHtml(pathname: string, settings?: ThemeSettings | null, 
 }
 
 function renderMobileDrawerHtml(ecContext: EcclesiaContextValue): string {
-  const { navigation, moduleEntitlements } = ecContext;
-  const items = (navigation?.items || []).filter((item) => isUrlEntitled(item.url, moduleEntitlements));
+  const { navigation, navigationMenus, moduleEntitlements } = ecContext;
+  const drawerMenu = menuByName(navigationMenus, 'Main Mobile Drawer Menu');
+  const items = (drawerMenu?.items?.length ? drawerMenu.items : navigation?.items || [])
+    .filter((item) => isUrlEntitled(item.url, moduleEntitlements));
   const showLiveAction = isUrlEntitled('/livestream', moduleEntitlements);
   const showGivingAction = isUrlEntitled('/giving', moduleEntitlements);
 
@@ -280,7 +317,7 @@ function renderMobileDrawerHtml(ecContext: EcclesiaContextValue): string {
   `;
 
   const links = items.map((item) => {
-    const url = item.url === '/home' ? '/' : item.url;
+    const url = normalizeMenuPath(item) === '/home' ? '/' : normalizeMenuPath(item);
     const icon = navIcons[url] || navIcons[item.url] || 'link';
     return `<a class="pjax-link" href="${escapeHtml(url)}"><i data-lucide="${icon}"></i><span>${escapeHtml(item.label)}</span></a>`;
   }).join('');
@@ -653,6 +690,7 @@ function buildStaticPayload(
     moduleEntitlements?: ModuleEntitlement[];
     ecContext?: EcclesiaContextValue | null;
     themeSettings?: ThemeSettings;
+    navigationMenus?: NavigationMenu[];
     isShellStatic?: boolean;
     preserveDocument?: boolean;
     assetBase?: string;
@@ -660,13 +698,20 @@ function buildStaticPayload(
 ): StaticPayload {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
-  applyTenantContent(doc, options.ecContext);
   const activeThemeSettings = options.ecContext?.themeSettings || options.themeSettings || {};
+  const activeNavigationMenus = options.ecContext?.navigationMenus || options.navigationMenus || [];
 
-  if (!options.preserveDocument) {
-    // Strip any existing mobile drawers from the parsed document to avoid duplicates.
-    doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach((el) => el.remove());
+  try {
+    injectThemeTokens(doc, activeThemeSettings as any);
+    applyThemeStructure(doc, activeThemeSettings as any, activeNavigationMenus as any, 'ecclesia-full-theme');
+  } catch (error) {
+    console.warn('Failed to apply published customizer structure:', error);
   }
+
+  applyTenantContent(doc, options.ecContext);
+
+  // Strip existing mobile drawers from parsed/theme-transformed documents to avoid duplicates.
+  doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach((el) => el.remove());
 
   // Extract header actions before we strip/process elements
   const headerActionsEl = doc.querySelector('.header-actions');
@@ -681,8 +726,8 @@ function buildStaticPayload(
   const headLinks: StaticPayload['headLinks'] = [];
   const headStyles: Array<{ id?: string; css: string }> = [];
   const shouldInjectRails = options.enableModuleRails;
-  const railHtml = shouldInjectRails ? renderRailHtml(options.pathname, activeThemeSettings, options.moduleEntitlements) : '';
-  const mobileTabHtml = shouldInjectRails ? renderMobileTabHtml(options.pathname, activeThemeSettings, options.moduleEntitlements) : '';
+  const railHtml = shouldInjectRails ? renderRailHtml(options.pathname, activeThemeSettings, options.moduleEntitlements, activeNavigationMenus) : '';
+  const mobileTabHtml = shouldInjectRails ? renderMobileTabHtml(options.pathname, activeThemeSettings, options.moduleEntitlements, activeNavigationMenus) : '';
 
   doc.head.querySelectorAll<HTMLLinkElement>('link[rel~="stylesheet"][href]').forEach((link) => {
     const rawHref = link.getAttribute('href') || '';
@@ -787,23 +832,6 @@ function buildStaticPayload(
       bodyChildren.forEach((node) => stage.appendChild(node));
 
       const shellWrapper = stage.querySelector('.shell-wrapper');
-      if (shellWrapper && options.ecContext) {
-        shellWrapper.querySelectorAll('footer, .footer').forEach((f) => f.remove());
-        const footerHtml = renderFooterHtml(options.ecContext);
-        const footer = doc.createElement('footer');
-        footer.className = 'footer';
-        footer.innerHTML = footerHtml;
-
-        const themeSettings = options.ecContext.themeSettings || {};
-        footer.setAttribute('data-footer-style', themeSettings.footerStyle || themeSettings.footer?.style || 'classic');
-        footer.setAttribute('data-footer-widgets', themeSettings.footerWidgets === 'hidden' ? 'hidden' : 'shown');
-        footer.setAttribute('data-footer-widget-layout', themeSettings.footerWidgetLayout || 'feature');
-        footer.setAttribute('data-footer-bottom', themeSettings.footerBottom || 'split');
-        footer.setAttribute('data-footer-legal', themeSettings.footerLegal === 'hidden' ? 'hidden' : 'shown');
-
-        shellWrapper.appendChild(footer);
-      }
-
       if (options.enableModuleRails) {
         const shellBody = stage.querySelector('.main-shell-body');
         if (shellWrapper && shellBody) {
@@ -886,23 +914,7 @@ function buildStaticPayload(
         }
       }
 
-      if (options.ecContext) {
-        const footerHtml = renderFooterHtml(options.ecContext);
-        const footer = doc.createElement('footer');
-        footer.className = 'footer';
-        footer.innerHTML = footerHtml;
-
-        const themeSettings = options.ecContext.themeSettings || {};
-        footer.setAttribute('data-footer-style', themeSettings.footerStyle || themeSettings.footer?.style || 'classic');
-        footer.setAttribute('data-footer-widgets', themeSettings.footerWidgets === 'hidden' ? 'hidden' : 'shown');
-        footer.setAttribute('data-footer-widget-layout', themeSettings.footerWidgetLayout || 'feature');
-        footer.setAttribute('data-footer-bottom', themeSettings.footerBottom || 'split');
-        footer.setAttribute('data-footer-legal', themeSettings.footerLegal === 'hidden' ? 'hidden' : 'shown');
-
-        shell.appendChild(footer);
-      } else {
-        footers.forEach((footer) => shell.appendChild(footer));
-      }
+      footers.forEach((footer) => shell.appendChild(footer));
 
       stage.appendChild(mobileTabRail);
 
@@ -1042,7 +1054,10 @@ function applyCustomizerAttributes(root: HTMLElement, settings?: ThemeSettings):
         'data-header-border-color': settings.headerBorderColor || 'accent',
         'data-header-layout': settings.headerLayout || 'logo-left',
         'data-header-effect': settings.headerEffect || 'static',
+        'data-header-font-size': settings.headerFontSize || 'medium',
+        'data-header-font-weight': settings.headerFontWeight || 'bold',
         'data-mobile-menu-position': settings.mobileMenuPosition || 'right',
+        'data-mobile-logo-align': settings.mobileLogoAlign || 'center',
         'data-mobile-hamburger-shape': settings.mobileHamburgerShape || 'circle',
       },
     });
@@ -1057,6 +1072,7 @@ function applyCustomizerAttributes(root: HTMLElement, settings?: ThemeSettings):
         'data-footer-widget-layout': settings.footerWidgetLayout || 'feature',
         'data-footer-bottom': settings.footerBottom || 'split',
         'data-footer-legal': settings.footerLegal === 'hidden' ? 'hidden' : 'shown',
+        'data-footer-columns': String(settings.footerColumns || 4),
       },
     });
   }
@@ -1164,6 +1180,7 @@ const StaticHtmlPage: React.FC<Props> = ({
       moduleEntitlements,
       ecContext,
       themeSettings,
+      navigationMenus: ecContext?.navigationMenus,
       isShellStatic,
       preserveDocument,
       assetBase,
@@ -1325,6 +1342,7 @@ const StaticHtmlPage: React.FC<Props> = ({
           moduleEntitlements,
           ecContext,
           themeSettings,
+          navigationMenus: ecContext?.navigationMenus,
           isShellStatic: false,
           preserveDocument: true,
           assetBase,

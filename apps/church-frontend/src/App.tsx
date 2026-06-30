@@ -273,6 +273,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     tenant: siteContext.tenant,
     themeSettings,
     navigation: pageData?.navigation || siteContext.navigation,
+    navigationMenus: pageData?.navigationMenus || siteContext.navigationMenus || [],
     footer: pageData?.footer || siteContext.footer,
     globalContent: pageData?.globalContent || null,
     isPreviewMode: !!getQueryParams().previewToken,
