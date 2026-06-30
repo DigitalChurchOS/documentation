@@ -91,6 +91,22 @@ const SLUG_TEMPLATE_FILES: Record<string, string> = {
   'store/checkout-failed': 'checkout-failed.html'
 };
 
+const SLUG_ALIASES: Record<string, string> = {
+  articles: 'blog',
+  blogs: 'blog',
+  cells: 'cells',
+  fellowship: 'cells',
+  groups: 'cells',
+  lms: 'courses',
+  podcasts: 'podcast',
+  resources: 'library',
+  resource: 'library',
+  study: 'courses',
+  devotion: 'prayer-home',
+  devotions: 'prayer-home',
+  devortion: 'prayer-home',
+};
+
 const INTERNAL_PATH_PREFIXES = [
   '/api/',
   '/admin',
@@ -124,7 +140,8 @@ export function slugFromPathname(pathname: string): string {
 
   const withoutHtml = cleanPath.replace(/\.html$/i, '');
   const mappedFromStem = SOURCE_FILE_SLUGS[`${withoutHtml}.html`];
-  return mappedFromStem !== undefined ? mappedFromStem : withoutHtml;
+  const slug = mappedFromStem !== undefined ? mappedFromStem : withoutHtml;
+  return SLUG_ALIASES[slug] || slug;
 }
 
 export function routeFromHref(href: string): string | null {

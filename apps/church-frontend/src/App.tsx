@@ -304,7 +304,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
           html={fullHtml}
           themeSettings={themeSettings}
           assetBase={getStaticHtmlAssetBase(pageData?.theme?.settings || themeSettings)}
-          enableModuleRails={false}
+          enableModuleRails
           moduleEntitlements={siteContext.moduleEntitlements}
           preserveDocument
           ecContextOverride={contextValue}

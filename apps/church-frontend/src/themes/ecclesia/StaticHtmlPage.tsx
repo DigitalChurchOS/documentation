@@ -202,8 +202,36 @@ function applyTenantContent(doc: Document, ecContext?: EcclesiaContextValue | nu
   ]);
 }
 
-function renderRailHtml(pathname: string, entitlements?: ModuleEntitlement[]): string {
-  const items = RAIL_ITEMS.filter((item) => isUrlEntitled(item.path, entitlements));
+type RailNavItem = {
+  label: string;
+  path: string;
+  icon: string;
+};
+
+function getRailItems(settings?: ThemeSettings | null): RailNavItem[] {
+  const configuredItems = Array.isArray(settings?.moduleRail) ? settings.moduleRail : [];
+  const items = configuredItems.length > 0
+    ? configuredItems.map((item: any) => {
+        const rawUrl = String(item.url || item.path || '').trim();
+        const route = routeFromHref(rawUrl) || (rawUrl.startsWith('/') ? rawUrl : `/${rawUrl.replace(/\.html$/i, '')}`);
+        return {
+          label: String(item.label || 'Page'),
+          path: route,
+          icon: String(item.icon || 'link'),
+        };
+      })
+    : RAIL_ITEMS;
+
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    if (!item.path || seen.has(item.path)) return false;
+    seen.add(item.path);
+    return true;
+  });
+}
+
+function renderRailHtml(pathname: string, settings?: ThemeSettings | null, entitlements?: ModuleEntitlement[]): string {
+  const items = getRailItems(settings).filter((item) => isUrlEntitled(item.path, entitlements));
   if (items.length === 0) return '';
 
   const links = items.map((item) => {
@@ -214,8 +242,8 @@ function renderRailHtml(pathname: string, entitlements?: ModuleEntitlement[]): s
   return `<nav class="rail-nav">${links}</nav>`;
 }
 
-function renderMobileTabHtml(pathname: string, entitlements?: ModuleEntitlement[]): string {
-  const items = RAIL_ITEMS
+function renderMobileTabHtml(pathname: string, settings?: ThemeSettings | null, entitlements?: ModuleEntitlement[]): string {
+  const items = getRailItems(settings)
     .filter((item) => ['Media', 'Podcast', 'Articles', 'Services', 'Library', 'Worship'].includes(item.label))
     .filter((item) => isUrlEntitled(item.path, entitlements));
   if (items.length === 0) return '';
@@ -317,6 +345,95 @@ function renderDefaultMobileDrawerHtml(): string {
   `;
 
   return `${closeRow}${navHtml}${actionsHtml}`;
+}
+
+function themeSetting(settings: ThemeSettings | null | undefined, key: string, fallback: string): string {
+  const value = settings?.[key];
+  return typeof value === 'string' && value.trim() ? value : fallback;
+}
+
+function getThemeBodyAttributes(settings?: ThemeSettings | null): Record<string, string> {
+  const mobileMenuPosition = themeSetting(settings, 'mobileMenuPosition', 'left');
+  const mobileMenuFlip = Boolean(settings?.mobileMenuFlip);
+  const mainDrawerSide = mobileMenuFlip
+    ? (mobileMenuPosition === 'left' ? 'right' : 'left')
+    : mobileMenuPosition;
+  const railDrawerSide = mobileMenuFlip
+    ? mobileMenuPosition
+    : (mobileMenuPosition === 'left' ? 'right' : 'left');
+
+  return {
+    'data-mobile-menu-position': mobileMenuPosition,
+    'data-mobile-menu-flip': String(mobileMenuFlip),
+    'data-mobile-drawer-side': mainDrawerSide,
+    'data-mobile-rail-side': railDrawerSide,
+    'data-mobile-rail-vertical-align': themeSetting(settings, 'mobileRailVerticalAlign', 'center'),
+    'data-mobile-logo-align': themeSetting(settings, 'mobileLogoAlign', 'center'),
+    'data-mobile-drawer-mode': themeSetting(settings, 'mobileDrawerMode', 'reveal'),
+    'data-mobile-drawer-buttons-full-width': String(Boolean(settings?.mobileDrawerButtonsFullWidth)),
+    'data-mobile-drawer-combine': String(settings?.mobileDrawerCombine !== false),
+    'data-mobile-drawer-rail-position': themeSetting(settings, 'mobileDrawerRailPosition', 'right'),
+    'data-rail-position': themeSetting(settings, 'railPosition', 'left'),
+    'data-rail-show-icons': String(settings?.railShowIcons !== false),
+    'data-rail-style': themeSetting(settings, 'railStyle', 'full'),
+    'data-rail-shadow': String(Boolean(settings?.railShadow)),
+    'data-rail-shadow-intensity': themeSetting(settings, 'railShadowIntensity', 'medium'),
+    'data-rail-shadow-themed': String(Boolean(settings?.railShadowThemed)),
+    'data-rail-solid-themed': String(Boolean(settings?.railSolidThemed)),
+    'data-rail-border': String(settings?.railBorder !== false),
+    'data-rail-border-size': themeSetting(settings, 'railBorderSize', 'small'),
+    'data-rail-border-color': themeSetting(settings, 'railBorderColor', 'standard'),
+    'data-rail-vertical-align': themeSetting(settings, 'railVerticalAlign', 'center'),
+    'data-rail-font-size': themeSetting(settings, 'railFontSize', 'medium'),
+    'data-rail-font-weight': themeSetting(settings, 'railFontWeight', 'bold'),
+  };
+}
+
+function applyRailAttributes(element: HTMLElement, settings?: ThemeSettings | null): void {
+  const attrs = getThemeBodyAttributes(settings);
+  Object.entries(attrs).forEach(([name, value]) => {
+    if (name.startsWith('data-rail-')) element.setAttribute(name, value);
+  });
+}
+
+function createRailElement(doc: Document, railHtml: string, settings?: ThemeSettings | null): HTMLElement {
+  const position = themeSetting(settings, 'railPosition', 'left');
+  const rail = doc.createElement(position === 'below-header' ? 'div' : 'aside');
+  rail.className = position === 'below-header'
+    ? 'rail-menu-horizontal'
+    : position === 'right'
+      ? 'right-rail'
+      : 'left-rail';
+  rail.innerHTML = railHtml;
+  applyRailAttributes(rail, settings);
+  return rail;
+}
+
+function upsertRail(shellWrapper: Element, mainShellBody: Element, doc: Document, railHtml: string, settings?: ThemeSettings | null): void {
+  shellWrapper.querySelectorAll(':scope > .rail-menu-horizontal').forEach((rail) => rail.remove());
+  mainShellBody.querySelectorAll(':scope > .left-rail, :scope > .right-rail').forEach((rail) => rail.remove());
+  if (!railHtml) return;
+
+  const position = themeSetting(settings, 'railPosition', 'left');
+  const rail = createRailElement(doc, railHtml, settings);
+
+  if (position === 'below-header') {
+    const header = shellWrapper.querySelector('header, .header, .top-notice, .top');
+    if (header?.nextSibling) {
+      shellWrapper.insertBefore(rail, header.nextSibling);
+    } else if (header) {
+      shellWrapper.appendChild(rail);
+    } else {
+      shellWrapper.insertBefore(rail, mainShellBody);
+    }
+    return;
+  }
+
+  if (position === 'right') {
+    mainShellBody.appendChild(rail);
+  } else {
+    mainShellBody.insertBefore(rail, mainShellBody.firstChild);
+  }
 }
 
 
@@ -535,6 +652,7 @@ function buildStaticPayload(
     pathname: string;
     moduleEntitlements?: ModuleEntitlement[];
     ecContext?: EcclesiaContextValue | null;
+    themeSettings?: ThemeSettings;
     isShellStatic?: boolean;
     preserveDocument?: boolean;
     assetBase?: string;
@@ -543,6 +661,7 @@ function buildStaticPayload(
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
   applyTenantContent(doc, options.ecContext);
+  const activeThemeSettings = options.ecContext?.themeSettings || options.themeSettings || {};
 
   if (!options.preserveDocument) {
     // Strip any existing mobile drawers from the parsed document to avoid duplicates.
@@ -561,9 +680,9 @@ function buildStaticPayload(
   const scripts: StaticScript[] = [];
   const headLinks: StaticPayload['headLinks'] = [];
   const headStyles: Array<{ id?: string; css: string }> = [];
-  const shouldInjectRails = options.enableModuleRails && !options.preserveDocument;
-  const railHtml = shouldInjectRails ? renderRailHtml(options.pathname, options.moduleEntitlements) : '';
-  const mobileTabHtml = shouldInjectRails ? renderMobileTabHtml(options.pathname, options.moduleEntitlements) : '';
+  const shouldInjectRails = options.enableModuleRails;
+  const railHtml = shouldInjectRails ? renderRailHtml(options.pathname, activeThemeSettings, options.moduleEntitlements) : '';
+  const mobileTabHtml = shouldInjectRails ? renderMobileTabHtml(options.pathname, activeThemeSettings, options.moduleEntitlements) : '';
 
   doc.head.querySelectorAll<HTMLLinkElement>('link[rel~="stylesheet"][href]').forEach((link) => {
     const rawHref = link.getAttribute('href') || '';
@@ -629,10 +748,7 @@ function buildStaticPayload(
   const stage = doc.createElement('div');
   stage.className = 'static-html-stage';
 
-  if (options.preserveDocument) {
-    markStaticPageExtras(doc);
-    Array.from(doc.body.childNodes).forEach((node) => stage.appendChild(node));
-  } else if (options.isShellStatic) {
+  if (options.isShellStatic) {
     let mainContentEl = doc.getElementById('content-outlet') || doc.querySelector('main');
     const contentDiv = doc.createElement('div');
     contentDiv.className = 'template-main-content';
@@ -690,14 +806,8 @@ function buildStaticPayload(
 
       if (options.enableModuleRails) {
         const shellBody = stage.querySelector('.main-shell-body');
-        if (shellBody) {
-          let rail = shellBody.querySelector<HTMLElement>(':scope > .left-rail');
-          if (!rail) {
-            rail = doc.createElement('aside');
-            rail.className = 'left-rail';
-            shellBody.insertBefore(rail, shellBody.firstChild);
-          }
-          rail.innerHTML = railHtml;
+        if (shellWrapper && shellBody) {
+          upsertRail(shellWrapper, shellBody, doc, railHtml, activeThemeSettings);
         }
 
         if (shellWrapper) {
@@ -717,9 +827,6 @@ function buildStaticPayload(
       shell.className = 'shell-wrapper static-shell-wrapper';
       const mainShellBody = doc.createElement('div');
       mainShellBody.className = 'main-shell-body';
-      const rail = doc.createElement('aside');
-      rail.className = 'left-rail';
-      rail.innerHTML = railHtml;
       const contentOutlet = doc.createElement('div');
       contentOutlet.className = 'content-wrap';
       contentOutlet.id = 'content-outlet';
@@ -757,10 +864,27 @@ function buildStaticPayload(
         contentOutlet.appendChild(node);
       });
 
-      mainShellBody.appendChild(rail);
+      const railPosition = themeSetting(activeThemeSettings, 'railPosition', 'left');
+      if (railHtml && railPosition === 'left') {
+        mainShellBody.appendChild(createRailElement(doc, railHtml, activeThemeSettings));
+      }
       mainShellBody.appendChild(contentOutlet);
+      if (railHtml && railPosition === 'right') {
+        mainShellBody.appendChild(createRailElement(doc, railHtml, activeThemeSettings));
+      }
       stage.appendChild(shell);
       shell.appendChild(mainShellBody);
+      if (railHtml && railPosition === 'below-header') {
+        const header = Array.from(shell.childNodes).find((node) => (
+          node.nodeType === Node.ELEMENT_NODE &&
+          (node as Element).matches('header, .header, .top-notice, .top')
+        ));
+        if (header?.nextSibling) {
+          shell.insertBefore(createRailElement(doc, railHtml, activeThemeSettings), header.nextSibling);
+        } else {
+          shell.insertBefore(createRailElement(doc, railHtml, activeThemeSettings), mainShellBody);
+        }
+      }
 
       if (options.ecContext) {
         const footerHtml = renderFooterHtml(options.ecContext);
@@ -804,14 +928,22 @@ function buildStaticPayload(
     stage.appendChild(drawerElement);
   }
 
+  const bodyClassNames = (doc.body.getAttribute('class') || '')
+    .split(/\s+/)
+    .filter((className) => className && className !== 'drawer-open');
+  if (!bodyClassNames.includes('shell-loaded')) bodyClassNames.push('shell-loaded');
+
+  const bodyAttributes = Array.from(doc.body.attributes).reduce<Record<string, string>>((attrs, attr) => {
+    if (attr.name !== 'class') attrs[attr.name] = attr.value;
+    return attrs;
+  }, {});
+  Object.assign(bodyAttributes, getThemeBodyAttributes(activeThemeSettings));
+
   return {
     html: stage.innerHTML,
     title: doc.title,
-    bodyClassNames: (doc.body.getAttribute('class') || '').split(/\s+/).filter((className) => className && className !== 'drawer-open'),
-    bodyAttributes: Array.from(doc.body.attributes).reduce<Record<string, string>>((attrs, attr) => {
-      if (attr.name !== 'class') attrs[attr.name] = attr.value;
-      return attrs;
-    }, {}),
+    bodyClassNames,
+    bodyAttributes,
     headLinks,
     headStyles,
     scripts,
@@ -1031,11 +1163,12 @@ const StaticHtmlPage: React.FC<Props> = ({
       pathname: location.pathname,
       moduleEntitlements,
       ecContext,
+      themeSettings,
       isShellStatic,
       preserveDocument,
       assetBase,
     }),
-    [enableModuleRails, html, location.pathname, moduleEntitlements, ecContext, isShellStatic, preserveDocument, assetBase]
+    [enableModuleRails, html, location.pathname, moduleEntitlements, ecContext, themeSettings, isShellStatic, preserveDocument, assetBase]
   );
 
   useEffect(() => {
@@ -1054,7 +1187,7 @@ const StaticHtmlPage: React.FC<Props> = ({
     payload.bodyClassNames.forEach((className) => document.body.classList.add(className));
     const previousAttributes = new Map<string, string | null>();
     Object.entries(payload.bodyAttributes).forEach(([name, value]) => {
-      if (name.startsWith('data-rail-') || name.startsWith('data-mobile-') || name === 'data-in-customizer') {
+      if (name === 'data-in-customizer') {
         return;
       }
       previousAttributes.set(name, document.body.getAttribute(name));
@@ -1191,6 +1324,7 @@ const StaticHtmlPage: React.FC<Props> = ({
           pathname: nextUrl.pathname,
           moduleEntitlements,
           ecContext,
+          themeSettings,
           isShellStatic: false,
           preserveDocument: true,
           assetBase,
