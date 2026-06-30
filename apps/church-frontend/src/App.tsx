@@ -100,16 +100,17 @@ function queueOfflinePrefetch(html: string, slug: string): void {
     .catch(() => undefined);
 }
 
-function isEcclesiaTheme(siteContext: SiteContext): boolean {
-  const themeName = siteContext.theme?.name || '';
-  const settings = siteContext.theme?.settings || {};
-  const themeKey = settings.metadata?.key || settings.metadata?.sourcePackage || '';
-  return /ecclesia/i.test(`${themeName} ${themeKey}`);
-}
-
 function normalizedAppPath(pathname: string): string {
   const path = pathname.startsWith('/church') ? pathname.substring('/church'.length) : pathname;
   return path || '/';
+}
+
+function getStaticHtmlAssetBase(settings?: ThemeSettings | null): string {
+  const sourcePackage = settings?.metadata?.sourcePackage;
+  if (sourcePackage && !sourcePackage.includes('/') && !sourcePackage.includes('\\')) {
+    return `/themes/${sourcePackage}`;
+  }
+  return settings?.sourcePackage?.assetBase || '/themes/ecclesia';
 }
 
 function getMemberPortalRoute(pathname: string): 'login' | 'account' | null {
@@ -263,27 +264,6 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
   useEffect(() => {
     let active = true;
     const loadPage = async () => {
-      if (getMemberPortalRoute(location.pathname)) {
-        setLoading(false);
-        setError(null);
-        setPageData(null);
-        return;
-      }
-
-      if (getServicesRoute(location.pathname)) {
-        setLoading(false);
-        setError(null);
-        setPageData(null);
-        return;
-      }
-
-      if (getLivestreamRoute(location.pathname)) {
-        setLoading(false);
-        setError(null);
-        setPageData(null);
-        return;
-      }
-
       setLoading(true);
       setError(null);
       try {
@@ -330,7 +310,13 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
         }
       } catch (err: any) {
         if (active) {
-          setError(err.message || 'Failed to load page content');
+          const hasRouteFallback = Boolean(
+            getMemberPortalRoute(location.pathname) ||
+            getServicesRoute(location.pathname) ||
+            getLivestreamRoute(location.pathname)
+          );
+          setPageData(null);
+          setError(hasRouteFallback ? null : err.message || 'Failed to load page content');
         }
       } finally {
         if (active) {
@@ -393,6 +379,31 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
   const servicesRoute = getServicesRoute(location.pathname);
   const livestreamRoute = getLivestreamRoute(location.pathname);
 
+  if (loading) {
+    return (
+      <EcclesiaProvider value={contextValue}>
+        <EcclesiaLayout useStaticLayout={false}>
+          <SkeletonPage />
+        </EcclesiaLayout>
+      </EcclesiaProvider>
+    );
+  }
+
+  const fullHtml = getFullHtml(pageData?.contentBlocks);
+
+  if (fullHtml) {
+    return (
+      <StaticHtmlPage
+        html={fullHtml}
+        themeSettings={themeSettings}
+        assetBase={getStaticHtmlAssetBase(pageData?.theme?.settings || themeSettings)}
+        enableModuleRails={false}
+        moduleEntitlements={siteContext.moduleEntitlements}
+        preserveDocument
+      />
+    );
+  }
+
   if (memberPortalRoute) {
     return (
       <EcclesiaProvider value={contextValue}>
@@ -427,16 +438,6 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     );
   }
 
-  if (loading) {
-    return (
-      <EcclesiaProvider value={contextValue}>
-        <EcclesiaLayout useStaticLayout={false}>
-          <SkeletonPage />
-        </EcclesiaLayout>
-      </EcclesiaProvider>
-    );
-  }
-
   if (error || !pageData) {
     return (
       <EcclesiaProvider value={contextValue}>
@@ -453,37 +454,13 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     );
   }
 
-  const fullHtml = getFullHtml(pageData.contentBlocks);
-  const ecclesiaActive = isEcclesiaTheme(siteContext);
-
-  if (fullHtml && !ecclesiaActive) {
-    return (
-      <StaticHtmlPage
-        html={fullHtml}
-        themeSettings={themeSettings}
-        enableModuleRails={false}
-        moduleEntitlements={siteContext.moduleEntitlements}
-      />
-    );
-  }
-
   return (
     <EcclesiaProvider value={contextValue}>
       <EcclesiaLayout useStaticLayout={false}>
-        {fullHtml ? (
-          <StaticHtmlPage
-            html={fullHtml}
-            themeSettings={themeSettings}
-            enableModuleRails
-            moduleEntitlements={siteContext.moduleEntitlements}
-            isShellStatic
-          />
-        ) : (
-          <GenericPage
-            title={pageData.title}
-            contentBlocks={pageData.contentBlocks}
-          />
-        )}
+        <GenericPage
+          title={pageData.title}
+          contentBlocks={pageData.contentBlocks}
+        />
       </EcclesiaLayout>
     </EcclesiaProvider>
   );

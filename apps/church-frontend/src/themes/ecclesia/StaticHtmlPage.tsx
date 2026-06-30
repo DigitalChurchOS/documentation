@@ -32,6 +32,8 @@ interface Props {
   enableModuleRails?: boolean;
   moduleEntitlements?: ModuleEntitlement[];
   isShellStatic?: boolean;
+  preserveDocument?: boolean;
+  assetBase?: string;
 }
 
 declare global {
@@ -183,21 +185,25 @@ function splitUrlSuffix(value: string) {
   return { path: match?.[1] || value, suffix: match?.[2] || '' };
 }
 
-function rewriteAssetUrl(value: string): string {
+function normalizeAssetBase(assetBase?: string): string {
+  return (assetBase || ASSET_BASE).replace(/\/+$/, '');
+}
+
+function rewriteAssetUrl(value: string, assetBase?: string): string {
   const trimmed = value.trim();
   if (!trimmed || /^(https?:|data:|blob:|mailto:|tel:|#|\/)/i.test(trimmed)) return value;
 
   const { path, suffix } = splitUrlSuffix(trimmed.replace(/^\.\//, ''));
   if (path.startsWith('assets/')) {
-    return `${ASSET_BASE}/${path}${suffix}`;
+    return `${normalizeAssetBase(assetBase)}/${path}${suffix}`;
   }
 
   return value;
 }
 
-function rewriteInlineUrls(value: string): string {
+function rewriteInlineUrls(value: string, assetBase?: string): string {
   return value.replace(/url\((['"]?)(?!https?:|data:|blob:|\/|#)([^'")]+)\1\)/gi, (_match, quote, rawUrl) => {
-    return `url(${quote}${rewriteAssetUrl(rawUrl)}${quote})`;
+    return `url(${quote}${rewriteAssetUrl(rawUrl, assetBase)}${quote})`;
   });
 }
 
@@ -298,13 +304,17 @@ function buildStaticPayload(
     moduleEntitlements?: ModuleEntitlement[];
     ecContext?: EcclesiaContextValue | null;
     isShellStatic?: boolean;
+    preserveDocument?: boolean;
+    assetBase?: string;
   }
 ): StaticPayload {
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
 
-  // Strip any existing mobile drawers from the parsed document to avoid duplicates
-  doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach((el) => el.remove());
+  if (!options.preserveDocument) {
+    // Strip any existing mobile drawers from the parsed document to avoid duplicates.
+    doc.querySelectorAll('.mobile-drawer, #mobileDrawer, .drawer, #drawer').forEach((el) => el.remove());
+  }
 
   // Extract header actions before we strip/process elements
   const headerActionsEl = doc.querySelector('.header-actions');
@@ -318,12 +328,13 @@ function buildStaticPayload(
   const scripts: StaticScript[] = [];
   const headLinks: StaticPayload['headLinks'] = [];
   const headStyles: Array<{ id?: string; css: string }> = [];
-  const railHtml = options.enableModuleRails ? renderRailHtml(options.pathname, options.moduleEntitlements) : '';
-  const mobileTabHtml = options.enableModuleRails ? renderMobileTabHtml(options.pathname, options.moduleEntitlements) : '';
+  const shouldInjectRails = options.enableModuleRails && !options.preserveDocument;
+  const railHtml = shouldInjectRails ? renderRailHtml(options.pathname, options.moduleEntitlements) : '';
+  const mobileTabHtml = shouldInjectRails ? renderMobileTabHtml(options.pathname, options.moduleEntitlements) : '';
 
   doc.head.querySelectorAll<HTMLLinkElement>('link[rel~="stylesheet"][href]').forEach((link) => {
     const rawHref = link.getAttribute('href') || '';
-    const href = rewriteAssetUrl(rawHref);
+    const href = rewriteAssetUrl(rawHref, options.assetBase);
 
     // Skip core theme stylesheets when rendering inside the dynamic shell wrapper
     // (where these sheets are already loaded globally) to avoid overriding customizer style tags.
@@ -350,7 +361,7 @@ function buildStaticPayload(
     if (style.textContent?.trim()) {
       headStyles.push({
         id: style.id || undefined,
-        css: rewriteInlineUrls(style.textContent),
+        css: rewriteInlineUrls(style.textContent, options.assetBase),
       });
     }
   });
@@ -358,7 +369,7 @@ function buildStaticPayload(
   doc.querySelectorAll('script').forEach((script) => {
     const src = script.getAttribute('src');
     if (src) {
-      scripts.push({ src: rewriteAssetUrl(src) });
+      scripts.push({ src: rewriteAssetUrl(src, options.assetBase) });
     } else if (script.textContent?.trim()) {
       scripts.push({ code: script.textContent });
     }
@@ -367,25 +378,27 @@ function buildStaticPayload(
 
   doc.querySelectorAll<HTMLElement>('[src]').forEach((element) => {
     const src = element.getAttribute('src');
-    if (src) element.setAttribute('src', rewriteAssetUrl(src));
+    if (src) element.setAttribute('src', rewriteAssetUrl(src, options.assetBase));
   });
 
   doc.querySelectorAll<HTMLElement>('[href]').forEach((element) => {
     const href = element.getAttribute('href');
     if (href && /^(?:\.\/)?assets\//i.test(href)) {
-      element.setAttribute('href', rewriteAssetUrl(href));
+      element.setAttribute('href', rewriteAssetUrl(href, options.assetBase));
     }
   });
 
   doc.querySelectorAll<HTMLElement>('[style]').forEach((element) => {
     const style = element.getAttribute('style');
-    if (style) element.setAttribute('style', rewriteInlineUrls(style));
+    if (style) element.setAttribute('style', rewriteInlineUrls(style, options.assetBase));
   });
 
   const stage = doc.createElement('div');
   stage.className = 'static-html-stage';
 
-  if (options.isShellStatic) {
+  if (options.preserveDocument) {
+    Array.from(doc.body.childNodes).forEach((node) => stage.appendChild(node));
+  } else if (options.isShellStatic) {
     let mainContentEl = doc.getElementById('content-outlet') || doc.querySelector('main');
     const contentDiv = doc.createElement('div');
     contentDiv.className = 'template-main-content';
@@ -761,6 +774,8 @@ const StaticHtmlPage: React.FC<Props> = ({
   enableModuleRails = true,
   moduleEntitlements,
   isShellStatic = false,
+  preserveDocument = false,
+  assetBase,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -780,8 +795,10 @@ const StaticHtmlPage: React.FC<Props> = ({
       moduleEntitlements,
       ecContext,
       isShellStatic,
+      preserveDocument,
+      assetBase,
     }),
-    [enableModuleRails, html, location.pathname, moduleEntitlements, ecContext, isShellStatic]
+    [enableModuleRails, html, location.pathname, moduleEntitlements, ecContext, isShellStatic, preserveDocument, assetBase]
   );
 
   useEffect(() => {
