@@ -11,7 +11,7 @@ import MemberAuthPage from './themes/ecclesia/pages/MemberAuthPage';
 import MemberAccountPage from './themes/ecclesia/pages/MemberAccountPage';
 import ServicesPage from './themes/ecclesia/pages/ServicesPage';
 import LivestreamPage from './themes/ecclesia/pages/LivestreamPage';
-import { routeFromHref, slugFromPathname } from './routing';
+import { getTemplateFileForSlug, routeFromHref, slugFromPathname } from './routing';
 import { httpRequest } from './http';
 
 // Extract query parameters helper
@@ -137,102 +137,6 @@ function getLivestreamRoute(pathname: string): { streamId?: string } | null {
   return null;
 }
 
-const slugToTemplateMap: Record<string, string> = {
-  '': 'index.html',
-  'about': 'about.html',
-  'sermons': 'sermons.html',
-  'events': 'events.html',
-  'ministries': 'ministries.html',
-  'prayer': 'prayer.html',
-  'contact': 'contact.html',
-  'login': 'login.html',
-  'account': 'account.html',
-  'giving': 'giving.html',
-  'partnership': 'giving-partnership.html',
-  'livestream': 'livestream-page.html',
-  'media': 'media-archive.html',
-  'media/sample-message': 'media-single.html',
-  'podcast': 'podcast-archive.html',
-  'podcast/sample-episode': 'podcast-episode.html',
-  'blog': 'blog-archive.html',
-  'blog/sample-post': 'blog-single.html',
-  'services': 'services-archive.html',
-  'services/sample-service': 'service-single.html',
-  'library': 'library-archive.html',
-  'library/sample-resource': 'resource-single.html',
-  'courses': 'courses-archive.html',
-  'courses/main': 'course-main.html',
-  'courses/lesson': 'lesson-single.html',
-  'events/archive': 'events-archive.html',
-  'events/sample-event': 'event-single.html',
-  'events/register': 'event-register.html',
-  'prayer-home': 'prayer-home.html',
-  'prayer/wall': 'prayer-wall.html',
-  'prayer/room': 'prayer-room.html',
-  'testimonies': 'testimony-wall.html',
-  'testimonies/sample-story': 'testimony-single.html',
-  'testimonies/submit': 'testimony-submit.html',
-  'worship': 'worship.html',
-  'cells': 'groups-archive.html',
-  'cells/sample-group': 'group-single.html',
-  'store': 'store-archive.html',
-  'store/sample-product': 'store-single.html',
-  'store/cart': 'cart.html',
-  'store/checkout': 'checkout.html',
-  'store/thank-you': 'checkout-success.html',
-  'store/checkout-failed': 'checkout-failed.html'
-};
-
-function getTemplateFileForSlug(slug: string): string | null {
-  if (slugToTemplateMap[slug]) {
-    return slugToTemplateMap[slug];
-  }
-
-  const parts = slug.split('/');
-  if (parts.length > 1) {
-    const prefix = parts[0];
-    const subPath = parts.slice(1).join('/');
-
-    if (prefix === 'blog') {
-      return 'blog-single.html';
-    }
-    if (prefix === 'sermons' || prefix === 'media') {
-      return 'media-single.html';
-    }
-    if (prefix === 'events') {
-      if (subPath === 'archive') return 'events-archive.html';
-      if (subPath === 'register') return 'event-register.html';
-      return 'event-single.html';
-    }
-    if (prefix === 'podcast') {
-      return 'podcast-episode.html';
-    }
-    if (prefix === 'services') {
-      return 'service-single.html';
-    }
-    if (prefix === 'library') {
-      return 'resource-single.html';
-    }
-    if (prefix === 'courses') {
-      if (subPath === 'main') return 'course-main.html';
-      if (subPath === 'lesson') return 'lesson-single.html';
-      return 'course-main.html';
-    }
-    if (prefix === 'testimonies') {
-      if (subPath === 'submit') return 'testimony-submit.html';
-      return 'testimony-single.html';
-    }
-    if (prefix === 'cells') {
-      return 'group-single.html';
-    }
-    if (prefix === 'store') {
-      return 'store-single.html';
-    }
-  }
-
-  return null;
-}
-
 const SkeletonPage: React.FC = () => (
   <div className="skeleton-page">
     <div className="skeleton-shimmer skeleton-hero"></div>
@@ -339,6 +243,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
       const target = e.target as HTMLElement;
       const anchor = target.closest('a');
       if (!anchor) return;
+      if (anchor.closest('[data-static-shell-nav="true"]')) return;
       if (anchor.target === '_blank' || anchor.hasAttribute('download')) return;
 
       const href = anchor.getAttribute('href');

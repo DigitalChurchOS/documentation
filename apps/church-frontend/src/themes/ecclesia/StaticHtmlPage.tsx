@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { routeFromHref } from '../../routing';
+import { getTemplateFileForSlug, routeFromHref, slugFromPathname } from '../../routing';
 import type { ModuleEntitlement, ThemeSettings } from '../../types';
 import { isUrlEntitled } from '../../entitlements';
 import { httpRequest } from '../../http';
@@ -8,6 +8,27 @@ import { useEcclesia, EcclesiaContextValue } from './EcclesiaContext';
 
 const ASSET_BASE = '/themes/ecclesia';
 const LUCIDE_CDN = 'https://unpkg.com/lucide@latest';
+const STATIC_PAGE_EXTRA_ATTR = 'data-static-page-extra';
+const STATIC_SHELL_SELECTOR = [
+  'header',
+  '.header',
+  'footer',
+  '.footer',
+  '.top',
+  '.top-notice',
+  '.mobile-drawer',
+  '#mobileDrawer',
+  '.drawer',
+  '#drawer',
+  '.drawer-backdrop',
+  '#drawerBackdrop',
+  '.mobile-tab-rail',
+  '.left-rail',
+  '.right-rail',
+  'script',
+  'style',
+  'link',
+].join(', ');
 
 type StaticScript = {
   src?: string;
@@ -207,6 +228,98 @@ function rewriteInlineUrls(value: string, assetBase?: string): string {
   });
 }
 
+function getBlockContent(block: any): string {
+  if (block && typeof block.html === 'string') return block.html;
+  if (block && typeof block.content === 'string') return block.content;
+  const data = block?.data || {};
+  return typeof data.content === 'string' ? data.content : '';
+}
+
+function isFullHtmlContent(content: string): boolean {
+  const normalized = content.trim().toLowerCase();
+  if (!normalized) return false;
+  return (
+    normalized.startsWith('<!doctype') ||
+    normalized.startsWith('<html') ||
+    normalized.includes('<body') ||
+    (normalized.includes('<header') && normalized.includes('<footer'))
+  );
+}
+
+function getFullHtml(blocks?: any[]): string | null {
+  if (!blocks || blocks.length === 0) return null;
+  const match = blocks.map(getBlockContent).find(isFullHtmlContent);
+  return match || null;
+}
+
+function findStaticContentElement(parent: Document | HTMLElement): HTMLElement | null {
+  if ('getElementById' in parent) {
+    const contentOutlet = parent.getElementById('content-outlet');
+    if (contentOutlet) return contentOutlet;
+  } else {
+    const contentOutlet = parent.querySelector<HTMLElement>('#content-outlet');
+    if (contentOutlet) return contentOutlet;
+  }
+  return parent.querySelector<HTMLElement>('main');
+}
+
+function isStaticPageExtraElement(element: Element): boolean {
+  if (element.matches('main, #content-outlet')) return false;
+  return !element.matches(STATIC_SHELL_SELECTOR);
+}
+
+function markStaticPageExtras(doc: Document): void {
+  Array.from(doc.body.children).forEach((element) => {
+    if (isStaticPageExtraElement(element)) {
+      element.setAttribute(STATIC_PAGE_EXTRA_ATTR, 'true');
+    }
+  });
+}
+
+function syncActiveLinks(root: HTMLElement, route: string): void {
+  const nextPath = new URL(route, window.location.origin).pathname;
+  root.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
+    const href = link.getAttribute('href');
+    if (!href) return;
+    const linkRoute = routeFromHref(href);
+    if (!linkRoute) return;
+    const linkPath = new URL(linkRoute, window.location.origin).pathname;
+    link.classList.toggle('active', linkPath === nextPath);
+  });
+}
+
+async function loadPublishedPageHtml(route: string, assetBase?: string): Promise<string | null> {
+  const nextUrl = new URL(route, window.location.origin);
+  const slug = slugFromPathname(nextUrl.pathname);
+
+  try {
+    const response = await httpRequest(`/api/cms/render?slug=${encodeURIComponent(slug)}`);
+    if (response.ok) {
+      const data = await response.json();
+      const html = getFullHtml(data?.data?.contentBlocks);
+      if (html) return html;
+    }
+  } catch (error) {
+    console.warn('Failed to fetch published CMS page:', error);
+  }
+
+  const templateFile = getTemplateFileForSlug(slug);
+  if (!templateFile) return null;
+
+  try {
+    const response = await httpRequest(`${normalizeAssetBase(assetBase)}/${templateFile}?t=${Date.now()}`);
+    return response.ok ? response.text() : null;
+  } catch (error) {
+    console.warn('Failed to fetch static theme page:', error);
+    return null;
+  }
+}
+
+function isShellScript(script: StaticScript): boolean {
+  const src = script.src || '';
+  return /(?:^|\/)app\.js(?:[?#]|$)/i.test(src) || /lucide/i.test(src);
+}
+
 function renderFooterHtml(ecContext: EcclesiaContextValue): string {
   const { tenant, footer, globalContent } = ecContext;
   const churchName = globalContent?.churchIdentity?.churchName || tenant.name;
@@ -397,6 +510,7 @@ function buildStaticPayload(
   stage.className = 'static-html-stage';
 
   if (options.preserveDocument) {
+    markStaticPageExtras(doc);
     Array.from(doc.body.childNodes).forEach((node) => stage.appendChild(node));
   } else if (options.isShellStatic) {
     let mainContentEl = doc.getElementById('content-outlet') || doc.querySelector('main');
@@ -780,6 +894,8 @@ const StaticHtmlPage: React.FC<Props> = ({
   const location = useLocation();
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement>(null);
+  const dynamicHeadElementsRef = useRef<HTMLElement[]>([]);
+  const dynamicPageScriptsRef = useRef<HTMLScriptElement[]>([]);
 
   let ecContext: EcclesiaContextValue | null = null;
   try {
@@ -869,19 +985,183 @@ const StaticHtmlPage: React.FC<Props> = ({
     if (!root) return;
 
     let cancelled = false;
+    let shellNavigationInFlight = false;
     const injectedScripts: HTMLScriptElement[] = [];
     const cleanupDrawer = bindStaticDrawer(root);
     const cleanupCustomizerAttributes = applyCustomizerAttributes(root, themeSettings);
     const previousNavigateToPage = window.navigateToPage;
 
-    window.navigateToPage = (url: string) => {
+    const cleanupDynamicHead = () => {
+      dynamicHeadElementsRef.current.forEach((element) => element.remove());
+      dynamicHeadElementsRef.current = [];
+    };
+
+    const cleanupDynamicScripts = () => {
+      dynamicPageScriptsRef.current.forEach((script) => script.remove());
+      dynamicPageScriptsRef.current = [];
+    };
+
+    const applyDynamicHead = (nextPayload: StaticPayload) => {
+      cleanupDynamicHead();
+
+      nextPayload.headLinks.forEach((linkDef, index) => {
+        const absoluteHref = new URL(linkDef.href, window.location.href).href;
+        const exists = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel~="stylesheet"][href]'))
+          .some((link) => link.href === absoluteHref);
+        if (exists) return;
+
+        const link = document.createElement('link');
+        link.rel = linkDef.rel;
+        link.href = linkDef.href;
+        link.dataset.staticHtmlPageStylesheet = 'true';
+        link.dataset.staticHtmlPageStylesheetIndex = String(index);
+        if (linkDef.media) link.media = linkDef.media;
+        if (linkDef.crossOrigin) link.crossOrigin = linkDef.crossOrigin;
+        document.head.appendChild(link);
+        dynamicHeadElementsRef.current.push(link);
+      });
+
+      nextPayload.headStyles.forEach((styleDef, index) => {
+        const style = document.createElement('style');
+        style.textContent = styleDef.css;
+        style.dataset.staticHtmlPageStyle = 'true';
+        style.dataset.staticHtmlPageStyleIndex = String(index);
+        if (styleDef.id) style.id = styleDef.id;
+        document.head.appendChild(style);
+        dynamicHeadElementsRef.current.push(style);
+      });
+    };
+
+    const runDynamicPageScripts = async (scripts: StaticScript[]) => {
+      cleanupDynamicScripts();
+      for (const script of scripts) {
+        if (cancelled || isShellScript(script)) continue;
+        if (script.src) {
+          const injected = await runExternalScript(script.src);
+          if (injected) dynamicPageScriptsRef.current.push(injected);
+        } else if (script.code) {
+          dynamicPageScriptsRef.current.push(appendInlineScript(script.code, 'static-html-page-script'));
+        }
+      }
+      window.lucide?.createIcons?.();
+    };
+
+    const applyShellPage = async (route: string, historyMode: 'push' | 'replace' | 'none' = 'push') => {
+      const nextUrl = new URL(route, window.location.origin);
+      const currentUrl = new URL(window.location.href);
+      if (
+        nextUrl.pathname === currentUrl.pathname &&
+        nextUrl.search === currentUrl.search &&
+        nextUrl.hash === currentUrl.hash
+      ) {
+        return true;
+      }
+
+      if (shellNavigationInFlight) return true;
+      shellNavigationInFlight = true;
+      document.body.classList.add('page-loading');
+
+      try {
+        const nextHtml = await loadPublishedPageHtml(route, assetBase);
+        if (!nextHtml || cancelled) return false;
+
+        const nextPayload = buildStaticPayload(nextHtml, {
+          enableModuleRails: false,
+          pathname: nextUrl.pathname,
+          moduleEntitlements,
+          ecContext,
+          isShellStatic: false,
+          preserveDocument: true,
+          assetBase,
+        });
+
+        const parser = new DOMParser();
+        const nextDoc = parser.parseFromString(nextPayload.html, 'text/html');
+        const currentContent = findStaticContentElement(root);
+        const nextContent = findStaticContentElement(nextDoc);
+        if (!currentContent || !nextContent) return false;
+
+        currentContent.replaceWith(nextContent.cloneNode(true));
+
+        root.querySelectorAll(`[${STATIC_PAGE_EXTRA_ATTR}="true"]`).forEach((element) => element.remove());
+        const footer = root.querySelector('footer, .footer');
+        nextDoc.querySelectorAll(`[${STATIC_PAGE_EXTRA_ATTR}="true"]`).forEach((element) => {
+          const clone = element.cloneNode(true);
+          if (footer?.parentNode) {
+            footer.parentNode.insertBefore(clone, footer);
+          } else {
+            root.appendChild(clone);
+          }
+        });
+
+        applyDynamicHead(nextPayload);
+        await runDynamicPageScripts(nextPayload.scripts);
+
+        document.title = nextPayload.title || document.title;
+        document.body.classList.remove('drawer-open', 'rail-drawer-open');
+        root.querySelectorAll<HTMLElement>('#mobileDrawer, .mobile-drawer').forEach((drawer) => {
+          drawer.setAttribute('aria-hidden', 'true');
+        });
+        syncActiveLinks(root, route);
+
+        if (historyMode === 'replace') {
+          window.history.replaceState(null, '', route);
+        } else if (historyMode === 'push') {
+          window.history.pushState(null, '', route);
+        }
+
+        if (nextUrl.hash) {
+          const target = document.getElementById(decodeURIComponent(nextUrl.hash.slice(1)));
+          target?.scrollIntoView({ block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, left: 0 });
+        }
+
+        return true;
+      } finally {
+        shellNavigationInFlight = false;
+        document.body.classList.remove('page-loading');
+        window.navigateToPage = handleNavigateToPage;
+      }
+    };
+
+    const handleNavigateToPage = (url: string) => {
       const route = routeFromHref(url);
       if (route) {
-        navigate(route);
+        if (preserveDocument) {
+          void applyShellPage(route);
+        } else {
+          navigate(route);
+        }
       } else {
         window.location.href = url;
       }
     };
+
+    const onShellClick = (event: MouseEvent) => {
+      if (!preserveDocument) return;
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target as HTMLElement;
+      const anchor = target.closest('a');
+      if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+      const route = routeFromHref(href);
+      if (!route) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      void applyShellPage(route);
+    };
+
+    const onPopState = () => {
+      if (!preserveDocument) return;
+      void applyShellPage(`${window.location.pathname}${window.location.search}${window.location.hash}`, 'none');
+    };
+
+    window.navigateToPage = handleNavigateToPage;
+    root.addEventListener('click', onShellClick, true);
+    window.addEventListener('popstate', onPopState);
 
     const runScripts = async () => {
       try {
@@ -904,6 +1184,7 @@ const StaticHtmlPage: React.FC<Props> = ({
         }
 
         if (!cancelled) window.lucide?.createIcons?.();
+        if (!cancelled) window.navigateToPage = handleNavigateToPage;
       } catch (error) {
         console.warn('Static page script initialization failed:', error);
       }
@@ -917,12 +1198,23 @@ const StaticHtmlPage: React.FC<Props> = ({
       cancelled = true;
       cleanupDrawer();
       cleanupCustomizerAttributes();
+      cleanupDynamicHead();
+      cleanupDynamicScripts();
+      root.removeEventListener('click', onShellClick, true);
+      window.removeEventListener('popstate', onPopState);
       injectedScripts.forEach((script) => script.remove());
       window.navigateToPage = previousNavigateToPage;
     };
-  }, [navigate, payload, themeSettings]);
+  }, [assetBase, ecContext, moduleEntitlements, navigate, payload, preserveDocument, themeSettings]);
 
-  return <div ref={rootRef} className="static-html-stage" dangerouslySetInnerHTML={{ __html: payload.html }} />;
+  return (
+    <div
+      ref={rootRef}
+      className="static-html-stage"
+      data-static-shell-nav={preserveDocument ? 'true' : undefined}
+      dangerouslySetInnerHTML={{ __html: payload.html }}
+    />
+  );
 };
 
 export default StaticHtmlPage;
