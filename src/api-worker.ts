@@ -324,6 +324,15 @@ function findDemoPage<T extends { id: string; slug: string }>(pageId: string, pa
   return pages.find((page) => page.id === pageId || page.slug === slug) || pages[0];
 }
 
+function titleFromSlug(slug: string) {
+  const lastSegment = String(slug || 'home').split('/').filter(Boolean).pop() || 'home';
+  return lastSegment
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ') || 'Home';
+}
+
 function tenantThemeStateKey(tenantId: string) {
   return `tenant-theme:${tenantId}`;
 }
@@ -1176,7 +1185,18 @@ function makeRenderForContext(
   navigationMenus: Array<Record<string, any>> = defaultTenantNavigationMenus(website.id),
 ) {
   const normalizedSlug = String(slug || '').replace(/^\/+/, '');
-  const page = findDemoPage(normalizedSlug, pages);
+  const matchedPage = findDemoPage(normalizedSlug, pages);
+  const page = normalizedSlug && matchedPage.slug !== normalizedSlug
+    ? {
+        ...matchedPage,
+        id: pageIdFromSlug(context, normalizedSlug),
+        title: titleFromSlug(normalizedSlug),
+        slug: normalizedSlug,
+        isHome: false,
+        content: '[]',
+        draftContent: null,
+      }
+    : matchedPage;
   const siteContext = makeSiteContextForContext(context, theme, navigationMenus);
   const contentBlocks = parseStoredJson<JsonValue>(page.content, []);
   return {

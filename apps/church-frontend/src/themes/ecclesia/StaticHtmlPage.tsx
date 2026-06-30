@@ -947,6 +947,11 @@ function normalizeShellHrefs(doc: Document): void {
   });
 }
 
+function renderSlugMatches(requestedSlug: string, returnedSlug?: string | null): boolean {
+  const normalizedReturned = slugFromPathname(`/${String(returnedSlug || '').replace(/^\/+/, '')}`);
+  return normalizedReturned === requestedSlug;
+}
+
 async function loadPublishedPageHtml(route: string, assetBase?: string): Promise<string | null> {
   const nextUrl = new URL(route, window.location.origin);
   const slug = slugFromPathname(nextUrl.pathname);
@@ -955,8 +960,10 @@ async function loadPublishedPageHtml(route: string, assetBase?: string): Promise
     const response = await httpRequest(`/api/cms/render?slug=${encodeURIComponent(slug)}`);
     if (response.ok) {
       const data = await response.json();
-      const html = getFullHtml(data?.data?.contentBlocks);
-      if (html) return html;
+      if (renderSlugMatches(slug, data?.data?.slug)) {
+        const html = getFullHtml(data?.data?.contentBlocks);
+        if (html) return html;
+      }
     }
   } catch (error) {
     console.warn('Failed to fetch published CMS page:', error);

@@ -48,6 +48,11 @@ function getFullHtml(blocks?: any[]): string | null {
   return match || null;
 }
 
+function renderSlugMatches(requestedSlug: string, returnedSlug?: string | null): boolean {
+  const normalizedReturned = slugFromPathname(`/${String(returnedSlug || '').replace(/^\/+/, '')}`);
+  return normalizedReturned === requestedSlug;
+}
+
 const OFFLINE_PREFETCH_LIMIT = 80;
 
 function collectOfflineUrls(html: string, slug: string): string[] {
@@ -183,7 +188,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
         }
 
         let data = response.data;
-        const fullHtml = getFullHtml(data?.contentBlocks);
+        const fullHtml = renderSlugMatches(slug, data?.slug) ? getFullHtml(data?.contentBlocks) : null;
         if (!fullHtml) {
           const templateFile = getTemplateFileForSlug(slug);
           if (templateFile) {
