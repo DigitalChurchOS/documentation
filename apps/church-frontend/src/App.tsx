@@ -347,14 +347,15 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
       const route = routeFromHref(href);
       if (!route) return;
 
-      // Prevent full page reload
+      // Own internal theme/template links before legacy PJAX handlers can rewrite the page.
       e.preventDefault();
+      e.stopPropagation();
       navigate(route);
     };
 
-    document.addEventListener('click', handleLinkClick);
+    document.addEventListener('click', handleLinkClick, true);
     return () => {
-      document.removeEventListener('click', handleLinkClick);
+      document.removeEventListener('click', handleLinkClick, true);
     };
   }, [navigate]);
 
