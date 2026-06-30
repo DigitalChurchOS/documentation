@@ -472,7 +472,7 @@ export function App() {
             finalWebsiteId = matched.id;
             resolvedWebsite = matched;
           } else {
-            if (queryWebsiteId) {
+            if (queryWebsiteId && !isDemoWebsiteId(queryWebsiteId)) {
               throw new Error("404 Website not found under current tenant context");
             }
             if (websitesRes.data.length > 0) {

@@ -1507,6 +1507,7 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
   const theme = makeThemeForContext(context, themeState);
   const website = makeWebsiteForContext(context, theme);
   const pages = await readTenantPages(env, context, website);
+  const navigationMenus = await readTenantNavigationMenus(env, context, website);
 
   if (pathname === '/api/cms/websites') {
     return withJson({ data: { ...website, ...(body as Record<string, JsonValue>) } as unknown as JsonValue }, { status: 201 });
