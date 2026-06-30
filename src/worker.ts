@@ -352,6 +352,10 @@ export default {
       return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
     }
 
+    if (isTenantPublicHost && pathname.startsWith('/themes/')) {
+      return env.ASSETS.fetch(request);
+    }
+
     // 4. Static assets: serve directly if it looks like a physical file (has extension)
     // We check for '.' to identify file extensions like .js, .css, .png, .ico, etc.
     // We exclude .html files from being served as static assets on tenant requests so that
