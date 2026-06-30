@@ -3265,6 +3265,10 @@ async function handleDemoApi(req, res, parsedUrl) {
     return sendJson(res, 201, { data: theme });
   }
 
+  if (pathname === '/api/cms/websites' && method === 'GET') {
+    return sendJson(res, 200, { data: state.websites });
+  }
+
   if (pathname === '/api/cms/websites' && method === 'POST') {
     const website = { id: createId('website'), title: body.title || 'Church Website', description: body.description || '', domain: body.domain || 'localhost', themeId: body.themeId || 'theme-ecclesia' };
     state.websites.push(website);
@@ -3409,12 +3413,19 @@ http
         return;
       }
       const customizerRelativePath = urlPath.replace(/^\/customizer\/?/, '') || 'index.html';
-      urlPath = `/apps/theme-customizer/dist/${customizerRelativePath}`;
+      urlPath = `/theme-customizer/dist/${customizerRelativePath}`;
     }
 
     let filePath;
-    if (urlPath === '/themes/ecclesia' || urlPath.startsWith('/themes/ecclesia/')) {
-      const themeRelativePath = urlPath.replace(/^\/themes\/ecclesia\/?/, '') || 'index.html';
+    if (
+      urlPath === '/themes/ecclesia' ||
+      urlPath.startsWith('/themes/ecclesia/') ||
+      urlPath === '/themes/ecclesia-full-theme' ||
+      urlPath.startsWith('/themes/ecclesia-full-theme/')
+    ) {
+      const themeRelativePath = urlPath
+        .replace(/^\/themes\/ecclesia-full-theme\/?/, '')
+        .replace(/^\/themes\/ecclesia\/?/, '') || 'index.html';
       filePath = path.normalize(path.join(ecclesiaFullTheme, decodeURIComponent(themeRelativePath)));
       const relativeToTheme = path.relative(ecclesiaFullTheme, filePath);
       if (relativeToTheme.startsWith('..') || path.isAbsolute(relativeToTheme)) {

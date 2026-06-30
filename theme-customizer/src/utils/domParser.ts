@@ -1303,6 +1303,9 @@ export function applyThemeStructure(doc: Document, state: ThemeState, navigation
   const body = doc.body;
   if (body) {
     body.classList.add("ec-preview");
+    // The theme stylesheet hides pages until the runtime marks them loaded.
+    // Preview HTML should remain visible even when a template script fails.
+    body.classList.add("shell-loaded");
     const mainDrawerSide = state.mobileMenuFlip 
       ? (state.mobileMenuPosition === 'left' ? 'right' : 'left')
       : state.mobileMenuPosition;
@@ -1381,17 +1384,28 @@ export function applyThemeStructure(doc: Document, state: ThemeState, navigation
       if (!accountWrapper) {
         accountWrapper = doc.createElement("div");
         accountWrapper.className = "nav-more-dropdown header-account-dropdown";
-        accountWrapper.innerHTML = `
-          <a class="member-account-icon-only-link" id="accountBtn" href="login.html" title="Account" data-editor-type="button">
-            <i data-lucide="user-circle"></i>
-          </a>
-          <div class="nav-more-menu account-dropdown-menu" style="display: none;">
-            <a class="nav-more-item" href="login.html">Login</a>
-            <a class="nav-more-item" href="login.html">Register</a>
-          </div>
+        const existingAccountLink = headerActions.querySelector(".member-account-icon-only-link");
+        if (existingAccountLink) {
+          existingAccountLink.id = "accountBtn";
+          existingAccountLink.setAttribute("data-editor-type", "button");
+          accountWrapper.appendChild(existingAccountLink);
+        } else {
+          accountWrapper.innerHTML = `
+            <a class="member-account-icon-only-link" id="accountBtn" href="login.html" title="Account" data-editor-type="button">
+              <i data-lucide="user-circle"></i>
+            </a>
+          `;
+        }
+        const accountMenu = doc.createElement("div");
+        accountMenu.className = "nav-more-menu account-dropdown-menu";
+        accountMenu.setAttribute("style", "display: none;");
+        accountMenu.innerHTML = `
+          <a class="nav-more-item" href="login.html">Login</a>
+          <a class="nav-more-item" href="login.html">Register</a>
         `;
+        accountWrapper.appendChild(accountMenu);
         const menuBtn = headerActions.querySelector("#menuBtn");
-        if (menuBtn) {
+        if (menuBtn && menuBtn.parentElement === headerActions) {
           headerActions.insertBefore(accountWrapper, menuBtn);
         } else {
           headerActions.appendChild(accountWrapper);

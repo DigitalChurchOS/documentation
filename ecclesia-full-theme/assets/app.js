@@ -561,7 +561,9 @@ function initShell() {
   if (window.formatCardButtons) window.formatCardButtons();
   
   // 7. Create icons
-  lucide.createIcons();
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 
   // 7. Initialize sort toggles
   if (window.initSortToggles) window.initSortToggles();

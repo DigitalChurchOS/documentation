@@ -119,6 +119,95 @@ export const Preview: React.FC<PreviewProps> = ({
       }
       document.__ecclesiaBound = true;
 
+      function bindMemberAccountPreviewInteractions() {
+        if (document.__memberAccountPreviewBound) return;
+
+        const contributionModal = document.getElementById("contributionModal");
+        const viewContributionsBtn = document.getElementById("viewContributionsBtn");
+        const closeContributionsBtn = document.getElementById("closeContributionsBtn");
+        const contributionHistoryList = document.getElementById("contributionHistoryList");
+        const contributionResultCount = document.getElementById("contributionResultCount");
+        const contributionResultTotal = document.getElementById("contributionResultTotal");
+
+        if (!contributionModal || !viewContributionsBtn || !closeContributionsBtn || !contributionHistoryList || !contributionResultCount || !contributionResultTotal) return;
+        document.__memberAccountPreviewBound = true;
+
+        const contributionHistory = [
+          { date: "2026-06-28", displayDate: "Jun 28, 2026", fund: "Weekly Tithes", method: "Online Card", amount: 150 },
+          { date: "2026-06-15", displayDate: "Jun 15, 2026", fund: "Missions Fund", method: "Direct Deposit", amount: 400 },
+          { date: "2026-05-30", displayDate: "May 30, 2026", fund: "Weekly Tithes", method: "Online Card", amount: 150 },
+          { date: "2026-05-18", displayDate: "May 18, 2026", fund: "Building Fund", method: "Bank Transfer", amount: 250 },
+          { date: "2026-04-26", displayDate: "Apr 26, 2026", fund: "Weekly Tithes", method: "Online Card", amount: 150 },
+          { date: "2026-03-29", displayDate: "Mar 29, 2026", fund: "Weekly Tithes", method: "Online Card", amount: 150 },
+          { date: "2026-02-22", displayDate: "Feb 22, 2026", fund: "Weekly Tithes", method: "Online Card", amount: 150 },
+          { date: "2026-01-25", displayDate: "Jan 25, 2026", fund: "Weekly Tithes", method: "Online Card", amount: 150 }
+        ];
+
+        const formatMoney = (amount) => "$" + amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const valueFor = (id) => {
+          const input = document.getElementById(id);
+          return input ? input.value : "";
+        };
+
+        function renderContributionHistory() {
+          const fromDate = valueFor("contributionFromDate");
+          const toDate = valueFor("contributionToDate");
+          const minAmount = Number(valueFor("contributionMinAmount") || 0);
+          const maxAmountRaw = valueFor("contributionMaxAmount");
+          const maxAmount = maxAmountRaw ? Number(maxAmountRaw) : Number.POSITIVE_INFINITY;
+
+          const filtered = contributionHistory.filter((item) => {
+            return (!fromDate || item.date >= fromDate)
+              && (!toDate || item.date <= toDate)
+              && item.amount >= minAmount
+              && item.amount <= maxAmount;
+          });
+
+          const total = filtered.reduce((sum, item) => sum + item.amount, 0);
+          contributionResultCount.textContent = filtered.length + " " + (filtered.length === 1 ? "record" : "records");
+          contributionResultTotal.textContent = formatMoney(total);
+          contributionHistoryList.innerHTML = filtered.length
+            ? filtered.map((item) => (
+              "<div class='contribution-history-row'>" +
+                "<div>" +
+                  "<strong>" + item.fund + "</strong>" +
+                  "<span class='transaction-date'>" + item.displayDate + " - " + item.method + "</span>" +
+                "</div>" +
+                "<span class='amount'>" + formatMoney(item.amount) + "</span>" +
+              "</div>"
+            )).join("")
+            : "<p style='margin:12px 0 0; color:var(--muted);'>No contributions match these filters.</p>";
+        }
+
+        function setContributionModalOpen(isOpen) {
+          contributionModal.hidden = !isOpen;
+          if (isOpen) renderContributionHistory();
+        }
+
+        viewContributionsBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setContributionModalOpen(true);
+        });
+        closeContributionsBtn.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setContributionModalOpen(false);
+        });
+        contributionModal.addEventListener("click", (event) => {
+          if (event.target === contributionModal) setContributionModalOpen(false);
+        });
+        ["contributionFromDate", "contributionToDate", "contributionMinAmount", "contributionMaxAmount"].forEach((id) => {
+          const input = document.getElementById(id);
+          if (input) input.addEventListener("input", renderContributionHistory);
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !contributionModal.hidden) setContributionModalOpen(false);
+        });
+      }
+
+      bindMemberAccountPreviewInteractions();
+
       // Drag & Drop State
       let dragCategory = "";
       let lastDropTarget = null;
@@ -272,6 +361,10 @@ export const Preview: React.FC<PreviewProps> = ({
           return;
         }
 
+        if (e.target.closest("[data-ec-preview-action], [data-ec-preview-interactive]")) {
+          return;
+        }
+
         // Prevent click actions
         e.preventDefault();
         e.stopPropagation();
@@ -376,6 +469,10 @@ export const Preview: React.FC<PreviewProps> = ({
             if (drawer) drawer.classList.toggle("open");
             e.preventDefault();
             e.stopPropagation();
+            return;
+          }
+
+          if (e.target.closest("[data-ec-preview-action], [data-ec-preview-interactive]")) {
             return;
           }
           
