@@ -5113,7 +5113,7 @@ body.customizer-open { overflow: hidden; }
                   <option value="media">Media Views & Downloads</option>
                   <option value="articles">Articles & Publications</option>
                   <option value="sales">Sales & Store Revenue</option>
-                  <option value="cells">Cell Group Meetings</option>
+                  <option value="groups">Group Meetings</option>
                 </select>
               </div>
             </div>
@@ -5267,6 +5267,10 @@ body.customizer-open { overflow: hidden; }
                   <button class="cms-nav-item" data-cms-tab="blocks">
                     <i data-lucide="layout-grid"></i>
                     <span>Reusable Sections</span>
+                  </button>
+                  <button class="cms-nav-item" data-cms-tab="content-design">
+                    <i data-lucide="sparkles"></i>
+                    <span>Hero & CTA</span>
                   </button>
                   <button class="cms-nav-item" data-cms-tab="publishing">
                     <i data-lucide="radio-tower"></i>
@@ -5424,7 +5428,71 @@ body.customizer-open { overflow: hidden; }
                   <div class="grid-layout" id="cmsReusableBlocksGrid"></div>
                 </div>
 
-                <!-- 6. PUBLISHING TAB -->
+                <!-- 6. HERO & CTA TAB -->
+                <div id="cmsContentDesignTab" class="cms-tab-content hidden">
+                  <div class="section-head">
+                    <div>
+                      <h2>Archive & Single Page Hero / CTA</h2>
+                      <p>Manage the text, button links, and image URLs that hydrate existing archive and single-page template sections.</p>
+                    </div>
+                    <button class="btn primary" onclick="saveCmsContentDesign()"><i data-lucide="save"></i>Save Hero & CTA</button>
+                  </div>
+                  <div class="panel" style="display:grid; grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr); gap:16px;">
+                    <div class="stack" style="gap:12px;">
+                      <div class="field">
+                        <label for="cmsContentDesignTemplate">Template Scope</label>
+                        <select id="cmsContentDesignTemplate" class="form-control" onchange="loadCmsContentDesignForm()">
+                          <option value="blog.archive">Blog Archive</option>
+                          <option value="blog.single">Blog Single</option>
+                          <option value="media.archive">Media Archive</option>
+                          <option value="media.single">Media Single</option>
+                          <option value="events.archive">Events Archive</option>
+                          <option value="events.single">Event Single</option>
+                          <option value="store.archive">Store Archive</option>
+                          <option value="store.single">Product Single</option>
+                          <option value="groups.archive">Groups Archive</option>
+                          <option value="groups.single">Group Single</option>
+                          <option value="courses.archive">Courses Archive</option>
+                          <option value="courses.single">Course Single</option>
+                          <option value="podcast.archive">Podcast Archive</option>
+                          <option value="podcast.single">Podcast Single</option>
+                          <option value="library.archive">Resources Archive</option>
+                          <option value="library.single">Resource Single</option>
+                          <option value="global">Global Fallback</option>
+                        </select>
+                      </div>
+                      <div class="setting-row">
+                        <div>
+                          <strong>Public source</strong>
+                          <span class="muted">Saved values hydrate existing theme sections only.</span>
+                        </div>
+                        <span class="status"><i data-lucide="shield-check"></i>Layout safe</span>
+                      </div>
+                    </div>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:16px;">
+                      <div class="stack" style="gap:10px;">
+                        <h3 style="margin:0;">Hero Section</h3>
+                        <input id="cmsHeroEyebrow" class="form-control" placeholder="Eyebrow / kicker">
+                        <input id="cmsHeroTitle" class="form-control" placeholder="Hero headline">
+                        <textarea id="cmsHeroDescription" class="form-control" style="min-height:84px;" placeholder="Hero supporting copy"></textarea>
+                        <input id="cmsHeroPrimaryLabel" class="form-control" placeholder="Primary button label">
+                        <input id="cmsHeroPrimaryUrl" class="form-control" placeholder="/button-url">
+                        <input id="cmsHeroImageUrl" class="form-control" placeholder="Hero image URL">
+                      </div>
+                      <div class="stack" style="gap:10px;">
+                        <h3 style="margin:0;">Bottom CTA Section</h3>
+                        <input id="cmsCtaEyebrow" class="form-control" placeholder="CTA eyebrow / kicker">
+                        <input id="cmsCtaTitle" class="form-control" placeholder="CTA headline">
+                        <textarea id="cmsCtaDescription" class="form-control" style="min-height:84px;" placeholder="CTA supporting copy"></textarea>
+                        <input id="cmsCtaPrimaryLabel" class="form-control" placeholder="CTA button label">
+                        <input id="cmsCtaPrimaryUrl" class="form-control" placeholder="/button-url">
+                        <input id="cmsCtaImageUrl" class="form-control" placeholder="CTA image URL">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 7. PUBLISHING TAB -->
                 <div id="cmsPublishingTab" class="cms-tab-content hidden">
                   <div class="section-head">
                     <div>
@@ -8968,10 +9036,10 @@ body.customizer-open { overflow: hidden; }
               <!-- Sidebar -->
               <aside class="cms-nav-panel">
                 <div class="cms-nav-group">
-                  <div class="cms-nav-header">Cell Groups Network</div>
+                  <div class="cms-nav-header">Groups Network</div>
                   <button class="cms-nav-item active" data-groups-tab="list" onclick="switchGroupsTab('list')">
                     <i data-lucide="network"></i>
-                    <span>Cell Groups Directory</span>
+                    <span>Groups Directory</span>
                   </button>
                   <button class="cms-nav-item" data-groups-tab="roster" onclick="switchGroupsTab('roster')">
                     <i data-lucide="users-round"></i>
@@ -8999,20 +9067,20 @@ body.customizer-open { overflow: hidden; }
               <!-- Content Panel -->
               <div class="cms-content-panel" style="padding: 0; display: flex; flex-direction: column; gap: 16px;">
                 
-                <!-- 1. CELL GROUPS DIRECTORY TAB -->
+                <!-- 1. GROUPS DIRECTORY TAB -->
                 <div id="groupsListTab" class="groups-tab-content">
                   <div class="section-head" style="margin-bottom:20px; align-items: center; justify-content: space-between;">
                     <div>
-                      <h2>Cell Groups Directory</h2>
-                      <p>View, inspect, and organize your home cell fellowships, zonal sectors, and regional zones.</p>
+                      <h2>Groups Directory</h2>
+                      <p>View, inspect, and organize groups, cells, fellowships, ministry teams, and regional networks.</p>
                     </div>
-                    <button class="btn primary" onclick="openCreateCellGroupModal()"><i data-lucide="plus-circle"></i>Create Cell Group</button>
+                    <button class="btn primary" onclick="openCreateCellGroupModal()"><i data-lucide="plus-circle"></i>Create Group</button>
                   </div>
                   <div class="panel" style="padding:0; overflow:hidden;">
                     <table class="mini-table" style="width:100%;">
                       <thead>
                         <tr>
-                          <th>Cell Group Name</th>
+                          <th>Group Name</th>
                           <th>Parent Network</th>
                           <th>Group Classification</th>
                           <th>Primary Leader</th>
@@ -9032,7 +9100,7 @@ body.customizer-open { overflow: hidden; }
                   <div class="section-head" style="margin-bottom:20px; align-items: center; justify-content: space-between;">
                     <div>
                       <h2 id="groupsActiveRosterTitle">Roster & Roles</h2>
-                      <p>Manage members, hosts, leaders, and co-leaders assigned to the active cell group.</p>
+                      <p>Manage members, hosts, leaders, and co-leaders assigned to the active group.</p>
                     </div>
                     <button class="btn primary" onclick="openAddMemberToRosterModal()"><i data-lucide="user-plus"></i>Add Member</button>
                   </div>
@@ -9083,8 +9151,8 @@ body.customizer-open { overflow: hidden; }
                 <div id="groupsNoticesTab" class="groups-tab-content hidden">
                   <div class="section-head" style="margin-bottom:20px; align-items: center; justify-content: space-between;">
                     <div>
-                      <h2>Cell Notice Board Announcements</h2>
-                      <p>Dispatch announcements, prayer guides, and fellowship notes directly to cell group notice boards.</p>
+                      <h2>Group Notice Board Announcements</h2>
+                      <p>Dispatch announcements, prayer guides, and fellowship notes directly to group notice boards.</p>
                     </div>
                     <button class="btn primary" onclick="openPostNoticeModal()"><i data-lucide="megaphone"></i>Post Notice</button>
                   </div>
@@ -9098,7 +9166,7 @@ body.customizer-open { overflow: hidden; }
                   <div class="section-head" style="margin-bottom:20px; align-items: center; justify-content: space-between;">
                     <div>
                       <h2>Accreditation Scorecard</h2>
-                      <p>Evaluate cell multiplication, attendance, outreach engagement, and overall fellowship health.</p>
+                      <p>Evaluate group multiplication, attendance, outreach engagement, and overall fellowship health.</p>
                     </div>
                     <button class="btn success" onclick="triggerAccreditationPromotion()"><i data-lucide="sparkles"></i>Promote Tier</button>
                   </div>
@@ -9112,7 +9180,7 @@ body.customizer-open { overflow: hidden; }
                   <div class="section-head" style="margin-bottom:20px; align-items: center; justify-content: space-between;">
                     <div>
                       <h2>Network Classification & Config</h2>
-                      <p>Define cell network tiers (e.g. Zone, Sector, Cell) and default system configurations.</p>
+                      <p>Define group network tiers (e.g. Zone, Sector, Group) and default system configurations.</p>
                     </div>
                     <button class="btn primary" onclick="openCreateGroupTypeModal()"><i data-lucide="plus"></i>Create Classification</button>
                   </div>
@@ -10708,7 +10776,7 @@ body.customizer-open { overflow: hidden; }
                         <select id="libResVisibility" class="select" style="width:100%;">
                           <option value="Public">Public Access</option>
                           <option value="Members">Verified Members Only</option>
-                          <option value="Leaders">Cell Groups Leaders Only</option>
+                          <option value="Leaders">Group Leaders Only</option>
                           <option value="Staff">Ministry Staff Only</option>
                         </select>
                       </div>
@@ -14532,7 +14600,7 @@ body.customizer-open { overflow: hidden; }
       { key: 'events', name: 'Events', icon: 'calendar-days', category: 'Connect', desc: 'Publish events, registrations, reminders, capacity, and tickets.', settings: [{ key: 'autoReminders', label: 'Automatic reminders', type: 'toggle' }, { key: 'capacityWarning', label: 'Capacity warning percent', type: 'range', min: 50, max: 100, value: 85 }] },
       { key: 'livestream', name: 'Livestream', icon: 'radio', category: 'Connect', desc: 'Run live services, chat, prayer prompts, and replays.', settings: [{ key: 'showChat', label: 'Show live chat', type: 'toggle' }, { key: 'prayerPrompt', label: 'Prayer prompt interval', type: 'range', min: 5, max: 30, value: 12 }] },
       { key: 'members', name: 'Members CRM', icon: 'users-round', category: 'Outreach', desc: 'Track members, families, notes, pipelines, and follow-ups.', settings: [{ key: 'duplicateCheck', label: 'Duplicate member checks', type: 'toggle' }, { key: 'followUpDays', label: 'Follow-up SLA days', type: 'range', min: 1, max: 14, value: 3 }] },
-      { key: 'groups', name: 'Cell Groups', icon: 'network', category: 'Connect', desc: 'Manage groups, leaders, attendance, invites, and hierarchy.', settings: [{ key: 'autoNaming', label: 'Automatic cell naming', type: 'toggle' }, { key: 'depthLimit', label: 'Hierarchy depth limit', type: 'range', min: 1, max: 8, value: 4 }] },
+      { key: 'groups', name: 'Groups', icon: 'network', category: 'Connect', desc: 'Manage groups, cells, fellowships, leaders, attendance, invites, and hierarchy.', settings: [{ key: 'autoNaming', label: 'Automatic group naming', type: 'toggle' }, { key: 'depthLimit', label: 'Hierarchy depth limit', type: 'range', min: 1, max: 8, value: 4 }] },
       { key: 'media', name: 'Media Library', icon: 'clapperboard', category: 'Media', desc: 'Organize sermons, playlists, captions, podcasts, and downloads.', settings: [{ key: 'autoCaption', label: 'Auto-generate captions', type: 'toggle' }, { key: 'clipLength', label: 'Default clip length', type: 'range', min: 15, max: 180, value: 60 }] },
       { key: 'prayer', name: 'Prayer & Testimony', icon: 'heart-handshake', category: 'Discipleship', desc: 'Moderate prayers, testimonies, sessions, and pastoral responses.', settings: [{ key: 'moderation', label: 'Require moderation', type: 'toggle' }, { key: 'responseSla', label: 'Response SLA hours', type: 'range', min: 1, max: 72, value: 24 }] },
       { key: 'volunteers', name: 'Volunteers', icon: 'clipboard-check', category: 'Connect', desc: 'Coordinate teams, availability, schedules, announcements, and assignments.', settings: [{ key: 'availabilityLock', label: 'Lock schedules after publish', type: 'toggle' }, { key: 'reminderHours', label: 'Reminder lead time hours', type: 'range', min: 1, max: 72, value: 24 }] },
@@ -15351,7 +15419,7 @@ body.customizer-open { overflow: hidden; }
               <span class="status info" style="font-size: 11px;"><i data-lucide="droplet"></i> Public testimony</span>
             </div>
             <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
-              <span class="muted" style="font-size: 11px;">Cell Group Joins</span>
+              <span class="muted" style="font-size: 11px;">Group Joins</span>
               <h3 style="font-size: 20px; margin: 4px 0;">115</h3>
               <span class="muted" style="font-size: 11px;">Assimilated newcomers</span>
             </div>
@@ -15368,7 +15436,7 @@ body.customizer-open { overflow: hidden; }
                 <div style="flex:1; background:var(--line); height:24px; border-radius:4px; overflow:hidden;"><div style="background:var(--accent); opacity:0.85; width:78%; height:100%; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:bold;">97 calls (78%)</div></div>
               </div>
               <div style="display:flex; align-items:center; gap:12px;">
-                <div style="width:120px; font-size:12px; text-align:right; font-weight:600;">3. Cell Group Join</div>
+                <div style="width:120px; font-size:12px; text-align:right; font-weight:600;">3. Group Join</div>
                 <div style="flex:1; background:var(--line); height:24px; border-radius:4px; overflow:hidden;"><div style="background:var(--accent); opacity:0.75; width:52%; height:100%; display:flex; align-items:center; padding-left:8px; color:#fff; font-size:11px; font-weight:bold;">64 joined (52%)</div></div>
               </div>
               <div style="display:flex; align-items:center; gap:12px;">
@@ -15581,7 +15649,7 @@ body.customizer-open { overflow: hidden; }
         html = `
           <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
             <div class="metric-card" style="padding: 16px; background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius);">
-              <span class="muted" style="font-size: 11px;">Active Cell Groups</span>
+              <span class="muted" style="font-size: 11px;">Active Groups</span>
               <h3 style="font-size: 20px; margin: 4px 0;">42</h3>
               <span class="status live" style="font-size: 11px;"><i data-lucide="check"></i> 100% active</span>
             </div>
@@ -16713,6 +16781,7 @@ body.customizer-open { overflow: hidden; }
       pages: [],
       reusableBlocks: [],
       activityLogs: [],
+      contentDesign: { entries: {} },
       activeWebsiteId: '',
       activeTab: 'overview',
       activePageFilter: 'all',
@@ -16910,7 +16979,7 @@ body.customizer-open { overflow: hidden; }
         { key: 'core-website-cms', label: 'Churchfront (core-website-cms.*)' },
         { key: 'giving', label: 'Donations & Giving (giving.*)' },
         { key: 'members', label: 'Members CRM (members.*)' },
-        { key: 'groups', label: 'Cell Groups (groups.*)' },
+        { key: 'groups', label: 'Groups (groups.*)' },
         { key: 'prayer', label: 'Prayer & Testimonies (prayer.*)' },
         { key: 'media', label: 'Media Library (media.*)' },
         { key: 'volunteers', label: 'Volunteers (volunteers.*)' },
@@ -18104,7 +18173,7 @@ body.customizer-open { overflow: hidden; }
       ['Membership / Visitor','hand','Volunteer Signup','Volunteer interest form CTA.'],
       ['Membership / Visitor','mail','Contact Form','Public contact form.'],
       ['Membership / Visitor','users','Join a Group CTA','CTA for group discovery.'],
-      ['Cell / Community','network','Cell Groups List','Cell group listing preview.'],
+      ['Groups / Community','network','Groups List','Group listing preview.'],
       ['Cell / Community','users-round','Ministry Groups','Ministry group cards.'],
       ['Cell / Community','building-2','Department Highlights','Department highlights section.'],
       ['Cell / Community','search','Small Group Finder','Group finder CTA and filters.'],
@@ -20990,10 +21059,11 @@ body.customizer-open { overflow: hidden; }
     }
 
     async function loadAllCmsData() {
-      const [pagesRes, blocksRes, globalContentRes] = await Promise.all([
+      const [pagesRes, blocksRes, globalContentRes, contentDesignRes] = await Promise.all([
         cmsApiRequest('GET', '/api/cms/pages'),
         cmsApiRequest('GET', '/api/cms/reusable-blocks'),
-        cmsApiRequest('GET', '/api/cms/global-content')
+        cmsApiRequest('GET', '/api/cms/global-content'),
+        cmsApiRequest('GET', '/api/cms/content-design')
       ]);
       if (pagesRes && pagesRes.data) {
         cmsState.pages = pagesRes.data;
@@ -21003,6 +21073,9 @@ body.customizer-open { overflow: hidden; }
       }
       if (globalContentRes && globalContentRes.data) {
         websiteBuilderState.globalContent = normalizeWebsiteBuilderGlobalContent(globalContentRes.data.content || globalContentRes.data);
+      }
+      if (contentDesignRes && contentDesignRes.data) {
+        cmsState.contentDesign = contentDesignRes.data;
       }
 
       const websiteIds = Array.from(new Set(cmsState.pages.map(p => p.websiteId)));
@@ -21156,14 +21229,14 @@ body.customizer-open { overflow: hidden; }
           ]
         },
         {
-          title: 'Cell Groups',
+          title: 'Groups',
           slug: 'groups',
           isHome: false,
           status: 'published',
-          seoTitle: 'Cell Groups | Demo Church',
-          seoDescription: 'Cell group finder, leader cards, meeting schedules, and join requests.',
+          seoTitle: 'Groups | Demo Church',
+          seoDescription: 'Group finder, leader cards, meeting schedules, and join requests.',
           content: [
-            { type: 'dynamic_cell_finder', title: 'Find a Cell Group', sourceModule: 'Cell Groups', fields: ['location', 'language', 'day', 'leader', 'joinRequest'] }
+            { type: 'dynamic_group_finder', title: 'Find a Group', sourceModule: 'Groups', fields: ['location', 'language', 'day', 'leader', 'joinRequest'] }
           ]
         },
         {
@@ -21358,6 +21431,7 @@ body.customizer-open { overflow: hidden; }
       else if (tabName === 'menus') loadCmsNavigationMenu();
       else if (tabName === 'footer') loadCmsFooterConfig();
       else if (tabName === 'blocks') renderCmsBlocksInventory();
+      else if (tabName === 'content-design') renderCmsContentDesign();
       else if (tabName === 'publishing') renderCmsPublishing();
       else if (tabName === 'reports') renderCmsReports();
       else if (tabName === 'logs') populateCmsLogs();
@@ -21621,6 +21695,78 @@ body.customizer-open { overflow: hidden; }
         alert(res?.data?.error || 'Failed to create template page.');
       }
     }
+
+    function readCmsContentDesignEntry(key) {
+      const entries = cmsState.contentDesign?.entries || {};
+      return entries[key] || { hero: {}, cta: {} };
+    }
+
+    function setFormValue(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.value = value || '';
+    }
+
+    function readFormValue(id) {
+      return document.getElementById(id)?.value?.trim() || '';
+    }
+
+    function loadCmsContentDesignForm() {
+      const key = document.getElementById('cmsContentDesignTemplate')?.value || 'blog.archive';
+      const entry = readCmsContentDesignEntry(key);
+      setFormValue('cmsHeroEyebrow', entry.hero?.eyebrow);
+      setFormValue('cmsHeroTitle', entry.hero?.title);
+      setFormValue('cmsHeroDescription', entry.hero?.description);
+      setFormValue('cmsHeroPrimaryLabel', entry.hero?.primaryLabel);
+      setFormValue('cmsHeroPrimaryUrl', entry.hero?.primaryUrl);
+      setFormValue('cmsHeroImageUrl', entry.hero?.imageUrl);
+      setFormValue('cmsCtaEyebrow', entry.cta?.eyebrow);
+      setFormValue('cmsCtaTitle', entry.cta?.title);
+      setFormValue('cmsCtaDescription', entry.cta?.description);
+      setFormValue('cmsCtaPrimaryLabel', entry.cta?.primaryLabel);
+      setFormValue('cmsCtaPrimaryUrl', entry.cta?.primaryUrl);
+      setFormValue('cmsCtaImageUrl', entry.cta?.imageUrl);
+    }
+
+    function renderCmsContentDesign() {
+      loadCmsContentDesignForm();
+      refreshIcons();
+    }
+
+    async function saveCmsContentDesign() {
+      const key = document.getElementById('cmsContentDesignTemplate')?.value || 'blog.archive';
+      const entries = {
+        ...(cmsState.contentDesign?.entries || {}),
+        [key]: {
+          hero: {
+            eyebrow: readFormValue('cmsHeroEyebrow'),
+            title: readFormValue('cmsHeroTitle'),
+            description: readFormValue('cmsHeroDescription'),
+            primaryLabel: readFormValue('cmsHeroPrimaryLabel'),
+            primaryUrl: readFormValue('cmsHeroPrimaryUrl'),
+            imageUrl: readFormValue('cmsHeroImageUrl')
+          },
+          cta: {
+            eyebrow: readFormValue('cmsCtaEyebrow'),
+            title: readFormValue('cmsCtaTitle'),
+            description: readFormValue('cmsCtaDescription'),
+            primaryLabel: readFormValue('cmsCtaPrimaryLabel'),
+            primaryUrl: readFormValue('cmsCtaPrimaryUrl'),
+            imageUrl: readFormValue('cmsCtaImageUrl')
+          }
+        }
+      };
+      const nextDesign = { ...(cmsState.contentDesign || {}), entries };
+      const res = await cmsApiRequest('PUT', '/api/cms/content-design', nextDesign);
+      if (res && res.ok) {
+        cmsState.contentDesign = res.data || nextDesign;
+        showToast('Hero and CTA settings saved.');
+      } else {
+        alert('Failed to save Hero and CTA settings.');
+      }
+    }
+
+    window.loadCmsContentDesignForm = loadCmsContentDesignForm;
+    window.saveCmsContentDesign = saveCmsContentDesign;
 
     function renderCmsPublishing() {
       const list = document.getElementById('cmsPublishingSettingsList');
@@ -27384,9 +27530,9 @@ body.customizer-open { overflow: hidden; }
 
     window.bootstrapGroups = async function() {
       const [gRes, tRes, sRes] = await Promise.all([
-        cmsApiRequest('GET', '/api/cells'),
-        cmsApiRequest('GET', '/api/cells/types'),
-        cmsApiRequest('GET', '/api/cells/settings')
+        cmsApiRequest('GET', '/api/groups'),
+        cmsApiRequest('GET', '/api/groups/types'),
+        cmsApiRequest('GET', '/api/groups/settings')
       ]);
 
       if (gRes && gRes.ok) groupsState.groups = gRes.data || [];
@@ -27407,10 +27553,10 @@ body.customizer-open { overflow: hidden; }
     async function fetchSelectedGroupDetails() {
       const id = groupsState.selectedGroupId;
       const [detRes, meetRes, notRes, scoreRes] = await Promise.all([
-        cmsApiRequest('GET', `/api/cells/${id}`),
-        cmsApiRequest('GET', `/api/cells/${id}/meetings`),
-        cmsApiRequest('GET', `/api/cells/${id}/notice-board`),
-        cmsApiRequest('GET', `/api/cells/${id}/scorecard`)
+        cmsApiRequest('GET', `/api/groups/${id}`),
+        cmsApiRequest('GET', `/api/groups/${id}/meetings`),
+        cmsApiRequest('GET', `/api/groups/${id}/notice-board`),
+        cmsApiRequest('GET', `/api/groups/${id}/scorecard`)
       ]);
 
       if (detRes && detRes.ok) groupsState.selectedGroupDetails = detRes.data || null;
@@ -27424,11 +27570,11 @@ body.customizer-open { overflow: hidden; }
         const tbody = document.getElementById('cellGroupsDirectoryList');
         if (!tbody) return;
         if (groupsState.groups.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="muted" style="text-align:center; padding:20px;">No cell groups configured.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" class="muted" style="text-align:center; padding:20px;">No groups configured.</td></tr>`;
           return;
         }
         tbody.innerHTML = groupsState.groups.map(g => {
-          const typeName = g.groupType ? g.groupType.name : 'Home Cell';
+          const typeName = g.groupType ? g.groupType.name : 'Group';
           const parentName = g.parent ? g.parent.name : 'Root Network';
           const leaderName = g.leaderId ? `Leader ID: ${g.leaderId}` : 'No Leader';
           const rosterCount = g.membersRoster ? g.membersRoster.length : 0;
@@ -27455,15 +27601,15 @@ body.customizer-open { overflow: hidden; }
         
         const details = groupsState.selectedGroupDetails;
         if (!details) {
-          titleEl.textContent = 'Roster & Roles (No cell group selected)';
-          tbody.innerHTML = `<tr><td colspan="4" class="muted" style="text-align:center; padding:20px;">Select a cell group from the directory tab first.</td></tr>`;
+          titleEl.textContent = 'Roster & Roles (No group selected)';
+          tbody.innerHTML = `<tr><td colspan="4" class="muted" style="text-align:center; padding:20px;">Select a group from the directory tab first.</td></tr>`;
           return;
         }
 
-        titleEl.textContent = `Cell Roster: ${details.name}`;
+        titleEl.textContent = `Group Roster: ${details.name}`;
         const roster = details.membersRoster || [];
         if (roster.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" class="muted" style="text-align:center; padding:20px;">Roster empty. Click Add Member to register home cell attendees.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="4" class="muted" style="text-align:center; padding:20px;">Roster empty. Click Add Member to register group attendees.</td></tr>`;
           return;
         }
 
@@ -27496,7 +27642,7 @@ body.customizer-open { overflow: hidden; }
           return `
             <tr>
               <td>
-                <div style="font-weight:600;">${escapeHtml(m.location || 'Home Cell Fellowship')}</div>
+                <div style="font-weight:600;">${escapeHtml(m.location || 'Group Fellowship')}</div>
                 <div style="font-size:11px;" class="muted">Topic: ${escapeHtml(m.topic || 'Fellowship & Worship')}</div>
               </td>
               <td class="muted">${dateStr}</td>
@@ -27525,7 +27671,7 @@ body.customizer-open { overflow: hidden; }
                 <span class="muted" style="font-size:11px;">Posted: ${dateStr}</span>
               </div>
               <p class="muted" style="font-size:13px; margin:0;">${escapeHtml(n.content)}</p>
-              <div style="font-size:11px; align-self:flex-end;" class="muted">By Author: ${escapeHtml(n.authorId || 'Cell Leader')}</div>
+              <div style="font-size:11px; align-self:flex-end;" class="muted">By Author: ${escapeHtml(n.authorId || 'Group Leader')}</div>
             </div>
           `;
         }).join('');
@@ -27533,7 +27679,7 @@ body.customizer-open { overflow: hidden; }
         const container = document.getElementById('cellScorecardDetails');
         if (!container) return;
         if (!groupsState.scorecard) {
-          container.innerHTML = `<div class="muted" style="text-align:center; padding:20px;">No scorecard indices generated for this cell fellowship.</div>`;
+          container.innerHTML = `<div class="muted" style="text-align:center; padding:20px;">No scorecard indices generated for this group.</div>`;
           return;
         }
         const s = groupsState.scorecard;
@@ -27555,7 +27701,7 @@ body.customizer-open { overflow: hidden; }
           <div style="margin-top:10px;">
             <strong>Accreditation Level & Standing:</strong>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:13px;">
-              <span>Cell Network Level Tier: <strong>Level ${s.tierLevel || 1}</strong></span>
+              <span>Group Network Level Tier: <strong>Level ${s.tierLevel || 1}</strong></span>
               <span class="status live">${s.accredited ? 'Accredited Standing' : 'Evaluation phase'}</span>
             </div>
           </div>
@@ -27586,7 +27732,7 @@ body.customizer-open { overflow: hidden; }
 
     window.openCreateCellGroupModal = async function() {
       if (groupsState.types.length === 0) {
-        alert('Please create a cell network type classification first.');
+        alert('Please create a group type classification first.');
         return;
       }
       const typeOptions = groupsState.types.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
@@ -27595,7 +27741,7 @@ body.customizer-open { overflow: hidden; }
       const html = `
         <div style="display:flex; flex-direction:column; gap:12px; min-width:320px;">
           <div class="field">
-            <label>Cell Group Name</label>
+            <label>Group Name</label>
             <input type="text" id="gName" class="form-control" placeholder="e.g. Grace Fellowship" style="width:100%;" />
           </div>
           <div class="field">
@@ -27615,7 +27761,7 @@ body.customizer-open { overflow: hidden; }
 
       const confirm = await showSystemModal({
         type: 'confirm',
-        title: 'Create Cell Group Node',
+          title: 'Create Group',
         message: html,
         showCancel: true
       });
@@ -27627,12 +27773,12 @@ body.customizer-open { overflow: hidden; }
         const leaderId = document.getElementById('gLeader').value || undefined;
 
         if (!name) {
-          alert('Cell group name is required.');
+          alert('Group name is required.');
           return;
         }
 
         showToast('Creating group node...');
-        const res = await cmsApiRequest('POST', '/api/cells', {
+        const res = await cmsApiRequest('POST', '/api/groups', {
           name,
           groupTypeId,
           parentId,
@@ -27640,17 +27786,17 @@ body.customizer-open { overflow: hidden; }
         });
 
         if (res && res.ok) {
-          showToast('Cell Group successfully created!');
+          showToast('Group successfully created!');
           bootstrapGroups();
         } else {
-          alert('Failed to create cell group: ' + (res.error || 'Server error'));
+          alert('Failed to create group: ' + (res.error || 'Server error'));
         }
       }
     };
 
     window.openAddMemberToRosterModal = async function() {
       if (!groupsState.selectedGroupId) {
-        alert('Please select a cell group first.');
+        alert('Please select a group first.');
         return;
       }
 
@@ -27688,8 +27834,8 @@ body.customizer-open { overflow: hidden; }
           return;
         }
 
-        showToast('Adding member to cell roster...');
-        const res = await cmsApiRequest('POST', `/api/cells/${groupsState.selectedGroupId}/members`, {
+        showToast('Adding member to group roster...');
+        const res = await cmsApiRequest('POST', `/api/groups/${groupsState.selectedGroupId}/members`, {
           memberId,
           role
         });
@@ -27705,10 +27851,10 @@ body.customizer-open { overflow: hidden; }
 
     window.removeMemberFromRoster = async function(memberId) {
       if (!groupsState.selectedGroupId) return;
-      const confirm = await showSystemConfirm('Are you sure you want to remove this member from the cell roster?', 'Remove Member');
+      const confirm = await showSystemConfirm('Are you sure you want to remove this member from the group roster?', 'Remove Member');
       if (confirm) {
         showToast('Removing member from roster...');
-        const res = await cmsApiRequest('DELETE', `/api/cells/${groupsState.selectedGroupId}/members/${memberId}`);
+        const res = await cmsApiRequest('DELETE', `/api/groups/${groupsState.selectedGroupId}/members/${memberId}`);
         if (res && res.ok) {
           showToast('Member removed from roster.');
           fetchSelectedGroupDetails().then(() => renderGroupsTab('roster'));
@@ -27720,7 +27866,7 @@ body.customizer-open { overflow: hidden; }
 
     window.openScheduleMeetingModal = async function() {
       if (!groupsState.selectedGroupId) {
-        alert('Please select a cell group first.');
+        alert('Please select a group first.');
         return;
       }
 
@@ -27743,7 +27889,7 @@ body.customizer-open { overflow: hidden; }
 
       const confirm = await showSystemModal({
         type: 'confirm',
-        title: 'Schedule Cell Fellowship Meeting',
+        title: 'Schedule Group Meeting',
         message: html,
         showCancel: true
       });
@@ -27759,7 +27905,7 @@ body.customizer-open { overflow: hidden; }
         }
 
         showToast('Scheduling fellowship meeting...');
-        const res = await cmsApiRequest('POST', `/api/cells/${groupsState.selectedGroupId}/meetings`, {
+        const res = await cmsApiRequest('POST', `/api/groups/${groupsState.selectedGroupId}/meetings`, {
           location,
           scheduledAt: new Date(scheduledAt),
           topic
@@ -27777,7 +27923,7 @@ body.customizer-open { overflow: hidden; }
     window.openLogAttendanceModal = async function(meetingId) {
       const details = groupsState.selectedGroupDetails;
       if (!details || !details.membersRoster || details.membersRoster.length === 0) {
-        alert('Active cell group has no registered roster members to log attendance.');
+        alert('Active group has no registered roster members to log attendance.');
         return;
       }
 
@@ -27816,7 +27962,7 @@ body.customizer-open { overflow: hidden; }
         });
 
         showToast('Logging fellowship attendance...');
-        const res = await cmsApiRequest('POST', `/api/cells/meetings/${meetingId}/attendance`, { attendances });
+        const res = await cmsApiRequest('POST', `/api/groups/meetings/${meetingId}/attendance`, { attendances });
         if (res && res.ok) {
           showToast('Attendance logged successfully!');
           fetchSelectedGroupDetails().then(() => renderGroupsTab('meetings'));
@@ -27828,7 +27974,7 @@ body.customizer-open { overflow: hidden; }
 
     window.openPostNoticeModal = async function() {
       if (!groupsState.selectedGroupId) {
-        alert('Please select a cell group first.');
+        alert('Please select a group first.');
         return;
       }
 
@@ -27862,7 +28008,7 @@ body.customizer-open { overflow: hidden; }
         }
 
         showToast('Dispatching notice post...');
-        const res = await cmsApiRequest('POST', `/api/cells/${groupsState.selectedGroupId}/notice-board`, {
+        const res = await cmsApiRequest('POST', `/api/groups/${groupsState.selectedGroupId}/notice-board`, {
           title,
           content
         });
@@ -27878,13 +28024,13 @@ body.customizer-open { overflow: hidden; }
 
     window.triggerAccreditationPromotion = async function() {
       if (!groupsState.selectedGroupId) return;
-      showToast('Accrediting cell network standing...');
-      const res = await cmsApiRequest('POST', `/api/cells/${groupsState.selectedGroupId}/promote`);
+      showToast('Accrediting group network standing...');
+      const res = await cmsApiRequest('POST', `/api/groups/${groupsState.selectedGroupId}/promote`);
       if (res && res.ok) {
         showToast('Accredited! Group has been successfully promoted to the next network tier level.');
         fetchSelectedGroupDetails().then(() => renderGroupsTab('scorecard'));
       } else {
-        alert('Failed to promote cell group: ' + (res.error || 'Server index conditions not met'));
+        alert('Failed to promote group: ' + (res.error || 'Server index conditions not met'));
       }
     };
 
@@ -27893,7 +28039,7 @@ body.customizer-open { overflow: hidden; }
         <div style="display:flex; flex-direction:column; gap:12px; min-width:300px;">
           <div class="field">
             <label>Classification Name</label>
-            <input type="text" id="tName" class="form-control" placeholder="e.g. Home Cell" style="width:100%;" />
+            <input type="text" id="tName" class="form-control" placeholder="e.g. Fellowship" style="width:100%;" />
           </div>
           <div class="field">
             <label>Tier Classification Level</label>
@@ -27919,7 +28065,7 @@ body.customizer-open { overflow: hidden; }
         }
 
         showToast('Saving classification classification...');
-        const res = await cmsApiRequest('POST', '/api/cells/types', { name, tierLevel });
+        const res = await cmsApiRequest('POST', '/api/groups/types', { name, tierLevel });
         if (res && res.ok) {
           showToast('Network classification saved.');
           bootstrapGroups();
@@ -29470,15 +29616,18 @@ body.customizer-open { overflow: hidden; }
 
     window.bootstrapCourses = async function() {
       showToast('Accessing Discipleship LMS...');
-      const [subsRes] = await Promise.all([
+      const [coursesRes, subsRes] = await Promise.all([
+        cmsApiRequest('GET', '/api/lms/courses'),
         cmsApiRequest('GET', '/api/lms/submissions/pending')
       ]);
 
-      // Academy static setup data
-      coursesState.courses = [
-        { id: 'c-101', title: 'Believers Foundation School', slug: 'foundation-school', description: 'Elementary doctrines of Christ and church fellowship guidelines.' },
-        { id: 'c-102', title: 'Discipleship Leadership Academy', slug: 'leadership-academy', description: 'Advanced cell group leadership and branch pastoral preparation.' }
-      ];
+      coursesState.courses = (coursesRes && coursesRes.ok) ? coursesRes.data || [] : [];
+      if (coursesState.courses.length === 0) {
+        coursesState.courses = [
+          { id: 'c-101', title: 'Believers Foundation School', slug: 'foundation-school', description: 'Elementary doctrines of Christ and church fellowship guidelines.' },
+          { id: 'c-102', title: 'Discipleship Leadership Academy', slug: 'leadership-academy', description: 'Advanced group leadership and branch pastoral preparation.' }
+        ];
+      }
 
       coursesState.enrollments = [
         { id: 'e-1', studentName: 'Brother David', courseTitle: 'Believers Foundation School', lessonsCompleted: '8 / 8 lessons', gradePoint: 'A+', awardStatus: 'Graduated' },

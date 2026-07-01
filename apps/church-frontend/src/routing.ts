@@ -35,8 +35,8 @@ const SOURCE_FILE_SLUGS: Record<string, string> = {
   'testimony-single.html': 'testimonies/sample-story',
   'testimony-submit.html': 'testimonies/submit',
   'worship.html': 'worship',
-  'groups-archive.html': 'cells',
-  'group-single.html': 'cells/sample-group',
+  'groups-archive.html': 'groups',
+  'group-single.html': 'groups/sample-group',
   'store-archive.html': 'store',
   'store-single.html': 'store/sample-product',
   'cart.html': 'store/cart',
@@ -81,8 +81,8 @@ const SLUG_TEMPLATE_FILES: Record<string, string> = {
   'testimonies/sample-story': 'testimony-single.html',
   'testimonies/submit': 'testimony-submit.html',
   'worship': 'worship.html',
-  'cells': 'groups-archive.html',
-  'cells/sample-group': 'group-single.html',
+  'groups': 'groups-archive.html',
+  'groups/sample-group': 'group-single.html',
   'store': 'store-archive.html',
   'store/sample-product': 'store-single.html',
   'store/cart': 'cart.html',
@@ -94,9 +94,9 @@ const SLUG_TEMPLATE_FILES: Record<string, string> = {
 const SLUG_ALIASES: Record<string, string> = {
   articles: 'blog',
   blogs: 'blog',
-  cells: 'cells',
-  fellowship: 'cells',
-  groups: 'cells',
+  cells: 'groups',
+  fellowship: 'groups',
+  groups: 'groups',
   lms: 'courses',
   podcasts: 'podcast',
   resources: 'library',
@@ -212,7 +212,7 @@ export function getTemplateFileForSlug(slug: string): string | null {
       if (subPath === 'submit') return 'testimony-submit.html';
       return 'testimony-single.html';
     }
-    if (prefix === 'cells') {
+    if (prefix === 'groups' || prefix === 'cells') {
       return 'group-single.html';
     }
     if (prefix === 'store') {

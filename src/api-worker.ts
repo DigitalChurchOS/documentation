@@ -349,6 +349,14 @@ function tenantMembersStateKey(tenantId: string) {
   return `tenant-members:${tenantId}`;
 }
 
+function tenantDashboardContentStateKey(tenantId: string) {
+  return `tenant-dashboard-content:${tenantId}`;
+}
+
+function tenantContentDesignStateKey(tenantId: string) {
+  return `tenant-content-design:${tenantId}`;
+}
+
 function pageIdFromSlug(context: ReturnType<typeof getRequestContext>, slug: string) {
   const slugKey = cleanSubdomain(slug || 'home') || 'home';
   const tenantKey = cleanSubdomain(context.tenant.subdomain || context.tenant.id) || 'tenant';
@@ -915,7 +923,7 @@ function defaultTenantNavigationMenus(websiteId: string) {
       { label: 'Blogs', url: '/blogs', icon: 'newspaper' },
       { label: 'Resources', url: '/resources', icon: 'book-open' },
       { label: 'Podcasts', url: '/podcasts', icon: 'mic' },
-      { label: 'Fellowship', url: '/fellowship', icon: 'users' },
+      { label: 'Groups', url: '/groups', icon: 'users' },
       { label: 'Store', url: '/store', icon: 'shopping-bag' },
       { label: 'Devortion', url: '/devortion', icon: 'heart' },
     ]),
@@ -928,7 +936,7 @@ function defaultTenantNavigationMenus(websiteId: string) {
       { label: 'Prayer', url: '/prayer' },
       { label: 'Worship', url: '/worship' },
       { label: 'Study', url: '/study' },
-      { label: 'Cells', url: '/cells' },
+      { label: 'Groups', url: '/groups' },
       { label: 'Giving', url: '/giving' },
     ]),
     menu('Main Mobile Drawer Menu', [
@@ -943,14 +951,14 @@ function defaultTenantNavigationMenus(websiteId: string) {
       { label: 'Media', url: '/media' },
       { label: 'Connect', url: '/connect' },
       { label: 'Devortion', url: '/devortion' },
-      { label: 'Fellowship', url: '/fellowship' },
+      { label: 'Groups', url: '/groups' },
     ]),
     menu('Mobile Rail Navigation', [
       { label: 'Media', url: '/media', icon: 'tv' },
       { label: 'Blogs', url: '/blogs', icon: 'newspaper' },
       { label: 'Resources', url: '/resources', icon: 'book-open' },
       { label: 'Podcasts', url: '/podcasts', icon: 'mic' },
-      { label: 'Fellowship', url: '/fellowship', icon: 'users' },
+      { label: 'Groups', url: '/groups', icon: 'users' },
       { label: 'Store', url: '/store', icon: 'shopping-bag' },
       { label: 'Devortion', url: '/devortion', icon: 'heart' },
     ]),
@@ -958,7 +966,7 @@ function defaultTenantNavigationMenus(websiteId: string) {
       { label: 'Prayer', url: '/prayer' },
       { label: 'Worship', url: '/worship' },
       { label: 'Study', url: '/study' },
-      { label: 'Cells', url: '/cells' },
+      { label: 'Groups', url: '/groups' },
       { label: 'Giving', url: '/giving' },
     ]),
   ];
@@ -1101,6 +1109,8 @@ function makeSiteContextForContext(
   context: ReturnType<typeof getRequestContext>,
   theme = makeThemeForContext(context),
   navigationMenus: Array<Record<string, any>> = defaultTenantNavigationMenus(makeWebsiteForContext(context, theme).id),
+  collections: DashboardCollectionsState = getTenantDashboardCollections(context),
+  contentDesign: Record<string, any> = defaultTenantContentDesign(),
 ) {
   const headerItems = findNavigationMenuItems(navigationMenus, 'Header Menu');
   const footerItems = [
@@ -1165,7 +1175,8 @@ function makeSiteContextForContext(
       secondaryLinks: footerItems.length ? footerItems : createEcclesiaFooterLinks(),
     },
     navigationMenus,
-    collections: getTenantDashboardCollections(context),
+    collections,
+    contentDesign,
     announcement: {
       id: `announcement-${context.tenant.subdomain}`,
       isActive: false,
@@ -1183,6 +1194,8 @@ function makeRenderForContext(
   website = makeWebsiteForContext(context, theme),
   pages = makePagesForContext(context, website),
   navigationMenus: Array<Record<string, any>> = defaultTenantNavigationMenus(website.id),
+  collections: DashboardCollectionsState = getTenantDashboardCollections(context),
+  contentDesign: Record<string, any> = defaultTenantContentDesign(),
 ) {
   const normalizedSlug = String(slug || '').replace(/^\/+/, '');
   const matchedPage = findDemoPage(normalizedSlug, pages);
@@ -1197,7 +1210,7 @@ function makeRenderForContext(
         draftContent: null,
       }
     : matchedPage;
-  const siteContext = makeSiteContextForContext(context, theme, navigationMenus);
+  const siteContext = makeSiteContextForContext(context, theme, navigationMenus, collections, contentDesign);
   const contentBlocks = parseStoredJson<JsonValue>(page.content, []);
   return {
     pageId: page.id,
@@ -1213,7 +1226,8 @@ function makeRenderForContext(
     navigation: siteContext.navigation,
     footer: siteContext.footer,
     navigationMenus,
-    collections: getTenantDashboardCollections(context),
+    collections,
+    contentDesign,
     theme: {
       name: siteContext.theme.name,
       settings: siteContext.theme.settings,
@@ -1458,25 +1472,108 @@ function createDemoDashboardCollections() {
         description: 'A one-day training and refreshing retreat for cell leaders, workers, and ministry heads.',
       },
     ],
+    groups: [
+      {
+        id: 'group-young-adults',
+        slug: 'young-adults',
+        name: 'Young Adults Group',
+        title: 'Young Adults Group',
+        groupType: { id: 'group-type-fellowship', name: 'Fellowship' },
+        leader: 'Ada Stone',
+        leaderName: 'Ada Stone',
+        meetingDay: 'Fridays',
+        meetingTime: '6:30 PM',
+        location: 'Youth Hall',
+        description: 'A weekly gathering for young adults to grow in faith, friendships, and service.',
+        membersRoster: [{ memberId: 'Ada Stone', role: 'leader', joinedAt: '2026-06-17T00:00:00.000Z' }],
+      },
+      {
+        id: 'group-outreach-team',
+        slug: 'outreach-team',
+        name: 'Outreach Team',
+        title: 'Outreach Team',
+        groupType: { id: 'group-type-ministry', name: 'Ministry Team' },
+        leader: 'Daniel Okafor',
+        leaderName: 'Daniel Okafor',
+        meetingDay: 'Saturdays',
+        meetingTime: '10:00 AM',
+        location: 'Community Center',
+        description: 'Serve the city through prayer walks, care visits, and local outreach projects.',
+        membersRoster: [{ memberId: 'Daniel Okafor', role: 'leader', joinedAt: '2026-06-20T00:00:00.000Z' }],
+      },
+    ],
     updatedAt: now,
   };
 }
 
-function getTenantDashboardCollections(context: ReturnType<typeof getRequestContext>) {
-  if (!isDemoShowcaseContext(context)) {
-    return {
-      media: [],
-      sermons: [],
-      services: [],
-      resources: [],
-      articles: [],
-      courses: [],
-      podcasts: [],
-      products: [],
-      events: [],
-    };
-  }
-  return createDemoDashboardCollections();
+const dashboardCollectionKeys = [
+  'media',
+  'sermons',
+  'services',
+  'resources',
+  'articles',
+  'courses',
+  'podcasts',
+  'products',
+  'events',
+  'groups',
+] as const;
+
+type DashboardCollectionKey = typeof dashboardCollectionKeys[number];
+type DashboardCollectionsState = Record<DashboardCollectionKey, Record<string, any>[]>;
+
+function emptyDashboardCollections(): DashboardCollectionsState {
+  return dashboardCollectionKeys.reduce((state, key) => {
+    state[key] = [];
+    return state;
+  }, {} as DashboardCollectionsState);
+}
+
+function getTenantDashboardCollections(context: ReturnType<typeof getRequestContext>): DashboardCollectionsState {
+  if (!isDemoShowcaseContext(context)) return emptyDashboardCollections();
+  const demoCollections = createDemoDashboardCollections() as unknown as DashboardCollectionsState;
+  return dashboardCollectionKeys.reduce((state, key) => {
+    state[key] = Array.isArray(demoCollections[key]) ? demoCollections[key] : [];
+    return state;
+  }, emptyDashboardCollections());
+}
+
+async function readTenantDashboardCollections(env: Env, context: ReturnType<typeof getRequestContext>) {
+  const base = getTenantDashboardCollections(context);
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantDashboardContentStateKey(context.tenant.id));
+  const stored = parseStoredJson<Record<string, any>>(raw, {});
+  return dashboardCollectionKeys.reduce((state, key) => {
+    const value = stored && Object.prototype.hasOwnProperty.call(stored, key) ? stored[key] : base[key];
+    state[key] = Array.isArray(value) ? value : [];
+    return state;
+  }, emptyDashboardCollections());
+}
+
+async function writeTenantDashboardCollections(
+  env: Env,
+  context: ReturnType<typeof getRequestContext>,
+  collections: DashboardCollectionsState,
+) {
+  await env.CHURCHOS_TENANTS?.put(tenantDashboardContentStateKey(context.tenant.id), JSON.stringify(collections));
+}
+
+function defaultTenantContentDesign() {
+  return {
+    entries: {},
+    updatedAt: null,
+  };
+}
+
+async function readTenantContentDesign(env: Env, context: ReturnType<typeof getRequestContext>) {
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantContentDesignStateKey(context.tenant.id));
+  return {
+    ...defaultTenantContentDesign(),
+    ...parseStoredJson<Record<string, any>>(raw, {}),
+  };
+}
+
+async function writeTenantContentDesign(env: Env, context: ReturnType<typeof getRequestContext>, design: Record<string, any>) {
+  await env.CHURCHOS_TENANTS?.put(tenantContentDesignStateKey(context.tenant.id), JSON.stringify(design));
 }
 
 function normalizeEmail(value: unknown) {
@@ -1625,37 +1722,45 @@ async function findMemberAccountFromRequest(env: Env, context: ReturnType<typeof
   return accounts.find((account) => account?.user?.id === userId || account?.member?.userId === userId) || null;
 }
 
-function collectionResponse(pathname: string, context: ReturnType<typeof getRequestContext>): JsonValue {
-  if (pathname.includes('/users')) return [demoUser];
-  if (pathname.includes('/roles')) return demoRoles;
-  if (pathname.includes('/invitations')) return [];
-  if (pathname.includes('/pages')) return demoPages;
-  if (pathname.includes('/websites')) return [demoWebsite] as JsonValue;
-  if (pathname.includes('/themes')) return [demoEcclesiaTheme] as JsonValue;
-  if (pathname.includes('/assets')) return demoMarketplaceAssets;
-  const collections = getTenantDashboardCollections(context);
-  if (pathname.includes('/media')) return collections.media as JsonValue;
-  if (pathname.includes('/sermons')) return collections.sermons as JsonValue;
-  if (pathname.includes('/services')) return collections.services as JsonValue;
-  if (pathname.includes('/resources') || pathname.includes('/library')) return collections.resources as JsonValue;
-  if (pathname.includes('/articles') || pathname.includes('/blogs') || pathname.includes('/posts')) return collections.articles as JsonValue;
-  if (pathname.includes('/podcasts')) return collections.podcasts as JsonValue;
-  if (pathname.includes('/products') || pathname.includes('/store')) return collections.products as JsonValue;
-  if (pathname.includes('/events')) return collections.events as JsonValue;
-  if (pathname.includes('/courses') || pathname.includes('/modules') || pathname.includes('/lessons') || pathname.includes('/quizzes')) return collections.courses as JsonValue;
-  if (pathname.includes('/plans')) {
+function slugifyContent(value: unknown) {
+  return cleanSubdomain(String(value || 'item')) || makeId('item');
+}
+
+function defaultAuxiliaryCollection(pathname: string): JsonValue | null {
+  if (pathname === '/api/events/categories') {
     return [
-      { id: 'starter', name: 'Starter', priceMonthly: 29 },
-      { id: 'growth', name: 'Growth', priceMonthly: 79 },
-      { id: 'pro', name: 'Pro', priceMonthly: 149 },
+      { id: 'cat-gatherings', name: 'Gatherings', slug: 'gatherings' },
+      { id: 'cat-training', name: 'Training', slug: 'training' },
+      { id: 'cat-outreach', name: 'Outreach', slug: 'outreach' },
     ];
+  }
+  if (pathname === '/api/cells/types' || pathname === '/api/groups/types') {
+    return [
+      { id: 'group-type-cell', name: 'Cell', tierLevel: 1 },
+      { id: 'group-type-fellowship', name: 'Fellowship', tierLevel: 1 },
+      { id: 'group-type-ministry', name: 'Ministry Team', tierLevel: 2 },
+    ];
+  }
+  if (pathname === '/api/cells/settings' || pathname === '/api/groups/settings') {
+    return {
+      publicRoute: '/groups',
+      officialLabel: 'Groups',
+      legacyAliases: ['/cells', '/fellowship'],
+    };
   }
   if (
     pathname.includes('/categories') ||
     pathname.includes('/tags') ||
+    pathname.includes('/series') ||
     pathname.includes('/playlists') ||
     pathname.includes('/speakers') ||
+    pathname.includes('/shows') ||
+    pathname.includes('/coupons') ||
     pathname.includes('/orders') ||
+    pathname.includes('/registrations') ||
+    pathname.includes('/submissions') ||
+    pathname.includes('/audit') ||
+    pathname.includes('/sales') ||
     pathname.includes('/members') ||
     pathname.includes('/contacts') ||
     pathname.includes('/tasks') ||
@@ -1665,6 +1770,152 @@ function collectionResponse(pathname: string, context: ReturnType<typeof getRequ
     pathname.includes('/reports')
   ) {
     return [];
+  }
+  return null;
+}
+
+function contentCollectionKeyFromPath(pathname: string): DashboardCollectionKey | null {
+  if (/^\/api\/events\/(categories|registrations|reminders)(?:\/|$)/.test(pathname)) return null;
+  if (/^\/api\/(?:groups|cells)\/(types|settings|meetings|notice-board|scorecard)(?:\/|$)/.test(pathname)) return null;
+  if (/^\/api\/media\/(categories|tags|series|playlists|speakers)(?:\/|$)/.test(pathname)) return null;
+  if (/^\/api\/blog\/(categories|tags|comments)(?:\/|$)/.test(pathname)) return null;
+  if (/^\/api\/store\/(orders|coupons)(?:\/|$)/.test(pathname)) return null;
+  if (/^\/api\/podcast\/shows(?:\/|$)/.test(pathname)) return null;
+  if (/^\/api\/lms\/(submissions|modules|lessons|quizzes)(?:\/|$)/.test(pathname)) return null;
+  if (/^\/api\/blog\/posts(?:\/[^/]+)?$/.test(pathname) || /^\/api\/(?:articles|blogs|posts)(?:\/[^/]+)?$/.test(pathname)) return 'articles';
+  if (/^\/api\/media\/assets(?:\/[^/]+)?$/.test(pathname) || /^\/api\/media-items(?:\/[^/]+)?$/.test(pathname)) return 'media';
+  if (/^\/api\/store\/products(?:\/[^/]+)?$/.test(pathname) || /^\/api\/products(?:\/[^/]+)?$/.test(pathname)) return 'products';
+  if (/^\/api\/events(?:\/[^/]+)?$/.test(pathname)) return 'events';
+  if (/^\/api\/(?:groups|cells)(?:\/[^/]+)?$/.test(pathname)) return 'groups';
+  if (/^\/api\/(?:lms\/courses|courses)(?:\/[^/]+)?$/.test(pathname)) return 'courses';
+  if (/^\/api\/(?:podcast\/episodes|podcasts)(?:\/[^/]+)?$/.test(pathname)) return 'podcasts';
+  if (/^\/api\/(?:library\/resources|resources)(?:\/[^/]+)?$/.test(pathname)) return 'resources';
+  if (/^\/api\/(?:church-services|services)(?:\/[^/]+)?$/.test(pathname)) return 'services';
+  if (/^\/api\/sermons(?:\/[^/]+)?$/.test(pathname)) return 'sermons';
+  return null;
+}
+
+function normalizeDashboardContentItem(
+  key: DashboardCollectionKey,
+  body: Record<string, any>,
+  existing?: Record<string, any>,
+) {
+  const now = new Date().toISOString();
+  const title = String(
+    body.title ||
+    body.name ||
+    body.productName ||
+    body.episodeTitle ||
+    existing?.title ||
+    existing?.name ||
+    'Untitled',
+  ).trim() || 'Untitled';
+  const slug = String(body.slug || existing?.slug || slugifyContent(title)).replace(/^\/+/, '');
+  const id = String(body.id || existing?.id || `${key}-${slugifyContent(slug)}-${Date.now().toString(36)}`);
+  const normalized: Record<string, any> = {
+    ...(existing || {}),
+    ...body,
+    id,
+    slug,
+    title,
+    name: body.name || existing?.name || (key === 'products' || key === 'groups' ? title : undefined),
+    updatedAt: now,
+    createdAt: existing?.createdAt || body.createdAt || now,
+  };
+
+  if (key === 'articles') {
+    normalized.author = body.author || existing?.author || 'Pastoral Team';
+    normalized.publishedAt = body.publishedAt || existing?.publishedAt || now;
+    normalized.imageUrl = body.imageUrl || body.coverImageUrl || existing?.imageUrl || existing?.coverImageUrl || '';
+    normalized.coverImageUrl = normalized.imageUrl;
+    normalized.excerpt = body.excerpt || existing?.excerpt || body.description || body.content || '';
+    normalized.content = body.content || existing?.content || normalized.excerpt;
+  }
+
+  if (key === 'media' || key === 'sermons') {
+    normalized.type = body.type || existing?.type || 'Video';
+    normalized.duration = body.duration || existing?.duration || (body.durationSeconds ? `${Math.round(Number(body.durationSeconds) / 60)} min` : '');
+    normalized.publishedAt = body.publishedAt || existing?.publishedAt || now;
+    normalized.speaker = body.speaker || body.speakerName || existing?.speaker || '';
+    normalized.imageUrl = body.imageUrl || body.thumbnailUrl || body.coverImageUrl || existing?.imageUrl || '';
+    normalized.videoUrl = body.videoUrl || body.sourceUrl || (body.type === 'video' ? body.providerKey : existing?.videoUrl);
+    normalized.audioUrl = body.audioUrl || (body.type === 'audio' ? body.providerKey : existing?.audioUrl);
+  }
+
+  if (key === 'products') {
+    normalized.name = title;
+    normalized.price = body.price ?? existing?.price ?? '$0.00';
+    normalized.type = body.type || body.category || existing?.type || existing?.category || 'Product';
+    normalized.category = body.category || existing?.category || normalized.type;
+    normalized.description = body.description || existing?.description || '';
+    normalized.imageUrl = body.imageUrl || body.thumbnailUrl || existing?.imageUrl || '';
+    normalized.isActive = body.isActive ?? existing?.isActive ?? true;
+  }
+
+  if (key === 'events') {
+    normalized.startDate = body.startDate || body.date || existing?.startDate || now;
+    normalized.endDate = body.endDate || existing?.endDate || normalized.startDate;
+    normalized.location = body.location || existing?.location || '';
+    normalized.price = body.pricingType === 'paid'
+      ? `$${Number(body.price || existing?.price || 0).toFixed(2)}`
+      : (body.price || existing?.price || 'Free');
+    normalized.status = body.status || existing?.status || 'published';
+  }
+
+  if (key === 'groups') {
+    normalized.name = title;
+    normalized.groupType = body.groupType || existing?.groupType || { id: body.groupTypeId || 'group-type-cell', name: body.type || 'Group' };
+    normalized.leader = body.leader || body.leaderName || body.leaderId || existing?.leader || '';
+    normalized.leaderName = normalized.leader;
+    normalized.location = body.location || existing?.location || '';
+    normalized.meetingDay = body.meetingDay || existing?.meetingDay || '';
+    normalized.meetingTime = body.meetingTime || existing?.meetingTime || '';
+    normalized.membersRoster = Array.isArray(body.membersRoster) ? body.membersRoster : (existing?.membersRoster || []);
+  }
+
+  return normalized;
+}
+
+async function collectionResponse(
+  pathname: string,
+  context: ReturnType<typeof getRequestContext>,
+  collections: DashboardCollectionsState,
+): Promise<JsonValue> {
+  if (pathname.includes('/users')) return [demoUser];
+  if (pathname.includes('/roles')) return demoRoles;
+  if (pathname.includes('/invitations')) return [];
+  if (pathname.includes('/pages')) return demoPages;
+  if (pathname.includes('/websites')) return [demoWebsite] as JsonValue;
+  if (pathname.includes('/themes')) return [demoEcclesiaTheme] as JsonValue;
+  if (pathname.includes('/marketplace/assets') || pathname === '/api/assets') return demoMarketplaceAssets;
+  const auxiliary = defaultAuxiliaryCollection(pathname);
+  if (auxiliary !== null) return auxiliary;
+  const directKey = contentCollectionKeyFromPath(pathname);
+  if (directKey) {
+    const parts = pathname.split('/').filter(Boolean);
+    const id = parts.length > 2 ? parts[parts.length - 1] : '';
+    if (id && !['events', 'groups', 'cells', 'products', 'posts', 'assets', 'courses', 'episodes', 'resources', 'church-services', 'services', 'sermons'].includes(id)) {
+      const item = collections[directKey].find((entry) => String(entry.id) === id || String(entry.slug) === id);
+      return (item || null) as JsonValue;
+    }
+    return collections[directKey] as JsonValue;
+  }
+  if (pathname.includes('/media')) return collections.media as JsonValue;
+  if (pathname.includes('/sermons')) return collections.sermons as JsonValue;
+  if (pathname.includes('/services')) return collections.services as JsonValue;
+  if (pathname.includes('/resources') || pathname.includes('/library')) return collections.resources as JsonValue;
+  if (pathname.includes('/articles') || pathname.includes('/blogs') || pathname.includes('/posts')) return collections.articles as JsonValue;
+  if (pathname.includes('/podcasts')) return collections.podcasts as JsonValue;
+  if (pathname.includes('/products') || pathname.includes('/store')) return collections.products as JsonValue;
+  if (pathname.includes('/events')) return collections.events as JsonValue;
+  if (pathname.includes('/groups') || pathname.includes('/cells')) return collections.groups as JsonValue;
+  if (pathname.includes('/courses') || pathname.includes('/modules') || pathname.includes('/lessons') || pathname.includes('/quizzes')) return collections.courses as JsonValue;
+  if (pathname.includes('/plans')) {
+    return [
+      { id: 'starter', name: 'Starter', priceMonthly: 29 },
+      { id: 'growth', name: 'Growth', priceMonthly: 79 },
+      { id: 'pro', name: 'Pro', priceMonthly: 149 },
+    ];
   }
   return {
     id: makeId('demo'),
@@ -1691,6 +1942,8 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
   const website = makeWebsiteForContext(context, theme);
   const pages = await readTenantPages(env, context, website);
   const navigationMenus = await readTenantNavigationMenus(env, context, website);
+  const dashboardCollections = await readTenantDashboardCollections(env, context);
+  const contentDesign = await readTenantContentDesign(env, context);
 
   if (pathname === '/health' || pathname === '/api/health') {
     return withJson({
@@ -1760,12 +2013,20 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
     return withJson({ data: makeGlobalContentForContext(context) as unknown as JsonValue });
   }
 
+  if (pathname === '/api/cms/content-design' || pathname === '/api/content-design') {
+    return withJson({ data: contentDesign as unknown as JsonValue });
+  }
+
+  if (pathname === '/api/dashboard/content') {
+    return withJson({ data: dashboardCollections as unknown as JsonValue });
+  }
+
   if (pathname === '/api/cms/site-context') {
-    return withJson({ data: makeSiteContextForContext(context, theme, navigationMenus) as unknown as JsonValue });
+    return withJson({ data: makeSiteContextForContext(context, theme, navigationMenus, dashboardCollections, contentDesign) as unknown as JsonValue });
   }
 
   if (pathname === '/api/cms/render') {
-    return withJson({ data: makeRenderForContext(context, url.searchParams.get('slug') || '', theme, website, pages, navigationMenus) as unknown as JsonValue });
+    return withJson({ data: makeRenderForContext(context, url.searchParams.get('slug') || '', theme, website, pages, navigationMenus, dashboardCollections, contentDesign) as unknown as JsonValue });
   }
 
   if (pathname === '/api/theme-engine/themes') {
@@ -1932,7 +2193,7 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
   }
 
   return withJson({
-    data: collectionResponse(pathname, context),
+    data: await collectionResponse(pathname, context, dashboardCollections),
     meta: { source: 'churchos-api-worker', mock: true },
   });
 }
@@ -2446,6 +2707,60 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
         status: pathname.endsWith('/complete') ? 'completed' : 'saved',
       } as JsonValue,
     });
+  }
+
+  if (pathname === '/api/cms/content-design' || pathname === '/api/content-design') {
+    const current = await readTenantContentDesign(env, context);
+    const nextDesign = {
+      ...current,
+      ...(body as Record<string, any>),
+      updatedAt: new Date().toISOString(),
+    };
+    await writeTenantContentDesign(env, context, nextDesign);
+    return withJson({ data: nextDesign as unknown as JsonValue });
+  }
+
+  const contentKey = contentCollectionKeyFromPath(pathname);
+  if (contentKey) {
+    const collections = await readTenantDashboardCollections(env, context);
+    const parts = pathname.split('/').filter(Boolean);
+    const tail = parts[parts.length - 1] || '';
+    const isCollectionPath = [
+      'events',
+      'groups',
+      'cells',
+      'products',
+      'posts',
+      'assets',
+      'courses',
+      'episodes',
+      'resources',
+      'church-services',
+      'services',
+      'sermons',
+    ].includes(tail);
+    const id = isCollectionPath ? '' : tail;
+
+    if (request.method === 'DELETE') {
+      collections[contentKey] = collections[contentKey].filter((entry) => String(entry.id) !== id && String(entry.slug) !== id);
+      await writeTenantDashboardCollections(env, context, collections);
+      return withJson({ ok: true, data: null });
+    }
+
+    const existingIndex = id
+      ? collections[contentKey].findIndex((entry) => String(entry.id) === id || String(entry.slug) === id)
+      : -1;
+    const existing = existingIndex >= 0 ? collections[contentKey][existingIndex] : undefined;
+    const normalized = normalizeDashboardContentItem(contentKey, body, existing);
+
+    if (existingIndex >= 0) {
+      collections[contentKey][existingIndex] = normalized;
+    } else {
+      collections[contentKey] = [normalized, ...collections[contentKey]];
+    }
+
+    await writeTenantDashboardCollections(env, context, collections);
+    return withJson({ ok: true, data: normalized as unknown as JsonValue }, { status: request.method === 'POST' ? 201 : 200 });
   }
 
   if (request.method === 'DELETE') {

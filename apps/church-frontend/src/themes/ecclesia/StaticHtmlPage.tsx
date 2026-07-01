@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getTemplateFileForSlug, routeFromHref, slugFromPathname } from '../../routing';
-import type { DashboardCollections, ModuleEntitlement, NavigationMenu, NavItem, ThemeSettings } from '../../types';
+import type { DashboardCollections, DashboardContentDesign, DashboardContentDesignSection, ModuleEntitlement, NavigationMenu, NavItem, ThemeSettings } from '../../types';
 import { isUrlEntitled } from '../../entitlements';
 import { httpRequest } from '../../http';
 import { useEcclesia, EcclesiaContextValue } from './EcclesiaContext';
@@ -205,6 +205,15 @@ const COLLECTION_BINDINGS: CollectionBinding[] = [
     countLabel: 'events',
     emptyText: 'No events have been published yet.',
   },
+  {
+    key: 'groups',
+    routeBase: '/groups',
+    archiveSlugs: ['groups'],
+    detailPrefix: 'groups',
+    cardSelector: '#groupGrid .group-card',
+    countLabel: 'groups',
+    emptyText: 'No groups have been published yet.',
+  },
 ];
 
 function itemSlug(item: Record<string, any>): string {
@@ -220,15 +229,17 @@ function itemDescription(item: Record<string, any>): string {
 }
 
 function itemDate(item: Record<string, any>): string {
-  return String(item?.date || item?.publishedAt || item?.startDate || item?.createdAt || '');
+  return String(item?.date || item?.publishedAt || item?.startDate || item?.meetingDay || item?.createdAt || '');
 }
 
 function itemPerson(item: Record<string, any>): string {
-  return String(item?.speaker || item?.author || item?.host || item?.instructor || item?.team || '');
+  return String(item?.speaker || item?.author || item?.host || item?.instructor || item?.leaderName || item?.leader || item?.team || '');
 }
 
 function itemKind(item: Record<string, any>, binding: CollectionBinding): string {
-  return String(item?.category || item?.type || item?.series || (binding.key === 'products' ? 'Product' : binding.countLabel.replace(/s$/, '')) || '');
+  const raw = item?.category || item?.type || item?.series || item?.groupType || (binding.key === 'products' ? 'Product' : binding.countLabel.replace(/s$/, ''));
+  if (raw && typeof raw === 'object') return String(raw.name || raw.title || raw.label || '');
+  return String(raw || '');
 }
 
 function itemPrice(item: Record<string, any>): string {
@@ -483,6 +494,72 @@ function applyDashboardContent(doc: Document, pathname: string, collections?: Da
 
   const item = items.find((entry) => itemSlug(entry) === rest || itemSlug(entry) === rest.split('/')[0]);
   if (item) hydrateDetailPage(doc, binding, item);
+}
+
+const CONTENT_DESIGN_KEY_BY_COLLECTION: Record<string, string> = {
+  articles: 'blog',
+  media: 'media',
+  sermons: 'sermons',
+  services: 'services',
+  resources: 'library',
+  courses: 'courses',
+  podcasts: 'podcast',
+  products: 'store',
+  events: 'events',
+  groups: 'groups',
+};
+
+function contentDesignKeyForSlug(slug: string): string {
+  const binding = COLLECTION_BINDINGS.find((candidate) => (
+    candidate.archiveSlugs.includes(slug) ||
+    slug === candidate.detailPrefix ||
+    slug.startsWith(`${candidate.detailPrefix}/`)
+  ));
+  if (!binding) return slug ? `${slug}.page` : 'home.page';
+  const base = CONTENT_DESIGN_KEY_BY_COLLECTION[binding.key] || binding.key;
+  const isArchive = binding.archiveSlugs.includes(slug) || slug === binding.detailPrefix;
+  return `${base}.${isArchive ? 'archive' : 'single'}`;
+}
+
+function setSectionLink(section: HTMLElement, selector: string, label?: string, url?: string): void {
+  const link = section.querySelector<HTMLAnchorElement>(selector);
+  if (!link) return;
+  if (label && label.trim()) {
+    const icon = link.querySelector('[data-lucide]')?.outerHTML || '';
+    link.innerHTML = icon ? `${icon} ${escapeHtml(label)}` : escapeHtml(label);
+  }
+  if (url && url.trim()) {
+    link.href = url;
+    link.setAttribute('href', url);
+  }
+}
+
+function applyDesignSection(section: HTMLElement | null, settings?: DashboardContentDesignSection): void {
+  if (!section || !settings) return;
+  setText(section, '.eyebrow, .kicker, .section-kicker, .badge', settings.eyebrow);
+  setText(section, 'h1, h2', settings.title);
+  setText(section, '.lead, p', settings.description);
+  setSectionLink(section, 'a.btn-primary, a.primary, a.btn[href], a[href]', settings.primaryLabel, settings.primaryUrl);
+  setSectionLink(section, 'a.btn-soft, a.btn-light, a.light[href]', settings.secondaryLabel, settings.secondaryUrl);
+  if (settings.imageUrl) {
+    setImage(section.querySelector<HTMLElement>('img, .hero-image, .hero-media, .wide-image, .cta-image'), settings.imageUrl, settings.title || '');
+    setBackgroundImage(section, settings.imageUrl);
+  }
+}
+
+function applyDashboardContentDesign(doc: Document, pathname: string, design?: DashboardContentDesign): void {
+  const entries = design?.entries || {};
+  const slug = slugFromPathname(pathname);
+  const key = contentDesignKeyForSlug(slug);
+  const entry = entries[key] || entries[slug] || entries.global;
+  if (!entry) return;
+
+  const main = doc.querySelector('main') || doc.body;
+  const hero = main.querySelector<HTMLElement>('.bloghero, .article-hero, .page-hero, .hero, .archive-hero, section[class*="hero"]');
+  applyDesignSection(hero, entry.hero);
+
+  const ctas = Array.from(main.querySelectorAll<HTMLElement>('.final-cta, .cta-section, .giving-cta, section[class*="cta"], .wide-panel'));
+  applyDesignSection(ctas[ctas.length - 1] || null, entry.cta);
 }
 
 function readText(value: unknown): string {
@@ -1103,6 +1180,7 @@ function buildStaticPayload(
 
   applyTenantContent(doc, options.ecContext);
   applyDashboardContent(doc, options.pathname, options.ecContext?.collections);
+  applyDashboardContentDesign(doc, options.pathname, options.ecContext?.contentDesign);
   normalizeShellHrefs(doc);
 
   // Strip existing mobile drawers from parsed/theme-transformed documents to avoid duplicates.

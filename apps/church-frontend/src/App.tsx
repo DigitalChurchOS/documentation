@@ -280,6 +280,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     navigation: pageData?.navigation || siteContext.navigation,
     navigationMenus: pageData?.navigationMenus || siteContext.navigationMenus || [],
     collections: pageData?.collections || siteContext.collections || {},
+    contentDesign: pageData?.contentDesign || siteContext.contentDesign,
     footer: pageData?.footer || siteContext.footer,
     globalContent: pageData?.globalContent || null,
     isPreviewMode: !!getQueryParams().previewToken,

@@ -120,6 +120,27 @@ export interface ModuleEntitlement {
 
 export type DashboardCollections = Record<string, any[]>;
 
+export interface DashboardContentDesignSection {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  primaryLabel?: string;
+  primaryUrl?: string;
+  secondaryLabel?: string;
+  secondaryUrl?: string;
+  imageUrl?: string;
+}
+
+export interface DashboardContentDesignEntry {
+  hero?: DashboardContentDesignSection;
+  cta?: DashboardContentDesignSection;
+}
+
+export interface DashboardContentDesign {
+  entries?: Record<string, DashboardContentDesignEntry>;
+  updatedAt?: string | null;
+}
+
 export interface SiteContext {
   tenant: Tenant;
   theme: ThemeInfo;
@@ -127,6 +148,7 @@ export interface SiteContext {
   navigation: NavigationData | null;
   navigationMenus?: NavigationMenu[];
   collections?: DashboardCollections;
+  contentDesign?: DashboardContentDesign;
   footer: FooterData | null;
   announcement: { id: string; isActive: boolean; text: string; ctaUrl?: string; ctaLabel?: string };
   enabledPlugins: string[];
@@ -195,6 +217,7 @@ export interface PageRenderResponse {
     navigation: NavigationData | null;
     navigationMenus?: NavigationMenu[];
     collections?: DashboardCollections;
+    contentDesign?: DashboardContentDesign;
     footer: FooterData | null;
     theme: { name: string; settings: ThemeSettings };
   };
