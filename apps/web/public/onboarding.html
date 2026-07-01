@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Church OS — Guided Onboarding Wizard</title>
+  <title>Churchtell — Guided Onboarding Wizard</title>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <style>
     /* Modern Custom Dropdown */
     .modern-select-wrapper {
@@ -290,6 +292,11 @@
 
     * { box-sizing: border-box; }
 
+    html, body {
+      height: 100vh;
+      overflow: hidden;
+    }
+
     body {
       margin: 0;
       font-family: var(--font);
@@ -298,10 +305,8 @@
         radial-gradient(circle at 92% 4%, rgba(91, 33, 182, .12), transparent 24%),
         linear-gradient(135deg, var(--bg), var(--bg-2));
       color: var(--ink);
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow-x: hidden;
     }
 
     body::before {
@@ -369,7 +374,7 @@
       padding: 0 16px;
       border-radius: 999px;
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 500;
       background: var(--soft);
       color: var(--ink);
       border: 1px solid var(--line);
@@ -396,143 +401,196 @@
       box-shadow: 0 14px 28px color-mix(in srgb, var(--accent) 20%, transparent);
     }
 
-    /* Onboarding Layout */
-    .onboarding-grid {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      flex: 1;
-      min-height: 100vh;
-    }
-
-    .sidebar {
-      border-right: 1px solid var(--line);
-      background: color-mix(in srgb, var(--solid) 30%, transparent);
-      padding: 30px 24px;
+    /* Onboarding Layout Container */
+    .onboarding-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px 16px 16px 16px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      overflow-y: auto;
-    }
-
-    .steps-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 16px;
+      height: 100vh;
+      width: 100%;
+      box-sizing: border-box;
     }
 
-    .step-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 16px 10px;
-      border-radius: 18px;
-      cursor: pointer;
-      transition: .25s ease;
-      color: var(--muted);
-      font-weight: 750;
-      font-size: 13px;
-      text-align: center;
-      border: 1px solid transparent;
-    }
 
-    .step-item:hover {
-      background: var(--accent-soft);
-      color: var(--ink);
-    }
 
-    .step-item.active {
-      background: var(--solid);
-      border: 1px solid var(--line);
-      color: var(--ink);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .step-item.completed {
-      color: #16a34a;
-    }
-
-    .step-num {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 900;
-      transition: .25s ease;
-    }
-
-    .step-item.active .step-num {
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-      border: 0;
-    }
-
-    .step-item.completed .step-num {
-      background: rgba(22, 163, 74, 0.1);
-      color: #16a34a;
-      border-color: rgba(22, 163, 74, 0.2);
-    }
-
-    .wizard-content {
-      padding: clamp(24px, 5vw, 64px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
+    /* Floating Card */
     .wizard-card {
       width: 100%;
-      max-width: 680px;
-      padding: clamp(24px, 4vw, 48px);
+      padding: clamp(20px, 4vw, 36px);
       border-radius: var(--radius);
       border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--solid) 68%, transparent);
+      background: color-mix(in srgb, var(--solid) 75%, transparent);
       backdrop-filter: blur(24px);
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      gap: 30px;
+      gap: 16px;
       transition: opacity .3s ease, transform .3s ease;
+      flex: 1;
+      min-height: 0;
     }
 
     .wizard-header {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 16px;
     }
 
     .wizard-header h2 {
-      font-size: 32px;
-      letter-spacing: -.05em;
+      font-size: 26px;
+      letter-spacing: -.04em;
       margin: 0;
     }
 
     .wizard-header p {
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.5;
       margin: 0;
-      font-size: 15px;
+      font-size: 14px;
+    }
+
+    /* 2-Column Wizard Layout */
+    .wizard-columns {
+      display: grid;
+      grid-template-columns: 1fr 2.5fr;
+      gap: 28px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Left Side: Minimised Steps Progress */
+    .wizard-subnav {
+      border-right: 1px solid var(--line);
+      padding-right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .substep-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 12px;
+      border: 1px solid transparent;
+    }
+
+    .substep-item:hover {
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    .substep-item.active {
+      background: var(--solid);
+      border-color: var(--line);
+      color: var(--ink);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .substep-item.completed {
+      color: #16a34a;
+    }
+
+    .substep-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      background: var(--bg);
+      flex-shrink: 0;
+    }
+
+    .substep-item.active .substep-dot {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      border-color: transparent;
+    }
+
+    .substep-item.completed .substep-dot {
+      background: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+      border-color: rgba(22, 163, 74, 0.2);
+    }
+
+    /* Right Side: Form and Footer */
+    .wizard-form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .wizard-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+      padding-top: 20px;
     }
 
     /* Forms */
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px;
+      gap: 16px;
+    }
+
+    /* Dynamic flex height & custom modern scrollbar for step wizard form content */
+    #stepForm {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 8px;
+      align-content: start;
+    }
+
+    #stepForm::-webkit-scrollbar,
+    #invitesListContainer::-webkit-scrollbar,
+    .review-grid::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #stepForm::-webkit-scrollbar-track,
+    #invitesListContainer::-webkit-scrollbar-track,
+    .review-grid::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #stepForm::-webkit-scrollbar-thumb,
+    #invitesListContainer::-webkit-scrollbar-thumb,
+    .review-grid::-webkit-scrollbar-thumb {
+      background: var(--line);
+      border-radius: 99px;
+    }
+
+    #stepForm::-webkit-scrollbar-thumb:hover,
+    #invitesListContainer::-webkit-scrollbar-thumb:hover,
+    .review-grid::-webkit-scrollbar-thumb:hover {
+      background: var(--muted);
     }
 
     .field {
       display: grid;
-      gap: 8px;
+      gap: 6px;
     }
 
     .field.full {
@@ -540,112 +598,53 @@
     }
 
     label {
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 600;
       color: var(--ink);
     }
 
     input, select, textarea {
       width: 100%;
       border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--solid) 75%, transparent);
+      border-radius: 12px;
+      padding: 0 16px;
+      font-family: inherit;
+      font-size: 14px;
+      background: var(--bg);
       color: var(--ink);
-      border-radius: 16px;
-      min-height: 50px;
-      padding: 0 15px;
-      outline: 0;
-      transition: border .25s ease, box-shadow .25s ease;
+      outline: none;
+      transition: all 0.2s;
+      height: 48px;
     }
 
     textarea {
-      min-height: 100px;
-      padding-top: 12px;
+      height: 110px;
+      padding: 14px 16px;
       resize: vertical;
     }
 
     input:focus, select:focus, textarea:focus {
-      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-      box-shadow: 0 0 0 5px var(--accent-soft);
-    }
-
-    .wizard-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 10px;
-      border-top: 1px solid var(--line);
-      padding-top: 24px;
-    }
-
-    /* Theme Cards and Mode Options */
-    .selection-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-    }
-
-    .select-card {
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 18px;
-      background: color-mix(in srgb, var(--solid) 40%, transparent);
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      transition: .25s ease;
-    }
-
-    .select-card:hover {
-      background: var(--accent-soft);
-      transform: translateY(-2px);
-    }
-
-    .select-card.active {
       border-color: var(--accent);
-      background: var(--solid);
-      box-shadow: var(--shadow-soft);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+      background: var(--bg-2);
     }
 
-    .select-card-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 12px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      display: grid;
-      place-items: center;
-    }
-
-    .select-card h4 {
-      margin: 0;
-      font-size: 14px;
-      letter-spacing: -.03em;
-    }
-
-    .select-card p {
-      margin: 0;
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.4;
-    }
-
-    /* Modules checkbox rows */
+    /* Modules list */
     .module-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 16px;
-      border-radius: 18px;
+      border-radius: 16px;
       border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--solid) 40%, transparent);
-      margin-bottom: 10px;
-      transition: .2s ease;
+      margin-bottom: 12px;
+      background: var(--solid);
+      transition: all 0.2s;
     }
 
     .module-item.active {
-      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-      background: var(--solid);
+      border-color: var(--accent-2);
+      background: var(--bg-2);
     }
 
     .module-info {
@@ -654,10 +653,15 @@
       gap: 14px;
     }
 
+    .module-info i {
+      width: 24px;
+      height: 24px;
+    }
+
     .module-info-text h4 {
-      margin: 0;
+      margin: 0 0 4px 0;
       font-size: 14px;
-      letter-spacing: -.03em;
+      font-weight: 800;
     }
 
     .module-info-text p {
@@ -667,17 +671,74 @@
     }
 
     .module-badge {
-      font-size: 11px;
-      font-weight: 800;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 999px;
-      border: 1px solid var(--line);
+      font-size: 10px;
+      font-weight: 800;
     }
 
     .module-badge.locked {
-      background: rgba(220,38,38,.08);
-      color: #dc2626;
-      border-color: rgba(220,38,38,.15);
+      background: rgba(21, 23, 26, 0.08);
+      color: var(--muted);
+    }
+
+    /* Selectable Payment Provider Cards */
+    .payment-provider-card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      background: var(--solid);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      min-height: 100px;
+      position: relative;
+    }
+    .payment-provider-card:hover {
+      border-color: var(--accent-2);
+      transform: translateY(-2px);
+    }
+    .payment-provider-card.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: var(--shadow-soft);
+    }
+    .payment-provider-card i {
+      width: 28px;
+      height: 28px;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .payment-provider-card.active i {
+      color: var(--accent);
+    }
+    .payment-provider-card h4 {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .payment-provider-card .check-indicator {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+    }
+    .payment-provider-card.active .check-indicator {
+      background: var(--accent);
+      border-color: var(--accent);
     }
 
     /* Custom Checkbox Toggle */
@@ -697,15 +758,15 @@
     .slider {
       position: absolute;
       cursor: pointer;
-      inset: 0;
-      background-color: color-mix(in srgb, var(--muted) 35%, transparent);
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: var(--line);
       transition: .3s;
-      border-radius: 34px;
+      border-radius: 24px;
     }
 
-    .slider::before {
-      content: "";
+    .slider:before {
       position: absolute;
+      content: "";
       height: 18px;
       width: 18px;
       left: 3px;
@@ -719,33 +780,234 @@
       background-color: var(--accent);
     }
 
-    input:checked + .slider::before {
+    input:checked + .slider:before {
       transform: translateX(20px);
+    }
+
+    /* Domain Setup */
+    .domain-preview {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    /* Upload Zone */
+    .upload-zone {
+      border: 2px dashed var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-2);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      min-height: 150px;
+      text-align: center;
+    }
+    .upload-zone:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
     }
 
     /* Toast */
     .toast-container {
       position: fixed;
-      left: 50%;
       bottom: 24px;
+      left: 50%;
       transform: translateX(-50%) translateY(100px);
-      opacity: 0;
-      padding: 14px 22px;
-      border-radius: 999px;
       background: var(--ink);
       color: var(--bg);
-      font-weight: 900;
-      font-size: 14px;
-      box-shadow: var(--shadow);
-      z-index: 999;
+      padding: 12px 24px;
+      border-radius: 999px;
       display: flex;
       align-items: center;
-      gap: 9px;
-      transition: transform .35s cubic-bezier(.175, .885, .32, 1.275), opacity .3s ease;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 800;
+      z-index: 999;
+      opacity: 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+
     .toast-container.show {
       transform: translateX(-50%) translateY(0);
       opacity: 1;
+    }
+
+    /* Review Dashboard Grid */
+    .review-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 8px 16px 16px 16px;
+      margin: -8px -16px -16px -16px;
+    }
+
+    /* Top-Right Category Progress Steps */
+    .category-progress-steps {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 85px;
+      position: relative;
+      cursor: pointer;
+      text-align: center;
+    }
+    .step-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      transition: all 0.3s ease;
+    }
+    .step-label {
+      font-size: 10px;
+      margin-top: 6px;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+    .step-line {
+      width: 30px;
+      height: 2px;
+      margin-top: 12px;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .invite-inputs-row {
+      display: grid;
+      grid-template-columns: 2.2fr 1.8fr auto;
+      gap: 12px;
+      align-items: flex-end;
+      width: 100%;
+    }
+    @media (max-width: 600px) {
+      .invite-inputs-row {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+      }
+      .invite-inputs-row button {
+        height: 42px;
+        margin-top: 4px;
+      }
+    }
+
+    .review-section {
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px;
+      background: var(--solid);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow-soft);
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .review-section:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-2);
+      box-shadow: var(--shadow);
+    }
+
+    .review-section.warning {
+      border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+    }
+
+    .review-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 8px;
+    }
+
+    .review-section-header h3 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .status-badge {
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .status-badge.ok {
+      background: rgba(22, 163, 74, 0.1);
+      color: #16a34a;
+    }
+
+    .status-badge.missing {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .status-badge.warning {
+      background: rgba(249, 115, 22, 0.1);
+      color: #f97316;
+    }
+
+    .review-section-body {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .review-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 4px;
+    }
+
+    .review-item span:first-child {
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .review-item span:last-child {
+      font-weight: 750;
+      color: var(--ink);
+      text-align: right;
     }
 
     /* Final Checklist Summary */
@@ -764,55 +1026,138 @@
       font-size: 13px;
     }
 
+    /* Responsive CSS */
     @media (max-width: 820px) {
-      .onboarding-grid {
-        display: flex;
-        flex-direction: column;
+      html, body {
+        height: auto !important;
+        overflow: visible !important;
       }
-      .sidebar {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-        padding: 16px;
-        align-items: center;
-        height: auto;
-        z-index: 100;
-        background: var(--solid);
-      }
-      .sidebar > div:first-child {
-        display: none;
-      }
-      .steps-list {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 8px;
-        width: 100%;
-        padding-bottom: 8px;
-      }
-      .step-item {
-        padding: 8px;
-        justify-content: center;
-        min-width: 60px;
-        border-radius: 12px;
-      }
-      .step-item span:not(.step-num) {
-        display: none;
-      }
-      .step-num {
-        width: 36px;
-        height: 36px;
-        font-size: 14px;
-      }
-      .wizard-content {
-        padding: 20px 16px;
+      .onboarding-container {
+        padding: 5px 12px 12px 12px;
+        height: auto !important;
+        min-height: 100vh;
+        overflow: visible !important;
       }
       .wizard-card {
-        padding: 24px 16px;
+        padding: 25px 30px 95px 30px !important;
+        border-radius: 24px !important;
+        height: auto !important;
+        min-height: 0 !important;
+        flex: none !important;
+        overflow: visible !important;
       }
-      /* Stack form fields in 1 column on mobile */
-      .form-grid, .selection-grid {
+      .wizard-header {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 16px !important;
+        margin-bottom: 0 !important;
+      }
+      #categoryProgressContainer {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        overflow-x: auto !important;
+        padding-bottom: 8px !important;
+        -ms-overflow-style: none !important;
+        scrollbar-width: none !important;
+      }
+      #categoryProgressContainer::-webkit-scrollbar {
+        display: none !important;
+      }
+      .wizard-columns {
+        display: flex;
+        flex-direction: column;
+        flex: none !important;
+        min-height: 0;
+        gap: 16px;
+        height: auto !important;
+      }
+      .wizard-subnav {
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+        padding-top: 0 !important;
+        padding-bottom: 14px !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        overflow: visible;
+      }
+      .substep-item {
+        padding: 6px !important;
+        border-radius: 50% !important;
+        width: 44px !important;
+        height: 44px !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .substep-dot {
+        width: 32px !important;
+        height: 32px !important;
+      }
+      .substep-dot i, .substep-dot svg {
+        width: 16px !important;
+        height: 16px !important;
+      }
+      .step-circle {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 13px !important;
+      }
+      .step-line {
+        margin-top: 15px !important;
+      }
+      .progress-step {
+        width: 90px !important;
+      }
+      .substep-item span:last-child {
+        display: none !important;
+      }
+      .review-step-tab, .review-step-line {
+        display: none !important;
+      }
+      .wizard-form-container {
+        height: auto !important;
+        min-height: 0 !important;
+        flex: none !important;
+      }
+      #stepForm {
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+        flex: none !important;
+        padding-right: 0 !important;
+      }
+      .wizard-footer {
+        position: fixed !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: color-mix(in srgb, var(--bg-2) 90%, transparent) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-top: 1px solid var(--line) !important;
+        padding: 16px 20px !important;
+        margin-top: 0 !important;
+        z-index: 100 !important;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.05) !important;
+      }
+      .form-grid {
         grid-template-columns: 1fr;
+      }
+      .review-grid {
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+        flex: none !important;
+        padding-right: 0 !important;
       }
     }
   </style>
@@ -820,30 +1165,47 @@
 <body data-theme="light">
   <script src="/countries.js"></script>
 
-  <main class="onboarding-grid">
-    <!-- Sidebar Wizard Steps Indicator -->
-    <aside class="sidebar">
-      <div style="display:flex; flex-direction:column; gap:4px; margin-bottom: 8px;">
-        <span style="font-size:11px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.1em;">Setup Progress</span>
-        <span style="font-weight:900; font-size:16px;" id="progressLabel">0% Completed</span>
+  <main class="onboarding-container">
+    <!-- Header Branding / Progress -->
+    <header style="display:flex; justify-content:space-between; align-items:center; width:100%; border-bottom:1px solid var(--line); padding-top:10px; padding-bottom:18px; margin-bottom:0;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span class="brand-icon"><i data-lucide="church"></i></span>
+        <span style="font-weight:950; font-size:18px; letter-spacing:-0.03em;">Churchtell</span>
       </div>
-      
-      <nav class="steps-list" id="stepsSidebarList">
-        <!-- Generated Dynamically -->
-      </nav>
-    </aside>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px;">
+        <span style="font-size:10px; font-weight:800; text-transform:uppercase; color:var(--accent); letter-spacing:0.05em;">Setup Progress</span>
+        <span style="font-weight:900; font-size:15px;" id="progressLabel">0% Completed</span>
+      </div>
+    </header>
+
+
 
     <!-- Main Content Stage -->
-    <section class="wizard-content">
-      <div class="wizard-card" id="wizardCard">
-        <!-- Active Onboarding Step Rendered Here -->
-      </div>
-    </section>
+    <div class="wizard-card" id="wizardCard">
+      <!-- Active Onboarding Step Rendered Here -->
+    </div>
   </main>
 
   <div class="toast-container" id="toast">
     <i data-lucide="info" id="toastIcon"></i>
     <span id="toastMessage">Step updated successfully!</span>
+  </div>
+
+  <!-- Cropper Modal -->
+  <div id="cropperModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); z-index:9999; align-items:center; justify-content:center; padding:16px;">
+    <div style="background:var(--solid); border:1px solid var(--line); border-radius:24px; max-width:500px; width:100%; padding:24px; display:flex; flex-direction:column; gap:20px; box-shadow:var(--shadow);">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="margin:0; font-size:18px; font-weight:850; color:var(--ink);">Crop Favicon</h3>
+        <span style="font-size:12px; color:var(--muted);">Favicon must be square (1:1)</span>
+      </div>
+      <div style="max-height:300px; overflow:hidden; border-radius:12px; background:var(--bg); border:1px solid var(--line); display:flex; align-items:center; justify-content:center;">
+        <img id="cropperImage" style="max-width:100%; max-height:300px; display:block;" />
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:12px;">
+        <button type="button" class="btn" onclick="closeCropperModal(false)">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="closeCropperModal(true)">Crop & Save</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -852,12 +1214,28 @@
     const stepsSidebarList = document.getElementById("stepsSidebarList");
     const wizardCard = document.getElementById("wizardCard");
 
+    const PLATFORM_MODULES = [
+      { key: 'website-cms', name: 'CMS & Pages', category: 'Core', icon: 'globe', description: 'Core website builder, pages, and template settings', alwaysActive: true },
+      { key: 'blog', name: 'Blog', category: 'Core', icon: 'book-open', description: 'Articles, announcements, news, and publishing engine', alwaysActive: true },
+      { key: 'member-crm', name: 'Member Management', category: 'Engagement', icon: 'users', description: 'Member CRM, account creation, and salvation journeys', alwaysActive: false },
+      { key: 'media', name: 'Media', category: 'Content', icon: 'play', description: 'Sermons, video and audio archives, and AI media studio', alwaysActive: false },
+      { key: 'events', name: 'Events', category: 'Operations', icon: 'calendar', description: 'Calendar scheduling, registration, crusades, and conferences', alwaysActive: false },
+      { key: 'cells', name: 'Cells/Fellowships', category: 'Engagement', icon: 'network', description: 'Small groups, circles of fellowship, and member tracking', alwaysActive: false },
+      { key: 'live-meetings', name: 'Live Meetings', category: 'Operations', icon: 'video', description: 'Virtual classroom classes, video calls, and interactive board meetings', alwaysActive: false },
+      { key: 'live-chat', name: 'Live Chat Support', category: 'Engagement', icon: 'message-square', description: 'Direct support messaging and live chat box for visitors', alwaysActive: false },
+      { key: 'campaigns', name: 'Campaigns', category: 'Marketing', icon: 'megaphone', description: 'Email marketing, conversions funnels, and bulk broadcasts', alwaysActive: false },
+      { key: 'courses', name: 'Courses', category: 'Discipleship', icon: 'graduation-cap', description: 'Foundation school, discipleship courses, and class tracking', alwaysActive: false },
+      { key: 'resource-library', name: 'Resource Library', category: 'Content', icon: 'library', description: 'Digital resource library downloads and media archives', alwaysActive: false },
+      { key: 'devotions', name: 'Devotions', category: 'Discipleship', icon: 'flame', description: 'Devotional logs, prayer requests, and worship tracks', alwaysActive: false },
+      { key: 'livestream', name: 'Livestream', category: 'Content', icon: 'radio', description: 'Live services, broadcasts, crusades, and conference streams', alwaysActive: false }
+    ];
+
     // Dynamic Dropdown Generators
-    function generateCountryOptions(selectedValue) {
+    function generateCountryOptions(selectedValue, targetInputId = 'profileCountry') {
       if (!window.WORLD_COUNTRIES) return '';
       return window.WORLD_COUNTRIES.map(c => `
         <div class="modern-option ${c.name === selectedValue ? 'selected' : ''}" 
-             onclick="selectOption(event, this, 'profileCountry', '${c.name.replace(/'/g, "\\'")}', '${c.emoji} ${c.name.replace(/'/g, "\\'")}')">
+             onclick="selectOption(event, this, '${targetInputId}', '${c.name.replace(/'/g, "\\'")}', '${c.emoji} ${c.name.replace(/'/g, "\\'")}')">
           <span style="display:flex; align-items:center; gap:8px;">${c.emoji} ${c.name}</span>
         </div>
       `).join('');
@@ -877,12 +1255,26 @@
 
     function generateTimezoneOptions(selectedValue) {
       const timezones = Intl.supportedValuesOf ? Intl.supportedValuesOf('timeZone') : ['UTC', 'America/Edmonton', 'Africa/Nairobi', 'Europe/London'];
-      return timezones.map(tz => `
+      
+      const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Edmonton';
+      
+      let optionsHtml = `
+        <div class="modern-option ${selectedValue === 'local' || selectedValue === localTz ? 'selected' : ''}" 
+             onclick="selectOption(event, this, 'profileTimezone', '${localTz}', 'Local (Auto-detected: ${localTz})')">
+          <span style="display:flex; align-items:center; gap:8px;">
+            <strong>Local Timezone</strong> <span style="font-size:11px; color:var(--muted);">(${localTz})</span>
+          </span>
+        </div>
+      `;
+      
+      optionsHtml += timezones.map(tz => `
         <div class="modern-option ${tz === selectedValue ? 'selected' : ''}" 
              onclick="selectOption(event, this, 'profileTimezone', '${tz}', '${tz}')">
           ${tz}
         </div>
       `).join('');
+      
+      return optionsHtml;
     }
 
     function filterOptions(inputEl) {
@@ -893,6 +1285,122 @@
         const text = opt.textContent.toLowerCase();
         opt.style.display = text.includes(filter) ? 'flex' : 'none';
       });
+    }
+
+    function onToggleDefaultPaymentChange(chk) {
+      const nativeCard = document.getElementById('nativeCheckoutCard');
+      const customGrid = document.getElementById('customGatewaysGrid');
+      const customLabel = document.getElementById('customGatewaysLabel');
+      const customDesc = document.getElementById('customGatewaysDesc');
+      const gatewayInput = document.getElementById('gatewayProvider');
+      
+      if (!nativeCard || !customGrid || !gatewayInput) return;
+      
+      if (!chk.checked) {
+        // Platform Checkout active (Default)
+        gatewayInput.value = 'native';
+        
+        // Style native card
+        nativeCard.classList.add('active');
+        nativeCard.style.opacity = '1';
+        nativeCard.style.filter = 'none';
+        nativeCard.style.pointerEvents = 'none';
+        const nativeIndicator = nativeCard.querySelector('.check-indicator');
+        if (nativeIndicator) {
+          nativeIndicator.innerHTML = '<i data-lucide="check" style="width:10px; height:10px; color:white;"></i>';
+        }
+        lucide.createIcons({ root: nativeCard });
+        
+        // Gray out custom grid
+        customGrid.style.opacity = '0.4';
+        customGrid.style.filter = 'grayscale(100%)';
+        customGrid.style.pointerEvents = 'none';
+        if (customLabel) {
+          customLabel.style.color = 'var(--muted)';
+        }
+        if (customDesc) {
+          customDesc.style.opacity = '0.6';
+        }
+        
+        // Deselect all custom cards
+        const customCards = customGrid.querySelectorAll('.payment-provider-card');
+        customCards.forEach(c => {
+          c.classList.remove('active');
+          const indicator = c.querySelector('.check-indicator');
+          if (indicator) {
+            indicator.innerHTML = '';
+          }
+        });
+      } else {
+        // Custom gateways active
+        nativeCard.classList.remove('active');
+        nativeCard.style.opacity = '0.4';
+        nativeCard.style.filter = 'grayscale(100%)';
+        nativeCard.style.pointerEvents = 'none';
+        const nativeIndicator = nativeCard.querySelector('.check-indicator');
+        if (nativeIndicator) {
+          nativeIndicator.innerHTML = '';
+        }
+        
+        // Enable custom grid
+        customGrid.style.opacity = '1';
+        customGrid.style.filter = 'none';
+        customGrid.style.pointerEvents = 'auto';
+        if (customLabel) {
+          customLabel.style.color = 'var(--ink)';
+        }
+        if (customDesc) {
+          customDesc.style.opacity = '1';
+        }
+        
+        // Auto-select a fallback if no custom options are selected
+        const customCards = customGrid.querySelectorAll('.payment-provider-card');
+        const activeCustom = Array.from(customCards).filter(c => c.classList.contains('active'));
+        if (activeCustom.length === 0) {
+          const pesapalCard = customGrid.querySelector('[data-gateway="pesapal"]');
+          if (pesapalCard) {
+            pesapalCard.classList.add('active');
+            const indicator = pesapalCard.querySelector('.check-indicator');
+            if (indicator) {
+              indicator.innerHTML = '<i data-lucide="check" style="width:10px; height:10px; color:white;"></i>';
+            }
+            lucide.createIcons({ root: pesapalCard });
+          }
+        }
+        
+        // Update input value
+        const updatedActiveCards = customGrid.querySelectorAll('.payment-provider-card.active');
+        const updatedKeys = Array.from(updatedActiveCards).map(card => card.dataset.gateway);
+        gatewayInput.value = updatedKeys.join(',');
+      }
+    }
+
+    function toggleGatewayCard(el) {
+      if (el.style.pointerEvents === 'none' || el.closest('#customGatewaysGrid')?.style.pointerEvents === 'none') {
+        return;
+      }
+      
+      el.classList.toggle('active');
+      
+      const customGrid = document.getElementById('customGatewaysGrid');
+      const activeCustomCards = customGrid ? customGrid.querySelectorAll('.payment-provider-card.active') : [];
+      const activeKeys = Array.from(activeCustomCards).map(card => card.dataset.gateway);
+      
+      const gatewayInput = document.getElementById('gatewayProvider');
+      if (gatewayInput) {
+        gatewayInput.value = activeKeys.join(',');
+      }
+      
+      const indicator = el.querySelector('.check-indicator');
+      if (indicator) {
+        if (el.classList.contains('active')) {
+          indicator.innerHTML = '<i data-lucide="check" style="width:10px; height:10px; color:white;"></i>';
+        } else {
+          indicator.innerHTML = '';
+        }
+      }
+      
+      lucide.createIcons({ root: el });
     }
 
     // Secure authentication check
@@ -912,41 +1420,123 @@
     }
 
     function toggleDropdown(el) {
-      // close others
-      document.querySelectorAll('.modern-select-wrapper').forEach(item => {
-        if (item !== el) item.classList.remove('open');
+      const dropdown = el.querySelector('.modern-select-dropdown');
+      const trigger = el.querySelector('.modern-select-trigger');
+
+      document.querySelectorAll('.modern-select-wrapper.open').forEach(openWrapper => {
+        if (openWrapper !== el) {
+          closeDropdown(openWrapper);
+        }
       });
-      el.classList.toggle('open');
+
+      const isOpen = el.classList.toggle('open');
+      if (isOpen && dropdown && trigger) {
+        // Remember original wrapper on the dropdown so we know where to return it
+        dropdown.dataset.originalWrapperId = el.id || '';
+        if (!el.id) {
+          el.id = 'select-wrapper-' + Math.random().toString(36).substr(2, 9);
+          dropdown.dataset.originalWrapperId = el.id;
+        }
+
+        const rect = trigger.getBoundingClientRect();
+        
+        // Append to body so it escapes containing blocks (e.g. backdrop-filter)
+        document.body.appendChild(dropdown);
+
+        dropdown.style.display = 'block';
+        dropdown.style.position = 'fixed';
+        dropdown.style.left = rect.left + 'px';
+        dropdown.style.right = 'auto'; // override CSS right:0 rule to prevent shifting/stretching
+        dropdown.style.zIndex = '99999';
+        if (el.closest('.phone-input-group')) {
+          dropdown.style.width = '240px';
+        } else {
+          dropdown.style.width = rect.width + 'px';
+        }
+
+        // Adjust drop direction based on available space in viewport
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        const estimatedHeight = 300; // max estimated height of dropdown panel
+
+        if (spaceBelow < estimatedHeight && spaceAbove > spaceBelow) {
+          // Drop UP
+          dropdown.style.top = 'auto';
+          dropdown.style.bottom = (window.innerHeight - rect.top + 6) + 'px';
+        } else {
+          // Drop DOWN
+          dropdown.style.bottom = 'auto';
+          dropdown.style.top = (rect.bottom + 6) + 'px';
+        }
+      } else if (!isOpen && dropdown) {
+        closeDropdown(el);
+      }
       lucide.createIcons();
+    }
+
+    function closeDropdown(wrapper) {
+      wrapper.classList.remove('open');
+      const dropdown = document.querySelector(`.modern-select-dropdown[data-original-wrapper-id="${wrapper.id}"]`);
+      if (dropdown) {
+        // Append it back to its original parent wrapper
+        wrapper.appendChild(dropdown);
+        dropdown.style.display = '';
+        dropdown.style.position = '';
+        dropdown.style.top = '';
+        dropdown.style.bottom = '';
+        dropdown.style.left = '';
+        dropdown.style.right = '';
+        dropdown.style.width = '';
+        dropdown.style.zIndex = '';
+        delete dropdown.dataset.originalWrapperId;
+      }
     }
 
     function selectOption(event, el, inputId, value, textHtml) {
       event.stopPropagation();
-      const customSelect = el.closest('.modern-select-wrapper');
+      const dropdown = el.closest('.modern-select-dropdown');
+      const wrapperId = dropdown?.dataset.originalWrapperId;
+      const customSelect = wrapperId ? document.getElementById(wrapperId) : el.closest('.modern-select-wrapper');
       
       // update hidden input
-      document.getElementById(inputId).value = value;
+      const inputEl = document.getElementById(inputId);
+      if (inputEl) {
+        inputEl.value = value;
+      }
       
       // update selected text HTML
-      customSelect.querySelector('.modern-select-trigger span').innerHTML = textHtml;
+      if (customSelect) {
+        const triggerSpan = customSelect.querySelector('.modern-select-trigger span');
+        if (triggerSpan) {
+          triggerSpan.innerHTML = textHtml;
+        }
+      }
       
       // update selected class
-      customSelect.querySelectorAll('.modern-option').forEach(item => item.classList.remove('selected'));
+      if (dropdown) {
+        dropdown.querySelectorAll('.modern-option').forEach(item => item.classList.remove('selected'));
+      }
       el.classList.add('selected');
       
       // close dropdown
-      customSelect.classList.remove('open');
+      if (customSelect) {
+        closeDropdown(customSelect);
+      }
       lucide.createIcons();
       
       // Trigger change event if needed
-      const evt = new Event('change');
-      document.getElementById(inputId).dispatchEvent(evt);
+      if (inputEl) {
+        const evt = new Event('change');
+        inputEl.dispatchEvent(evt);
+      }
     }
 
     // Close dropdowns when clicking outside
     document.addEventListener('click', function(e) {
-      if (!e.target.closest('.modern-select-wrapper')) {
-        document.querySelectorAll('.modern-select-wrapper').forEach(item => item.classList.remove('open'));
+      if (!e.target.closest('.modern-select-wrapper') && !e.target.closest('.modern-select-dropdown')) {
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(wrapper => {
+          closeDropdown(wrapper);
+        });
         lucide.createIcons();
       }
     });
@@ -983,27 +1573,38 @@
       `;
       container.appendChild(div);
       lucide.createIcons({ root: div });
-    }
-
-    // Theme Icon toggle
+    }    // Theme Icon toggle
     function icon(name) {
       return `<i data-lucide="${name}"></i>`;
     }
 
-    // Onboarding checklist steps definition
-    const onboardingStepsDef = [
-      { stepKey: 'profile', title: 'Church Profile', description: 'Address, phone, email, and timezone settings' },
-      { stepKey: 'logo', title: 'Upload Logo', description: 'Main light/dark logo and favicon' },
-      { stepKey: 'modules', title: 'Select Modules', description: 'Entitle and activate ministry modules' },
-      { stepKey: 'website', title: 'Website Basics', description: 'Homepage titles, primary CTA and text' },
-      { stepKey: 'domain', title: 'Domain Setup', description: 'Configure church domain structure' },
-      { stepKey: 'giving', title: 'Giving Setup', description: 'Integrate Pesapal, Stripe or Flutterwave' },
-      { stepKey: 'invite', title: 'Invite Team', description: 'Invite pastors and office administrators' },
-      { stepKey: 'complete', title: 'Launch Dashboard', description: 'Final launch checklists summary' }
+    // Category navigation tabs definitions
+    const categoriesDef = [
+      { index: 0, title: 'Identity & Core', description: 'Define your church identity, location, and schedules' },
+      { index: 1, title: 'Branding & Web', description: 'Configure website branding, logos, and custom domains' },
+      { index: 2, title: 'Features & Team', description: 'Select modules and invite team members' },
+      { index: 3, title: 'Review & Launch', description: 'Review details and launch your platform' }
+    ];
+
+    // Wizard sub-steps definitions
+    const wizardSubSteps = [
+      // Category 0
+      { index: 0, category: 0, stepKey: 'profile', subStepKey: 'profile-basic', title: 'Basic Profile', description: 'Setup church basic identity details', icon: 'user' },
+      { index: 1, category: 0, stepKey: 'profile', subStepKey: 'profile-location', title: 'Church Location', description: 'Configure church office and venue addresses', icon: 'map-pin' },
+      { index: 2, category: 0, stepKey: 'profile', subStepKey: 'profile-times', title: 'Service Times', description: 'Configure worship services schedules and timezone', icon: 'clock' },
+      // Category 1
+      { index: 3, category: 1, stepKey: 'logo', subStepKey: 'logo', title: 'Brand Logo', description: 'Upload logos and favicon', icon: 'image' },
+      { index: 4, category: 1, stepKey: 'website', subStepKey: 'website', title: 'Website Info', description: 'Configure landing page content', icon: 'globe' },
+      { index: 5, category: 1, stepKey: 'domain', subStepKey: 'domain', title: 'Domain Setup', description: 'Reserve subdomain and custom domain', icon: 'link' },
+      // Category 2
+      { index: 6, category: 2, stepKey: 'modules', subStepKey: 'modules', title: 'Active Modules', description: 'Enable target ministry modules', icon: 'grid' },
+      { index: 7, category: 2, stepKey: 'giving', subStepKey: 'giving', title: 'Giving Settings', description: 'Setup payment gateway provider', icon: 'credit-card' },
+      { index: 8, category: 2, stepKey: 'invite', subStepKey: 'invite', title: 'Invite Team', description: 'Invite staff members to the workspace', icon: 'users' }
     ];
 
     let state = {
-      currentStepIndex: 0,
+      activeCategoryIndex: 0,
+      activeSubStepIndex: 0,
       progressPercent: 0,
       steps: [], // status records from API
       tenant: {},
@@ -1042,15 +1643,16 @@
 
     function rememberOnboardingStep(stepKey, metadata) {
       const normalizedStepKey = stepKey === "website-basics" ? "website" : stepKey;
-      return mergeOnboardingContext({
+      
+      const patch = {
         tenant: {
           id: tenantId,
-          name: state.tenant.name || localStorage.getItem("churchos.tenantName") || "",
+          name: metadata.churchName || state.tenant.name || localStorage.getItem("churchos.tenantName") || "",
           subdomain: state.tenant.subdomain || localStorage.getItem("churchos.subdomain") || "",
           subdomainHost: state.tenant.subdomainHost || localStorage.getItem("churchos.tenantHost") || "",
           customDomain: metadata.customDomain || state.tenant.customDomain || "",
-          country: state.tenant.country || "",
-          city: state.tenant.city || "",
+          country: metadata.country || state.tenant.country || "",
+          city: metadata.city || state.tenant.city || "",
           plan: state.plan || "growth"
         },
         steps: {
@@ -1059,7 +1661,16 @@
             updatedAt: new Date().toISOString()
           }
         }
-      });
+      };
+
+      if (metadata.ownerName || metadata.ownerEmail) {
+        patch.owner = {
+          name: metadata.ownerName || readOnboardingContext().owner?.name || localStorage.getItem("churchos.ownerName") || "",
+          email: metadata.ownerEmail || readOnboardingContext().owner?.email || localStorage.getItem("churchos.ownerEmail") || ""
+        };
+      }
+
+      return mergeOnboardingContext(patch);
     }
 
     function tenantHeaders() {
@@ -1147,8 +1758,6 @@
           ...(cachedContext.tenant || {})
         };
         state.progressPercent = data.progressPercent;
-        
-        state.progressPercent = data.progressPercent;
 
         // Determine plan by querying subscription
         try {
@@ -1177,7 +1786,7 @@
         localStorage.setItem("churchos.subdomain", state.tenant.subdomain || "");
         localStorage.setItem("churchos.tenantHost", state.tenant.subdomainHost || (state.tenant.subdomain ? `${state.tenant.subdomain}.churched.online` : ""));
 
-        renderSidebar();
+        renderCategoryTabs();
         renderActiveStep();
       } catch (err) {
         console.error(err);
@@ -1185,41 +1794,372 @@
       }
     }
 
-    // Render step checklist sidebar
-    function renderSidebar() {
-      progressLabel.textContent = `${state.progressPercent}% Completed`;
-      
-      stepsSidebarList.innerHTML = onboardingStepsDef.map((step, index) => {
-        // Find completion status in API steps list
-        const apiStep = state.steps.find(s => s.stepKey === step.stepKey);
-        const isCompleted = apiStep && (apiStep.status === 'completed' || apiStep.status === 'skipped');
-        const isActive = index === state.currentStepIndex;
-        
-        let statusClass = '';
-        if (isActive) statusClass = 'active';
-        else if (isCompleted) statusClass = 'completed';
-
-        return `
-          <div class="step-item ${statusClass}" onclick="goToStep(${index})">
-            <span class="step-num">${index + 1}</span>
-            <span>${step.title}</span>
-          </div>
-        `;
-      }).join("");
+    function isStepKeyCompleted(stepKey) {
+      const apiStep = state.steps.find(s => s.stepKey === stepKey);
+      return apiStep && (apiStep.status === 'completed' || apiStep.status === 'skipped');
     }
 
-    function goToStep(index) {
-      if (index >= 0 && index < onboardingStepsDef.length) {
-        state.currentStepIndex = index;
-        renderSidebar();
+    function isSubStepCompleted(sub) {
+      const apiStep = state.steps.find(s => s.stepKey === sub.stepKey) || {};
+      let meta = {};
+      if (apiStep.metadataJson) {
+        try { meta = JSON.parse(apiStep.metadataJson); } catch {}
+      }
+      meta = {
+        ...(readOnboardingContext().steps?.[sub.stepKey] || {}),
+        ...meta
+      };
+
+      if (sub.index === 0) {
+        return !!(meta.email || meta.phone || meta.churchName);
+      }
+      if (sub.index === 1) {
+        return !!(meta.address || meta.city);
+      }
+      if (sub.index === 2) {
+        return !!(meta.serviceTimes && meta.serviceTimes.length > 0);
+      }
+      return isStepKeyCompleted(sub.stepKey);
+    }
+
+    // Render Category Tabs on top
+    function renderCategoryTabs() {
+      progressLabel.textContent = `${state.progressPercent}% Completed`;
+      renderCategoryProgressSteps('categoryProgressContainer');
+    }
+
+    function renderCategoryProgressSteps(containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      let html = '';
+
+      categoriesDef.forEach((cat, idx) => {
+        const isActive = idx === state.activeCategoryIndex;
+        let isCompleted = false;
+
+        if (idx === 0) {
+          isCompleted = isStepKeyCompleted('profile');
+        } else if (idx === 1) {
+          isCompleted = isStepKeyCompleted('logo') && isStepKeyCompleted('website') && isStepKeyCompleted('domain');
+        } else if (idx === 2) {
+          isCompleted = isStepKeyCompleted('modules') && isStepKeyCompleted('giving') && isStepKeyCompleted('invite');
+        }
+
+        let circleStyle = '';
+        let labelStyle = '';
+
+        if (isCompleted) {
+          circleStyle = 'background-color:#16a34a; border:2px solid #16a34a; color:white;';
+          labelStyle = 'color:var(--ink); font-weight:700;';
+        } else if (isActive) {
+          circleStyle = 'background-color:var(--solid); border:2px solid var(--accent); color:var(--accent); box-shadow: 0 0 0 4px var(--accent-soft);';
+          labelStyle = 'color:var(--accent); font-weight:700;';
+        } else {
+          circleStyle = 'background-color:var(--bg); border:2px solid var(--line); color:var(--muted);';
+          labelStyle = 'color:var(--muted); font-weight:500;';
+        }
+
+        let stepClass = 'progress-step';
+        if (idx === 3) {
+          stepClass += ' review-step-tab';
+        }
+
+        html += `
+          <div class="${stepClass}" onclick="switchCategory(${idx})">
+            <div class="step-circle" style="${circleStyle}">
+              ${idx + 1}
+            </div>
+            <span class="step-label" style="${labelStyle}">${cat.title}</span>
+          </div>
+        `;
+
+        if (idx < categoriesDef.length - 1) {
+          const nextCompleted = isCompleted;
+          const currentLineStyle = nextCompleted ? 'background-color:#16a34a;' : 'background-color:var(--line);';
+          let lineClass = 'step-line';
+          if (idx === 2) {
+            lineClass += ' review-step-line';
+          }
+          html += `
+            <div class="${lineClass}" style="${currentLineStyle}"></div>
+          `;
+        }
+      });
+
+      container.innerHTML = html;
+    }
+
+    function switchCategory(idx) {
+      state.activeCategoryIndex = idx;
+      if (idx === 3) {
+        state.activeSubStepIndex = -1;
+      } else {
+        state.activeSubStepIndex = wizardSubSteps.find(s => s.category === idx).index;
+      }
+      renderCategoryTabs();
+      renderActiveStep();
+    }
+
+    function goToSubStep(index) {
+      if (index >= 0 && index < wizardSubSteps.length) {
+        state.activeSubStepIndex = index;
+        state.activeCategoryIndex = wizardSubSteps[index].category;
+        renderCategoryTabs();
         renderActiveStep();
       }
     }
 
+    function goBackSubStep() {
+      if (state.activeSubStepIndex > 0) {
+        goToSubStep(state.activeSubStepIndex - 1);
+      } else if (state.activeCategoryIndex > 0) {
+        switchCategory(state.activeCategoryIndex - 1);
+        const subSteps = wizardSubSteps.filter(s => s.category === state.activeCategoryIndex);
+        goToSubStep(subSteps[subSteps.length - 1].index);
+      }
+    }
+
+    function advanceWizard() {
+      if (state.activeSubStepIndex < wizardSubSteps.length - 1) {
+        goToSubStep(state.activeSubStepIndex + 1);
+      } else {
+        switchCategory(3); // Switch to Review & Launch
+      }
+    }
+
+    // Handles skipping active sub-step
+    async function skipSubStep() {
+      const sub = wizardSubSteps[state.activeSubStepIndex];
+      try {
+        await apiPost(`/api/onboarding/${sub.stepKey}/skip`, {});
+        showToast('Step skipped');
+        await loadOnboarding();
+        advanceWizard();
+      } catch (err) {
+        showToast(err.message || 'Unable to skip this step', true);
+      }
+    }
+
+    function renderSubNavHtml() {
+      const subStepsInCat = wizardSubSteps.filter(s => s.category === state.activeCategoryIndex);
+      return `
+        <div class="wizard-subnav">
+          ${subStepsInCat.map(sub => {
+            const isActive = sub.index === state.activeSubStepIndex;
+            const isCompleted = isSubStepCompleted(sub);
+            
+            let cssClass = 'substep-item';
+            if (isActive) cssClass += ' active';
+            else if (isCompleted) cssClass += ' completed';
+            
+            return `
+              <div class="${cssClass}" onclick="goToSubStep(${sub.index})">
+                <span class="substep-dot">
+                  ${isCompleted ? '<i data-lucide="check" style="width:12px; height:12px;"></i>' : `<i data-lucide="${sub.icon}" style="width:12px; height:12px;"></i>`}
+                </span>
+                <span>${sub.title}</span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // Render Review Summary Grid for Tab 4
+    function renderReviewGrid() {
+      const context = readOnboardingContext();
+      const apiSteps = state.steps;
+      
+      function getMeta(stepKey) {
+        const s = apiSteps.find(x => x.stepKey === stepKey) || {};
+        let m = {};
+        if (s.metadataJson) {
+          try { m = JSON.parse(s.metadataJson); } catch {}
+        }
+        return {
+          ...(context.steps?.[stepKey] || {}),
+          ...m
+        };
+      }
+      
+      const profileMeta = getMeta('profile');
+      const logoMeta = getMeta('logo');
+      const websiteMeta = getMeta('website');
+      const domainMeta = getMeta('domain');
+      const modulesMeta = getMeta('modules');
+      const givingMeta = getMeta('giving');
+      const inviteMeta = getMeta('invite');
+
+      const isProfileOk = !!(profileMeta.churchName || state.tenant.name) && !!(profileMeta.email && profileMeta.phone);
+      const isLocationOk = !!(profileMeta.address && (profileMeta.city || state.tenant.city));
+      const isScheduleOk = !!(profileMeta.serviceTimes && profileMeta.serviceTimes.length > 0);
+      const isLogoOk = !!logoMeta.logoUrl;
+      const isWebsiteOk = !!(websiteMeta.homepageTitle && websiteMeta.homepageSubtitle);
+
+      return `
+        <div class="review-grid">
+          <div class="review-section ${isProfileOk ? '' : 'warning'}" onclick="goToSubStep(0)">
+            <div class="review-section-header">
+              <h3>Basic Profile</h3>
+              <span class="status-badge ${isProfileOk ? 'ok' : 'missing'}">${isProfileOk ? 'Ready' : 'Missed'}</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Church Name</span><span>${profileMeta.churchName || state.tenant.name || '—'}</span></div>
+              <div class="review-item"><span>Owner Name</span><span>${profileMeta.ownerName || context.owner?.name || '—'}</span></div>
+              <div class="review-item"><span>Owner Email</span><span>${profileMeta.ownerEmail || context.owner?.email || '—'}</span></div>
+              <div class="review-item"><span>Public Email</span><span>${profileMeta.email || '—'}</span></div>
+              <div class="review-item"><span>Phone</span><span>${profileMeta.phoneCode || ''} ${profileMeta.phone || '—'}</span></div>
+              <div class="review-item"><span>Timezone</span><span>${profileMeta.timezone || '—'}</span></div>
+            </div>
+          </div>
+
+          <div class="review-section ${isLocationOk ? '' : 'warning'}" onclick="goToSubStep(1)">
+            <div class="review-section-header">
+              <h3>Church Location</h3>
+              <span class="status-badge ${isLocationOk ? 'ok' : 'missing'}">${isLocationOk ? 'Ready' : 'Missed'}</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Country</span><span>${profileMeta.country || state.tenant.country || '—'}</span></div>
+              <div class="review-item"><span>City</span><span>${profileMeta.city || state.tenant.city || '—'}</span></div>
+              <div class="review-item"><span>Office Address</span><span>${profileMeta.address || '—'}</span></div>
+              <div class="review-item"><span>Venue Address</span><span>${profileMeta.isVenueDifferent ? (profileMeta.venueAddress || '—') : 'Same as Office'}</span></div>
+            </div>
+          </div>
+
+          <div class="review-section ${isScheduleOk ? '' : 'warning'}" onclick="goToSubStep(2)">
+            <div class="review-section-header">
+              <h3>Service Schedule</h3>
+              <span class="status-badge ${isScheduleOk ? 'ok' : 'missing'}">${isScheduleOk ? 'Ready' : 'Missed'}</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Service Times</span><span>${profileMeta.serviceTimes ? profileMeta.serviceTimes.map(st => `${st.day} @ ${st.time}`).join(', ') : '—'}</span></div>
+            </div>
+          </div>
+
+          <div class="review-section ${isLogoOk ? '' : 'warning'}" onclick="goToSubStep(3)">
+            <div class="review-section-header">
+              <h3>Branding & Logos</h3>
+              <span class="status-badge ${isLogoOk ? 'ok' : 'warning'}">${isLogoOk ? 'Ready' : 'Skipped'}</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Main Logo</span><span>${logoMeta.logoUrl ? (logoMeta.logoUrl.startsWith('data:') ? 'Uploaded' : 'Linked') : '—'}</span></div>
+              <div class="review-item"><span>Dark Logo</span><span>${logoMeta.darkLogoUrl ? (logoMeta.darkLogoUrl.startsWith('data:') ? 'Uploaded' : 'Linked') : '—'}</span></div>
+              <div class="review-item"><span>Favicon</span><span>${logoMeta.faviconUrl ? (logoMeta.faviconUrl.startsWith('data:') ? 'Uploaded' : 'Linked') : '—'}</span></div>
+            </div>
+          </div>
+
+          <div class="review-section ${isWebsiteOk ? '' : 'warning'}" onclick="goToSubStep(4)">
+            <div class="review-section-header">
+              <h3>Website Info</h3>
+              <span class="status-badge ${isWebsiteOk ? 'ok' : 'missing'}">${isWebsiteOk ? 'Ready' : 'Missed'}</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Homepage Title</span><span>${websiteMeta.homepageTitle || '—'}</span></div>
+              <div class="review-item"><span>Tagline</span><span>${websiteMeta.homepageSubtitle || '—'}</span></div>
+              <div class="review-item"><span>Vision</span><span>${websiteMeta.vision ? (websiteMeta.vision.substring(0, 30) + (websiteMeta.vision.length > 30 ? '...' : '')) : '—'}</span></div>
+              <div class="review-item"><span>Mission</span><span>${websiteMeta.mission ? (websiteMeta.mission.substring(0, 30) + (websiteMeta.mission.length > 30 ? '...' : '')) : '—'}</span></div>
+            </div>
+          </div>
+
+          <div class="review-section" onclick="goToSubStep(5)">
+            <div class="review-section-header">
+              <h3>Domain Config</h3>
+              <span class="status-badge ok">Ready</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Subdomain</span><span>${state.tenant.subdomainHost || `${state.tenant.subdomain}.churched.online`}</span></div>
+              <div class="review-item"><span>Custom Domain</span><span>${domainMeta.customDomain || '—'}</span></div>
+            </div>
+          </div>
+
+          <div class="review-section" onclick="goToSubStep(6)">
+            <div class="review-section-header">
+              <h3>Active Modules</h3>
+              <span class="status-badge ok">Ready</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Enabled Modules</span><span>${
+                modulesMeta.enabledModuleKeys 
+                  ? modulesMeta.enabledModuleKeys
+                      .filter(k => PLATFORM_MODULES.some(m => m.key === k))
+                      .map(k => {
+                        const found = PLATFORM_MODULES.find(m => m.key === k);
+                        return found ? found.name : k;
+                      }).join(', ') 
+                  : 'CMS & Pages, Blog, Member Management'
+              }</span></div>
+            </div>
+          </div>
+
+          <div class="review-section" onclick="goToSubStep(7)">
+            <div class="review-section-header">
+              <h3>Giving Integration</h3>
+              <span class="status-badge ok">Ready</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Payment Gateways</span><span>${
+                (() => {
+                  const val = givingMeta.gatewayProvider || 'native';
+                  const namesMap = {
+                    pesapal: 'Pesapal',
+                    flutterwave: 'Flutterwave',
+                    yo: 'Yo! Payments',
+                    stripe: 'Stripe',
+                    native: 'Platform Checkout',
+                    bank: 'Manual Bank Transfer',
+                    manual: 'Manual Bank Transfer'
+                  };
+                  return val.split(',').filter(Boolean).map(k => namesMap[k] || k).join(', ') || 'Platform Checkout';
+                })()
+              }</span></div>
+            </div>
+          </div>
+
+          <div class="review-section" onclick="goToSubStep(8)">
+            <div class="review-section-header">
+              <h3>Team Invitations</h3>
+              <span class="status-badge ok">Ready</span>
+            </div>
+            <div class="review-section-body">
+              <div class="review-item"><span>Last Invited</span><span>${inviteMeta.invitedEmail || 'No invites yet'}</span></div>
+              ${inviteMeta.totalInvitedCount ? `<div class="review-item"><span>Total Invited</span><span>${inviteMeta.totalInvitedCount} staff member(s)</span></div>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
     // Active Step Template Renderer
     function renderActiveStep() {
-      const step = onboardingStepsDef[state.currentStepIndex];
-      const apiStep = state.steps.find(s => s.stepKey === step.stepKey) || {};
+      const category = categoriesDef[state.activeCategoryIndex];
+      
+      if (state.activeCategoryIndex === 3) {
+        wizardCard.innerHTML = `
+          <div class="wizard-header" style="display:flex; flex-direction:row; justify-content:space-between; align-items:center; gap:20px; width:100%; margin-bottom: 24px;">
+            <div>
+              <div class="eyebrow">Step 10 of 10</div>
+              <h2 style="margin: 4px 0;">${category.title}</h2>
+              <p style="margin: 0;">${category.description}</p>
+            </div>
+            <div id="categoryProgressContainer" style="display:flex; align-items:flex-start; gap:0; flex-shrink:0;"></div>
+          </div>
+          
+          ${renderReviewGrid()}
+          
+          <div class="wizard-footer" style="justify-content: flex-end;">
+            <button class="btn btn-primary" type="button" style="min-height:48px; padding-inline:36px;" onclick="completeOnboarding()">
+              Launch Platform <i data-lucide="rocket"></i>
+            </button>
+          </div>
+        `;
+        renderCategoryProgressSteps('categoryProgressContainer');
+        lucide.createIcons();
+        return;
+      }
+
+      const sub = wizardSubSteps[state.activeSubStepIndex];
+      const apiStep = state.steps.find(s => s.stepKey === sub.stepKey) || {};
       
       let metadata = {};
       if (apiStep.metadataJson) {
@@ -1228,80 +2168,31 @@
         } catch {}
       }
       metadata = {
-        ...(readOnboardingContext().steps?.[step.stepKey] || {}),
+        ...(readOnboardingContext().steps?.[sub.stepKey] || {}),
         ...metadata
       };
 
       let formHtml = '';
 
-      switch(step.stepKey) {
-        case 'profile':
-          let stData = [];
-          try {
-            if (metadata.serviceTimes && Array.isArray(metadata.serviceTimes)) {
-              stData = metadata.serviceTimes;
-            } else if (metadata.serviceTimes) {
-               stData = [{ day: 'Sunday', time: '10:00 AM' }];
-            }
-          } catch(e) {}
-          
-          if (stData.length === 0) {
-             stData = [{ day: 'Sunday', time: '09:00 AM' }];
-          }
-
-          let stHtml = '';
-          stData.forEach((st, i) => {
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            let optionsHtml = '';
-            days.forEach(d => {
-              optionsHtml += `<div class="modern-option ${st.day === d ? 'selected' : ''}" onclick="selectOption(event, this, 'st-day-${i}', '${d}', '${d}')">${d}</div>`;
-            });
-            
-            stHtml += `
-              <div class="service-time-row" style="display:flex; gap:12px; margin-bottom:12px; align-items:center;">
-                <input type="hidden" class="st-day-val" id="st-day-${i}" value="${st.day}" />
-                <div class="modern-select-wrapper" style="flex:1;" onclick="toggleDropdown(this)">
-                  <div class="modern-select-trigger"><span>${st.day}</span> <i data-lucide="chevron-down"></i></div>
-                  <div class="modern-select-dropdown">
-                    ${optionsHtml}
-                  </div>
-                </div>
-                
-                <input type="time" class="st-time-val modern-time-input" style="flex:1;" value="${st.time || ''}" required />
-                
-                <button type="button" class="btn-icon-delete" onclick="this.parentElement.remove()" title="Delete Service Time">
-                  <i data-lucide="trash-2"></i>
-                </button>
-              </div>
-            `;
-          });
-
+      switch(state.activeSubStepIndex) {
+        case 0: // profile-basic
           formHtml = `
             <form id="stepForm" class="form-grid">
+              <div class="field full">
+                <label for="profileChurchName">Church Name</label>
+                <input id="profileChurchName" value="${metadata.churchName || state.tenant.name || ''}" placeholder="e.g. Grace Fellowship" required />
+              </div>
+              
+              <div class="field">
+                <label for="profileOwnerName">Owner Name</label>
+                <input id="profileOwnerName" value="${metadata.ownerName || readOnboardingContext().owner?.name || localStorage.getItem('churchos.ownerName') || ''}" placeholder="e.g. Pastor John Doe" required />
+              </div>
 
-              <!-- Church Address -->
-              <div class="field full" style="margin-bottom: 4px;">
-                <label for="profileAddress" style="display:flex; align-items:center;">
-                  Church Address
-                  <span class="tooltip-container">
-                    <i data-lucide="info"></i>
-                    <span class="tooltip-content">This is where the church office is located.</span>
-                  </span>
-                </label>
-                <input id="profileAddress" value="${metadata.address || ''}" placeholder="e.g. 221 Victory Ave, Edmonton" />
+              <div class="field">
+                <label for="profileOwnerEmail">Owner Email</label>
+                <input id="profileOwnerEmail" type="email" value="${metadata.ownerEmail || readOnboardingContext().owner?.email || localStorage.getItem('churchos.ownerEmail') || ''}" placeholder="e.g. pastor@church.org" required />
               </div>
-              
-              <!-- Checkbox right below -->
-              <div class="field full" style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-bottom: 16px; margin-top: 0;">
-                <input type="checkbox" id="profileVenueCheck" ${metadata.isVenueDifferent ? 'checked' : ''} onchange="document.getElementById('venueAddressContainer').style.display = this.checked ? 'block' : 'none'" style="width:16px; height:16px; flex:none; margin:0; accent-color: var(--accent); cursor:pointer;" />
-                <label for="profileVenueCheck" style="margin:0; font-weight:normal; font-size:13px; color:var(--charcoal); cursor:pointer;">Church venue is different from office address</label>
-              </div>
-              
-              <div class="field full" id="venueAddressContainer" style="display: ${metadata.isVenueDifferent ? 'block' : 'none'};">
-                <label for="profileVenueAddress">Venue Address</label>
-                <input id="profileVenueAddress" value="${metadata.venueAddress || ''}" placeholder="e.g. 500 Main St Venue" />
-              </div>
-              
+
               <div class="field">
                 <label>Phone Number</label>
                 <div class="phone-input-group">
@@ -1335,12 +2226,136 @@
                   Church Public Email
                   <span class="tooltip-container">
                     <i data-lucide="info"></i>
-                    <span class="tooltip-content">This is the email that people will see on the website, and maybe reach out to if they need any assistance. This is not the same email that the user, the pastor's email or the owner's email.</span>
+                    <span class="tooltip-content">This is the email that people will see on the website.</span>
                   </span>
                 </label>
                 <input id="profileEmail" type="email" value="${metadata.email || ''}" placeholder="e.g. info@church.org" />
               </div>
+            </form>
+          `;
+          break;
+          
+        case 1: // profile-location
+          formHtml = `
+            <form id="stepForm" class="form-grid">
+              <div class="field full">
+                <label for="profileStreet">Street Address</label>
+                <input id="profileStreet" value="${metadata.street || ''}" placeholder="e.g. 221 Victory Ave" required />
+              </div>
+
+              <div class="field">
+                <label for="profileUnit">Suite / Unit / Apt (Optional)</label>
+                <input id="profileUnit" value="${metadata.unit || ''}" placeholder="e.g. Suite 404" />
+              </div>
+
+              <div class="field">
+                <label for="profilePoBox">PO Box (Optional)</label>
+                <input id="profilePoBox" value="${metadata.poBox || ''}" placeholder="e.g. PO Box 1234" />
+              </div>
+
+              <div class="field">
+                <label for="profileCity">City</label>
+                <input id="profileCity" value="${metadata.city || state.tenant.city || ''}" placeholder="e.g. Edmonton" required />
+              </div>
+
+              <div class="field">
+                <label for="profileState">State / Province / Region</label>
+                <input id="profileState" value="${metadata.state || ''}" placeholder="e.g. Alberta" required />
+              </div>
+
+              <div class="field">
+                <label for="profileZip">Zip / Postal Code</label>
+                <input id="profileZip" value="${metadata.zip || ''}" placeholder="e.g. T5J 2H5" required />
+              </div>
+
+              <div class="field">
+                <label>Country</label>
+                <input type="hidden" id="profileCountry" value="${metadata.country || state.tenant.country || ''}">
+                <div class="modern-select-wrapper" onclick="toggleDropdown(this)">
+                   <div class="modern-select-trigger">
+                     <span style="display:flex; align-items:center; gap:4px; font-weight:500;">
+                       ${(() => {
+                         const c = window.WORLD_COUNTRIES?.find(x => x.name === (metadata.country || state.tenant.country));
+                         return c ? `${c.emoji} ${c.name}` : (metadata.country || state.tenant.country || 'Select Country');
+                       })()}
+                     </span>
+                     <i data-lucide="chevron-down" style="width:16px; height:16px; color:var(--muted);"></i>
+                   </div>
+                   <div class="modern-select-dropdown">
+                     <div class="modern-select-search" onclick="event.stopPropagation()">
+                       <i data-lucide="search"></i>
+                       <input type="text" placeholder="Search country..." oninput="filterOptions(this)" />
+                     </div>
+                     <div class="modern-select-options-container">
+                       ${generateCountryOptions(metadata.country || state.tenant.country)}
+                     </div>
+                   </div>
+                </div>
+              </div>
               
+              <div class="field full" style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-top: 8px; margin-bottom: 8px;">
+                <input type="checkbox" id="profileVenueCheck" ${metadata.isVenueDifferent ? 'checked' : ''} onchange="document.getElementById('venueAddressContainer').style.display = this.checked ? 'grid' : 'none'" style="width:16px; height:16px; flex:none; margin:0; accent-color: var(--accent); cursor:pointer;" />
+                <label for="profileVenueCheck" style="margin:0; font-weight:normal; font-size:13px; color:var(--charcoal); cursor:pointer;">Church venue is different from office address</label>
+              </div>
+              
+              <div class="form-grid" id="venueAddressContainer" style="display: ${metadata.isVenueDifferent ? 'grid' : 'none'}; grid-column: span 2; border-top: 1px dashed var(--line); padding-top: 16px; margin-top: 8px; gap: 16px;">
+                <h4 style="margin: 0; color: var(--accent); font-size: 13px; font-weight: 600; grid-column: span 2;">Location</h4>
+                
+                <div class="field full">
+                  <label for="venueStreet">Street / Road</label>
+                  <input id="venueStreet" value="${metadata.venueStreet || ''}" placeholder="e.g. 500 Main St Venue" />
+                </div>
+
+                <div class="field full">
+                  <label for="venueUnit">Building, Floor, Room</label>
+                  <input id="venueUnit" value="${metadata.venueUnit || ''}" placeholder="e.g. Building A, Floor 2, Room 3" />
+                </div>
+              </div>
+            </form>
+          `;
+          break;
+          
+        case 2: // profile-times
+          let stData = [];
+          try {
+            if (metadata.serviceTimes && Array.isArray(metadata.serviceTimes)) {
+              stData = metadata.serviceTimes;
+            }
+          } catch(e) {}
+          
+          if (stData.length === 0) {
+             stData = [{ day: 'Sunday', time: '10:00' }];
+          }
+
+          let stHtml = '';
+          stData.forEach((st, i) => {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            let optionsHtml = '';
+            days.forEach(d => {
+              optionsHtml += `<div class="modern-option ${st.day === d ? 'selected' : ''}" onclick="selectOption(event, this, 'st-day-${i}', '${d}', '${d}')">${d}</div>`;
+            });
+            
+            stHtml += `
+              <div class="service-time-row" style="display:flex; gap:12px; margin-bottom:12px; align-items:center;">
+                <input type="hidden" class="st-day-val" id="st-day-${i}" value="${st.day}" />
+                <div class="modern-select-wrapper" style="flex:1;" onclick="toggleDropdown(this)">
+                  <div class="modern-select-trigger"><span>${st.day}</span> <i data-lucide="chevron-down"></i></div>
+                  <div class="modern-select-dropdown">
+                    ${optionsHtml}
+                  </div>
+                </div>
+                
+                <input type="time" class="st-time-val modern-time-input" style="flex:1;" value="${st.time || ''}" required />
+                
+                <button type="button" class="btn-icon-delete" onclick="this.parentElement.remove()" title="Delete Service Time">
+                  <i data-lucide="trash-2"></i>
+                </button>
+              </div>
+            `;
+          });
+
+          formHtml = `
+            <form id="stepForm" class="form-grid">
               <div class="field full">
                 <label>Service Times</label>
                 <div id="serviceTimesContainer">
@@ -1352,15 +2367,27 @@
               <div class="field full">
                 <label>Timezone</label>
                 <div class="modern-select-wrapper" onclick="toggleDropdown(this)">
-                  <input type="hidden" id="profileTimezone" value="${state.tenant.timezone || 'America/Edmonton'}">
-                  <div class="modern-select-trigger"><span>${state.tenant.timezone || 'America/Edmonton'}</span> <i data-lucide="chevron-down"></i></div>
+                  <input type="hidden" id="profileTimezone" value="${metadata.timezone || 'local'}">
+                  <div class="modern-select-trigger">
+                    <span>
+                      ${(() => {
+                        const tzVal = metadata.timezone || 'local';
+                        if (tzVal === 'local') {
+                          const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Edmonton';
+                          return `Local (Auto-detected: ${localTz})`;
+                        }
+                        return tzVal;
+                      })()}
+                    </span>
+                    <i data-lucide="chevron-down"></i>
+                  </div>
                   <div class="modern-select-dropdown">
                     <div class="modern-select-search" onclick="event.stopPropagation()">
                       <i data-lucide="search"></i>
                       <input type="text" placeholder="Search timezones..." oninput="filterOptions(this)" />
                     </div>
                     <div class="modern-select-options-container">
-                      ${generateTimezoneOptions(state.tenant.timezone || 'America/Edmonton')}
+                      ${generateTimezoneOptions(metadata.timezone || 'local')}
                     </div>
                   </div>
                 </div>
@@ -1368,120 +2395,112 @@
             </form>
           `;
           break;
-        case 'logo':
-          formHtml = `
-            <form id="stepForm" class="form-grid">
-              <div class="field full">
-                <label for="logoUrl">Main Light Logo URL</label>
-                <input id="logoUrl" value="${metadata.logoUrl || ''}" placeholder="https://example.com/logo.png" />
-              </div>
-              <div class="field full">
-                <label for="darkLogoUrl">Dark Mode Logo URL (Optional)</label>
-                <input id="darkLogoUrl" value="${metadata.darkLogoUrl || ''}" placeholder="https://example.com/logo-dark.png" />
-              </div>
-              <div class="field full">
-                <label for="faviconUrl">Favicon URL</label>
-                <input id="faviconUrl" value="${metadata.faviconUrl || ''}" placeholder="https://example.com/favicon.ico" />
-              </div>
-            </form>
-          `;
-          break;
-
-        case 'modules':
-          // Module plan locking conditions
-          const isStarter = state.plan === 'starter';
-          const isGrowth = state.plan === 'growth';
           
-          formHtml = `
-            <form id="stepForm">
-              <div class="module-item active">
-                <div class="module-info">
-                  <i data-lucide="globe" style="color: var(--accent);"></i>
-                  <div class="module-info-text">
-                    <h4>Website Builder & CMS</h4>
-                    <p>Included in all plans</p>
+        case 3: // logo
+          {
+            function renderLogoAssetUploader(id, label, value, isFavicon = false) {
+              const hasValue = !!value;
+              const isLinkMode = hasValue && value.startsWith('http');
+              
+              return `
+                <div class="field full" id="${id}FieldContainer" style="border: 1px solid var(--line); padding: 20px; border-radius: 20px; background: var(--solid); margin-bottom: 8px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                    <label id="${id}Label" style="margin:0; font-weight: 800; font-size: 13px; color: var(--ink);">${label}</label>
+                    <button type="button" class="btn" id="${id}ToggleModeBtn" onclick="toggleAssetMode('${id}', ${!isLinkMode})" style="min-height:28px; padding:0 12px; font-size:11px; border-radius:6px; background:var(--soft); border:1px solid var(--line);">
+                      ${isLinkMode ? 'Upload File Instead' : 'Link via URL Instead'}
+                    </button>
+                  </div>
+                  
+                  <!-- Hidden input to hold the final value for the form payload -->
+                  <input type="hidden" id="${id}Url" value="${value || ''}" class="logo-asset-hidden" />
+                  
+                  <!-- Mode 1: File Upload (Default) -->
+                  <div id="${id}UploadContainer" style="display: ${isLinkMode ? 'none' : 'block'};">
+                    <!-- File input (hidden) -->
+                    <input type="file" id="${id}FileInput" accept="image/*" style="display:none;" onchange="handleAssetFileSelect('${id}', this, ${isFavicon})" />
+                    
+                    <!-- Drop Zone -->
+                    <div class="upload-zone" id="${id}UploadZone" onclick="document.getElementById('${id}FileInput').click()" style="min-height: 120px; padding: 16px;">
+                      <div id="${id}UploadZoneContent" style="display: ${hasValue && !isLinkMode ? 'none' : 'flex'}; flex-direction:column; align-items:center; gap:8px;">
+                        <i data-lucide="upload-cloud" style="width:28px; height:28px; color:var(--muted);"></i>
+                        <span style="font-weight:700; font-size:12px; color:var(--ink);">Drag and drop, or <span style="color:var(--accent);">browse</span></span>
+                        <span style="font-size:10px; color:var(--muted);">${isFavicon ? 'Square PNG, ICO up to 1MB (Required to crop)' : 'PNG, JPG, SVG up to 2MB'}</span>
+                      </div>
+                      
+                      <!-- Preview inside Drop Zone if uploaded -->
+                      <div id="${id}UploadZonePreview" style="display: ${hasValue && !isLinkMode ? 'flex' : 'none'}; flex-direction:column; align-items:center; gap:12px; position:relative;">
+                        <div style="position:relative; display:inline-block; padding:8px; background:var(--bg); border:1px solid var(--line); border-radius:12px;">
+                          <img id="${id}PreviewImg" src="${!isLinkMode ? value : ''}" style="max-height:60px; max-width:100%; object-fit:contain; border-radius:6px;" />
+                          <button type="button" class="btn-icon-delete" onclick="clearAssetFile('${id}', event)" style="position:absolute; top:-10px; right:-10px; height:24px; width:24px; border-radius:50%; background:#fee2e2; border:1px solid #fecaca; padding:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.05);" title="Remove">
+                            <i data-lucide="trash-2" style="width:12px; height:12px;"></i>
+                          </button>
+                        </div>
+                        <span style="font-size:10px; color:var(--muted); font-weight:600;">Click or drag to replace image</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Mode 2: Link URL -->
+                  <div id="${id}LinkContainer" style="display: ${isLinkMode ? 'block' : 'none'};">
+                    <input id="${id}UrlInput" value="${isLinkMode ? value : ''}" placeholder="https://example.com/image.png" oninput="handleAssetUrlInput('${id}', this.value)" style="height: 42px;" />
+                    <div id="${id}UrlPreviewContainer" style="margin-top: 12px; display: ${isLinkMode && value ? 'block' : 'none'};">
+                      <span style="font-size:10px; color:var(--muted); display:block; margin-bottom:6px;">Preview:</span>
+                      <div style="display:inline-block; padding:8px; background:var(--bg); border:1px solid var(--line); border-radius:12px;">
+                        <img id="${id}UrlPreviewImg" src="${isLinkMode ? value : ''}" style="max-height:60px; max-width:100%; object-fit:contain; border-radius:6px;" onerror="this.parentElement.parentElement.style.display='none';" />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <span style="font-size:12px; color:var(--muted); font-weight:800;">Always Active</span>
-              </div>
+              `;
+            }
 
-              <div class="module-item active">
-                <div class="module-info">
-                  <i data-lucide="users" style="color: var(--accent);"></i>
-                  <div class="module-info-text">
-                    <h4>Members & CRM logs</h4>
-                    <p>Core member registry</p>
-                  </div>
-                </div>
-                <label class="switch">
-                  <input type="checkbox" class="module-chk" value="members" checked disabled />
-                  <span class="slider"></span>
-                </label>
-              </div>
-
-              <div class="module-item ${isStarter ? '' : 'active'}">
-                <div class="module-info">
-                  <i data-lucide="hand-coins" style="color: var(--accent);"></i>
-                  <div class="module-info-text">
-                    <h4>Giving & Payments</h4>
-                    <p>Online donations gateway</p>
-                  </div>
-                </div>
-                ${isStarter 
-                  ? `<span class="module-badge locked">Upgrade Plan</span>`
-                  : `<label class="switch">
-                       <input type="checkbox" class="module-chk" value="giving" checked />
-                       <span class="slider"></span>
-                     </label>`
-                }
-              </div>
-
-              <div class="module-item ${(isStarter || isGrowth) ? '' : 'active'}">
-                <div class="module-info">
-                  <i data-lucide="video" style="color: var(--accent);"></i>
-                  <div class="module-info-text">
-                    <h4>Livestream & Replays</h4>
-                    <p>Broadcast video directly to website</p>
-                  </div>
-                </div>
-                ${(isStarter || isGrowth)
-                  ? `<span class="module-badge locked">Upgrade Plan</span>`
-                  : `<label class="switch">
-                       <input type="checkbox" class="module-chk" value="livestream" />
-                       <span class="slider"></span>
-                     </label>`
-                }
-              </div>
-            </form>
-          `;
+            formHtml = `
+              <form id="stepForm" class="form-grid" onsubmit="event.preventDefault();" style="gap: 20px;">
+                ${renderLogoAssetUploader('logo', 'Main Light Logo', metadata.logoUrl || '')}
+                ${renderLogoAssetUploader('darkLogo', 'Dark Mode Logo (Optional)', metadata.darkLogoUrl || '')}
+                ${renderLogoAssetUploader('favicon', 'Favicon (Required to crop)', metadata.faviconUrl || '', true)}
+              </form>
+            `;
+          }
           break;
-        case 'website':
-          formHtml = `
-            <form id="stepForm" class="form-grid">
-              <div class="field full">
-                <label for="homepageTitle">Homepage Title</label>
-                <input id="homepageTitle" value="${metadata.homepageTitle || 'Welcome Home'}" placeholder="e.g. Welcome to Christ Embassy" required />
-              </div>
-              <div class="field full">
-                <label for="homepageSubtitle">Homepage Subtitle</label>
-                <input id="homepageSubtitle" value="${metadata.homepageSubtitle || 'We are glad you are here.'}" placeholder="e.g. Build, manage, and grow your church online." required />
-              </div>
-              <div class="field full">
-                <label for="aboutText">About Text Paragraph</label>
-                <textarea id="aboutText" placeholder="Brief story about your church mission and core values...">${metadata.aboutText || ''}</textarea>
-              </div>
-              <div class="field">
-                <label for="primaryCtaText">Primary CTA Button Label</label>
-                <input id="primaryCtaText" value="${metadata.primaryCtaText || 'Plan a Visit'}" placeholder="e.g. Watch Live" />
-              </div>
-              <div class="field">
-                <label for="primaryCtaUrl">Primary CTA Button Link</label>
-                <input id="primaryCtaUrl" value="${metadata.primaryCtaUrl || '/visit'}" placeholder="e.g. /give" />
-              </div>
-            </form>
-          `;
+          
+        case 4: // website
+          {
+            const profileStep = state.steps.find(s => s.stepKey === 'profile') || {};
+            let profileMeta = {};
+            if (profileStep.metadataJson) {
+              try { profileMeta = JSON.parse(profileStep.metadataJson); } catch {}
+            }
+            const churchName = profileMeta.churchName || readOnboardingContext().steps?.profile?.churchName || state.tenant.name || '';
+            
+            formHtml = `
+              <form id="stepForm" class="form-grid">
+                <div class="field full">
+                  <label for="homepageTitle">Homepage Title</label>
+                  <input id="homepageTitle" value="${metadata.homepageTitle || churchName || 'Welcome Home'}" placeholder="e.g. Welcome to Christ Embassy" required />
+                </div>
+                <div class="field full">
+                  <label for="homepageSubtitle">Tagline</label>
+                  <input id="homepageSubtitle" value="${metadata.homepageSubtitle || 'We are glad you are here.'}" placeholder="e.g. Build, manage, and grow your church online." required />
+                </div>
+                <div class="field full">
+                  <label for="aboutText">About Text Paragraph</label>
+                  <textarea id="aboutText" placeholder="Brief story about your church and core values...">${metadata.aboutText || ''}</textarea>
+                </div>
+                <div class="field full">
+                  <label for="vision">Vision</label>
+                  <textarea id="vision" placeholder="Enter church vision statement...">${metadata.vision || ''}</textarea>
+                </div>
+                <div class="field full">
+                  <label for="mission">Mission Statement</label>
+                  <textarea id="mission" placeholder="Enter church mission statement...">${metadata.mission || ''}</textarea>
+                </div>
+              </form>
+            `;
+          }
           break;
-        case 'domain':
+          
+        case 5: // domain
           formHtml = `
             <form id="stepForm" class="form-grid">
               <div class="field full">
@@ -1499,117 +2518,265 @@
             </form>
           `;
           break;
-        case 'giving':
-          formHtml = `
-            <form id="stepForm" class="form-grid">
-              <div class="field">
-                <label for="gatewayProvider">Payment Gateway Provider</label>
-                <select id="gatewayProvider">
-                  <option value="pesapal" ${metadata.gatewayProvider === 'pesapal' ? 'selected' : ''}>Pesapal (East Africa)</option>
-                  <option value="flutterwave" ${metadata.gatewayProvider === 'flutterwave' ? 'selected' : ''}>Flutterwave</option>
-                  <option value="yo" ${metadata.gatewayProvider === 'yo' ? 'selected' : ''}>Yo! Payments</option>
-                  <option value="stripe" ${metadata.gatewayProvider === 'stripe' ? 'selected' : ''}>Stripe (Card Payments)</option>
-                  <option value="bank" ${metadata.gatewayProvider === 'bank' ? 'selected' : ''}>Manual Bank Transfer</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="integrationMode">Integration Mode</label>
-                <select id="integrationMode">
-                  <option value="pending" selected>Pending DNS Configuration</option>
-                  <option value="active">Live Production Gate</option>
-                </select>
-              </div>
-              <div class="field full">
-                <span style="font-size:12px; color:var(--muted); line-height: 1.4;">Select a giving portal gateway. Configuration can be skipped and adjusted later from your dashboard Settings panel.</span>
-              </div>
-            </form>
-          `;
+          
+        case 6: // modules
+          {
+            const enabledModuleKeys = metadata.enabledModuleKeys || [
+              'website-cms',
+              'blog',
+              'member-crm'
+            ];
+
+            const modulesGridHtml = PLATFORM_MODULES.map(m => {
+              const isChecked = m.alwaysActive || enabledModuleKeys.includes(m.key);
+              
+              return `
+                <div class="module-item ${isChecked ? 'active' : ''}" style="margin-bottom:0; display:flex; justify-content:space-between; align-items:center; padding:12px; border-radius:14px; border:1px solid var(--line); background:var(--solid); transition:all 0.2s;">
+                  <div class="module-info" style="gap:10px; display:flex; align-items:center; text-align:left;">
+                    <i data-lucide="${m.icon}" style="color: ${isChecked ? 'var(--accent)' : 'var(--muted)'}; width:18px; height:18px; flex-shrink:0;"></i>
+                    <div class="module-info-text">
+                      <h4 style="font-size:12px; font-weight:850; margin:0 0 2px 0;">${m.name}</h4>
+                      <p style="font-size:10px; color:var(--muted); margin:0; line-height:1.2;">${m.description}</p>
+                    </div>
+                  </div>
+                  
+                  ${m.alwaysActive 
+                    ? `<span style="font-size:9px; color:var(--muted); font-weight:800; white-space:nowrap; text-transform:uppercase; margin-right:4px;">Core</span>
+                       <input type="checkbox" class="module-chk" value="${m.key}" checked style="display:none;" />`
+                    : `<label class="switch" style="flex-shrink:0; scale:0.85;">
+                         <input type="checkbox" class="module-chk" value="${m.key}" ${isChecked ? 'checked' : ''} onchange="this.closest('.module-item').classList.toggle('active', this.checked); this.closest('.module-item').querySelector('i, svg').style.color = this.checked ? 'var(--accent)' : 'var(--muted)';" />
+                         <span class="slider"></span>
+                       </label>`
+                  }
+                </div>
+              `;
+            }).join('');
+
+            formHtml = `
+              <form id="stepForm" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:12px; width:100%;">
+                ${modulesGridHtml}
+              </form>
+            `;
+          }
           break;
-        case 'invite':
-          formHtml = `
-            <form id="stepForm" class="form-grid">
-              <div class="field">
-                <label for="inviteEmail">Staff Email Address</label>
-                <input id="inviteEmail" type="email" placeholder="e.g. pastor@church.org" />
-              </div>
-              <div class="field">
-                <label for="inviteRole">Assigned Role</label>
-                <select id="inviteRole">
-                  <option value="Pastor">Associate Pastor</option>
-                  <option value="Admin">Administrator</option>
-                  <option value="Finance Manager">Finance Director</option>
-                  <option value="Media Manager">Creative Producer</option>
-                </select>
-              </div>
-              <div class="field full" style="margin-top: 10px;">
-                <button class="btn btn-primary" type="button" id="btnInvite" style="width:100%; min-height:48px;">
-                  <i data-lucide="user-plus"></i> Send Invitation
-                </button>
-              </div>
-            </form>
-          `;
+          
+        case 7: // giving
+          {
+            let gatewayVal = metadata.gatewayProvider || 'native';
+            if (gatewayVal === 'pesapal') {
+              gatewayVal = 'native';
+            }
+            const activeGateways = gatewayVal.split(',').filter(Boolean);
+            const isDefaultCheckout = activeGateways.includes('native') || activeGateways.length === 0;
+            
+            const customProviders = [
+              { key: 'stripe', name: 'Stripe', icon: 'credit-card', desc: 'Global card checkout' },
+              { key: 'flutterwave', name: 'Flutterwave', icon: 'globe', desc: 'Accept cards & Mobile Money' },
+              { key: 'pesapal', name: 'Pesapal', icon: 'wallet', desc: 'Popular in East Africa' },
+              { key: 'yo', name: 'Yo! Payments', icon: 'smartphone', desc: 'Direct Mobile Money gateway' },
+              { key: 'bank', name: 'Manual Bank', icon: 'landmark', desc: 'Direct bank transfer guides' }
+            ];
+
+            const integrationVal = metadata.integrationMode || 'pending';
+            const integrationNameMap = {
+              pending: 'Pending DNS Configuration',
+              active: 'Live Production Gate'
+            };
+
+            const customCardsHtml = customProviders.map(p => {
+              const isActive = !isDefaultCheckout && activeGateways.includes(p.key);
+              return `
+                <div class="payment-provider-card ${isActive ? 'active' : ''}" 
+                     data-gateway="${p.key}" 
+                     onclick="toggleGatewayCard(this)">
+                  <div class="check-indicator">
+                    ${isActive ? '<i data-lucide="check" style="width:10px; height:10px; color:white;"></i>' : ''}
+                  </div>
+                  <i data-lucide="${p.icon}"></i>
+                  <h4>${p.name}</h4>
+                  <span style="font-size:9px; color:var(--muted); line-height:1.2; display:block; margin-top:2px;">${p.desc}</span>
+                </div>
+              `;
+            }).join('');
+
+            formHtml = `
+              <form id="stepForm" class="form-grid" style="gap:20px;">
+                <input type="hidden" id="gatewayProvider" value="${gatewayVal}" />
+                
+                <div class="field full">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <label style="margin:0; font-weight: 600;">Recommended Payment Option</label>
+                  </div>
+                  
+                  <div class="payment-cards-grid" style="display:grid; grid-template-columns: 1fr; gap:12px; width:100%; margin-bottom: 12px;">
+                    <div id="nativeCheckoutCard" class="payment-provider-card ${isDefaultCheckout ? 'active' : ''}" 
+                         style="flex-direction:row; justify-content:flex-start; text-align:left; gap:16px; padding:16px; ${!isDefaultCheckout ? 'opacity:0.4; filter:grayscale(100%); pointer-events:none;' : ''}">
+                      <div class="check-indicator" style="position:static; order:3; margin-left:auto; flex-shrink:0;">
+                        ${isDefaultCheckout ? '<i data-lucide="check" style="width:10px; height:10px; color:white;"></i>' : ''}
+                      </div>
+                      <i data-lucide="shield-check" style="width:28px; height:28px; flex-shrink:0; order:1; color:${isDefaultCheckout ? 'var(--accent)' : 'var(--muted)'};"></i>
+                      <div style="order:2;">
+                        <h4 style="margin:0 0 2px 0; font-size:13px; font-weight:700; color:var(--ink);">Platform Checkout</h4>
+                        <span style="font-size:11px; color:var(--muted); line-height:1.3; display:block;">Native central checkout with zero setup time. Ready out-of-the-box.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="field full" id="customGatewaysSection">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <label id="customGatewaysLabel" style="margin:0; font-weight: 600; color:${isDefaultCheckout ? 'var(--muted)' : 'var(--ink)'};">Other Church-Owned Options</label>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span style="font-size:11px; color:var(--muted); font-weight:500;">Activate other options</span>
+                      <label class="switch" style="scale:0.85;">
+                        <input type="checkbox" id="toggleDefaultPayment" onchange="onToggleDefaultPaymentChange(this)" ${!isDefaultCheckout ? 'checked' : ''} />
+                        <span class="slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                  <span id="customGatewaysDesc" style="font-size:12px; color:var(--muted); line-height:1.4; display:block; margin-bottom:12px; transition: opacity 0.3s; ${isDefaultCheckout ? 'opacity:0.6;' : ''}">Select one or more. Configuration will be later adjusted from your dashboard Settings panel.</span>
+                  <div id="customGatewaysGrid" class="payment-cards-grid" 
+                       style="display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px; width:100%; transition: opacity 0.3s, filter 0.3s; ${isDefaultCheckout ? 'opacity:0.4; filter:grayscale(100%); pointer-events:none;' : ''}">
+                    ${customCardsHtml}
+                  </div>
+                </div>
+
+                <input type="hidden" id="integrationMode" value="${integrationVal}" />
+              </form>
+            `;
+          }
           break;
-        case 'complete':
-          formHtml = `
-            <div class="summary-list">
-              <div class="summary-row">
-                <span>Workspace name</span>
-                <strong>${state.tenant.name}</strong>
+          
+        case 8: // invite
+          {
+            state.pendingInvites = state.pendingInvites || [];
+            
+            let invitesHtml = '';
+            if (state.pendingInvites.length === 0) {
+              invitesHtml = `
+                <div id="noInvitesMessage" style="text-align:center; padding:16px; color:var(--muted); font-size:12px; border:1px dashed var(--line); border-radius:12px; background:var(--bg);">
+                  No staff members added yet. Add staff members below to invite them.
+                </div>
+              `;
+            } else {
+              invitesHtml = `
+                <div style="display:flex; flex-direction:column; gap:8px; max-height:200px; overflow-y:auto;" id="invitesListContainer">
+                  ${state.pendingInvites.map((inv, idx) => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--solid); border:1px solid var(--line); border-radius:12px; font-size:13px;">
+                      <div style="display:flex; flex-direction:column; gap:2px;">
+                        <span style="font-weight:700; color:var(--ink);">${inv.email}</span>
+                        <span style="font-size:10px; color:var(--muted); font-weight:800; text-transform:uppercase;">${inv.roleName}</span>
+                      </div>
+                      <button type="button" class="btn-icon-delete" onclick="removePendingInvite(${idx})" style="height:28px; width:28px; border-radius:6px; padding:0; display:flex; align-items:center; justify-content:center;" title="Remove Invite">
+                        <i data-lucide="trash-2" style="width:14px; height:14px;"></i>
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+              `;
+            }
+
+            const hasInvites = state.pendingInvites.length > 0;
+            const showForm = !hasInvites || state.showInviteInputs;
+
+            formHtml = `
+              <div id="stepForm" class="form-grid" style="gap:20px;">
+                <div class="field full">
+                  <label style="font-weight:800; font-size:13px;">Pending Invitation List</label>
+                  <div id="pendingInvitesSection" style="margin-top:4px;">
+                    ${invitesHtml}
+                  </div>
+                </div>
+                
+                <div class="invite-inputs-row field full" id="inviteInputsContainer" style="display: ${showForm ? 'grid' : 'none'}; margin-top: 4px;">
+                  <div class="field">
+                    <label for="inviteEmail">Staff Email Address</label>
+                    <input id="inviteEmail" type="email" placeholder="e.g. pastor@church.org" />
+                  </div>
+                  
+                  <div class="field">
+                    <label>Assigned Role</label>
+                    <input type="hidden" id="inviteRole" value="Pastor" />
+                    <div class="modern-select-wrapper" onclick="toggleDropdown(this)">
+                      <div class="modern-select-trigger">
+                        <span>Associate Pastor</span>
+                        <i data-lucide="chevron-down"></i>
+                      </div>
+                      <div class="modern-select-dropdown">
+                        <div class="modern-select-options-container">
+                          <div class="modern-option selected" onclick="selectOption(event, this, 'inviteRole', 'Pastor', 'Associate Pastor')">Associate Pastor</div>
+                          <div class="modern-option" onclick="selectOption(event, this, 'inviteRole', 'Admin', 'Administrator')">Administrator</div>
+                          <div class="modern-option" onclick="selectOption(event, this, 'inviteRole', 'Finance Manager', 'Finance Director')">Finance Director</div>
+                          <div class="modern-option" onclick="selectOption(event, this, 'inviteRole', 'Media Manager', 'Creative Producer')">Creative Producer</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <button class="btn btn-primary" type="button" onclick="addPendingInvite()" style="height: 48px; display: flex; align-items: center; justify-content: center; padding: 0 24px; font-weight: 500;">
+                    Save
+                  </button>
+                </div>
+                
+                <div class="field full" id="addStaffButtonContainer" style="display: ${(!showForm && hasInvites) ? 'block' : 'none'}; margin-top: 4px;">
+                  <button class="btn" type="button" onclick="showInviteInputs()" style="width:100%; min-height:42px; background:var(--soft); border:1px solid var(--line); font-weight:500; font-size:13px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <i data-lucide="plus"></i> Add Staff Member
+                  </button>
+                </div>
               </div>
-              <div class="summary-row">
-                <span>Subdomain URL</span>
-                <strong>${state.tenant.subdomainHost || `${state.tenant.subdomain}.churched.online`}</strong>
-              </div>
-              <div class="summary-row">
-                <span>Plan active</span>
-                <strong>${state.plan.toUpperCase()} (14-day free trial)</strong>
-              </div>
-              <div class="summary-row">
-                <span>Design pairing</span>
-                <strong>Mode: Light/Dark System</strong>
-              </div>
-            </div>
-          `;
+            `;
+          }
           break;
       }
 
       wizardCard.innerHTML = `
-        <div class="wizard-header">
-          <div class="eyebrow">Step ${state.currentStepIndex + 1} of ${onboardingStepsDef.length}</div>
-          <h2>${step.title}</h2>
-          <p>${step.description}</p>
+        <div class="wizard-header" style="display:flex; flex-direction:row; justify-content:space-between; align-items:center; gap:20px; width:100%; margin-bottom: 24px;">
+          <div>
+            <div class="eyebrow">Step ${sub.index + 1} of 10</div>
+            <h2 style="margin: 4px 0;">${sub.title}</h2>
+            <p style="margin: 0;">${sub.description}</p>
+          </div>
+          <div id="categoryProgressContainer" style="display:flex; align-items:flex-start; gap:0; flex-shrink:0;"></div>
         </div>
         
-        ${formHtml}
-        
-        <div class="wizard-footer">
-          <button class="btn" type="button" id="btnBack" onclick="goToStep(${state.currentStepIndex - 1})" ${state.currentStepIndex === 0 ? 'disabled' : ''}>
-            <i data-lucide="arrow-left"></i> Back
-          </button>
+        <div class="wizard-columns">
+          <!-- Left Columns (1/3 Width Step List) -->
+          ${renderSubNavHtml()}
           
-          <div style="display:flex; gap:8px;">
-            ${step.stepKey !== 'complete' 
-              ? `<button class="btn" type="button" onclick="skipStep()">Skip</button>
-                 <button class="btn btn-primary" type="button" id="btnNext" onclick="submitActiveStep()">
-                   Save & Continue <i data-lucide="arrow-right"></i>
-                 </button>`
-              : `<button class="btn btn-primary" type="button" onclick="completeOnboarding()">
-                   Launch Dashboard <i data-lucide="rocket"></i>
-                 </button>`
-            }
+          <!-- Right Columns (2/3 Width Forms) -->
+          <div class="wizard-form-container">
+            ${formHtml}
+            
+            <div class="wizard-footer">
+              <button class="btn" type="button" id="btnBack" onclick="goBackSubStep()">
+                <i data-lucide="arrow-left"></i> Back
+              </button>
+              
+              <div style="display:flex; gap:8px;">
+                <button class="btn" type="button" onclick="skipSubStep()">Skip</button>
+                <button class="btn btn-primary" type="button" id="btnNext" onclick="submitActiveSubStep()">
+                  Save & Continue <i data-lucide="arrow-right"></i>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       `;
 
+      renderCategoryProgressSteps('categoryProgressContainer');
       lucide.createIcons();
 
-      // Hook invite button specifically if on invite step
-      if (step.stepKey === 'invite') {
-        document.getElementById("btnInvite").addEventListener("click", sendInvitation);
+      // Inline onclick handler handles invite list building
+
+      // Hook logo upload drag & drop events specifically if on logo step
+      if (sub.stepKey === 'logo') {
+        setupLogoUploadDragDrop('logo');
+        setupLogoUploadDragDrop('darkLogo');
+        setupLogoUploadDragDrop('favicon');
       }
     }
 
-    // Handles theme selection cards
+    // Handles theme selection cards (retained for customizer if needed)
     function selectThemeCard(themeId) {
       document.getElementById("selectedTheme").value = themeId;
       document.querySelectorAll(".select-card").forEach(card => {
@@ -1617,31 +2784,104 @@
       });
     }
 
-    // Handles skipping steps
-    async function skipStep() {
-      const step = onboardingStepsDef[state.currentStepIndex];
-      try {
-        await apiPost(`/api/onboarding/${step.stepKey}/skip`, {});
-        showToast('Step skipped');
-        await loadOnboarding();
-        goToStep(state.currentStepIndex + 1);
-      } catch (err) {
-        showToast(err.message || 'Unable to skip this step', true);
-      }
-    }
-
     // Handles Step form submissions
-    async function submitActiveStep() {
-      const step = onboardingStepsDef[state.currentStepIndex];
-      const form = document.getElementById("stepForm");
+    async function submitActiveSubStep() {
+      const sub = wizardSubSteps[state.activeSubStepIndex];
+      let bodyData = {};
+      let url = '';
 
       try {
-        let bodyData = {};
-        let url = '';
+        if (sub.stepKey === 'profile') {
+          url = '/api/onboarding/profile';
+          
+          // Get existing profile metadata to merge
+          const apiStep = state.steps.find(s => s.stepKey === 'profile') || {};
+          let existingMeta = {};
+          if (apiStep.metadataJson) {
+            try { existingMeta = JSON.parse(apiStep.metadataJson); } catch {}
+          }
+          existingMeta = {
+            ...(readOnboardingContext().steps?.profile || {}),
+            ...existingMeta
+          };
 
-        switch(step.stepKey) {
-          case 'profile':
+          if (state.activeSubStepIndex === 0) {
+            bodyData = {
+              ...existingMeta,
+              churchName: document.getElementById("profileChurchName").value.trim(),
+              ownerName: document.getElementById("profileOwnerName").value.trim(),
+              ownerEmail: document.getElementById("profileOwnerEmail").value.trim(),
+              phoneCode: document.getElementById("profilePhoneCode").value,
+              phone: document.getElementById("profilePhone").value.trim(),
+              email: document.getElementById("profileEmail").value.trim()
+            };
+          } else if (state.activeSubStepIndex === 1) {
+            const street = document.getElementById("profileStreet").value.trim();
+            const unit = document.getElementById("profileUnit").value.trim();
+            const poBox = document.getElementById("profilePoBox").value.trim();
+            const city = document.getElementById("profileCity").value.trim();
+            const provinceState = document.getElementById("profileState").value.trim();
+            const zip = document.getElementById("profileZip").value.trim();
+            const country = document.getElementById("profileCountry").value;
+
+            const parts = [
+              street,
+              unit ? `Unit/Suite ${unit}` : '',
+              poBox ? poBox : '',
+              city,
+              provinceState,
+              zip,
+              country
+            ].filter(Boolean);
+            const address = parts.join(', ');
+
             const isVenueDifferent = document.getElementById("profileVenueCheck").checked;
+            let venueStreet = '';
+            let venueUnit = '';
+            let venuePoBox = '';
+            let venueCity = '';
+            let venueState = '';
+            let venueZip = '';
+            let venueCountry = '';
+            let venueAddress = null;
+
+            if (isVenueDifferent) {
+              venueStreet = document.getElementById("venueStreet").value.trim();
+              venueUnit = document.getElementById("venueUnit").value.trim();
+              venuePoBox = '';
+              venueCity = '';
+              venueState = '';
+              venueZip = '';
+              venueCountry = '';
+
+              const venueParts = [
+                venueStreet,
+                venueUnit
+              ].filter(Boolean);
+              venueAddress = venueParts.join(', ');
+            }
+
+            bodyData = {
+              ...existingMeta,
+              street,
+              unit,
+              poBox,
+              state: provinceState,
+              zip,
+              city,
+              country,
+              address,
+              isVenueDifferent: isVenueDifferent,
+              venueStreet,
+              venueUnit,
+              venuePoBox,
+              venueCity,
+              venueState,
+              venueZip,
+              venueCountry,
+              venueAddress
+            };
+          } else if (state.activeSubStepIndex === 2) {
             const stRows = document.querySelectorAll('.service-time-row');
             let serviceTimes = [];
             stRows.forEach(row => {
@@ -1649,88 +2889,95 @@
               const time = row.querySelector('.st-time-val').value;
               if (day && time) serviceTimes.push({ day, time });
             });
-
-            url = '/api/onboarding/profile';
-            bodyData = {
-              address: document.getElementById("profileAddress").value.trim(),
-              isVenueDifferent: isVenueDifferent,
-              venueAddress: isVenueDifferent ? document.getElementById("profileVenueAddress").value.trim() : null,
-              phoneCode: document.getElementById("profilePhoneCode").value,
-              phone: document.getElementById("profilePhone").value.trim(),
-              email: document.getElementById("profileEmail").value.trim(),
-              serviceTimes: serviceTimes,
-              timezone: document.getElementById("profileTimezone").value
-            };
-            break;
-          case 'logo':
-            url = '/api/onboarding/logo';
-            bodyData = {
-              logoUrl: document.getElementById("logoUrl").value.trim(),
-              darkLogoUrl: document.getElementById("darkLogoUrl").value.trim(),
-              faviconUrl: document.getElementById("faviconUrl").value.trim()
-            };
-            break;
-
-          case 'modules':
-            url = '/api/onboarding/modules';
-            const chks = document.querySelectorAll(".module-chk");
-            const keys = ['website-cms', 'theme-engine', 'domain-tenant-management', 'billing-subscription-management']; // core defaults
-            chks.forEach(chk => {
-              if (chk.checked) {
-                if (chk.value === 'members') keys.push('member-crm');
-                if (chk.value === 'giving') keys.push('giving-donations');
-                if (chk.value === 'livestream') keys.push('livestream');
-              }
-            });
-            bodyData = { enabledModuleKeys: keys };
-            break;
-          case 'website':
-            url = '/api/onboarding/website-basics';
-            bodyData = {
-              homepageTitle: document.getElementById("homepageTitle").value.trim(),
-              homepageSubtitle: document.getElementById("homepageSubtitle").value.trim(),
-              aboutText: document.getElementById("aboutText").value.trim(),
-              primaryCtaText: document.getElementById("primaryCtaText").value.trim(),
-              primaryCtaUrl: document.getElementById("primaryCtaUrl").value.trim()
-            };
-            break;
-          case 'domain':
-            url = '/api/onboarding/domain';
-            bodyData = {
-              customDomain: document.getElementById("customDomain").value.trim()
-            };
-            break;
-          case 'giving':
-            url = '/api/onboarding/giving';
-            bodyData = {
-              gatewayProvider: document.getElementById("gatewayProvider").value,
-              integrationMode: document.getElementById("integrationMode").value
-            };
-            break;
-          case 'invite':
-            // If email is empty, they just continue without inviting
-            const emailVal = document.getElementById("inviteEmail").value.trim();
-            if (!emailVal) {
-              goToStep(state.currentStepIndex + 1);
-              return;
+            let tzVal = document.getElementById("profileTimezone").value;
+            if (tzVal === 'local') {
+              tzVal = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/Edmonton';
             }
-            // If they filled it, send invite
-            await sendInvitation();
-            goToStep(state.currentStepIndex + 1);
-            return;
+            bodyData = {
+              ...existingMeta,
+              serviceTimes: serviceTimes,
+              timezone: tzVal
+            };
+          }
+        } else if (sub.stepKey === 'logo') {
+          url = '/api/onboarding/logo';
+          bodyData = {
+            logoUrl: document.getElementById("logoUrl").value.trim(),
+            darkLogoUrl: document.getElementById("darkLogoUrl").value.trim(),
+            faviconUrl: document.getElementById("faviconUrl").value.trim()
+          };
+        } else if (sub.stepKey === 'website') {
+          url = '/api/onboarding/website-basics';
+          bodyData = {
+            homepageTitle: document.getElementById("homepageTitle").value.trim(),
+            homepageSubtitle: document.getElementById("homepageSubtitle").value.trim(),
+            aboutText: document.getElementById("aboutText").value.trim(),
+            vision: document.getElementById("vision").value.trim(),
+            mission: document.getElementById("mission").value.trim()
+          };
+        } else if (sub.stepKey === 'domain') {
+          url = '/api/onboarding/domain';
+          bodyData = {
+            customDomain: document.getElementById("customDomain").value.trim()
+          };
+        } else if (sub.stepKey === 'modules') {
+          url = '/api/onboarding/modules';
+          const chks = document.querySelectorAll(".module-chk");
+          // Include platform-level developer/infra modules implicitly behind the scenes
+          const keys = [
+            'theme-engine',
+            'billing-subscription-management',
+            'marketplace',
+            'developer-marketplace',
+            'plugin-extensions-engine'
+          ];
+          chks.forEach(chk => {
+            if (chk.checked) {
+              keys.push(chk.value);
+            }
+          });
+          bodyData = { enabledModuleKeys: keys };
+        } else if (sub.stepKey === 'giving') {
+          url = '/api/onboarding/giving';
+          bodyData = {
+            gatewayProvider: document.getElementById("gatewayProvider").value,
+            integrationMode: document.getElementById("integrationMode").value
+          };
+        } else if (sub.stepKey === 'invite') {
+          const emailInput = document.getElementById("inviteEmail");
+          const roleSelect = document.getElementById("inviteRole");
+          
+          if (emailInput && emailInput.value.trim()) {
+            const email = emailInput.value.trim();
+            const roleName = roleSelect.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (emailRegex.test(email)) {
+              state.pendingInvites = state.pendingInvites || [];
+              if (!state.pendingInvites.some(inv => inv.email.toLowerCase() === email.toLowerCase())) {
+                state.pendingInvites.push({ email, roleName });
+              }
+            }
+          }
+          
+          state.pendingInvites = state.pendingInvites || [];
+          
+          if (state.pendingInvites.length > 0) {
+            await sendAllInvitations();
+          }
+          advanceWizard();
+          return;
         }
 
         showToast('Saving step...', false);
-        rememberOnboardingStep(step.stepKey, bodyData);
+        rememberOnboardingStep(sub.stepKey, bodyData);
         await apiPatch(url, bodyData);
         showToast('Saved successfully!', false);
         
-        // Reload onboarding status to update sidebar checkmarks and progress %
         await loadOnboarding();
         
-        // Proceed to next step
         setTimeout(() => {
-          goToStep(state.currentStepIndex + 1);
+          advanceWizard();
         }, 400);
 
       } catch (err) {
@@ -1738,26 +2985,341 @@
       }
     }
 
-    // Handles sending team invites
-    async function sendInvitation() {
-      const email = document.getElementById("inviteEmail").value.trim();
-      const roleName = document.getElementById("inviteRole").value;
+    // Logo Upload & Link Handlers
+    let activeCropper = null;
 
-      if (!email) {
-        showToast('Email address is required to invite a team member', true);
+    function toggleAssetMode(id, useLink) {
+      const logoUrl = document.getElementById(`${id}Url`);
+      const logoUploadContainer = document.getElementById(`${id}UploadContainer`);
+      const logoLinkContainer = document.getElementById(`${id}LinkContainer`);
+      const logoToggleModeBtn = document.getElementById(`${id}ToggleModeBtn`);
+      const logoLabel = document.getElementById(`${id}Label`);
+      
+      if (!logoUrl || !logoUploadContainer || !logoLinkContainer || !logoToggleModeBtn) return;
+      
+      if (useLink) {
+        // Switch to Link Mode
+        logoUploadContainer.style.display = 'none';
+        logoLinkContainer.style.display = 'block';
+        logoToggleModeBtn.textContent = 'Upload File Instead';
+        logoToggleModeBtn.setAttribute('onclick', `toggleAssetMode('${id}', false)`);
+        
+        // Populate the URL input field with whatever is in the hidden input
+        const logoUrlInput = document.getElementById(`${id}UrlInput`);
+        if (logoUrlInput) {
+          const val = logoUrl.value;
+          if (val.startsWith('data:')) {
+            logoUrlInput.value = '';
+            logoUrl.value = '';
+          } else {
+            logoUrlInput.value = val;
+          }
+          handleAssetUrlInput(id, logoUrlInput.value);
+        }
+      } else {
+        // Switch to Upload Mode
+        logoUploadContainer.style.display = 'block';
+        logoLinkContainer.style.display = 'none';
+        logoToggleModeBtn.textContent = 'Link via URL Instead';
+        logoToggleModeBtn.setAttribute('onclick', `toggleAssetMode('${id}', true)`);
+        
+        // If current logoUrl is NOT base64 (i.e. it's a link or empty), clear it
+        const val = logoUrl.value;
+        if (val.startsWith('http')) {
+          logoUrl.value = '';
+        }
+        
+        // Update display states
+        const preview = document.getElementById(`${id}UploadZonePreview`);
+        const content = document.getElementById(`${id}UploadZoneContent`);
+        const previewImg = document.getElementById(`${id}PreviewImg`);
+        
+        if (logoUrl.value) {
+          preview.style.display = 'flex';
+          content.style.display = 'none';
+          previewImg.src = logoUrl.value;
+        } else {
+          preview.style.display = 'none';
+          content.style.display = 'flex';
+          previewImg.src = '';
+        }
+      }
+      lucide.createIcons();
+    }
+
+    function handleAssetFileSelect(id, input, isFavicon = false) {
+      const file = input.files[0];
+      if (!file) return;
+      
+      // Limit file size (e.g. 2MB, favicon 1MB)
+      const maxSize = isFavicon ? 1 * 1024 * 1024 : 2 * 1024 * 1024;
+      if (file.size > maxSize) {
+        showToast(`File size cannot exceed ${isFavicon ? '1MB' : '2MB'}`, true);
+        input.value = '';
         return;
       }
-
-      try {
-        showToast('Sending invitation...', false);
-        await apiPost('/api/onboarding/invite-team', { email, roleName });
-        showToast(`Invitation sent to ${email}!`, false);
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64 = e.target.result;
         
-        // Reset email input
-        document.getElementById("inviteEmail").value = '';
+        if (isFavicon) {
+          // Open cropping modal
+          openCropperModal(base64);
+        } else {
+          // Update hidden field
+          const logoUrl = document.getElementById(`${id}Url`);
+          if (logoUrl) logoUrl.value = base64;
+          
+          // Update uploader preview
+          const preview = document.getElementById(`${id}UploadZonePreview`);
+          const content = document.getElementById(`${id}UploadZoneContent`);
+          const previewImg = document.getElementById(`${id}PreviewImg`);
+          
+          if (preview && content && previewImg) {
+            preview.style.display = 'flex';
+            content.style.display = 'none';
+            previewImg.src = base64;
+          }
+          lucide.createIcons();
+          showToast('File selected successfully');
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    }
+
+    function clearAssetFile(id, event) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      
+      const logoUrl = document.getElementById(`${id}Url`);
+      const input = document.getElementById(`${id}FileInput`);
+      const preview = document.getElementById(`${id}UploadZonePreview`);
+      const content = document.getElementById(`${id}UploadZoneContent`);
+      const previewImg = document.getElementById(`${id}PreviewImg`);
+      
+      if (logoUrl) logoUrl.value = '';
+      if (input) input.value = '';
+      
+      if (preview && content && previewImg) {
+        preview.style.display = 'none';
+        content.style.display = 'flex';
+        previewImg.src = '';
+      }
+      lucide.createIcons();
+    }
+
+    function handleAssetUrlInput(id, val) {
+      const logoUrl = document.getElementById(`${id}Url`);
+      if (logoUrl) logoUrl.value = val.trim();
+      
+      const previewContainer = document.getElementById(`${id}UrlPreviewContainer`);
+      const previewImg = document.getElementById(`${id}UrlPreviewImg`);
+      
+      if (previewContainer && previewImg) {
+        if (val.trim()) {
+          previewContainer.style.display = 'block';
+          previewImg.src = val.trim();
+        } else {
+          previewContainer.style.display = 'none';
+          previewImg.src = '';
+        }
+      }
+    }
+
+    function openCropperModal(imageSrc) {
+      const modal = document.getElementById('cropperModal');
+      const img = document.getElementById('cropperImage');
+      if (!modal || !img) return;
+      
+      img.src = imageSrc;
+      modal.style.display = 'flex';
+      
+      if (activeCropper) {
+        activeCropper.destroy();
+      }
+      
+      activeCropper = new Cropper(img, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: 'move',
+        autoCropArea: 1,
+        restore: false,
+        guides: true,
+        center: true,
+        highlight: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        toggleDragModeOnDblclick: false,
+      });
+    }
+
+    function closeCropperModal(save) {
+      const modal = document.getElementById('cropperModal');
+      if (!modal) return;
+      
+      if (save && activeCropper) {
+        const canvas = activeCropper.getCroppedCanvas({
+          width: 256,
+          height: 256,
+        });
+        const croppedBase64 = canvas.toDataURL('image/png');
+        
+        // Update hidden field
+        const faviconUrl = document.getElementById('faviconUrl');
+        if (faviconUrl) faviconUrl.value = croppedBase64;
+        
+        // Update preview in UI
+        const preview = document.getElementById('faviconUploadZonePreview');
+        const content = document.getElementById('faviconUploadZoneContent');
+        const previewImg = document.getElementById('faviconPreviewImg');
+        
+        if (preview && content && previewImg) {
+          preview.style.display = 'flex';
+          content.style.display = 'none';
+          previewImg.src = croppedBase64;
+        }
+        showToast('Favicon cropped successfully');
+      } else {
+        // Clear input file
+        const input = document.getElementById('faviconFileInput');
+        if (input) input.value = '';
+      }
+      
+      if (activeCropper) {
+        activeCropper.destroy();
+        activeCropper = null;
+      }
+      modal.style.display = 'none';
+      lucide.createIcons();
+    }
+
+    function setupLogoUploadDragDrop(id) {
+      const zone = document.getElementById(`${id}UploadZone`);
+      if (!zone) return;
+      
+      // Prevent defaults for all drag events
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        zone.addEventListener(eventName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, false);
+      });
+      
+      // Add visual cues
+      ['dragenter', 'dragover'].forEach(eventName => {
+        zone.addEventListener(eventName, () => {
+          zone.style.borderColor = 'var(--accent)';
+          zone.style.background = 'var(--accent-soft)';
+        }, false);
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        zone.addEventListener(eventName, () => {
+          zone.style.borderColor = 'var(--line)';
+          zone.style.background = 'var(--bg-2)';
+        }, false);
+      });
+      
+      // Handle drop
+      zone.addEventListener('drop', e => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        const input = document.getElementById(`${id}FileInput`);
+        if (files.length && input) {
+          input.files = files;
+          const isFavicon = id === 'favicon';
+          handleAssetFileSelect(id, input, isFavicon);
+        }
+      }, false);
+    }
+
+    // Pending Invite List Handlers
+    function showInviteInputs() {
+      state.showInviteInputs = true;
+      renderActiveStep();
+    }
+
+    function addPendingInvite() {
+      const emailInput = document.getElementById("inviteEmail");
+      const roleSelect = document.getElementById("inviteRole");
+      if (!emailInput || !roleSelect) return;
+      
+      const email = emailInput.value.trim();
+      const roleName = roleSelect.value;
+      
+      if (!email) {
+        showToast('Please enter an email address', true);
+        return;
+      }
+      
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showToast('Please enter a valid email address', true);
+        return;
+      }
+      
+      state.pendingInvites = state.pendingInvites || [];
+      
+      if (state.pendingInvites.some(inv => inv.email.toLowerCase() === email.toLowerCase())) {
+        showToast('This email is already in the invitation list', true);
+        return;
+      }
+      
+      state.pendingInvites.push({ email, roleName });
+      
+      // Clear inputs and hide the row, showing the bottom add button
+      emailInput.value = '';
+      state.showInviteInputs = false;
+      
+      renderActiveStep();
+      showToast('Staff member added to list');
+    }
+
+    function removePendingInvite(idx) {
+      if (state.pendingInvites && state.pendingInvites[idx]) {
+        state.pendingInvites.splice(idx, 1);
+        // If the pending invites list becomes empty, reset showInviteInputs so it defaults back to showing the inputs
+        if (state.pendingInvites.length === 0) {
+          state.showInviteInputs = false;
+        }
+        renderActiveStep();
+        showToast('Staff member removed');
+      }
+    }
+
+    // Handles sending all pending invites in parallel
+    async function sendAllInvitations() {
+      state.pendingInvites = state.pendingInvites || [];
+      if (state.pendingInvites.length === 0) return;
+      
+      showToast(`Sending ${state.pendingInvites.length} invitation(s)...`, false);
+      
+      const promises = state.pendingInvites.map(inv => {
+        return apiPost('/api/onboarding/invite-team', { email: inv.email, roleName: inv.roleName });
+      });
+      
+      try {
+        await Promise.all(promises);
+        showToast('All invitations sent successfully!', false);
+        
+        // Remember invite metadata for Tab 4 review page
+        const lastInv = state.pendingInvites[state.pendingInvites.length - 1];
+        rememberOnboardingStep('invite', {
+          invitedEmail: lastInv.email,
+          invitedRole: lastInv.roleName,
+          totalInvitedCount: state.pendingInvites.length
+        });
+        
+        state.pendingInvites = [];
         await loadOnboarding();
       } catch (err) {
-        showToast(err.message || 'Invitation failed', true);
+        console.error(err);
+        showToast('Some invitations failed to send: ' + err.message, true);
+        throw err;
       }
     }
 
@@ -1769,6 +3331,11 @@
         mergeOnboardingContext({ completedAt: new Date().toISOString() });
         showToast('Launch success! Entering dashboard...', false);
         
+        // Mark that we are entering the dashboard for the very first time
+        if (tenantId) {
+          localStorage.setItem('churchos.first_dashboard_load.' + tenantId, 'true');
+        }
+        
         setTimeout(() => {
           window.location.href = "/admin";
         }, 1200);
@@ -1776,6 +3343,15 @@
         showToast(err.message || 'Launch failed', true);
       }
     }
+
+    // Close dropdowns on scroll to prevent floating fixed menus from becoming misaligned
+    document.addEventListener('scroll', function(e) {
+      if (e.target.closest('#stepForm') || e.target.id === 'stepForm' || e.target === document) {
+        document.querySelectorAll('.modern-select-wrapper.open').forEach(wrapper => {
+          closeDropdown(wrapper);
+        });
+      }
+    }, true);
 
     // Initialize Page
     loadOnboarding();

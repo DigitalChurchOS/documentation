@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Church OS — The Complete Church Operating System</title>
-  <meta name="description" content="Build, manage, and grow your church online. Digital Church OS gives ministries a complete platform to launch websites, manage members, accept giving, publish sermons, and run livestreams." />
+  <title>Churchtell — The Complete Church Operating System</title>
+  <meta name="description" content="Build, manage, and grow your church online. Churchtell gives ministries a complete platform to launch websites, manage members, accept giving, publish sermons, and run livestreams." />
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css"/>
   <style>
@@ -298,111 +298,110 @@
       to { transform: translate3d(22px,-28px,0); }
     }
 
-    .product-card {
+    /* Showcase Container */
+    .showcase-container {
       position: relative;
-      z-index: 2;
-      width: min(480px, 100%);
-      padding: 18px;
-      border-radius: 42px;
-      border: 1px solid var(--line);
-      background: color-mix(in srgb, var(--solid) 74%, transparent);
-      backdrop-filter: blur(26px);
-      box-shadow: var(--shadow);
-      transform: rotate(-2deg);
-      transition: .5s ease;
-    }
-
-    .product-card:hover {
-      transform: rotate(0deg) translateY(-8px);
-    }
-
-    .browser {
-      overflow: hidden;
-      border-radius: 30px;
-      border: 1px solid var(--line);
-      background: var(--solid);
-    }
-
-    .browser-top {
-      height: 52px;
+      width: 100%;
+      max-width: 680px;
+      height: 520px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding-inline: 16px;
-      border-bottom: 1px solid var(--line);
-      background: color-mix(in srgb, var(--soft) 78%, transparent);
+      justify-content: center;
+      margin: 0 auto;
+      z-index: 2;
     }
 
-    .dots {
-      display: flex;
-      gap: 7px;
+    .showcase-wrapper {
+      position: absolute;
+      transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    .dots span {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--muted) 34%, transparent);
+    .desktop-wrapper {
+      left: 10px;
+      width: min(520px, 85%);
+      animation: float-desktop 9s ease-in-out infinite;
+      z-index: 1;
     }
 
-    .browser-url {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: var(--soft);
-      border: 1px solid var(--line);
+    .mobile-wrapper {
+      right: 10px;
+      bottom: 25px;
+      width: min(210px, 42%);
+      animation: float-mobile 8s ease-in-out infinite;
+      z-index: 2; /* Mobile overlaps desktop */
     }
 
-    .mini-site {
-      padding: 18px;
+    .showcase-card {
+      width: 100%;
+      transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.6s ease;
     }
 
-    .mini-hero {
-      min-height: 260px;
-      border-radius: 26px;
-      padding: 24px;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: end;
-      background:
-        linear-gradient(135deg, rgba(0,0,0,.28), rgba(0,0,0,.06)),
-        radial-gradient(circle at 76% 20%, rgba(255,255,255,.24), transparent 18%),
-        linear-gradient(135deg, var(--accent), #161616);
+    .desktop-card {
+      transform: rotate(-3deg);
+      filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.15));
     }
 
-    .mini-hero h3 {
-      font-size: 30px;
-      line-height: .98;
-      letter-spacing: -.06em;
-      margin-bottom: 10px;
+    .mobile-card {
+      transform: rotate(4deg);
+      filter: drop-shadow(0 20px 45px rgba(0, 0, 0, 0.25));
     }
 
-    .mini-hero p {
-      color: rgba(255,255,255,.75);
-      line-height: 1.55;
-      margin-bottom: 0;
-      font-size: 14px;
+    /* On hover, slide the cards apart but KEEP the same tilt angles */
+    .showcase-container:hover .desktop-card {
+      transform: rotate(-3deg) translateX(-20px);
     }
 
-    .soft-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 14px;
+    .showcase-container:hover .mobile-card {
+      transform: rotate(4deg) translateX(20px);
     }
 
-    .soft-tile {
-      min-height: 76px;
-      border-radius: 20px;
-      display: grid;
-      place-items: center;
-      color: var(--muted);
-      font-weight: 900;
-      background: color-mix(in srgb, var(--soft) 72%, transparent);
-      border: 1px solid var(--line);
+    /* SVGs */
+    .showcase-card svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Float Animations */
+    @keyframes float-desktop {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+      100% { transform: translateY(0); }
+    }
+
+    @keyframes float-mobile {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-18px); }
+      100% { transform: translateY(0); }
+    }
+
+    @media (max-width: 980px) {
+      .showcase-container {
+        max-width: 580px;
+        height: 460px;
+      }
+      .desktop-wrapper {
+        width: min(440px, 85%);
+      }
+      .mobile-wrapper {
+        width: min(180px, 42%);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .showcase-container {
+        max-width: 380px;
+        height: 330px;
+      }
+      .desktop-wrapper {
+        width: min(300px, 85%);
+        left: 5px;
+      }
+      .mobile-wrapper {
+        width: min(130px, 42%);
+        right: 5px;
+        bottom: 10px;
+      }
     }
 
     .section {
@@ -916,6 +915,27 @@
       }
     }
 
+    .step-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .step-container {
+        grid-template-columns: 1fr !important;
+      }
+      .step-container > * {
+        grid-column: span 1 !important;
+      }
+      .shell {
+        width: calc(100% - 24px) !important;
+      }
+      #signup {
+        padding: 40px 0 !important;
+      }
+    }
+
     /* Form Background and Centered Layout */
     .signup-wrapper {
       position: relative;
@@ -1010,7 +1030,8 @@
     @media (max-width: 900px) {
       .signup-container { grid-template-columns: 1fr !important; gap: 40px !important; }
       .signup-left h2 { font-size: 2.5rem !important; }
-      #step1, #step2 { grid-template-columns: 1fr !important; }
+      .step-container { grid-template-columns: 1fr !important; }
+      .step-container > * { grid-column: span 1 !important; }
       .field.full { grid-column: span 1 !important; }
     }
 
@@ -1133,7 +1154,7 @@
   <header class="nav">
     <a class="brand" href="#">
       <span class="brand-icon"><i data-lucide="church"></i></span>
-      <span>Digital Church OS</span>
+      <span>Churchtell</span>
     </a>
 
     <nav class="nav-links">
@@ -1158,7 +1179,7 @@
         <div class="eyebrow"><i data-lucide="sparkles"></i> The SaaS platform for churches</div>
         <h1>Build, manage, and grow your church <span class="gradient-text">online.</span></h1>
         <p class="lead">
-          Digital Church OS gives churches a complete operating system to launch responsive public websites, manage members, accept giving, publish sermons, organize cells, and launch ministry modules.
+          Churchtell gives churches a complete operating system to launch responsive public websites, manage members, accept giving, publish sermons, organize cells, and launch ministry modules.
         </p>
         <div class="hero-actions">
           <a href="#signup" class="btn btn-primary"><i data-lucide="rocket"></i> Create Church Account</a>
@@ -1171,25 +1192,50 @@
         <span class="orb two"></span>
         <span class="orb three"></span>
 
-        <div class="product-card">
-          <div class="browser">
-            <div class="browser-top">
-              <div class="dots"><span></span><span></span><span></span></div>
-              <div class="browser-url" id="previewUrl">churchname.churched.online</div>
+        <div class="showcase-container">
+          <div class="showcase-wrapper desktop-wrapper">
+            <div class="showcase-card desktop-card">
+              <svg viewBox="0 0 800 500" width="100%" height="auto">
+                <defs>
+                  <clipPath id="laptop-screen-clip">
+                    <rect x="70" y="30" width="660" height="400" rx="6" />
+                  </clipPath>
+                </defs>
+                <!-- Screen bezel / outer chassis -->
+                <rect x="60" y="20" width="680" height="420" rx="14" fill="#1e1e24" stroke="#2a2a35" stroke-width="2" />
+                <!-- Inner screen border / display area -->
+                <rect x="70" y="30" width="660" height="400" rx="6" fill="#000" />
+                <!-- Embedded image inside screen clip-path -->
+                <image href="desktop_preview.png" x="70" y="30" width="660" height="400" preserveAspectRatio="xMidYMid slice" clip-path="url(#laptop-screen-clip)" />
+                <!-- Laptop base -->
+                <path d="M 30 450 L 770 450 Q 780 450 780 455 L 775 468 Q 772 472 760 472 L 40 472 Q 28 472 25 468 L 20 455 Q 20 450 30 450 Z" fill="#e2e2e9" />
+                <!-- Keyboard area indentation notch -->
+                <path d="M 370 450 Q 370 456 380 456 L 420 456 Q 430 456 430 450 Z" fill="#a8a8b3" />
+                <!-- Base bottom border shadow -->
+                <rect x="50" y="472" width="700" height="4" rx="2" fill="#8e8e93" opacity="0.3" />
+              </svg>
             </div>
-            <div class="mini-site">
-              <div class="mini-hero">
-                <div class="pill" style="background:rgba(255,255,255,.18); color:#fff; border-color:rgba(255,255,255,.22); width:fit-content; margin-bottom:14px;">
-                  <i data-lucide="wand-sparkles"></i> Christo Theme
-                </div>
-                <h3 id="heroPreviewName">Your church, beautifully launched.</h3>
-                <p>Website, giving, members, livestream, events, media, and ministry tools from one place.</p>
-              </div>
-              <div class="soft-row">
-                <div class="soft-tile"><i data-lucide="users"></i></div>
-                <div class="soft-tile"><i data-lucide="hand-coins"></i></div>
-                <div class="soft-tile"><i data-lucide="radio"></i></div>
-              </div>
+          </div>
+          <div class="showcase-wrapper mobile-wrapper">
+            <div class="showcase-card mobile-card">
+              <svg viewBox="0 0 360 740" width="100%" height="auto">
+                <defs>
+                  <clipPath id="phone-screen-clip">
+                    <rect x="6" y="6" width="348" height="728" rx="42" />
+                  </clipPath>
+                </defs>
+                <!-- Outer phone chassis (very thin bezel) -->
+                <rect x="6" y="6" width="348" height="728" rx="42" fill="#000" stroke="#2c2c35" stroke-width="3" />
+                <!-- Embedded image inside phone clip-path (goes edge-to-edge) -->
+                <image href="mobile_preview.png" x="6" y="6" width="348" height="728" preserveAspectRatio="xMidYMid slice" clip-path="url(#phone-screen-clip)" />
+                <!-- Speaker notch / Dynamic Island sitting on top of image -->
+                <rect x="110" y="24" width="140" height="24" rx="12" fill="#000" />
+                <!-- Front camera lens highlight -->
+                <circle cx="225" cy="36" r="4" fill="#15151a" />
+                <circle cx="225" cy="36" r="1.5" fill="#242430" />
+                <!-- Speaker grill line -->
+                <rect x="135" y="30" width="40" height="2.5" rx="1.25" fill="#15151a" />
+              </svg>
             </div>
           </div>
         </div>
@@ -1202,7 +1248,7 @@
         <div class="eyebrow"><i data-lucide="layout"></i> Platform Capabilities</div>
         <h2>One workspace. Infinite reach.</h2>
         <p class="section-copy">
-          Digital Church OS replaces ten fragmented systems. Manage everything with clean design and atomic speed.
+          Churchtell replaces ten fragmented systems. Manage everything with clean design and atomic speed.
         </p>
       </div>
 
@@ -1359,7 +1405,7 @@
         <div class="signup-right">
           <div class="signup-wrapper" style="max-width: 100%; margin: 0;">
             <div class="form-tabs" style="margin-bottom: 30px;">
-              <button class="form-tab active" id="tabRegister" type="button">Register Church</button>
+              <button class="form-tab active" id="tabRegister" type="button">Register</button>
               <button class="form-tab" id="tabLogin" type="button">Sign In</button>
             </div>
 
@@ -1367,7 +1413,7 @@
             <form id="signupForm">
               
               <!-- Step 1 -->
-              <div id="step1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div id="step1" class="step-container">
                 <div class="step-header" style="grid-column: span 2;">
                   <h3 style="margin: 0;">Step 1: Church Details</h3>
                   <div class="step-count">1 of 2</div>
@@ -1379,7 +1425,7 @@
                 </div>
 
                 <div class="field">
-                  <label for="ownerName">Pastor/Owner Full Name</label>
+                  <label for="ownerName">Pastor/Leader Name</label>
                   <input id="ownerName" placeholder="e.g. Pastor David Cole" required />
                 </div>
 
@@ -1419,7 +1465,7 @@
               </div>
 
               <!-- Step 2 -->
-              <div id="step2" style="display: none; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div id="step2" class="step-container" style="display: none;">
                 <div class="step-header" style="grid-column: span 2;">
                   <h3 style="margin: 0;">Step 2: Workspace Setup</h3>
                   <div class="step-count">2 of 2</div>
@@ -1504,7 +1550,7 @@
   </main>
 
   <footer class="footer shell">
-    Digital Church OS — The Complete Church Management Platform. © 2026. All rights reserved.
+    Churchtell — The Complete Church Management Platform. © 2026. All rights reserved.
   </footer>
 
   <!-- Toast Element -->
