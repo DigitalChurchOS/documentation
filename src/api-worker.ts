@@ -349,8 +349,16 @@ function tenantMembersStateKey(tenantId: string) {
   return `tenant-members:${tenantId}`;
 }
 
+function tenantMemberSettingsStateKey(tenantId: string) {
+  return `tenant-member-settings:${tenantId}`;
+}
+
 function tenantDashboardContentStateKey(tenantId: string) {
   return `tenant-dashboard-content:${tenantId}`;
+}
+
+function tenantMediaSettingsStateKey(tenantId: string) {
+  return `tenant-media-settings:${tenantId}`;
 }
 
 function tenantContentDesignStateKey(tenantId: string) {
@@ -1580,45 +1588,70 @@ function normalizeEmail(value: unknown) {
   return String(value || '').trim().toLowerCase();
 }
 
+function defaultMemberPortalSettings() {
+  return {
+    memberPortalEnabled: true,
+    allowPublicRegistration: true,
+    showGivingHistory: true,
+    showGroupMemberships: true,
+    showCourseProgress: true,
+    showAttendanceHistory: true,
+    showEventRegistrations: true,
+    memberOnlyContent: true,
+  };
+}
+
 function makeMemberAccount(context: ReturnType<typeof getRequestContext>, body: Record<string, any>) {
   const email = normalizeEmail(body.email);
   const firstName = String(body.firstName || 'Member').trim() || 'Member';
   const lastName = String(body.lastName || 'Account').trim() || 'Account';
   const now = new Date().toISOString();
+  const identityKey = cleanSubdomain(email || `${firstName}-${lastName}`) || makeId('member');
+  const accountId = String(body.id || `account-${identityKey}`);
+  const userId = String(body.userId || `user-${identityKey}`);
+  const memberId = String(body.memberId || `member-${identityKey}`);
   return {
-    id: String(body.id || `account-${cleanSubdomain(email) || makeId('member')}`),
+    id: accountId,
     user: {
-      id: String(body.userId || `user-${cleanSubdomain(email) || makeId('member')}`),
+      id: userId,
       email,
       member: {
-        id: String(body.memberId || `member-${cleanSubdomain(email) || makeId('member')}`),
+        id: memberId,
         firstName,
         lastName,
       },
     },
     password: String(body.password || ''),
     member: {
-      id: String(body.memberId || `member-${cleanSubdomain(email) || makeId('member')}`),
+      id: memberId,
       tenantId: context.tenant.id,
-      userId: String(body.userId || `user-${cleanSubdomain(email) || makeId('member')}`),
+      userId,
       firstName,
       lastName,
       email,
       phone: String(body.phone || ''),
+      gender: body.gender || '',
+      photoUrl: String(body.photoUrl || ''),
+      bio: String(body.bio || body.about || ''),
       birthday: body.birthday || null,
       address: String(body.address || ''),
       membershipStatus: String(body.membershipStatus || 'member'),
+      status: String(body.status || 'active'),
       createdAt: String(body.createdAt || now),
+      updatedAt: String(body.updatedAt || now),
+      lastLoginAt: body.lastLoginAt || null,
       notificationPref: {
         preferEmail: true,
         preferSms: Boolean(body.phone),
         preferPush: true,
         preferWhatsapp: false,
+        ...(body.notificationPref || {}),
       },
       groupMemberships: body.groupMemberships || [],
       lmsEnrollments: body.lmsEnrollments || [],
       eventRegistrations: body.eventRegistrations || [],
       checkIns: body.checkIns || [],
+      notes: body.notes || [],
     },
     giving: body.giving || {
       donations: [],
@@ -1627,17 +1660,73 @@ function makeMemberAccount(context: ReturnType<typeof getRequestContext>, body: 
       recurringPartnerships: [],
       totalGiven: 0,
     },
-    settings: body.settings || {
-      memberPortalEnabled: true,
-      allowPublicRegistration: true,
-      showGivingHistory: true,
-      showGroupMemberships: true,
-      showCourseProgress: true,
-      showAttendanceHistory: true,
-      showEventRegistrations: true,
-      memberOnlyContent: true,
-    },
+    settings: body.settings || defaultMemberPortalSettings(),
   };
+}
+
+function accountMemberId(account: Record<string, any>) {
+  return String(account?.member?.id || account?.user?.member?.id || account?.id || '');
+}
+
+function accountMatchesMemberId(account: Record<string, any>, id: string) {
+  const cleanId = String(id || '');
+  return [
+    account?.id,
+    account?.user?.id,
+    account?.member?.id,
+    account?.member?.userId,
+    account?.member?.email,
+    account?.user?.email,
+  ].some((value) => String(value || '') === cleanId);
+}
+
+function memberAccountEmail(account: Record<string, any>) {
+  return normalizeEmail(account?.member?.email || account?.user?.email);
+}
+
+function memberDirectoryRecord(account: Record<string, any>) {
+  const member = account?.member || {};
+  const user = account?.user || {};
+  return {
+    id: accountMemberId(account),
+    accountId: String(account?.id || ''),
+    userId: String(user?.id || member?.userId || ''),
+    tenantId: String(member?.tenantId || ''),
+    firstName: String(member?.firstName || user?.member?.firstName || ''),
+    lastName: String(member?.lastName || user?.member?.lastName || ''),
+    email: memberAccountEmail(account),
+    phone: String(member?.phone || ''),
+    gender: String(member?.gender || ''),
+    photoUrl: String(member?.photoUrl || ''),
+    bio: String(member?.bio || ''),
+    birthday: member?.birthday || null,
+    address: String(member?.address || ''),
+    membershipStatus: String(member?.membershipStatus || 'member'),
+    status: String(member?.status || 'active'),
+    createdAt: String(member?.createdAt || account?.createdAt || new Date().toISOString()),
+    updatedAt: String(member?.updatedAt || account?.updatedAt || member?.createdAt || new Date().toISOString()),
+    lastLoginAt: member?.lastLoginAt || account?.lastLoginAt || null,
+    linkedAccount: Boolean(account?.password),
+    notesCount: Array.isArray(member?.notes) ? member.notes.length : 0,
+  };
+}
+
+async function readMemberPortalSettings(env: Env, context: ReturnType<typeof getRequestContext>) {
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantMemberSettingsStateKey(context.tenant.id));
+  return {
+    ...defaultMemberPortalSettings(),
+    ...parseStoredJson<Record<string, any>>(raw, {}),
+  };
+}
+
+async function writeMemberPortalSettings(env: Env, context: ReturnType<typeof getRequestContext>, settings: Record<string, any>) {
+  const nextSettings = {
+    ...defaultMemberPortalSettings(),
+    ...settings,
+    updatedAt: new Date().toISOString(),
+  };
+  await env.CHURCHOS_TENANTS?.put(tenantMemberSettingsStateKey(context.tenant.id), JSON.stringify(nextSettings));
+  return nextSettings;
 }
 
 function demoMemberAccount(context: ReturnType<typeof getRequestContext>) {
@@ -1724,6 +1813,51 @@ async function findMemberAccountFromRequest(env: Env, context: ReturnType<typeof
 
 function slugifyContent(value: unknown) {
   return cleanSubdomain(String(value || 'item')) || makeId('item');
+}
+
+function arrayValue(value: unknown, fallback: unknown[] = []) {
+  return Array.isArray(value) ? value : fallback;
+}
+
+function stringArrayValue(value: unknown, fallback: string[] = []) {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => isRecord(entry) ? String(entry.name || entry.slug || '').trim() : String(entry || '').trim())
+      .filter(Boolean);
+  }
+  if (typeof value === 'string') return value.split(',').map((entry) => entry.trim()).filter(Boolean);
+  return fallback;
+}
+
+function defaultMediaSettings() {
+  return {
+    storageMode: 'platform',
+    provider: 'cloudinary',
+    cloudName: '',
+    apiKey: '',
+    apiSecret: '',
+    hasApiSecret: false,
+    uploadFolder: 'churchos-media',
+    syncUploads: true,
+    updatedAt: null,
+  };
+}
+
+async function readTenantMediaSettings(env: Env, context: ReturnType<typeof getRequestContext>) {
+  const raw = await env.CHURCHOS_TENANTS?.get(tenantMediaSettingsStateKey(context.tenant.id));
+  const stored = parseStoredJson<Record<string, any>>(raw, {});
+  return {
+    ...defaultMediaSettings(),
+    ...stored,
+  };
+}
+
+async function writeTenantMediaSettings(
+  env: Env,
+  context: ReturnType<typeof getRequestContext>,
+  settings: Record<string, any>,
+) {
+  await env.CHURCHOS_TENANTS?.put(tenantMediaSettingsStateKey(context.tenant.id), JSON.stringify(settings));
 }
 
 function defaultAuxiliaryCollection(pathname: string): JsonValue | null {
@@ -1822,55 +1956,161 @@ function normalizeDashboardContentItem(
     updatedAt: now,
     createdAt: existing?.createdAt || body.createdAt || now,
   };
+  const publishedAt = body.scheduledAt || body.publishedAt || existing?.publishedAt || now;
+  normalized.status = body.status || existing?.status || (body.scheduledAt ? 'scheduled' : 'published');
+  normalized.featuredImageUrl = body.featuredImageUrl || body.imageUrl || body.coverImageUrl || body.thumbnailUrl || existing?.featuredImageUrl || existing?.imageUrl || '';
+  normalized.thumbnailUrl = body.thumbnailUrl || body.featuredImageUrl || body.imageUrl || body.coverImageUrl || existing?.thumbnailUrl || normalized.featuredImageUrl;
+  normalized.publishedAt = publishedAt;
+  normalized.scheduledAt = body.scheduledAt || existing?.scheduledAt || '';
+  normalized.tags = stringArrayValue(body.tags, stringArrayValue(existing?.tags, []));
+  normalized.description = body.description || body.summary || body.subtitle || existing?.description || '';
 
   if (key === 'articles') {
-    normalized.author = body.author || existing?.author || 'Pastoral Team';
-    normalized.publishedAt = body.publishedAt || existing?.publishedAt || now;
-    normalized.imageUrl = body.imageUrl || body.coverImageUrl || existing?.imageUrl || existing?.coverImageUrl || '';
+    normalized.blogName = body.blogName || existing?.blogName || 'Blog';
+    normalized.postType = body.postType || body.channel || existing?.postType || 'articles';
+    normalized.author = body.author || body.authorName || existing?.author || 'Pastoral Team';
+    normalized.subtitle = body.subtitle || body.shortDescription || existing?.subtitle || body.description || '';
+    normalized.publishedAt = publishedAt;
+    normalized.imageUrl = normalized.featuredImageUrl;
     normalized.coverImageUrl = normalized.imageUrl;
-    normalized.excerpt = body.excerpt || existing?.excerpt || body.description || body.content || '';
-    normalized.content = body.content || existing?.content || normalized.excerpt;
+    normalized.excerpt = body.excerpt || body.shortDescription || body.description || existing?.excerpt || '';
+    normalized.content = body.content || body.body || existing?.content || normalized.excerpt;
+    normalized.body = normalized.content;
+    normalized.commentsEnabled = body.commentsEnabled ?? body.allowComments ?? existing?.commentsEnabled ?? true;
+    normalized.sections = arrayValue(body.sections, arrayValue(existing?.sections, []));
   }
 
   if (key === 'media' || key === 'sermons') {
-    normalized.type = body.type || existing?.type || 'Video';
+    normalized.assetType = body.assetType || body.type || existing?.assetType || existing?.type || 'video';
+    normalized.type = normalized.assetType;
     normalized.duration = body.duration || existing?.duration || (body.durationSeconds ? `${Math.round(Number(body.durationSeconds) / 60)} min` : '');
-    normalized.publishedAt = body.publishedAt || existing?.publishedAt || now;
-    normalized.speaker = body.speaker || body.speakerName || existing?.speaker || '';
-    normalized.imageUrl = body.imageUrl || body.thumbnailUrl || body.coverImageUrl || existing?.imageUrl || '';
-    normalized.videoUrl = body.videoUrl || body.sourceUrl || (body.type === 'video' ? body.providerKey : existing?.videoUrl);
-    normalized.audioUrl = body.audioUrl || (body.type === 'audio' ? body.providerKey : existing?.audioUrl);
+    normalized.publishedAt = publishedAt;
+    normalized.speaker = body.speaker || body.speakerName || body.teacher || existing?.speaker || '';
+    normalized.speakerName = normalized.speaker;
+    normalized.series = body.series || body.seriesName || existing?.series || '';
+    normalized.imageUrl = normalized.featuredImageUrl;
+    normalized.coverImageUrl = normalized.featuredImageUrl;
+    normalized.fileUrl = body.fileUrl || body.mediaUrl || body.deliveryUrl || body.sourceUrl || body.providerKey || existing?.fileUrl || '';
+    normalized.deliveryUrl = body.deliveryUrl || body.cloudinaryDeliveryUrl || normalized.fileUrl;
+    normalized.videoUrl = body.videoUrl || (normalized.assetType === 'video' ? normalized.fileUrl : existing?.videoUrl) || '';
+    normalized.audioUrl = body.audioUrl || (normalized.assetType === 'audio' ? normalized.fileUrl : existing?.audioUrl) || '';
+    normalized.providerType = body.providerType || body.provider || existing?.providerType || 'cloudinary';
+    normalized.storageProvider = body.storageProvider || body.storageMode || existing?.storageProvider || 'cloudinary';
+    normalized.cloudinaryPublicId = body.cloudinaryPublicId || existing?.cloudinaryPublicId || '';
+    normalized.mediaAssetId = body.mediaAssetId || existing?.mediaAssetId || '';
+    normalized.notes = body.notes || existing?.notes || '';
+    normalized.transcript = body.transcript || existing?.transcript || '';
+    normalized.clips = arrayValue(body.clips, arrayValue(existing?.clips, []));
+    normalized.commentsEnabled = body.commentsEnabled ?? body.allowComments ?? existing?.commentsEnabled ?? true;
+  }
+
+  if (key === 'resources') {
+    normalized.resourceType = body.resourceType || body.fileType || existing?.resourceType || existing?.fileType || 'PDF';
+    normalized.fileType = normalized.resourceType;
+    normalized.accessRule = body.accessRule || body.visibilityRole || existing?.accessRule || existing?.visibilityRole || 'Public';
+    normalized.visibilityRole = normalized.accessRule;
+    normalized.groupId = body.groupId || existing?.groupId || '';
+    normalized.groupName = body.groupName || existing?.groupName || '';
+    normalized.fileUrl = body.fileUrl || body.downloadUrl || body.mediaUrl || existing?.fileUrl || '';
+    normalized.downloadUrl = normalized.fileUrl;
+    normalized.mediaAssetId = body.mediaAssetId || existing?.mediaAssetId || '';
+    normalized.price = body.price ?? existing?.price ?? 0;
+    normalized.isPaid = Boolean(Number(normalized.price) > 0 || body.isPaid || body.paid);
+    normalized.imageUrl = normalized.featuredImageUrl;
+    normalized.coverImageUrl = normalized.featuredImageUrl;
   }
 
   if (key === 'products') {
     normalized.name = title;
     normalized.price = body.price ?? existing?.price ?? '$0.00';
-    normalized.type = body.type || body.category || existing?.type || existing?.category || 'Product';
+    normalized.productType = body.productType || body.type || existing?.productType || existing?.type || 'Physical';
+    normalized.type = normalized.productType;
+    normalized.shortDescription = body.shortDescription || body.description || existing?.shortDescription || '';
+    normalized.longDescription = body.longDescription || body.content || existing?.longDescription || normalized.shortDescription;
     normalized.category = body.category || existing?.category || normalized.type;
     normalized.description = body.description || existing?.description || '';
-    normalized.imageUrl = body.imageUrl || body.thumbnailUrl || existing?.imageUrl || '';
+    normalized.imageUrl = normalized.featuredImageUrl;
+    normalized.coverImageUrl = normalized.featuredImageUrl;
+    normalized.images = arrayValue(body.images, arrayValue(existing?.images, normalized.imageUrl ? [normalized.imageUrl] : []));
+    normalized.variations = arrayValue(body.variations, arrayValue(existing?.variations, []));
+    normalized.paymentProvider = body.paymentProvider || existing?.paymentProvider || 'platform';
     normalized.isActive = body.isActive ?? existing?.isActive ?? true;
+    normalized.status = normalized.isActive ? 'published' : 'draft';
   }
 
   if (key === 'events') {
     normalized.startDate = body.startDate || body.date || existing?.startDate || now;
     normalized.endDate = body.endDate || existing?.endDate || normalized.startDate;
-    normalized.location = body.location || existing?.location || '';
+    normalized.startTime = body.startTime || existing?.startTime || '';
+    normalized.endTime = body.endTime || existing?.endTime || '';
+    normalized.eventType = body.eventType || body.category || existing?.eventType || 'Gathering';
+    normalized.locationType = body.locationType || body.meetingMode || existing?.locationType || 'physical';
+    normalized.location = body.location || body.venue || body.venueName || existing?.location || '';
+    normalized.address = body.address || existing?.address || '';
+    normalized.onlineUrl = body.onlineUrl || body.streamUrl || existing?.onlineUrl || '';
+    normalized.registrationRequired = body.registrationRequired ?? existing?.registrationRequired ?? true;
+    normalized.pricingType = body.pricingType || existing?.pricingType || (Number(body.price || existing?.price || 0) > 0 ? 'paid' : 'free');
     normalized.price = body.pricingType === 'paid'
       ? `$${Number(body.price || existing?.price || 0).toFixed(2)}`
       : (body.price || existing?.price || 'Free');
     normalized.status = body.status || existing?.status || 'published';
+    normalized.imageUrl = normalized.featuredImageUrl;
+    normalized.coverImageUrl = normalized.featuredImageUrl;
+    normalized.schedule = arrayValue(body.schedule, arrayValue(existing?.schedule, []));
+    normalized.speakers = arrayValue(body.speakers, arrayValue(existing?.speakers, []));
+    normalized.gallery = arrayValue(body.gallery, arrayValue(existing?.gallery, []));
+    normalized.reminders = arrayValue(body.reminders, arrayValue(existing?.reminders, []));
+    normalized.ticketTemplate = body.ticketTemplate || existing?.ticketTemplate || '';
   }
 
   if (key === 'groups') {
     normalized.name = title;
-    normalized.groupType = body.groupType || existing?.groupType || { id: body.groupTypeId || 'group-type-cell', name: body.type || 'Group' };
+    normalized.category = body.category || existing?.category || 'General';
+    normalized.groupType = body.groupType || existing?.groupType || { id: body.groupTypeId || 'group-type-cell', name: body.type || body.category || 'Group' };
     normalized.leader = body.leader || body.leaderName || body.leaderId || existing?.leader || '';
     normalized.leaderName = normalized.leader;
-    normalized.location = body.location || existing?.location || '';
+    normalized.leaderMemberId = body.leaderMemberId || body.leaderId || existing?.leaderMemberId || '';
+    normalized.leaders = arrayValue(body.leaders, arrayValue(existing?.leaders, normalized.leader ? [{ name: normalized.leader, role: 'Leader' }] : []));
+    normalized.meetingMode = body.meetingMode || body.locationType || existing?.meetingMode || 'onsite';
+    normalized.location = body.location || body.venueName || existing?.location || '';
+    normalized.address = body.address || existing?.address || '';
+    normalized.onlineUrl = body.onlineUrl || existing?.onlineUrl || '';
     normalized.meetingDay = body.meetingDay || existing?.meetingDay || '';
     normalized.meetingTime = body.meetingTime || existing?.meetingTime || '';
+    normalized.imageUrl = normalized.featuredImageUrl;
+    normalized.coverImageUrl = normalized.featuredImageUrl;
     normalized.membersRoster = Array.isArray(body.membersRoster) ? body.membersRoster : (existing?.membersRoster || []);
+    normalized.onePrimaryMembershipOnly = body.onePrimaryMembershipOnly ?? existing?.onePrimaryMembershipOnly ?? true;
+  }
+
+  if (key === 'podcasts') {
+    normalized.showId = body.showId || existing?.showId || '';
+    normalized.showTitle = body.showTitle || body.showName || existing?.showTitle || 'Podcast';
+    normalized.episodeType = body.episodeType || body.assetType || existing?.episodeType || 'audio';
+    normalized.duration = body.duration || existing?.duration || '';
+    normalized.audioUrl = body.audioUrl || body.mediaUrl || body.fileUrl || existing?.audioUrl || '';
+    normalized.videoUrl = body.videoUrl || existing?.videoUrl || '';
+    normalized.mediaAssetId = body.mediaAssetId || existing?.mediaAssetId || '';
+    normalized.isLive = Boolean(body.isLive || existing?.isLive || body.liveMode === 'live');
+    normalized.liveMode = body.liveMode || existing?.liveMode || (normalized.isLive ? 'live' : 'replay');
+    normalized.liveUrl = body.liveUrl || body.streamUrl || existing?.liveUrl || '';
+    normalized.imageUrl = normalized.featuredImageUrl;
+    normalized.coverImageUrl = normalized.featuredImageUrl;
+    normalized.publishedAt = publishedAt;
+    normalized.fileSizeBytes = body.fileSizeBytes || existing?.fileSizeBytes || 0;
+  }
+
+  if (key === 'services') {
+    normalized.serviceType = body.serviceType || body.type || existing?.serviceType || 'Service';
+    normalized.startDate = body.startDate || body.date || existing?.startDate || now;
+    normalized.startTime = body.startTime || existing?.startTime || '';
+    normalized.location = body.location || body.venueName || existing?.location || '';
+    normalized.speaker = body.speaker || body.speakerName || existing?.speaker || '';
+    normalized.mediaAssetId = body.mediaAssetId || existing?.mediaAssetId || '';
+    normalized.videoUrl = body.videoUrl || body.mediaUrl || existing?.videoUrl || '';
+    normalized.audioUrl = body.audioUrl || existing?.audioUrl || '';
+    normalized.imageUrl = normalized.featuredImageUrl;
+    normalized.coverImageUrl = normalized.featuredImageUrl;
   }
 
   return normalized;
@@ -2021,6 +2261,10 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
     return withJson({ data: dashboardCollections as unknown as JsonValue });
   }
 
+  if (pathname === '/api/media/settings') {
+    return withJson({ data: await readTenantMediaSettings(env, context) as unknown as JsonValue });
+  }
+
   if (pathname === '/api/cms/site-context') {
     return withJson({ data: makeSiteContextForContext(context, theme, navigationMenus, dashboardCollections, contentDesign) as unknown as JsonValue });
   }
@@ -2168,16 +2412,89 @@ async function routeGet(request: Request, pathname: string, url: URL, env: Env) 
     });
   }
 
+  if (pathname === '/api/members') {
+    const accounts = await readTenantMemberAccounts(env, context);
+    return withJson({
+      data: accounts.map(memberDirectoryRecord) as unknown as JsonValue,
+    });
+  }
+
+  if (pathname === '/api/members/reports/summary') {
+    const accounts = await readTenantMemberAccounts(env, context);
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const checkIns30d = accounts.reduce((total, account) => {
+      const checkIns = Array.isArray(account?.member?.checkIns) ? account.member.checkIns : [];
+      return total + checkIns.filter((checkIn: Record<string, any>) => {
+        const checkedInAt = Date.parse(String(checkIn.checkedInAt || checkIn.createdAt || ''));
+        return Number.isFinite(checkedInAt) && checkedInAt >= thirtyDaysAgo;
+      }).length;
+    }, 0);
+    const logins30d = accounts.filter((account) => {
+      const member = memberDirectoryRecord(account);
+      const lastLoginAt = Date.parse(String(member.lastLoginAt || ''));
+      return Number.isFinite(lastLoginAt) && lastLoginAt >= thirtyDaysAgo;
+    }).length;
+    return withJson({
+      data: {
+        totals: {
+          members: accounts.length,
+          linkedAccounts: accounts.filter((account) => Boolean(account?.password)).length,
+          checkIns30d,
+          logins30d,
+        },
+      } as JsonValue,
+    });
+  }
+
+  if (pathname === '/api/members/settings') {
+    return withJson({ data: await readMemberPortalSettings(env, context) as unknown as JsonValue });
+  }
+
+  if (pathname === '/api/members/activities') {
+    const limit = Number(url.searchParams.get('limit') || 20);
+    const accounts = await readTenantMemberAccounts(env, context);
+    const activities = accounts
+      .map((account) => {
+        const member = memberDirectoryRecord(account);
+        return {
+          id: `member-activity-${member.id}`,
+          entityId: member.id,
+          name: `${member.firstName} ${member.lastName}`.trim() || 'Member profile',
+          metadata: JSON.stringify({
+            source: account?.member?.lastLoginAt ? 'Member portal login' : 'Member profile',
+            email: member.email,
+          }),
+          createdAt: member.lastLoginAt || member.updatedAt || member.createdAt,
+        };
+      })
+      .sort((a, b) => Date.parse(String(b.createdAt)) - Date.parse(String(a.createdAt)))
+      .slice(0, Number.isFinite(limit) ? limit : 20);
+    return withJson({ data: activities as unknown as JsonValue });
+  }
+
+  const memberNotesMatch = pathname.match(/^\/api\/members\/([^/]+)\/notes$/);
+  if (memberNotesMatch) {
+    const accounts = await readTenantMemberAccounts(env, context);
+    const account = accounts.find((entry) => accountMatchesMemberId(entry, decodeURIComponent(memberNotesMatch[1])));
+    return withJson({
+      data: (Array.isArray(account?.member?.notes) ? account.member.notes : []) as JsonValue,
+    });
+  }
+
   if (pathname === '/api/members/me') {
     const account = await findMemberAccountFromRequest(env, context, request);
     if (!account) {
       return withJson({ error: 'Member session not found' }, { status: 401 });
     }
+    const settings = await readMemberPortalSettings(env, context);
     return withJson({
       data: {
         member: account.member,
         giving: account.giving,
-        settings: account.settings,
+        settings: {
+          ...(account.settings || {}),
+          ...settings,
+        },
       } as JsonValue,
     });
   }
@@ -2554,6 +2871,136 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
     return withJson({ ...session, data: session }, { status: 201 });
   }
 
+  if (pathname === '/api/members/settings') {
+    const nextSettings = await writeMemberPortalSettings(env, context, body as Record<string, any>);
+    return withJson({ ok: true, data: nextSettings as unknown as JsonValue });
+  }
+
+  if (pathname === '/api/members' && request.method === 'POST') {
+    const firstName = String(body.firstName || '').trim();
+    const lastName = String(body.lastName || '').trim();
+    const email = normalizeEmail(body.email);
+    if (!firstName || !lastName) {
+      return withJson({ error: 'firstName and lastName are required' }, { status: 400 });
+    }
+
+    const accounts = await readTenantMemberAccounts(env, context);
+    if (email && accounts.some((account) => memberAccountEmail(account) === email)) {
+      return withJson({ error: 'Email already exists in this church member directory' }, { status: 409 });
+    }
+
+    const account = makeMemberAccount(context, {
+      ...body,
+      email,
+      firstName,
+      lastName,
+      password: body.password || '',
+      membershipStatus: body.membershipStatus || 'visitor',
+    });
+    await writeTenantMemberAccounts(env, context, [account, ...accounts]);
+    return withJson({
+      ok: true,
+      data: memberDirectoryRecord(account) as unknown as JsonValue,
+    }, { status: 201 });
+  }
+
+  const memberNotesMutationMatch = pathname.match(/^\/api\/members\/([^/]+)\/notes$/);
+  if (memberNotesMutationMatch && request.method === 'POST') {
+    const memberId = decodeURIComponent(memberNotesMutationMatch[1]);
+    const accounts = await readTenantMemberAccounts(env, context);
+    const note = {
+      id: makeId('member-note'),
+      authorId: String(body.authorId || demoUser.id),
+      noteText: String(body.noteText || body.content || '').trim(),
+      createdAt: new Date().toISOString(),
+    };
+    if (!note.noteText) {
+      return withJson({ error: 'noteText is required' }, { status: 400 });
+    }
+    let updatedNote: Record<string, any> | null = null;
+    const nextAccounts = accounts.map((entry) => {
+      if (!accountMatchesMemberId(entry, memberId)) return entry;
+      const notes = Array.isArray(entry?.member?.notes) ? entry.member.notes : [];
+      updatedNote = note;
+      return {
+        ...entry,
+        member: {
+          ...(entry.member || {}),
+          notes: [note, ...notes],
+          updatedAt: note.createdAt,
+        },
+      };
+    });
+    if (!updatedNote) {
+      return withJson({ error: 'Member not found' }, { status: 404 });
+    }
+    await writeTenantMemberAccounts(env, context, nextAccounts);
+    return withJson({ ok: true, data: updatedNote as unknown as JsonValue }, { status: 201 });
+  }
+
+  const memberRecordMutationMatch = pathname.match(/^\/api\/members\/([^/]+)$/);
+  if (memberRecordMutationMatch && memberRecordMutationMatch[1] !== 'me') {
+    const memberId = decodeURIComponent(memberRecordMutationMatch[1]);
+    const accounts = await readTenantMemberAccounts(env, context);
+
+    if (request.method === 'DELETE') {
+      const nextAccounts = accounts.filter((entry) => !accountMatchesMemberId(entry, memberId));
+      if (nextAccounts.length === accounts.length) {
+        return withJson({ error: 'Member not found' }, { status: 404 });
+      }
+      await writeTenantMemberAccounts(env, context, nextAccounts);
+      return withJson({ ok: true, data: null });
+    }
+
+    const email = body.email !== undefined ? normalizeEmail(body.email) : undefined;
+    if (email && accounts.some((entry) => !accountMatchesMemberId(entry, memberId) && memberAccountEmail(entry) === email)) {
+      return withJson({ error: 'Email already exists in this church member directory' }, { status: 409 });
+    }
+
+    let updated: Record<string, any> | null = null;
+    const now = new Date().toISOString();
+    const nextAccounts = accounts.map((entry) => {
+      if (!accountMatchesMemberId(entry, memberId)) return entry;
+      const nextMember = {
+        ...(entry.member || {}),
+        firstName: body.firstName !== undefined ? String(body.firstName || '') : String(entry.member?.firstName || ''),
+        lastName: body.lastName !== undefined ? String(body.lastName || '') : String(entry.member?.lastName || ''),
+        email: email !== undefined ? email : memberAccountEmail(entry),
+        phone: body.phone !== undefined ? String(body.phone || '') : String(entry.member?.phone || ''),
+        gender: body.gender !== undefined ? String(body.gender || '') : String(entry.member?.gender || ''),
+        photoUrl: body.photoUrl !== undefined ? String(body.photoUrl || '') : String(entry.member?.photoUrl || ''),
+        bio: body.bio !== undefined ? String(body.bio || '') : String(entry.member?.bio || ''),
+        birthday: body.birthday !== undefined ? body.birthday || null : entry.member?.birthday || null,
+        address: body.address !== undefined ? String(body.address || '') : String(entry.member?.address || ''),
+        membershipStatus: body.membershipStatus !== undefined ? String(body.membershipStatus || 'member') : String(entry.member?.membershipStatus || 'member'),
+        status: body.status !== undefined ? String(body.status || 'active') : String(entry.member?.status || 'active'),
+        updatedAt: now,
+      };
+      updated = {
+        ...entry,
+        password: body.password !== undefined ? String(body.password || '') : String(entry.password || ''),
+        member: nextMember,
+        user: {
+          ...(entry.user || {}),
+          email: nextMember.email,
+          member: {
+            ...(entry.user?.member || {}),
+            id: nextMember.id,
+            firstName: nextMember.firstName,
+            lastName: nextMember.lastName,
+          },
+        },
+      };
+      return updated;
+    });
+
+    if (!updated) {
+      return withJson({ error: 'Member not found' }, { status: 404 });
+    }
+    await writeTenantMemberAccounts(env, context, nextAccounts);
+    return withJson({ ok: true, data: memberDirectoryRecord(updated) as unknown as JsonValue });
+  }
+
   if (pathname === '/api/auth/member-register') {
     const email = normalizeEmail(body.email);
     const password = String(body.password || '');
@@ -2562,8 +3009,12 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
     if (!email || !password || !firstName || !lastName) {
       return withJson({ error: 'email, password, firstName, lastName are required' }, { status: 400 });
     }
+    const settings = await readMemberPortalSettings(env, context);
+    if (settings.allowPublicRegistration === false) {
+      return withJson({ error: 'Member registration is currently disabled for this church' }, { status: 403 });
+    }
     const accounts = await readTenantMemberAccounts(env, context);
-    if (accounts.some((account) => normalizeEmail(account?.user?.email || account?.member?.email) === email)) {
+    if (accounts.some((account) => memberAccountEmail(account) === email)) {
       return withJson({ error: 'Email already registered in this church' }, { status: 409 });
     }
     const account = makeMemberAccount(context, {
@@ -2585,26 +3036,44 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
     }, { status: 201 });
   }
 
-  if (pathname === '/api/auth/login' || pathname === '/api/super-admin/login') {
-    if (pathname === '/api/auth/login') {
+  if (pathname === '/api/auth/member-login' || pathname === '/api/auth/login' || pathname === '/api/super-admin/login') {
+    if (pathname === '/api/auth/member-login' || pathname === '/api/auth/login') {
       const email = normalizeEmail(body.email);
       const password = String(body.password || '');
       const accounts = await readTenantMemberAccounts(env, context);
-      const account = accounts.find((entry) => normalizeEmail(entry?.user?.email || entry?.member?.email) === email);
+      const account = accounts.find((entry) => memberAccountEmail(entry) === email);
       if (account) {
         if (String(account.password || '') !== password) {
           return withJson({ error: 'Invalid credentials' }, { status: 401 });
         }
-        const token = makeMemberSessionToken(context.tenant.id, account.user.id);
+        const now = new Date().toISOString();
+        const nextAccounts = accounts.map((entry) => {
+          if (!accountMatchesMemberId(entry, accountMemberId(account))) return entry;
+          return {
+            ...entry,
+            lastLoginAt: now,
+            member: {
+              ...(entry.member || {}),
+              lastLoginAt: now,
+              updatedAt: now,
+            },
+          };
+        });
+        await writeTenantMemberAccounts(env, context, nextAccounts);
+        const updatedAccount = nextAccounts.find((entry) => accountMatchesMemberId(entry, accountMemberId(account))) || account;
+        const token = makeMemberSessionToken(context.tenant.id, updatedAccount.user.id);
         return withJson({
           token,
-          user: account.user as JsonValue,
+          user: updatedAccount.user as JsonValue,
           data: {
             token,
-            user: account.user,
+            user: updatedAccount.user,
             tenant,
           } as JsonValue,
         });
+      }
+      if (pathname === '/api/auth/member-login') {
+        return withJson({ error: 'Invalid credentials' }, { status: 401 });
       }
     }
 
@@ -2631,6 +3100,11 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
       return withJson({ error: 'Member session not found' }, { status: 401 });
     }
     const accounts = await readTenantMemberAccounts(env, context);
+    const requestedEmail = body.email !== undefined ? normalizeEmail(body.email) : undefined;
+    if (requestedEmail && accounts.some((entry) => entry?.user?.id !== account.user.id && memberAccountEmail(entry) === requestedEmail)) {
+      return withJson({ error: 'Email already exists in this church member directory' }, { status: 409 });
+    }
+    const now = new Date().toISOString();
     const nextAccounts = accounts.map((entry) => {
       if (entry?.user?.id !== account.user.id) return entry;
       if (pathname.endsWith('/preferences')) {
@@ -2642,27 +3116,36 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
               ...(entry.member?.notificationPref || {}),
               ...(body as Record<string, unknown>),
             },
+            updatedAt: now,
           },
         };
       }
+      const nextEmail = requestedEmail !== undefined ? requestedEmail : memberAccountEmail(entry);
+      const nextFirstName = body.firstName !== undefined ? String(body.firstName || '') : String(entry.member?.firstName || '');
+      const nextLastName = body.lastName !== undefined ? String(body.lastName || '') : String(entry.member?.lastName || '');
       return {
         ...entry,
         member: {
           ...entry.member,
-          firstName: String(body.firstName || entry.member?.firstName || ''),
-          lastName: String(body.lastName || entry.member?.lastName || ''),
-          email: normalizeEmail(body.email || entry.member?.email || entry.user?.email),
-          phone: String(body.phone || entry.member?.phone || ''),
-          birthday: body.birthday || entry.member?.birthday || null,
-          address: String(body.address || entry.member?.address || ''),
+          firstName: nextFirstName,
+          lastName: nextLastName,
+          email: nextEmail,
+          phone: body.phone !== undefined ? String(body.phone || '') : String(entry.member?.phone || ''),
+          gender: body.gender !== undefined ? String(body.gender || '') : String(entry.member?.gender || ''),
+          photoUrl: body.photoUrl !== undefined ? String(body.photoUrl || '') : String(entry.member?.photoUrl || ''),
+          bio: body.bio !== undefined ? String(body.bio || '') : String(entry.member?.bio || ''),
+          birthday: body.birthday !== undefined ? body.birthday || null : entry.member?.birthday || null,
+          address: body.address !== undefined ? String(body.address || '') : String(entry.member?.address || ''),
+          membershipStatus: body.membershipStatus !== undefined ? String(body.membershipStatus || 'member') : String(entry.member?.membershipStatus || 'member'),
+          updatedAt: now,
         },
         user: {
           ...entry.user,
-          email: normalizeEmail(body.email || entry.user?.email),
+          email: nextEmail,
           member: {
             ...(entry.user?.member || {}),
-            firstName: String(body.firstName || entry.member?.firstName || ''),
-            lastName: String(body.lastName || entry.member?.lastName || ''),
+            firstName: nextFirstName,
+            lastName: nextLastName,
           },
         },
       };
@@ -2718,6 +3201,28 @@ async function routeMutation(request: Request, pathname: string, env: Env) {
     };
     await writeTenantContentDesign(env, context, nextDesign);
     return withJson({ data: nextDesign as unknown as JsonValue });
+  }
+
+  if (pathname === '/api/media/settings') {
+    const current = await readTenantMediaSettings(env, context);
+    const nextSettings = {
+      ...current,
+      storageMode: body.storageMode === 'bring-your-own' ? 'bring-your-own' : 'platform',
+      provider: 'cloudinary',
+      cloudName: String(body.cloudName || current.cloudName || ''),
+      apiKey: String(body.apiKey || current.apiKey || ''),
+      uploadFolder: String(body.uploadFolder || current.uploadFolder || 'churchos-media'),
+      syncUploads: body.syncUploads ?? current.syncUploads ?? true,
+      hasApiSecret: Boolean(body.apiSecret || current.hasApiSecret),
+      apiSecret: body.apiSecret ? String(body.apiSecret) : current.apiSecret,
+      updatedAt: new Date().toISOString(),
+    };
+    await writeTenantMediaSettings(env, context, nextSettings);
+    const responseSettings = {
+      ...nextSettings,
+      apiSecret: nextSettings.apiSecret ? '********' : '',
+    };
+    return withJson({ ok: true, data: responseSettings as unknown as JsonValue });
   }
 
   const contentKey = contentCollectionKeyFromPath(pathname);

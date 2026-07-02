@@ -35416,6 +35416,584 @@ function renderOutreachTab(tab) {
       document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
+    function installSimpleContentWorkflows() {
+      const esc = (value) => escapeHtml(String(value || ''));
+      const valueOf = (id) => {
+        const el = document.getElementById(id);
+        return el && 'value' in el ? String(el.value || '').trim() : '';
+      };
+      const boolOf = (id) => {
+        const el = document.getElementById(id);
+        return Boolean(el && 'checked' in el && el.checked);
+      };
+      const slugFrom = (value) => String(value || 'item').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || `item-${Date.now()}`;
+      const linesToList = (value, keys) => String(value || '').split('\n').map(line => line.trim()).filter(Boolean).map((line) => {
+        const parts = line.split('|').map(part => part.trim());
+        return keys.reduce((item, key, index) => {
+          item[key] = parts[index] || '';
+          return item;
+        }, {});
+      });
+      const csv = (value) => String(value || '').split(',').map(part => part.trim()).filter(Boolean);
+      const mediaOptions = (selected = '') => {
+        const assets = Array.isArray(mediaState?.assets) ? mediaState.assets : [];
+        return `<option value="">Select from Media Library</option>${assets.map(asset => `<option value="${esc(asset.id)}" ${selected === asset.id ? 'selected' : ''}>${esc(asset.title || asset.name || asset.fileUrl || asset.id)}</option>`).join('')}`;
+      };
+      const mediaById = (id) => (Array.isArray(mediaState?.assets) ? mediaState.assets : []).find(asset => String(asset.id) === String(id));
+      const ensureMediaLoaded = async () => {
+        if (!Array.isArray(mediaState?.assets) || mediaState.assets.length === 0) {
+          try { await bootstrapMedia(); } catch {}
+        }
+      };
+      const field = (label, id, attrs = '') => `
+        <div class="field">
+          <label>${label}</label>
+          <input id="${id}" class="form-control" ${attrs} style="width:100%;" />
+        </div>
+      `;
+      const select = (label, id, options) => `
+        <div class="field">
+          <label>${label}</label>
+          <select id="${id}" class="select" style="width:100%;">${options}</select>
+        </div>
+      `;
+      const area = (label, id, placeholder = '', rows = 4) => `
+        <div class="field">
+          <label>${label}</label>
+          <textarea id="${id}" class="textarea" rows="${rows}" placeholder="${esc(placeholder)}" style="width:100%; min-height:${rows * 28}px;"></textarea>
+        </div>
+      `;
+      const modalGrid = (children, minWidth = 620) => `<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; min-width:${minWidth}px; max-height:68vh; overflow:auto; padding-right:8px;">${children}</div>`;
+      const postJson = async (path, payload, success, refresh) => {
+        showToast('Saving content...');
+        const res = await cmsApiRequest('POST', path, payload);
+        if (res && res.ok) {
+          showToast(success);
+          if (typeof refresh === 'function') refresh();
+          return res.data;
+        }
+        alert('Could not save this content. Please check the fields and try again.');
+        return null;
+      };
+
+      window.openMediaSettingsModal = async function() {
+        const current = await cmsApiRequest('GET', '/api/media/settings');
+        const settings = (current && current.ok && current.data) ? current.data : {};
+        const html = modalGrid(`
+          ${select('Storage Mode', 'cmsMediaStorageMode', `
+            <option value="platform" ${settings.storageMode !== 'bring-your-own' ? 'selected' : ''}>Use Platform Cloudinary</option>
+            <option value="bring-your-own" ${settings.storageMode === 'bring-your-own' ? 'selected' : ''}>Bring Your Own Cloudinary</option>
+          `)}
+          ${field('Cloud Name', 'cmsMediaCloudName', `value="${esc(settings.cloudName || '')}" placeholder="your-cloud-name"`)}
+          ${field('API Key', 'cmsMediaApiKey', `value="${esc(settings.apiKey || '')}" placeholder="Cloudinary API key"`)}
+          ${field('API Secret', 'cmsMediaApiSecret', 'type="password" placeholder="Leave blank to keep existing secret"')}
+          ${field('Upload Folder', 'cmsMediaUploadFolder', `value="${esc(settings.uploadFolder || 'churchos-media')}"`)}
+          <div class="field" style="display:flex; align-items:center; gap:10px; margin-top:22px;">
+            <input type="checkbox" id="cmsMediaSyncUploads" ${settings.syncUploads !== false ? 'checked' : ''} />
+            <label for="cmsMediaSyncUploads" style="margin:0;">Sync uploaded media to Cloudinary</label>
+          </div>
+        `);
+        const confirmSave = await showSystemModal({ type: 'confirm', title: 'Media Settings', message: html, showCancel: true });
+        if (!confirmSave) return;
+        await cmsApiRequest('POST', '/api/media/settings', {
+          storageMode: valueOf('cmsMediaStorageMode'),
+          cloudName: valueOf('cmsMediaCloudName'),
+          apiKey: valueOf('cmsMediaApiKey'),
+          apiSecret: valueOf('cmsMediaApiSecret'),
+          uploadFolder: valueOf('cmsMediaUploadFolder') || 'churchos-media',
+          syncUploads: boolOf('cmsMediaSyncUploads')
+        });
+        showToast('Media settings saved.');
+      };
+
+      function attachMediaActions() {
+        const head = document.querySelector('#mediaConsoleContainer .section-head');
+        if (!head || document.getElementById('mediaSettingsQuickBtn')) return;
+        const actions = head.querySelector('button')?.parentElement || head;
+        const settingsBtn = document.createElement('button');
+        settingsBtn.id = 'mediaSettingsQuickBtn';
+        settingsBtn.className = 'btn';
+        settingsBtn.innerHTML = '<i data-lucide="settings"></i>Settings';
+        settingsBtn.onclick = window.openMediaSettingsModal;
+        const sermonBtn = document.createElement('button');
+        sermonBtn.id = 'mediaSermonQuickBtn';
+        sermonBtn.className = 'btn';
+        sermonBtn.innerHTML = '<i data-lucide="mic-2"></i>New Sermon';
+        sermonBtn.onclick = window.openCreateSermonModal;
+        actions.appendChild(settingsBtn);
+        actions.appendChild(sermonBtn);
+        refreshIcons();
+      }
+
+      const originalBootstrapMedia = window.bootstrapMedia;
+      window.bootstrapMedia = async function() {
+        if (typeof originalBootstrapMedia === 'function') await originalBootstrapMedia.apply(this, arguments);
+        attachMediaActions();
+      };
+
+      window.openCreateMediaAssetModal = async function() {
+        const html = modalGrid(`
+          <div style="grid-column:span 2;">${field('Asset Title', 'maSimpleTitle', 'placeholder="Sunday worship replay"')}</div>
+          ${select('Media Type', 'maSimpleType', '<option value="image">Image</option><option value="video">Video</option><option value="audio">Audio</option><option value="document">Document</option><option value="other">Other</option>')}
+          ${field('Duration or Length', 'maSimpleDuration', 'placeholder="42:18"')}
+          <div style="grid-column:span 2;">${field('File, Embed, or Delivery URL', 'maSimpleUrl', 'placeholder="https://res.cloudinary.com/... or YouTube URL"')}</div>
+          <div style="grid-column:span 2;">${field('Thumbnail URL', 'maSimpleThumb', 'placeholder="Optional cover image URL"')}</div>
+          <div style="grid-column:span 2;">${area('Description', 'maSimpleDesc', 'Short description for frontend media cards.', 3)}</div>
+          ${field('Cloudinary Public ID', 'maSimpleCloudId', 'placeholder="Optional existing public id"')}
+          ${field('Tags', 'maSimpleTags', 'placeholder="sermon, worship, youth"')}
+        `);
+        const confirmCreate = await showSystemModal({ type: 'confirm', title: 'Add Media Asset', message: html, showCancel: true });
+        if (!confirmCreate) return;
+        const title = valueOf('maSimpleTitle');
+        if (!title) return alert('Asset title is required.');
+        await postJson('/api/media/assets', {
+          title,
+          slug: slugFrom(title),
+          assetType: valueOf('maSimpleType'),
+          type: valueOf('maSimpleType'),
+          fileUrl: valueOf('maSimpleUrl'),
+          deliveryUrl: valueOf('maSimpleUrl'),
+          mediaUrl: valueOf('maSimpleUrl'),
+          thumbnailUrl: valueOf('maSimpleThumb'),
+          featuredImageUrl: valueOf('maSimpleThumb'),
+          duration: valueOf('maSimpleDuration'),
+          description: valueOf('maSimpleDesc'),
+          cloudinaryPublicId: valueOf('maSimpleCloudId'),
+          providerType: 'cloudinary',
+          storageProvider: 'cloudinary',
+          tags: csv(valueOf('maSimpleTags')),
+          status: 'published'
+        }, 'Media asset saved.', bootstrapMedia);
+      };
+
+      window.openCreateSermonModal = async function() {
+        await ensureMediaLoaded();
+        const html = modalGrid(`
+          <div style="grid-column:span 2;">${field('Message Title', 'sermonTitle', 'placeholder="The Power of Faith"')}</div>
+          ${field('Series', 'sermonSeries', 'placeholder="Faith Foundations"')}
+          ${field('Speaker', 'sermonSpeaker', 'placeholder="Pastor Ada Stone"')}
+          ${select('Media Source', 'sermonMediaAsset', mediaOptions())}
+          ${select('Primary Format', 'sermonType', '<option value="video">Video</option><option value="audio">Audio</option>')}
+          <div style="grid-column:span 2;">${field('External Video or Audio URL', 'sermonUrl', 'placeholder="Use when no Media Library asset is selected"')}</div>
+          <div style="grid-column:span 2;">${field('Featured Image URL', 'sermonThumb', 'placeholder="Optional sermon cover image"')}</div>
+          <div style="grid-column:span 2;">${area('Brief Description', 'sermonDesc', 'Short description shown on sermon cards.', 3)}</div>
+          <div style="grid-column:span 2;">${area('Notes', 'sermonNotes', 'Optional message notes.', 3)}</div>
+          <div style="grid-column:span 2;">${area('Transcript', 'sermonTranscript', 'Optional transcript.', 4)}</div>
+        `);
+        const confirmCreate = await showSystemModal({ type: 'confirm', title: 'Create Sermon / Message', message: html, showCancel: true });
+        if (!confirmCreate) return;
+        const title = valueOf('sermonTitle');
+        if (!title) return alert('Message title is required.');
+        const media = mediaById(valueOf('sermonMediaAsset')) || {};
+        const type = valueOf('sermonType');
+        const mediaUrl = valueOf('sermonUrl') || media.deliveryUrl || media.fileUrl || media.videoUrl || media.audioUrl || '';
+        await postJson('/api/sermons', {
+          title,
+          slug: slugFrom(title),
+          series: valueOf('sermonSeries'),
+          speaker: valueOf('sermonSpeaker'),
+          mediaAssetId: valueOf('sermonMediaAsset'),
+          assetType: type,
+          type,
+          videoUrl: type === 'video' ? mediaUrl : '',
+          audioUrl: type === 'audio' ? mediaUrl : media.audioUrl || '',
+          mediaUrl,
+          featuredImageUrl: valueOf('sermonThumb') || media.featuredImageUrl || media.thumbnailUrl || '',
+          description: valueOf('sermonDesc'),
+          notes: valueOf('sermonNotes'),
+          transcript: valueOf('sermonTranscript'),
+          status: 'published',
+          commentsEnabled: true
+        }, 'Sermon saved.', bootstrapMedia);
+      };
+
+      window.openCreateEventModal = async function() {
+        const html = modalGrid(`
+          <div style="grid-column:span 2;">${field('Event Title', 'evSimpleTitle', 'placeholder="Annual Worship Night"')}</div>
+          ${field('Event Type', 'evSimpleType', 'placeholder="Conference, service, outreach"')}
+          ${field('Thumbnail URL', 'evSimpleThumb', 'placeholder="Featured event image"')}
+          ${field('Start Date', 'evSimpleStartDate', 'type="date"')}
+          ${field('Start Time', 'evSimpleStartTime', 'type="time"')}
+          ${field('End Date', 'evSimpleEndDate', 'type="date"')}
+          ${field('End Time', 'evSimpleEndTime', 'type="time"')}
+          ${select('Event Mode', 'evSimpleMode', '<option value="physical">On-site</option><option value="virtual">Online</option><option value="hybrid">Hybrid</option>')}
+          ${field('Venue Name', 'evSimpleVenue', 'placeholder="Main auditorium"')}
+          <div style="grid-column:span 2;">${field('Address', 'evSimpleAddress', 'placeholder="Full venue address"')}</div>
+          <div style="grid-column:span 2;">${field('Online / Stream URL', 'evSimpleOnlineUrl', 'placeholder="Optional livestream or meeting URL"')}</div>
+          ${select('Pricing', 'evSimplePricing', '<option value="free">Free</option><option value="paid">Paid</option>')}
+          ${field('Price', 'evSimplePrice', 'type="number" min="0" step="0.01" value="0"')}
+          <div class="field" style="display:flex; align-items:center; gap:10px; margin-top:22px;">
+            <input type="checkbox" id="evSimpleRegister" checked />
+            <label for="evSimpleRegister" style="margin:0;">Require registration</label>
+          </div>
+          <div style="grid-column:span 2;">${area('Description', 'evSimpleDesc', 'Short event description.', 3)}</div>
+          <div style="grid-column:span 2;">${area('Schedule', 'evSimpleSchedule', 'One item per line: 09:00 | Opening worship | Short description', 3)}</div>
+          <div style="grid-column:span 2;">${area('Speakers', 'evSimpleSpeakers', 'One speaker per line: Name | Role | Photo URL', 3)}</div>
+        `);
+        const confirmCreate = await showSystemModal({ type: 'confirm', title: 'Create Event', message: html, showCancel: true });
+        if (!confirmCreate) return;
+        const title = valueOf('evSimpleTitle');
+        if (!title) return alert('Event title is required.');
+        await postJson('/api/events', {
+          title,
+          slug: slugFrom(title),
+          eventType: valueOf('evSimpleType'),
+          featuredImageUrl: valueOf('evSimpleThumb'),
+          thumbnailUrl: valueOf('evSimpleThumb'),
+          startDate: valueOf('evSimpleStartDate'),
+          startTime: valueOf('evSimpleStartTime'),
+          endDate: valueOf('evSimpleEndDate') || valueOf('evSimpleStartDate'),
+          endTime: valueOf('evSimpleEndTime'),
+          locationType: valueOf('evSimpleMode'),
+          venueName: valueOf('evSimpleVenue'),
+          location: valueOf('evSimpleVenue'),
+          address: valueOf('evSimpleAddress'),
+          onlineUrl: valueOf('evSimpleOnlineUrl'),
+          pricingType: valueOf('evSimplePricing'),
+          price: Number(valueOf('evSimplePrice') || 0),
+          registrationRequired: boolOf('evSimpleRegister'),
+          description: valueOf('evSimpleDesc'),
+          schedule: linesToList(valueOf('evSimpleSchedule'), ['time', 'title', 'description']),
+          speakers: linesToList(valueOf('evSimpleSpeakers'), ['name', 'role', 'photoUrl']),
+          status: 'published'
+        }, 'Event created.', bootstrapEvents);
+      };
+
+      window.openCreateCellGroupModal = async function() {
+        const html = modalGrid(`
+          <div style="grid-column:span 2;">${field('Group Name', 'grpSimpleName', 'placeholder="Young Adults Fellowship"')}</div>
+          ${field('Category', 'grpSimpleCategory', 'placeholder="Youth, Women, Men, Business"')}
+          ${field('Leader Name', 'grpSimpleLeader', 'placeholder="Group leader"')}
+          ${select('Meeting Mode', 'grpSimpleMode', '<option value="onsite">On-site</option><option value="online">Online</option><option value="hybrid">Hybrid</option>')}
+          ${field('Meeting Day', 'grpSimpleDay', 'placeholder="Fridays"')}
+          ${field('Meeting Time', 'grpSimpleTime', 'placeholder="6:30 PM"')}
+          ${field('Venue Name', 'grpSimpleVenue', 'placeholder="Youth Hall"')}
+          ${field('Online URL', 'grpSimpleOnline', 'placeholder="Optional meeting URL"')}
+          <div style="grid-column:span 2;">${field('Address', 'grpSimpleAddress', 'placeholder="Physical meeting address"')}</div>
+          <div style="grid-column:span 2;">${field('Featured Image URL', 'grpSimpleImage', 'placeholder="Optional group photo"')}</div>
+          <div style="grid-column:span 2;">${area('Description', 'grpSimpleDesc', 'What this group is about.', 3)}</div>
+          <div style="grid-column:span 2;">${area('Additional Leaders', 'grpSimpleLeaders', 'One leader per line: Name | Role | Photo URL', 3)}</div>
+        `);
+        const confirmCreate = await showSystemModal({ type: 'confirm', title: 'Create Group', message: html, showCancel: true });
+        if (!confirmCreate) return;
+        const name = valueOf('grpSimpleName');
+        if (!name) return alert('Group name is required.');
+        await postJson('/api/groups', {
+          name,
+          title: name,
+          slug: slugFrom(name),
+          category: valueOf('grpSimpleCategory') || 'General',
+          groupType: { id: slugFrom(valueOf('grpSimpleCategory') || 'group'), name: valueOf('grpSimpleCategory') || 'Group' },
+          leader: valueOf('grpSimpleLeader'),
+          leaderName: valueOf('grpSimpleLeader'),
+          meetingMode: valueOf('grpSimpleMode'),
+          meetingDay: valueOf('grpSimpleDay'),
+          meetingTime: valueOf('grpSimpleTime'),
+          venueName: valueOf('grpSimpleVenue'),
+          location: valueOf('grpSimpleVenue'),
+          onlineUrl: valueOf('grpSimpleOnline'),
+          address: valueOf('grpSimpleAddress'),
+          featuredImageUrl: valueOf('grpSimpleImage'),
+          description: valueOf('grpSimpleDesc'),
+          leaders: linesToList(valueOf('grpSimpleLeaders'), ['name', 'role', 'photoUrl']),
+          onePrimaryMembershipOnly: true,
+          status: 'published'
+        }, 'Group created.', bootstrapGroups);
+      };
+
+      window.openCreateProductModal = async function() {
+        await ensureMediaLoaded();
+        const html = modalGrid(`
+          <div style="grid-column:span 2;">${field('Product Name', 'prodSimpleName', 'placeholder="Faith Study Manual"')}</div>
+          ${select('Product Type', 'prodSimpleType', '<option value="Physical">Physical</option><option value="Digital">Digital</option><option value="Donation">Donation</option><option value="Ticket">Ticket</option>')}
+          ${field('Category', 'prodSimpleCategory', 'placeholder="Books, Apparel, Digital"')}
+          ${field('Price', 'prodSimplePrice', 'type="number" min="0" step="0.01" value="0"')}
+          ${field('Stock', 'prodSimpleStock', 'type="number" min="0" value="0"')}
+          ${select('Primary Media Image', 'prodSimpleMedia', mediaOptions())}
+          <div style="grid-column:span 2;">${field('Featured Image URL', 'prodSimpleImage', 'placeholder="Optional product image URL"')}</div>
+          <div style="grid-column:span 2;">${area('Short Description', 'prodSimpleShort', 'Short product summary.', 3)}</div>
+          <div style="grid-column:span 2;">${area('Long Description', 'prodSimpleLong', 'Detailed product description.', 4)}</div>
+          <div style="grid-column:span 2;">${area('Variations', 'prodSimpleVars', 'One variation per line: Name | Options, e.g. Size | S,M,L', 3)}</div>
+          ${field('Tags', 'prodSimpleTags', 'placeholder="book, discipleship"')}
+        `);
+        const confirmCreate = await showSystemModal({ type: 'confirm', title: 'Create Product', message: html, showCancel: true });
+        if (!confirmCreate) return;
+        const name = valueOf('prodSimpleName');
+        if (!name) return alert('Product name is required.');
+        const media = mediaById(valueOf('prodSimpleMedia')) || {};
+        await postJson('/api/store/products', {
+          name,
+          title: name,
+          slug: slugFrom(name),
+          productType: valueOf('prodSimpleType'),
+          category: valueOf('prodSimpleCategory') || valueOf('prodSimpleType'),
+          price: Number(valueOf('prodSimplePrice') || 0),
+          stock: Number(valueOf('prodSimpleStock') || 0),
+          mediaAssetId: valueOf('prodSimpleMedia'),
+          featuredImageUrl: valueOf('prodSimpleImage') || media.featuredImageUrl || media.thumbnailUrl || media.fileUrl || '',
+          imageUrl: valueOf('prodSimpleImage') || media.featuredImageUrl || media.thumbnailUrl || '',
+          shortDescription: valueOf('prodSimpleShort'),
+          description: valueOf('prodSimpleShort'),
+          longDescription: valueOf('prodSimpleLong'),
+          variations: linesToList(valueOf('prodSimpleVars'), ['name', 'options']),
+          tags: csv(valueOf('prodSimpleTags')),
+          isActive: true,
+          paymentProvider: 'platform'
+        }, 'Product created.', bootstrapStore);
+      };
+
+      const originalOpenCreatePostComposer = window.openCreatePostComposer;
+      window.openCreatePostComposer = function() {
+        if (typeof originalOpenCreatePostComposer === 'function') originalOpenCreatePostComposer();
+        enhanceBlogComposer();
+      };
+
+      const originalTriggerEditBlogPost = window.triggerEditBlogPost;
+      window.triggerEditBlogPost = function(id) {
+        if (typeof originalTriggerEditBlogPost === 'function') originalTriggerEditBlogPost(id);
+        enhanceBlogComposer();
+        const post = blogPublishingState.posts.find(p => p.id === id);
+        if (post) {
+          const set = (id, value) => { const el = document.getElementById(id); if (el) el.value = value || ''; };
+          set('blogPostSubtitle', post.subtitle || post.shortDescription || '');
+          set('blogPostBlogName', post.blogName || 'Blog');
+          set('blogPostScheduledAt', post.scheduledAt || '');
+          const comments = document.getElementById('blogPostCommentsEnabled');
+          if (comments) comments.checked = post.commentsEnabled !== false;
+        }
+      };
+
+      function enhanceBlogComposer() {
+        const content = document.getElementById('blogPostContent');
+        const sidePanel = document.getElementById('blogPostTags')?.closest('.panel');
+        if (content && !document.getElementById('blogRichToolbar')) {
+          const toolbar = document.createElement('div');
+          toolbar.id = 'blogRichToolbar';
+          toolbar.style.cssText = 'display:flex; gap:6px; flex-wrap:wrap;';
+          toolbar.innerHTML = `
+            <button class="btn btn-sm" type="button" data-wrap="## ">H2</button>
+            <button class="btn btn-sm" type="button" data-wrap="### ">H3</button>
+            <button class="btn btn-sm" type="button" data-pair="**">B</button>
+            <button class="btn btn-sm" type="button" data-pair="_">I</button>
+            <button class="btn btn-sm" type="button" data-wrap="- ">List</button>
+          `;
+          content.closest('.field')?.insertAdjacentElement('beforebegin', toolbar);
+          toolbar.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const prefix = btn.getAttribute('data-wrap') || '';
+              const pair = btn.getAttribute('data-pair') || '';
+              const start = content.selectionStart || 0;
+              const end = content.selectionEnd || 0;
+              const selected = content.value.slice(start, end) || 'Text';
+              const insert = pair ? `${pair}${selected}${pair}` : `${prefix}${selected}`;
+              content.value = `${content.value.slice(0, start)}${insert}${content.value.slice(end)}`;
+              content.focus();
+            });
+          });
+        }
+        if (sidePanel && !document.getElementById('blogPostSubtitle')) {
+          sidePanel.insertAdjacentHTML('afterbegin', `
+            ${field('Blog Name', 'blogPostBlogName', 'value="Blog" placeholder="Blog"')}
+            ${field('Subtitle', 'blogPostSubtitle', 'placeholder="Optional article subtitle"')}
+            ${field('Schedule Publish Date', 'blogPostScheduledAt', 'type="datetime-local"')}
+            <div class="field" style="display:flex; align-items:center; gap:10px;">
+              <input type="checkbox" id="blogPostCommentsEnabled" checked />
+              <label for="blogPostCommentsEnabled" style="margin:0;">Allow comments</label>
+            </div>
+          `);
+        }
+      }
+
+      const originalTriggerSaveBlogPost = window.triggerSaveBlogPost;
+      window.triggerSaveBlogPost = async function() {
+        const id = valueOf('blogPostId');
+        const title = valueOf('blogPostTitle');
+        const slug = valueOf('blogPostSlug') || slugFrom(title);
+        const excerpt = valueOf('blogPostExcerpt');
+        const content = valueOf('blogPostContent');
+        const coverImageUrl = valueOf('blogPostCoverUrl');
+        const postType = valueOf('blogPostType') || 'articles';
+        const status = valueOf('blogPostStatus') || 'draft';
+        const tags = csv(valueOf('blogPostTags'));
+        if (!title || !content) {
+          alert('Title and article body are required.');
+          return;
+        }
+        const payload = {
+          title,
+          slug,
+          excerpt,
+          content,
+          body: content,
+          coverImageUrl,
+          featuredImageUrl: coverImageUrl,
+          postType,
+          status,
+          tags,
+          blogName: valueOf('blogPostBlogName') || 'Blog',
+          subtitle: valueOf('blogPostSubtitle'),
+          scheduledAt: valueOf('blogPostScheduledAt'),
+          commentsEnabled: document.getElementById('blogPostCommentsEnabled') ? boolOf('blogPostCommentsEnabled') : true,
+          author: 'Pastoral Team'
+        };
+        const path = id ? `/api/blog/posts/${id}` : '/api/blog/posts';
+        const method = id ? 'PUT' : 'POST';
+        const res = await cmsApiRequest(method, path, payload);
+        if (res && res.ok) {
+          showToast('Article saved.');
+          bootstrapBlogPublishing();
+        } else if (typeof originalTriggerSaveBlogPost === 'function') {
+          await originalTriggerSaveBlogPost();
+        } else {
+          alert('Failed to save article.');
+        }
+      };
+
+      function enhanceLibraryPublisher() {
+        const panel = document.getElementById('libResPrice')?.closest('.panel');
+        if (!panel || document.getElementById('libResFeaturedImage')) return;
+        panel.insertAdjacentHTML('beforeend', `
+          ${field('Featured Image URL', 'libResFeaturedImage', 'placeholder="Optional cover image"')}
+          ${select('Access Rule', 'libResAccessRule', '<option value="Public">Public</option><option value="Members">Members only</option><option value="Group">Specific group</option><option value="Groups">Any group member</option><option value="Paid">Paid access</option>')}
+          ${field('Group ID or Slug', 'libResGroupId', 'placeholder="Optional group id/slug"')}
+          ${select('Linked Media Asset', 'libResMediaAsset', mediaOptions())}
+        `);
+        refreshIcons();
+      }
+
+      const originalSwitchLibraryTab = window.switchLibraryTab;
+      window.switchLibraryTab = function(tabId) {
+        if (typeof originalSwitchLibraryTab === 'function') originalSwitchLibraryTab(tabId);
+        if (tabId === 'publisher') enhanceLibraryPublisher();
+      };
+
+      window.triggerPublishResource = async function() {
+        await ensureMediaLoaded();
+        enhanceLibraryPublisher();
+        const title = valueOf('libResTitle');
+        if (!title) return alert('Title is required.');
+        const media = mediaById(valueOf('libResMediaAsset')) || {};
+        const price = Number(valueOf('libResPrice') || 0);
+        await postJson('/api/library/resources', {
+          title,
+          slug: slugFrom(title),
+          description: valueOf('libResDescription'),
+          resourceType: valueOf('libResType'),
+          fileType: valueOf('libResType'),
+          fileUrl: valueOf('libResUrl') || media.deliveryUrl || media.fileUrl || '',
+          mediaAssetId: valueOf('libResMediaAsset'),
+          accessRule: valueOf('libResAccessRule') || valueOf('libResVisibility'),
+          visibilityRole: valueOf('libResAccessRule') || valueOf('libResVisibility'),
+          groupId: valueOf('libResGroupId'),
+          featuredImageUrl: valueOf('libResFeaturedImage') || media.featuredImageUrl || media.thumbnailUrl || '',
+          price,
+          isPaid: price > 0 || valueOf('libResAccessRule') === 'Paid',
+          status: 'published'
+        }, 'Resource published.', bootstrapDigitalLibrary);
+      };
+
+      window.openCreateShowModal = async function() {
+        const html = modalGrid(`
+          <div style="grid-column:span 2;">${field('Podcast Show Name', 'podShowTitle', 'placeholder="Grace Conversations"')}</div>
+          <div style="grid-column:span 2;">${field('Cover Image URL', 'podShowCover', 'placeholder="Optional podcast cover image"')}</div>
+          <div style="grid-column:span 2;">${area('Description', 'podShowDesc', 'Short show description.', 3)}</div>
+        `);
+        const confirmCreate = await showSystemModal({ type: 'confirm', title: 'Create Podcast Show', message: html, showCancel: true });
+        if (!confirmCreate) return;
+        const title = valueOf('podShowTitle');
+        if (!title) return alert('Podcast show name is required.');
+        await postJson('/api/podcast/shows', {
+          title,
+          slug: slugFrom(title),
+          description: valueOf('podShowDesc'),
+          coverImageUrl: valueOf('podShowCover'),
+          rssUrl: '',
+          copyright: state.tenant?.name || 'Church'
+        }, 'Podcast show created.', bootstrapPodcastBroadcasting);
+      };
+
+      window.openCreateEpisodeModal = async function() {
+        await ensureMediaLoaded();
+        const showOptions = (Array.isArray(podcastBroadcastingState?.shows) ? podcastBroadcastingState.shows : []).map(show => `<option value="${esc(show.id)}">${esc(show.title)}</option>`).join('');
+        const html = modalGrid(`
+          ${select('Podcast Show', 'podEpShow', showOptions || '<option value="">Default Podcast</option>')}
+          ${select('Episode Format', 'podEpType', '<option value="audio">Audio</option><option value="video">Video</option>')}
+          <div style="grid-column:span 2;">${field('Episode Title', 'podEpTitle', 'placeholder="Walking in Faith"')}</div>
+          ${select('Media Library Asset', 'podEpMedia', mediaOptions())}
+          ${field('Duration', 'podEpDuration', 'placeholder="28:12"')}
+          <div style="grid-column:span 2;">${field('Audio / Video / Live URL', 'podEpUrl', 'placeholder="Use when no media asset is selected"')}</div>
+          ${select('Play Mode', 'podEpLiveMode', '<option value="replay">Replay / on demand</option><option value="scheduled-live">Pre-recorded live premiere</option><option value="live">Live stream URL</option>')}
+          ${field('Schedule Date', 'podEpSchedule', 'type="datetime-local"')}
+          <div style="grid-column:span 2;">${area('Brief Description', 'podEpDesc', 'Short episode description.', 3)}</div>
+        `);
+        const confirmCreate = await showSystemModal({ type: 'confirm', title: 'Create Podcast Episode', message: html, showCancel: true });
+        if (!confirmCreate) return;
+        const title = valueOf('podEpTitle');
+        if (!title) return alert('Episode title is required.');
+        const show = (Array.isArray(podcastBroadcastingState?.shows) ? podcastBroadcastingState.shows : []).find(item => String(item.id) === valueOf('podEpShow')) || {};
+        const media = mediaById(valueOf('podEpMedia')) || {};
+        const type = valueOf('podEpType');
+        const mediaUrl = valueOf('podEpUrl') || media.deliveryUrl || media.fileUrl || media.videoUrl || media.audioUrl || '';
+        await postJson('/api/podcast/episodes', {
+          title,
+          slug: slugFrom(title),
+          showId: valueOf('podEpShow'),
+          showTitle: show.title || 'Podcast',
+          episodeType: type,
+          mediaAssetId: valueOf('podEpMedia'),
+          audioUrl: type === 'audio' ? mediaUrl : media.audioUrl || '',
+          videoUrl: type === 'video' ? mediaUrl : '',
+          liveUrl: valueOf('podEpLiveMode') === 'live' ? mediaUrl : '',
+          liveMode: valueOf('podEpLiveMode'),
+          isLive: valueOf('podEpLiveMode') !== 'replay',
+          duration: valueOf('podEpDuration'),
+          scheduledAt: valueOf('podEpSchedule'),
+          description: valueOf('podEpDesc'),
+          featuredImageUrl: media.featuredImageUrl || media.thumbnailUrl || ''
+        }, 'Podcast episode created.', bootstrapPodcastBroadcasting);
+      };
+
+      window.openCreateServiceModal = async function() {
+        await ensureMediaLoaded();
+        const html = modalGrid(`
+          <div style="grid-column:span 2;">${field('Service Title', 'svcTitle', 'placeholder="Sunday Worship Service"')}</div>
+          ${field('Service Type', 'svcType', 'placeholder="Sunday, midweek, prayer"')}
+          ${field('Date', 'svcDate', 'type="date"')}
+          ${field('Time', 'svcTime', 'type="time"')}
+          ${field('Speaker', 'svcSpeaker', 'placeholder="Pastor or minister"')}
+          ${select('Linked Media', 'svcMedia', mediaOptions())}
+          <div style="grid-column:span 2;">${field('Featured Image URL', 'svcImage', 'placeholder="Optional service image"')}</div>
+          <div style="grid-column:span 2;">${area('Description', 'svcDesc', 'Brief service description.', 3)}</div>
+        `);
+        const confirmCreate = await showSystemModal({ type: 'confirm', title: 'Create Service', message: html, showCancel: true });
+        if (!confirmCreate) return;
+        const title = valueOf('svcTitle');
+        if (!title) return alert('Service title is required.');
+        const media = mediaById(valueOf('svcMedia')) || {};
+        await postJson('/api/church-services', {
+          title,
+          slug: slugFrom(title),
+          serviceType: valueOf('svcType'),
+          startDate: valueOf('svcDate'),
+          startTime: valueOf('svcTime'),
+          speaker: valueOf('svcSpeaker'),
+          mediaAssetId: valueOf('svcMedia'),
+          videoUrl: media.videoUrl || media.deliveryUrl || media.fileUrl || '',
+          audioUrl: media.audioUrl || '',
+          featuredImageUrl: valueOf('svcImage') || media.featuredImageUrl || media.thumbnailUrl || '',
+          description: valueOf('svcDesc'),
+          status: 'published'
+        }, 'Service created.', bootstrapChurchServices);
+      };
+
+      setTimeout(() => {
+        attachMediaActions();
+        enhanceBlogComposer();
+        enhanceLibraryPublisher();
+      }, 0);
+    }
+
+    installSimpleContentWorkflows();
 
 init();
   </script>

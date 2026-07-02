@@ -560,6 +560,23 @@ describe('DigitalChurchOS Member Management Module (Module 25)', () => {
       portalToken = res.body.token;
       portalMemberId = res.body.user.member.id;
 
+      const login = await request(app)
+        .post('/api/auth/member-login')
+        .set('x-tenant-id', tenantId)
+        .send({ email: 'portal.member@example.com', password: 'password123' });
+
+      expect(login.status).toBe(200);
+      expect(login.body.token).toBeDefined();
+      expect(login.body.user.member.id).toBe(portalMemberId);
+      portalToken = login.body.token;
+
+      const failedLogin = await request(app)
+        .post('/api/auth/member-login')
+        .set('x-tenant-id', tenantId)
+        .send({ email: 'portal.member@example.com', password: 'wrong-password' });
+
+      expect(failedLogin.status).toBe(401);
+
       const blocked = await request(app)
         .post('/api/members')
         .set('x-tenant-id', tenantId)

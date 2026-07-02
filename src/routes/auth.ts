@@ -316,6 +316,63 @@ router.post('/member-register', async (req: Request, res: Response) => {
   }
 });
 
+router.post('/member-login', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const tenantId = req.tenantId!;
+
+    if (!email || !password) {
+      res.status(400).json({ error: 'email and password are required' });
+      return;
+    }
+
+    const cleanEmail = normalizeEmail(email);
+    const user = await prisma.user.findUnique({
+      where: { tenantId_email: { tenantId, email: cleanEmail } },
+      include: { member: true },
+    });
+
+    if (!user || !user.member) {
+      res.status(401).json({ error: 'Invalid credentials' });
+      return;
+    }
+
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) {
+      res.status(401).json({ error: 'Invalid credentials' });
+      return;
+    }
+
+    const token = jwt.sign(
+      { userId: user.id, tenantId, email: cleanEmail },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    await recordMemberEvent(tenantId, 'login', {
+      memberId: user.member.id,
+      userId: user.id,
+      metadata: { source: 'auth.member-login' },
+    });
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        member: {
+          id: user.member.id,
+          firstName: user.member.firstName,
+          lastName: user.member.lastName,
+        },
+      },
+    });
+  } catch (err) {
+    console.error('Member login error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // ─────────────────────────────────────────────────────────────
 // POST /api/auth/login
 // ─────────────────────────────────────────────────────────────

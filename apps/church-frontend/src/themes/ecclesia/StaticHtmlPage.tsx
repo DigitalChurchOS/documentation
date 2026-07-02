@@ -199,7 +199,7 @@ const COLLECTION_BINDINGS: CollectionBinding[] = [
   {
     key: 'events',
     routeBase: '/events',
-    archiveSlugs: ['events/archive'],
+    archiveSlugs: ['events', 'events/archive'],
     detailPrefix: 'events',
     cardSelector: '#eventGrid .event-card',
     countLabel: 'events',
@@ -225,19 +225,20 @@ function itemTitle(item: Record<string, any>): string {
 }
 
 function itemDescription(item: Record<string, any>): string {
-  return String(item?.summary || item?.description || item?.excerpt || item?.notes || item?.content || '');
+  return String(item?.summary || item?.shortDescription || item?.subtitle || item?.description || item?.excerpt || item?.notes || item?.content || '');
 }
 
 function itemDate(item: Record<string, any>): string {
-  return String(item?.date || item?.publishedAt || item?.startDate || item?.meetingDay || item?.createdAt || '');
+  return String(item?.date || item?.publishedAt || item?.scheduledAt || item?.startDate || item?.meetingDay || item?.createdAt || '');
 }
 
 function itemPerson(item: Record<string, any>): string {
-  return String(item?.speaker || item?.author || item?.host || item?.instructor || item?.leaderName || item?.leader || item?.team || '');
+  const author = item?.author && typeof item.author === 'object' ? item.author.name : item?.author;
+  return String(item?.speakerName || item?.speaker || author || item?.host || item?.instructor || item?.leaderName || item?.leader || item?.team || '');
 }
 
 function itemKind(item: Record<string, any>, binding: CollectionBinding): string {
-  const raw = item?.category || item?.type || item?.series || item?.groupType || (binding.key === 'products' ? 'Product' : binding.countLabel.replace(/s$/, ''));
+  const raw = item?.eventType || item?.resourceType || item?.productType || item?.assetType || item?.category || item?.type || item?.series || item?.groupType || item?.showTitle || (binding.key === 'products' ? 'Product' : binding.countLabel.replace(/s$/, ''));
   if (raw && typeof raw === 'object') return String(raw.name || raw.title || raw.label || '');
   return String(raw || '');
 }
@@ -253,7 +254,7 @@ function itemDuration(item: Record<string, any>): string {
 }
 
 function itemImage(item: Record<string, any>): string {
-  return String(item?.imageUrl || item?.thumbnailUrl || item?.coverUrl || '');
+  return String(item?.featuredImageUrl || item?.imageUrl || item?.thumbnailUrl || item?.coverImageUrl || item?.coverUrl || '');
 }
 
 function detailUrl(binding: CollectionBinding, item: Record<string, any>): string {

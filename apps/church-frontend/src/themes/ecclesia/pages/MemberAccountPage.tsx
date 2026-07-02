@@ -1,6 +1,22 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { BookOpen, CalendarDays, CheckCircle2, Gift, GraduationCap, LogOut, Save, UsersRound } from 'lucide-react';
+import {
+  Award,
+  BookOpen,
+  CalendarDays,
+  CheckCircle2,
+  Download,
+  Edit3,
+  Gift,
+  GraduationCap,
+  ListFilter,
+  LogIn,
+  LogOut,
+  Save,
+  ShieldCheck,
+  UsersRound,
+  X,
+} from 'lucide-react';
 import type { Tenant } from '../../../types';
 import {
   clearMemberSession,
@@ -17,6 +33,13 @@ import './MemberPortal.css';
 interface Props {
   tenant: Tenant;
 }
+
+type ContributionFilter = {
+  from: string;
+  to: string;
+  min: string;
+  max: string;
+};
 
 function formatDate(value?: string | null): string {
   if (!value) return 'Not recorded';
@@ -40,14 +63,29 @@ function formatMoney(amount?: number, currency = 'USD'): string {
   }).format(Number(amount || 0));
 }
 
+function getInitials(firstName?: string, lastName?: string): string {
+  return `${firstName?.trim()[0] || ''}${lastName?.trim()[0] || ''}`.toUpperCase() || 'ME';
+}
+
+function memberBio(member: any, tenant: Tenant): string {
+  return member.bio || member.about || `Member of ${tenant.name}. Keep your contact details, giving records, group connections, courses, events, and preferences in one secure place.`;
+}
+
+function contributionDate(value: any): string {
+  const date = new Date(value?.createdAt || value?.paidAt || value?.date || '');
+  return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
+}
+
 function ListBlock({
   empty,
+  emptyText = 'No records yet.',
   children,
 }: {
   empty: boolean;
+  emptyText?: string;
   children: React.ReactNode;
 }) {
-  if (empty) return <div className="member-empty">No records yet.</div>;
+  if (empty) return <div className="member-empty">{emptyText}</div>;
   return <div className="member-list">{children}</div>;
 }
 
@@ -57,6 +95,14 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
   const [account, setAccount] = useState<MemberAccountResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [contributionModalOpen, setContributionModalOpen] = useState(false);
+  const [contributionFilter, setContributionFilter] = useState<ContributionFilter>({
+    from: '',
+    to: '',
+    min: '',
+    max: '',
+  });
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [profileForm, setProfileForm] = useState({
@@ -66,6 +112,8 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
     phone: '',
     birthday: '',
     address: '',
+    bio: '',
+    photoUrl: '',
   });
   const [preferences, setPreferences] = useState({
     preferEmail: true,
@@ -92,10 +140,12 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
         setProfileForm({
           firstName: data.member.firstName || '',
           lastName: data.member.lastName || '',
-          email: data.member.email || data.member.user?.email || '',
+          email: data.member.email || data.member.user?.email || current.user.email || '',
           phone: data.member.phone || '',
           birthday: formatDateInput(data.member.birthday),
           address: data.member.address || '',
+          bio: memberBio(data.member, tenant),
+          photoUrl: data.member.photoUrl || '',
         });
         const pref = data.member.notificationPref || {};
         setPreferences({
@@ -116,16 +166,43 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
     return () => {
       active = false;
     };
-  }, [tenant.id]);
+  }, [tenant]);
 
-  const totals = useMemo(() => {
-    const giving = account?.giving;
-    return {
-      totalGiven: giving?.totalGiven || 0,
-      gifts: (giving?.donations.length || 0) + (giving?.partnerships.length || 0),
-      attendance: account?.member.checkIns?.length || 0,
-    };
+  const allContributions = useMemo(() => {
+    const donations = account?.giving?.donations || [];
+    const partnerships = account?.giving?.partnerships || [];
+    return [...donations, ...partnerships]
+      .map((gift: any) => ({
+        ...gift,
+        contributionDate: contributionDate(gift),
+        label: gift.category?.name || gift.fund || gift.title || 'Giving',
+        method: gift.method || gift.paymentMethod || gift.source || 'Online',
+      }))
+      .sort((a, b) => Date.parse(b.createdAt || b.date || '') - Date.parse(a.createdAt || a.date || ''));
   }, [account]);
+
+  const filteredContributions = useMemo(() => {
+    const min = contributionFilter.min ? Number(contributionFilter.min) : 0;
+    const max = contributionFilter.max ? Number(contributionFilter.max) : Number.POSITIVE_INFINITY;
+    return allContributions.filter((gift: any) => {
+      const date = gift.contributionDate;
+      const amount = Number(gift.amount || 0);
+      const matchesFrom = !contributionFilter.from || date >= contributionFilter.from;
+      const matchesTo = !contributionFilter.to || date <= contributionFilter.to;
+      return matchesFrom && matchesTo && amount >= min && amount <= max;
+    });
+  }, [allContributions, contributionFilter]);
+
+  const givingBuckets = useMemo(() => {
+    const buckets = new Map<string, { label: string; amount: number; currency: string }>();
+    allContributions.forEach((gift: any) => {
+      const key = gift.label || 'Giving';
+      const current = buckets.get(key) || { label: key, amount: 0, currency: gift.currency || 'USD' };
+      current.amount += Number(gift.amount || 0);
+      buckets.set(key, current);
+    });
+    return Array.from(buckets.values()).slice(0, 4);
+  }, [allContributions]);
 
   const saveProfile = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -136,7 +213,8 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
     try {
       const updated = await updateMemberProfile(session.tenantId, session.token, profileForm);
       setAccount((current) => current ? { ...current, member: { ...current.member, ...updated } } : current);
-      setMessage('Profile saved.');
+      setEditingProfile(false);
+      setMessage('Profile updated.');
     } catch (err: any) {
       setError(err.message || 'Unable to save profile');
     } finally {
@@ -152,7 +230,7 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
     try {
       const updated = await updateMemberPreferences(session.tenantId, session.token, preferences);
       setAccount((current) => current ? { ...current, member: { ...current.member, notificationPref: updated } } : current);
-      setMessage('Preferences saved.');
+      setMessage('Communication preferences saved.');
     } catch (err: any) {
       setError(err.message || 'Unable to save preferences');
     } finally {
@@ -169,16 +247,15 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
   if (!session) {
     return (
       <div className="member-portal">
-        <section className="member-portal__hero">
+        <section className="member-template-hero">
           <div>
-            <p className="member-portal__eyebrow">{tenant.name}</p>
+            <div className="section-kicker">{tenant.name}</div>
             <h1>Member Account</h1>
-            <p className="member-portal__subtitle">Sign in to view your account.</p>
+            <p className="lead">Sign in or create your profile to view your church records.</p>
           </div>
-          <div className="member-form__actions">
-            <Link className="btn btn-primary" to={withLocalChurchBase('/login')}>Sign In</Link>
-            <Link className="btn btn-soft" to={withLocalChurchBase('/')}>Home</Link>
-          </div>
+          <Link className="btn btn-primary" to={withLocalChurchBase('/login')}>
+            <LogIn size={16} /> Sign In
+          </Link>
         </section>
       </div>
     );
@@ -203,37 +280,35 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
 
   const member = account.member;
   const settings = account.settings || {};
-  const donations = account.giving?.donations || [];
-  const partnerships = account.giving?.partnerships || [];
-  const gifts = [...donations, ...partnerships].slice(0, 6);
   const groups = member.groupMemberships || [];
   const courses = member.lmsEnrollments || [];
+  const certificates = courses.filter((enrollment: any) => (
+    String(enrollment.status || '').toLowerCase().includes('complete') ||
+    Number(enrollment.progressPercent || 0) >= 100
+  ));
   const events = member.eventRegistrations || [];
   const checkIns = member.checkIns || [];
+  const initials = getInitials(member.firstName, member.lastName);
+  const totalGiven = account.giving?.totalGiven || allContributions.reduce((sum, gift: any) => sum + Number(gift.amount || 0), 0);
+  const contributionTotal = filteredContributions.reduce((sum, gift: any) => sum + Number(gift.amount || 0), 0);
 
   return (
-    <div className="member-portal">
-      <section className="member-portal__hero">
+    <div className="member-portal member-account-page">
+      <section className="member-account-hero">
         <div>
-          <p className="member-portal__eyebrow">{member.membershipStatus || 'member'}</p>
-          <h1>{member.firstName} {member.lastName}</h1>
-          <p className="member-portal__subtitle">
-            {member.email || session.user.email}
-          </p>
+          <div className="portal-avatar-wrap">
+            <div className="portal-avatar" aria-hidden="true">
+              {member.photoUrl ? <img src={member.photoUrl} alt="" /> : initials}
+            </div>
+            <div>
+              <h1>{member.firstName} {member.lastName}</h1>
+            </div>
+          </div>
+          <p>{memberBio(member, tenant)}</p>
         </div>
-        <div className="member-portal__stat-grid">
-          <div className="member-portal__stat">
-            <span>Giving</span>
-            <strong>{formatMoney(totals.totalGiven)}</strong>
-          </div>
-          <div className="member-portal__stat">
-            <span>Records</span>
-            <strong>{totals.gifts}</strong>
-          </div>
-          <div className="member-portal__stat">
-            <span>Check-ins</span>
-            <strong>{totals.attendance}</strong>
-          </div>
+        <div className="member-stat-strip">
+          <div><span>Total Invites</span><strong>{member.totalInvites || 0}</strong></div>
+          <div><span>Total Converts</span><strong>{member.totalConverts || 0}</strong></div>
         </div>
       </section>
 
@@ -241,92 +316,149 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
         <div className={`member-alert ${error ? 'error' : ''}`}>{error || message}</div>
       )}
 
-      <div className="member-portal__grid">
-        <section className="member-portal__panel">
-          <h2>Profile</h2>
-          <p className="member-portal__panel-subtitle">Joined {formatDate(member.createdAt)}</p>
-          <form className="member-form" onSubmit={saveProfile}>
-            <label>
-              First name
-              <input value={profileForm.firstName} onChange={(event) => setProfileForm((f) => ({ ...f, firstName: event.target.value }))} required />
-            </label>
-            <label>
-              Last name
-              <input value={profileForm.lastName} onChange={(event) => setProfileForm((f) => ({ ...f, lastName: event.target.value }))} required />
-            </label>
-            <label>
-              Email
-              <input type="email" value={profileForm.email} onChange={(event) => setProfileForm((f) => ({ ...f, email: event.target.value }))} required />
-            </label>
-            <label>
-              Phone
-              <input value={profileForm.phone} onChange={(event) => setProfileForm((f) => ({ ...f, phone: event.target.value }))} />
-            </label>
-            <label>
-              Birthday
-              <input type="date" value={profileForm.birthday} onChange={(event) => setProfileForm((f) => ({ ...f, birthday: event.target.value }))} />
-            </label>
-            <label className="full">
-              Address
-              <input value={profileForm.address} onChange={(event) => setProfileForm((f) => ({ ...f, address: event.target.value }))} />
-            </label>
-            <div className="member-form__actions">
-              <button className="btn btn-primary" type="submit" disabled={saving}>
-                <Save size={16} /> {saving ? 'Saving' : 'Save Profile'}
-              </button>
-              <button className="btn btn-soft" type="button" onClick={signOut}>
-                <LogOut size={16} /> Sign Out
-              </button>
-            </div>
-          </form>
-        </section>
-
-        <section className="member-portal__panel">
-          <h2>Access</h2>
-          <p className="member-portal__panel-subtitle">
-            {settings.memberOnlyContent ? 'Member access is active.' : 'Member access is limited.'}
-          </p>
-          <div className="member-list">
-            <Link className="member-list__item" to={withLocalChurchBase('/giving')}>
-              <div className="member-list__row"><strong><Gift size={16} /> Giving</strong><span>Open</span></div>
-            </Link>
-            <Link className="member-list__item" to={withLocalChurchBase('/courses')}>
-              <div className="member-list__row"><strong><GraduationCap size={16} /> Courses</strong><span>{courses.length}</span></div>
-            </Link>
-            <Link className="member-list__item" to={withLocalChurchBase('/events')}>
-              <div className="member-list__row"><strong><CalendarDays size={16} /> Events</strong><span>{events.length}</span></div>
-            </Link>
-            <Link className="member-list__item" to={withLocalChurchBase('/library')}>
-              <div className="member-list__row"><strong><BookOpen size={16} /> Library</strong><span>Browse</span></div>
-            </Link>
+      <section className="member-dashboard-preview section">
+        <article className="member-panel member-profile-panel">
+          <div className="member-panel-head">
+            <h2>Profile Details</h2>
+            <span>Joined {formatDate(member.createdAt)}</span>
           </div>
-        </section>
 
-        <section className="member-portal__panel">
-          <h2>Giving Records</h2>
-          <p className="member-portal__panel-subtitle">{formatMoney(totals.totalGiven)} recorded.</p>
-          <ListBlock empty={!settings.showGivingHistory || gifts.length === 0}>
-            {gifts.map((gift: any) => (
-              <div className="member-list__item" key={gift.id}>
-                <div className="member-list__row">
-                  <strong>{gift.category?.name || 'Giving'}</strong>
-                  <strong>{formatMoney(gift.amount, gift.currency || 'USD')}</strong>
+          {!editingProfile ? (
+            <div>
+              <div className="profile-summary-row">
+                <div className="profile-photo-slot">
+                  {member.photoUrl ? <img src={member.photoUrl} alt={`${member.firstName} ${member.lastName}`} /> : initials}
                 </div>
-                <div className="member-list__meta">{formatDate(gift.createdAt)} · {gift.status}</div>
+                <div>
+                  <span className="portal-badge"><ShieldCheck size={15} /> {member.membershipStatus || 'Member'}</span>
+                  <p className="profile-summary-meta">Member since {formatDate(member.createdAt)}</p>
+                </div>
+              </div>
+
+              <dl className="profile-detail-grid">
+                <div className="profile-detail"><dt>First name</dt><dd>{member.firstName || 'Not recorded'}</dd></div>
+                <div className="profile-detail"><dt>Last name</dt><dd>{member.lastName || 'Not recorded'}</dd></div>
+                <div className="profile-detail"><dt>Email</dt><dd>{member.email || session.user.email}</dd></div>
+                <div className="profile-detail"><dt>Phone</dt><dd>{member.phone || 'Not recorded'}</dd></div>
+                <div className="profile-detail"><dt>Birth date</dt><dd>{formatDate(member.birthday)}</dd></div>
+                <div className="profile-detail"><dt>Membership status</dt><dd>{member.membershipStatus || 'Member'}</dd></div>
+                <div className="profile-detail full"><dt>Bio / About me</dt><dd>{memberBio(member, tenant)}</dd></div>
+                <div className="profile-detail full"><dt>Address</dt><dd>{member.address || 'Not recorded'}</dd></div>
+              </dl>
+
+              <div className="profile-actions">
+                <button className="btn btn-primary" type="button" onClick={() => setEditingProfile(true)}>
+                  <Edit3 size={16} /> Edit Profile
+                </button>
+              </div>
+            </div>
+          ) : (
+            <form className="member-form-preview two-col" onSubmit={saveProfile}>
+              <div className="profile-edit-photo-row">
+                <div className="profile-photo-slot">
+                  {profileForm.photoUrl ? <img src={profileForm.photoUrl} alt="" /> : getInitials(profileForm.firstName, profileForm.lastName)}
+                </div>
+                <label className="full">Profile photo<input value={profileForm.photoUrl} onChange={(event) => setProfileForm((f) => ({ ...f, photoUrl: event.target.value }))} placeholder="Paste profile image URL" /></label>
+              </div>
+              <label>First name<input value={profileForm.firstName} onChange={(event) => setProfileForm((f) => ({ ...f, firstName: event.target.value }))} required /></label>
+              <label>Last name<input value={profileForm.lastName} onChange={(event) => setProfileForm((f) => ({ ...f, lastName: event.target.value }))} required /></label>
+              <label>Email<input type="email" value={profileForm.email} onChange={(event) => setProfileForm((f) => ({ ...f, email: event.target.value }))} required /></label>
+              <label>Phone<input value={profileForm.phone} onChange={(event) => setProfileForm((f) => ({ ...f, phone: event.target.value }))} /></label>
+              <label>Birth date<input type="date" value={profileForm.birthday} onChange={(event) => setProfileForm((f) => ({ ...f, birthday: event.target.value }))} /></label>
+              <label>Membership status<input value={member.membershipStatus || 'Member'} disabled /></label>
+              <label className="full">Bio / About me<textarea value={profileForm.bio} onChange={(event) => setProfileForm((f) => ({ ...f, bio: event.target.value }))} /></label>
+              <label className="full">Address<input value={profileForm.address} onChange={(event) => setProfileForm((f) => ({ ...f, address: event.target.value }))} /></label>
+              <button className="btn btn-primary" type="submit" disabled={saving}><Save size={16} /> {saving ? 'Updating' : 'Update Profile'}</button>
+              <button className="btn btn-soft" type="button" onClick={() => setEditingProfile(false)}><X size={16} /> Cancel</button>
+            </form>
+          )}
+        </article>
+
+        <article className="member-panel">
+          <h2>Course Certificates</h2>
+          <p className="member-panel-note">Issued upon completion of spiritual growth modules.</p>
+          <ListBlock empty={certificates.length === 0} emptyText="Completed certificates will appear here.">
+            {certificates.map((enrollment: any) => (
+              <div className="certificate-card" key={enrollment.id}>
+                <div className="certificate-info">
+                  <Award className="certificate-icon" size={22} />
+                  <div>
+                    <span className="certificate-title">{enrollment.course?.title || 'Course Certificate'}</span>
+                    <span className="certificate-date">Completed {formatDate(enrollment.completedAt || enrollment.updatedAt || enrollment.createdAt)}</span>
+                  </div>
+                </div>
+                <a className="certificate-btn" href={enrollment.certificateUrl || '#'}><Download size={14} /> Certificate</a>
               </div>
             ))}
           </ListBlock>
-        </section>
+        </article>
 
-        <section className="member-portal__panel">
-          <h2>Preferences</h2>
-          <p className="member-portal__panel-subtitle">Communication channels</p>
-          <div className="member-preferences">
+        <article className="member-panel">
+          <h2>My Groups</h2>
+          <p className="member-panel-note">Your active fellowships and group involvements.</p>
+          <ListBlock empty={!settings.showGroupMemberships || groups.length === 0} emptyText="Your group connections will appear here.">
+            {groups.map((membership: any) => (
+              <div className="member-access-row" key={membership.id}>
+                <strong><UsersRound size={16} /> {membership.group?.name || 'Group'}</strong>
+                <span className="portal-badge soft"><CheckCircle2 size={14} /> {membership.role || 'Active'}</span>
+              </div>
+            ))}
+          </ListBlock>
+        </article>
+
+        <article className="member-panel">
+          <h2>Giving History</h2>
+          <p className="member-panel-note">Detailed logs of your online support.</p>
+          <ListBlock empty={!settings.showGivingHistory || givingBuckets.length === 0} emptyText="No giving records yet.">
+            {givingBuckets.map((bucket) => (
+              <div className="giving-summary-row" key={bucket.label}>
+                <strong>{bucket.label}</strong>
+                <span>{formatMoney(bucket.amount, bucket.currency)}</span>
+              </div>
+            ))}
+          </ListBlock>
+
+          <div className="giving-section-divider" />
+          <h3 className="member-section-mini-title">Recent Contributions</h3>
+          <ListBlock empty={!settings.showGivingHistory || allContributions.length === 0} emptyText="Recent contributions will appear here.">
+            {allContributions.slice(0, 3).map((gift: any) => (
+              <div className="transaction-row" key={gift.id || `${gift.label}-${gift.createdAt}`}>
+                <div className="transaction-meta">
+                  <span className="transaction-title">{gift.label}</span>
+                  <span className="transaction-date">{formatDate(gift.createdAt)} - {gift.method}</span>
+                </div>
+                <div className="transaction-amount">
+                  <strong>{formatMoney(gift.amount, gift.currency || 'USD')}</strong>
+                  <span><CheckCircle2 size={11} /> {gift.status || 'Success'}</span>
+                </div>
+              </div>
+            ))}
+          </ListBlock>
+          <button className="btn btn-soft contribution-history-btn" type="button" onClick={() => setContributionModalOpen(true)}>
+            <ListFilter size={16} /> View All Contributions
+          </button>
+        </article>
+
+        <article className="member-panel">
+          <h2>Access</h2>
+          <p className="member-panel-note">{settings.memberOnlyContent ? 'Member access is active.' : 'Member access is limited.'}</p>
+          <div className="member-list">
+            <Link className="member-list__item" to={withLocalChurchBase('/giving')}><div className="member-list__row"><strong><Gift size={16} /> Giving</strong><span>{formatMoney(totalGiven)}</span></div></Link>
+            <Link className="member-list__item" to={withLocalChurchBase('/courses')}><div className="member-list__row"><strong><GraduationCap size={16} /> Courses</strong><span>{courses.length}</span></div></Link>
+            <Link className="member-list__item" to={withLocalChurchBase('/events')}><div className="member-list__row"><strong><CalendarDays size={16} /> Events</strong><span>{events.length}</span></div></Link>
+            <Link className="member-list__item" to={withLocalChurchBase('/resources')}><div className="member-list__row"><strong><BookOpen size={16} /> Resources</strong><span>Browse</span></div></Link>
+          </div>
+        </article>
+
+        <article className="member-panel">
+          <h2>Communications</h2>
+          <p className="member-panel-note">Manage how your church sends updates.</p>
+          <div className="member-check-list">
             {[
-              ['preferEmail', 'Email updates'],
-              ['preferSms', 'SMS updates'],
-              ['preferPush', 'App notifications'],
-              ['preferWhatsapp', 'WhatsApp updates'],
+              ['preferEmail', 'Email notifications'],
+              ['preferSms', 'SMS alerts'],
+              ['preferPush', 'Mobile app push'],
+              ['preferWhatsapp', 'WhatsApp messages'],
             ].map(([key, label]) => (
               <label key={key}>
                 {label}
@@ -337,76 +469,88 @@ const MemberAccountPage: React.FC<Props> = ({ tenant }) => {
                 />
               </label>
             ))}
-            <button className="btn btn-primary" type="button" onClick={savePreferences} disabled={saving}>
-              <CheckCircle2 size={16} /> Save Preferences
-            </button>
           </div>
-        </section>
+          <button className="btn btn-primary btn-full" type="button" onClick={savePreferences} disabled={saving}>
+            <CheckCircle2 size={16} /> Save Settings
+          </button>
+        </article>
 
-        <section className="member-portal__panel">
-          <h2>Groups</h2>
-          <p className="member-portal__panel-subtitle">{groups.length} active connection records</p>
-          <ListBlock empty={!settings.showGroupMemberships || groups.length === 0}>
-            {groups.map((membership: any) => (
-              <div className="member-list__item" key={membership.id}>
-                <div className="member-list__row">
-                  <strong><UsersRound size={16} /> {membership.group?.name || 'Group'}</strong>
-                  <span>{membership.role}</span>
-                </div>
-                <div className="member-list__meta">Joined {formatDate(membership.joinedAt)}</div>
-              </div>
-            ))}
-          </ListBlock>
-        </section>
-
-        <section className="member-portal__panel">
-          <h2>Courses</h2>
-          <p className="member-portal__panel-subtitle">{courses.length} enrollments</p>
-          <ListBlock empty={!settings.showCourseProgress || courses.length === 0}>
-            {courses.map((enrollment: any) => (
-              <div className="member-list__item" key={enrollment.id}>
-                <div className="member-list__row">
-                  <strong>{enrollment.course?.title || 'Course'}</strong>
-                  <span>{Math.round(enrollment.progressPercent || 0)}%</span>
-                </div>
-                <div className="member-list__meta">{enrollment.status}</div>
-              </div>
-            ))}
-          </ListBlock>
-        </section>
-
-        <section className="member-portal__panel">
+        <article className="member-panel">
           <h2>Attendance</h2>
-          <p className="member-portal__panel-subtitle">{checkIns.length} recent check-ins</p>
+          <p className="member-panel-note">{checkIns.length} recent check-ins</p>
           <ListBlock empty={!settings.showAttendanceHistory || checkIns.length === 0}>
-            {checkIns.map((checkIn: any) => (
+            {checkIns.slice(0, 5).map((checkIn: any) => (
               <div className="member-list__item" key={checkIn.id}>
-                <div className="member-list__row">
-                  <strong>{checkIn.type}</strong>
-                  <span>{formatDate(checkIn.checkedInAt)}</span>
-                </div>
+                <div className="member-list__row"><strong>{checkIn.type}</strong><span>{formatDate(checkIn.checkedInAt)}</span></div>
                 <div className="member-list__meta">{checkIn.targetId}</div>
               </div>
             ))}
           </ListBlock>
-        </section>
+        </article>
 
-        <section className="member-portal__panel">
+        <article className="member-panel">
           <h2>Events</h2>
-          <p className="member-portal__panel-subtitle">{events.length} registrations</p>
+          <p className="member-panel-note">{events.length} registrations</p>
           <ListBlock empty={!settings.showEventRegistrations || events.length === 0}>
-            {events.map((registration: any) => (
+            {events.slice(0, 5).map((registration: any) => (
               <div className="member-list__item" key={registration.id}>
-                <div className="member-list__row">
-                  <strong>{registration.event?.title || 'Event'}</strong>
-                  <span>{registration.paymentStatus}</span>
-                </div>
+                <div className="member-list__row"><strong>{registration.event?.title || 'Event'}</strong><span>{registration.paymentStatus}</span></div>
                 <div className="member-list__meta">{formatDate(registration.event?.startDate || registration.createdAt)}</div>
               </div>
             ))}
           </ListBlock>
-        </section>
-      </div>
+        </article>
+      </section>
+
+      <section className="account-exit-section section">
+        <div className="account-exit-divider" />
+        <div className="account-exit-actions">
+          <button className="btn btn-soft" type="button" onClick={signOut}>
+            <LogOut size={16} /> Sign Out
+          </button>
+        </div>
+      </section>
+
+      {contributionModalOpen && (
+        <div className="contribution-modal" onClick={(event) => {
+          if (event.target === event.currentTarget) setContributionModalOpen(false);
+        }}>
+          <div className="contribution-modal-card" role="dialog" aria-modal="true" aria-labelledby="contributionModalTitle">
+            <div className="contribution-modal-head">
+              <div>
+                <h3 id="contributionModalTitle">All Contributions</h3>
+                <p>Review giving over time and narrow the record by date or amount.</p>
+              </div>
+              <button className="btn btn-soft modal-close-btn" type="button" onClick={() => setContributionModalOpen(false)} aria-label="Close contributions">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="contribution-filter-grid">
+              <label>From<input type="date" value={contributionFilter.from} onChange={(event) => setContributionFilter((f) => ({ ...f, from: event.target.value }))} /></label>
+              <label>To<input type="date" value={contributionFilter.to} onChange={(event) => setContributionFilter((f) => ({ ...f, to: event.target.value }))} /></label>
+              <label>Min amount<input type="number" min="0" step="1" value={contributionFilter.min} onChange={(event) => setContributionFilter((f) => ({ ...f, min: event.target.value }))} /></label>
+              <label>Max amount<input type="number" min="0" step="1" value={contributionFilter.max} onChange={(event) => setContributionFilter((f) => ({ ...f, max: event.target.value }))} /></label>
+            </div>
+
+            <div className="contribution-modal-summary">
+              <span>{filteredContributions.length} {filteredContributions.length === 1 ? 'record' : 'records'}</span>
+              <strong>{formatMoney(contributionTotal, filteredContributions[0]?.currency || 'USD')}</strong>
+            </div>
+            <div className="contribution-list">
+              {filteredContributions.length ? filteredContributions.map((gift: any) => (
+                <div className="contribution-history-row" key={gift.id || `${gift.label}-${gift.createdAt}`}>
+                  <div>
+                    <strong>{gift.label}</strong>
+                    <span className="transaction-date">{formatDate(gift.createdAt)} - {gift.method}</span>
+                  </div>
+                  <span className="amount">{formatMoney(gift.amount, gift.currency || 'USD')}</span>
+                </div>
+              )) : <p className="member-empty">No contributions match these filters.</p>}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

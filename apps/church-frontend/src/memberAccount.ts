@@ -94,7 +94,7 @@ async function requestWithTenant<T>(
 export async function loginMember(tenant: Tenant, email: string, password: string): Promise<MemberSession> {
   const payload = await requestWithTenant<{ token: string; user: MemberSession['user'] }>(
     tenant.id,
-    '/api/auth/login',
+    '/api/auth/member-login',
     {
       method: 'POST',
       body: JSON.stringify({ email, password }),

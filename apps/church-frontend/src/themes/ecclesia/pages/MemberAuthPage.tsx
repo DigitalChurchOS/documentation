@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogIn, UserPlus } from 'lucide-react';
+import { Home, LogIn, UserPlus } from 'lucide-react';
 import type { Tenant } from '../../../types';
 import { loginMember, registerMember } from '../../../memberAccount';
 import { withLocalChurchBase } from '../../../routing';
@@ -12,146 +12,174 @@ interface Props {
 
 const MemberAuthPage: React.FC<Props> = ({ tenant }) => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [loading, setLoading] = useState(false);
+  const [loadingAction, setLoadingAction] = useState<'login' | 'register' | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState({
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    password: '',
+  });
+  const [registerForm, setRegisterForm] = useState({
     firstName: '',
     lastName: '',
-    email: '',
     phone: '',
+    email: '',
     password: '',
   });
 
-  const updateField = (field: keyof typeof form, value: string) => {
-    setForm((current) => ({ ...current, [field]: value }));
-  };
-
-  const submit = async (event: React.FormEvent) => {
+  const submitLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    setLoading(true);
+    setLoadingAction('login');
     setError(null);
     setMessage(null);
 
     try {
-      if (mode === 'login') {
-        await loginMember(tenant, form.email, form.password);
-        setMessage('Signed in.');
-      } else {
-        await registerMember(tenant, {
-          firstName: form.firstName,
-          lastName: form.lastName,
-          email: form.email,
-          phone: form.phone,
-          password: form.password,
-        });
-        setMessage('Account created.');
-      }
+      await loginMember(tenant, loginForm.email, loginForm.password);
+      setMessage('Signed in.');
       navigate(withLocalChurchBase('/account'));
     } catch (err: any) {
-      setError(err.message || 'Unable to continue');
+      setError(err.message || 'Unable to sign in');
     } finally {
-      setLoading(false);
+      setLoadingAction(null);
+    }
+  };
+
+  const submitRegister = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setLoadingAction('register');
+    setError(null);
+    setMessage(null);
+
+    try {
+      await registerMember(tenant, registerForm);
+      setMessage('Account created.');
+      navigate(withLocalChurchBase('/account'));
+    } catch (err: any) {
+      setError(err.message || 'Unable to create account');
+    } finally {
+      setLoadingAction(null);
     }
   };
 
   return (
-    <div className="member-auth-wrap">
-      <section className="member-auth">
-        <div className="member-auth__copy">
-          <p className="member-auth__eyebrow">{tenant.name}</p>
-          <h1>Member Account</h1>
-          <p className="member-auth__subtitle">
-            Welcome to your secure church account.
+    <div className="member-auth-page">
+      <section className="member-template-hero">
+        <div>
+          <div className="section-kicker">Member access</div>
+          <h1>Welcome to your secure church account.</h1>
+          <p className="lead">
+            Sign in to view giving records, group connections, courses, event registrations,
+            attendance, and profile preferences.
           </p>
         </div>
+      </section>
 
-        <form className="member-auth__form" onSubmit={submit}>
-          <div className="member-auth__tabs" role="tablist" aria-label="Member account mode">
-            <button
-              type="button"
-              className={`member-auth__tab ${mode === 'login' ? 'active' : ''}`}
-              onClick={() => setMode('login')}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              className={`member-auth__tab ${mode === 'register' ? 'active' : ''}`}
-              onClick={() => setMode('register')}
-            >
+      {(message || error) && (
+        <div className={`member-alert ${error ? 'error' : ''}`}>{error || message}</div>
+      )}
+
+      <section className="member-auth-preview section">
+        <article className="member-auth-card">
+          <div className="member-tabs" role="tablist" aria-label="Member account mode">
+            <button className="active" type="button">Sign In</button>
+            <button type="button" onClick={() => document.getElementById('memberJoinCard')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}>
               Join
             </button>
           </div>
 
-          {mode === 'register' && (
-            <>
-              <label>
-                First name
-                <input
-                  value={form.firstName}
-                  onChange={(event) => updateField('firstName', event.target.value)}
-                  autoComplete="given-name"
-                  required
-                />
-              </label>
-              <label>
-                Last name
-                <input
-                  value={form.lastName}
-                  onChange={(event) => updateField('lastName', event.target.value)}
-                  autoComplete="family-name"
-                  required
-                />
-              </label>
-              <label>
-                Phone
-                <input
-                  value={form.phone}
-                  onChange={(event) => updateField('phone', event.target.value)}
-                  autoComplete="tel"
-                />
-              </label>
-            </>
-          )}
-
-          <label>
-            Email
-            <input
-              type="email"
-              value={form.email}
-              onChange={(event) => updateField('email', event.target.value)}
-              autoComplete="email"
-              required
-            />
-          </label>
-          <label>
-            Password
-            <input
-              type="password"
-              value={form.password}
-              onChange={(event) => updateField('password', event.target.value)}
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              minLength={8}
-              required
-            />
-          </label>
-
-          {error && <div className="member-alert error">{error}</div>}
-          {message && <div className="member-alert">{message}</div>}
-
-          <div className="member-auth__actions">
-            <button className="btn btn-primary" type="submit" disabled={loading}>
-              {mode === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />}
-              {loading ? 'Please wait' : mode === 'login' ? 'Sign In' : 'Create Account'}
+          <form className="member-form-preview" onSubmit={submitLogin}>
+            <label>
+              Email
+              <input
+                type="email"
+                value={loginForm.email}
+                onChange={(event) => setLoginForm((form) => ({ ...form, email: event.target.value }))}
+                autoComplete="email"
+                required
+              />
+            </label>
+            <label>
+              Password
+              <input
+                type="password"
+                value={loginForm.password}
+                onChange={(event) => setLoginForm((form) => ({ ...form, password: event.target.value }))}
+                autoComplete="current-password"
+                minLength={8}
+                required
+              />
+            </label>
+            <button className="btn btn-primary" type="submit" disabled={loadingAction === 'login'}>
+              <LogIn size={16} /> {loadingAction === 'login' ? 'Signing In' : 'Sign In'}
             </button>
-            <Link className="btn btn-soft" to={withLocalChurchBase('/')}>
-              Home
-            </Link>
+          </form>
+        </article>
+
+        <article className="member-auth-card" id="memberJoinCard">
+          <div className="member-card-heading">
+            <span className="section-kicker">Create profile</span>
+            <h2>Join your church online.</h2>
           </div>
-        </form>
+          <form className="member-form-preview two-col" onSubmit={submitRegister}>
+            <label>
+              First name
+              <input
+                value={registerForm.firstName}
+                onChange={(event) => setRegisterForm((form) => ({ ...form, firstName: event.target.value }))}
+                autoComplete="given-name"
+                required
+              />
+            </label>
+            <label>
+              Last name
+              <input
+                value={registerForm.lastName}
+                onChange={(event) => setRegisterForm((form) => ({ ...form, lastName: event.target.value }))}
+                autoComplete="family-name"
+                required
+              />
+            </label>
+            <label>
+              Phone
+              <input
+                value={registerForm.phone}
+                onChange={(event) => setRegisterForm((form) => ({ ...form, phone: event.target.value }))}
+                autoComplete="tel"
+              />
+            </label>
+            <label>
+              Email
+              <input
+                type="email"
+                value={registerForm.email}
+                onChange={(event) => setRegisterForm((form) => ({ ...form, email: event.target.value }))}
+                autoComplete="email"
+                required
+              />
+            </label>
+            <label className="full">
+              Password
+              <input
+                type="password"
+                value={registerForm.password}
+                onChange={(event) => setRegisterForm((form) => ({ ...form, password: event.target.value }))}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+            </label>
+            <button className="btn btn-primary full" type="submit" disabled={loadingAction === 'register'}>
+              <UserPlus size={16} /> {loadingAction === 'register' ? 'Creating Account' : 'Create Account'}
+            </button>
+          </form>
+        </article>
       </section>
+
+      <div className="member-auth-home-row">
+        <Link className="btn btn-soft" to={withLocalChurchBase('/')}>
+          <Home size={16} /> Home
+        </Link>
+      </div>
     </div>
   );
 };
