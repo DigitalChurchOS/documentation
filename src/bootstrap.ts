@@ -28,8 +28,8 @@ async function main() {
   const tenantId = 'demo-church-local';
   await prisma.tenant.upsert({
     where: { id: tenantId },
-    update: { name: 'Demo Cathedral', subdomain: 'demo', status: 'active' },
-    create: { id: tenantId, name: 'Demo Cathedral', subdomain: 'demo', status: 'active' },
+    update: { name: 'Demo Church', subdomain: 'demo', status: 'active' },
+    create: { id: tenantId, name: 'Demo Church', subdomain: 'demo', status: 'active' },
   });
 
   // Assign base plan
