@@ -16,7 +16,7 @@ const webPublic = path.join(appsRoot, 'web', 'public');
 const ecclesiaFullTheme = path.join(root, 'ecclesia-full-theme');
 const themeCustomizerRoot = path.join(root, 'theme-customizer');
 const themeCustomizerDist = path.join(themeCustomizerRoot, 'dist');
-const buildThemeCustomizer = /^(1|true|yes)$/i.test(process.env.BUILD_THEME_CUSTOMIZER || '');
+const buildThemeCustomizer = !/^(0|false|no)$/i.test(process.env.BUILD_THEME_CUSTOMIZER || '');
 const buildChurchFrontend = !/^(0|false|no)$/i.test(process.env.BUILD_CHURCH_FRONTEND || '');
 
 function ensureAppDependencies(appRoot, label) {
@@ -45,7 +45,7 @@ if (buildThemeCustomizer) {
   ensureAppDependencies(themeCustomizerRoot, 'Theme Customizer');
   execSync('npm run build', { cwd: themeCustomizerRoot, stdio: 'inherit' });
 } else {
-  console.log('Skipping Theme Customizer build. Set BUILD_THEME_CUSTOMIZER=true to include /customizer assets.');
+  console.log('Skipping Theme Customizer build because BUILD_THEME_CUSTOMIZER=false.');
 }
 
 if (buildChurchFrontend) {

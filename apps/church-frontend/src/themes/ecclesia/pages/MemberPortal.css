@@ -362,6 +362,41 @@
   padding-bottom: 54px;
 }
 
+.member-auth-split {
+  grid-template-columns: minmax(0, .95fr) minmax(360px, .78fr);
+  align-items: center;
+  min-height: calc(100vh - 230px);
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+.member-auth-copy {
+  display: grid;
+  gap: 18px;
+  align-content: center;
+}
+
+.member-auth-copy h1 {
+  max-width: 660px;
+  margin: 0;
+  color: var(--text, #141414);
+  font-size: 58px;
+  line-height: 1.04;
+  letter-spacing: 0;
+}
+
+.member-auth-copy .lead {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted, #6b625c);
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+.member-auth-copy .btn {
+  width: max-content;
+}
+
 .member-auth-card,
 .member-panel {
   background: var(--surface, #fff);
@@ -372,6 +407,15 @@
 
 .member-auth-card {
   padding: 32px;
+}
+
+.member-auth-card--single {
+  align-self: center;
+  padding: 34px;
+}
+
+.member-alert--inline {
+  margin-bottom: 16px;
 }
 
 .member-tabs {
@@ -981,7 +1025,13 @@
     grid-template-columns: 1fr;
   }
 
+  .member-auth-split {
+    min-height: auto;
+    padding-top: 46px;
+  }
+
   .member-template-hero h1,
+  .member-auth-copy h1,
   .member-account-hero h1 {
     font-size: 42px;
   }
@@ -1013,6 +1063,14 @@
   .member-panel,
   .contribution-modal-card {
     padding: 22px;
+  }
+
+  .member-auth-copy h1 {
+    font-size: 36px;
+  }
+
+  .member-auth-copy .lead {
+    font-size: 16px;
   }
 
   .portal-avatar-wrap,
