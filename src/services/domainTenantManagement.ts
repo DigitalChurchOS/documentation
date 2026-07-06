@@ -1,5 +1,6 @@
 import prisma from '../lib/prisma';
 import { trackEvent } from './analytics';
+import { getPlatformCloudinaryCredentials, uploadToCloudinary } from './cloudinary';
 
 const MODULE_KEY = 'domain-tenant-management';
 const VALID_STATUSES = new Set(['active', 'inactive']);
@@ -344,10 +345,30 @@ export class DomainTenantManagementService {
       currentSettings = safeParseJson(brandingRecord.settings, {});
     }
 
+    let logoUrl = data.logo;
+    if (logoUrl && logoUrl.startsWith('data:') && logoUrl.includes(';base64,')) {
+      try {
+        const credentials = await getPlatformCloudinaryCredentials('onboarding');
+        logoUrl = await uploadToCloudinary(logoUrl, credentials, `churchtell-${tenantId}`);
+      } catch (err: any) {
+        console.error('Failed to upload logo to Cloudinary:', err);
+      }
+    }
+
+    let faviconUrl = data.favicon;
+    if (faviconUrl && faviconUrl.startsWith('data:') && faviconUrl.includes(';base64,')) {
+      try {
+        const credentials = await getPlatformCloudinaryCredentials('onboarding');
+        faviconUrl = await uploadToCloudinary(faviconUrl, credentials, `churchtell-${tenantId}`);
+      } catch (err: any) {
+        console.error('Failed to upload favicon to Cloudinary:', err);
+      }
+    }
+
     const updatedSettings = {
       ...currentSettings,
-      ...(data.logo !== undefined && { logo: data.logo }),
-      ...(data.favicon !== undefined && { favicon: data.favicon }),
+      ...(logoUrl !== undefined && { logo: logoUrl }),
+      ...(faviconUrl !== undefined && { favicon: faviconUrl }),
       ...(data.timezone !== undefined && { timezone: data.timezone }),
       ...(data.accent !== undefined && { accent: data.accent }),
       ...(data.language !== undefined && { language: data.language }),
@@ -369,6 +390,40 @@ export class DomainTenantManagementService {
         settings: JSON.stringify(updatedSettings)
       }
     });
+
+    // Sync branding back to ecclesia-global-content CMS block if it exists
+    try {
+      const cmsBlock = await prisma.reusableBlock.findFirst({
+        where: {
+          tenantId,
+          key: 'ecclesia-global-content'
+        }
+      });
+      if (cmsBlock && cmsBlock.content) {
+        const content = JSON.parse(cmsBlock.content);
+        if (content.churchIdentity) {
+          if (logoUrl !== undefined) content.churchIdentity.logoUrl = logoUrl;
+          if (faviconUrl !== undefined) content.churchIdentity.faviconUrl = faviconUrl;
+          if (data.name !== undefined) content.churchIdentity.churchName = data.name;
+          if (data.description !== undefined) content.churchIdentity.description = data.description;
+        }
+        if (content.contact) {
+          if (data.phone !== undefined) content.contact.phone = data.phone;
+          if (data.address !== undefined) content.contact.address = data.address;
+        }
+        if (content.footer) {
+          if (data.name !== undefined) {
+            content.footer.copyrightText = `&copy; ${new Date().getFullYear()} ${data.name}. All rights reserved.`;
+          }
+        }
+        await prisma.reusableBlock.update({
+          where: { id: cmsBlock.id },
+          data: { content: JSON.stringify(content) }
+        });
+      }
+    } catch (syncErr) {
+      console.error('Failed to sync branding back to CMS block:', syncErr);
+    }
 
     await this.logActivity(tenantId, userId, 'update_branding', updatedSettings);
 

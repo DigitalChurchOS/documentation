@@ -11,7 +11,24 @@ async function main() {
     'branch.create', 'branch.read', 'branch.update', 'branch.delete',
     'role.create', 'role.read', 'role.update', 'role.delete',
     'user.create', 'user.read', 'user.update', 'user.delete',
-    'tenant.settings'
+    'tenant.settings',
+    'platform.overview',
+    'platform.tenants',
+    'platform.modules',
+    'platform.plans',
+    'platform.subscriptions',
+    'platform.usage',
+    'platform.domains',
+    'platform.users-roles',
+    'platform.support',
+    'platform.announcements',
+    'platform.audit',
+    'platform.health',
+    'platform.marketplace',
+    'platform.themes',
+    'platform.plugins',
+    'platform.integrations',
+    'platform.settings'
   ];
 
   console.log('🔑 Seeding permissions...');
@@ -22,6 +39,7 @@ async function main() {
       create: { name, description: `System permission for ${name}` },
     });
   }
+
 
   // 2. Create the Tenant Admin Workspace (demo-church-local)
   console.log('\n⛪ Seeding Demo Church workspace...');

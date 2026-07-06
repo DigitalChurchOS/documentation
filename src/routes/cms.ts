@@ -390,16 +390,52 @@ async function ensureEcclesiaGlobalContent(tenantId: string) {
     where: { tenantId_key: { tenantId, key: ECCLESIA_GLOBAL_CONTENT_KEY } },
   });
 
-  if (existing) return existing;
-
   const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
+  const branding = await prisma.moduleSettings.findUnique({
+    where: { tenantId_moduleKey: { tenantId, moduleKey: 'domain-tenant-management' } },
+  });
+  const brandingData = branding?.settings ? JSON.parse(branding.settings) : {};
+
+  if (existing) {
+    const content = JSON.parse(existing.content);
+    let changed = false;
+    if (content.churchIdentity) {
+      if (brandingData.logo && content.churchIdentity.logoUrl !== brandingData.logo) {
+        content.churchIdentity.logoUrl = brandingData.logo;
+        changed = true;
+      }
+      if (brandingData.favicon && content.churchIdentity.faviconUrl !== brandingData.favicon) {
+        content.churchIdentity.faviconUrl = brandingData.favicon;
+        changed = true;
+      }
+      if (brandingData.darkLogo && content.churchIdentity.darkLogoUrl !== brandingData.darkLogo) {
+        content.churchIdentity.darkLogoUrl = brandingData.darkLogo;
+        changed = true;
+      }
+    }
+    if (changed) {
+      return prisma.reusableBlock.update({
+        where: { id: existing.id },
+        data: { content: JSON.stringify(content) },
+      });
+    }
+    return existing;
+  }
+
+  const globalContent = createEcclesiaGlobalContent(tenant?.name) as any;
+  if (brandingData.logo) globalContent.churchIdentity.logoUrl = brandingData.logo;
+  if (brandingData.favicon) globalContent.churchIdentity.faviconUrl = brandingData.favicon;
+  if (brandingData.darkLogo) globalContent.churchIdentity.darkLogoUrl = brandingData.darkLogo;
+  if (brandingData.email) globalContent.contact.email = brandingData.email;
+  if (brandingData.phone) globalContent.contact.phone = brandingData.phone;
+  if (brandingData.address) globalContent.contact.address = brandingData.address;
 
   return prisma.reusableBlock.create({
     data: {
       tenantId,
       name: 'Ecclesia Global Content',
       key: ECCLESIA_GLOBAL_CONTENT_KEY,
-      content: JSON.stringify(createEcclesiaGlobalContent(tenant?.name)),
+      content: JSON.stringify(globalContent),
     },
   });
 }
@@ -593,6 +629,11 @@ router.get('/site-context', dnsMiddleware, async (req: Request, res: Response) =
       enabled: m.status === 'active',
     }));
 
+    const globalContentBlock = await ensureEcclesiaGlobalContent(tenantId);
+    const globalContent = globalContentBlock
+      ? safeJson(globalContentBlock.content, createEcclesiaGlobalContent(tenant.name))
+      : createEcclesiaGlobalContent(tenant.name);
+
     res.json({
       data: {
         tenant: {
@@ -608,6 +649,7 @@ router.get('/site-context', dnsMiddleware, async (req: Request, res: Response) =
           draftSettings: safeJson(website.theme.draftSettings, null),
         },
         moduleEntitlements,
+        globalContent,
         navigation: navMenu ? {
           id: navMenu.id,
           items: normalizeNavigationItems(navMenu.items),
@@ -1014,6 +1056,35 @@ router.patch('/global-content', requireCmsPermission('core-website-cms.update'),
         content: JSON.stringify(content),
       },
     });
+
+    try {
+      const logoUrl = content.churchIdentity?.logoUrl || '';
+      const faviconUrl = content.churchIdentity?.faviconUrl || '';
+      const darkLogoUrl = content.churchIdentity?.darkLogoUrl || '';
+      const email = content.contact?.email || '';
+      const phone = content.contact?.phone || '';
+      const address = content.contact?.address || '';
+
+      const currentBranding = await prisma.moduleSettings.findUnique({
+        where: { tenantId_moduleKey: { tenantId, moduleKey: 'domain-tenant-management' } },
+      });
+      const nextBranding = {
+        ...safeJson<Record<string, any>>(currentBranding?.settings, {}),
+        logo: logoUrl,
+        favicon: faviconUrl,
+        darkLogo: darkLogoUrl,
+        email,
+        phone,
+        address,
+      };
+      await prisma.moduleSettings.upsert({
+        where: { tenantId_moduleKey: { tenantId, moduleKey: 'domain-tenant-management' } },
+        create: { tenantId, moduleKey: 'domain-tenant-management', settings: JSON.stringify(nextBranding) },
+        update: { settings: JSON.stringify(nextBranding) },
+      });
+    } catch (syncErr) {
+      console.error('Failed to sync global content branding back to module settings:', syncErr);
+    }
 
     await prisma.cmsActivityLog.create({
       data: {

@@ -153,6 +153,7 @@ export interface SiteContext {
   announcement: { id: string; isActive: boolean; text: string; ctaUrl?: string; ctaLabel?: string };
   enabledPlugins: string[];
   pluginSettings: Record<string, any>;
+  globalContent?: GlobalContent;
 }
 
 export interface GlobalContent {

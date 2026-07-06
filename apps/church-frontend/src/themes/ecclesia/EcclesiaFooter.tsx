@@ -35,7 +35,17 @@ const EcclesiaFooter: React.FC = () => {
           {/* Column 1: Brand + Description + Social */}
           <div>
             <Link to={withLocalChurchBase('/')} className="brand" style={{ color: 'white' }}>
-              <span className="brand-mark"><Church size={20} /></span>
+              <span className="brand-mark">
+                {globalContent?.churchIdentity?.logoUrl ? (
+                  <img 
+                    src={globalContent.churchIdentity.logoUrl} 
+                    alt={`${churchName} Logo`} 
+                    style={{ height: '100%', width: '100%', objectFit: 'contain', display: 'block' }} 
+                  />
+                ) : (
+                  <Church size={20} />
+                )}
+              </span>
               <span>{churchName}</span>
             </Link>
             {description && <p style={{ marginTop: 18, maxWidth: 340 }}>{description}</p>}

@@ -282,7 +282,7 @@ const PageRenderer: React.FC<{ siteContext: SiteContext; themeSettings: ThemeSet
     collections: pageData?.collections || siteContext.collections || {},
     contentDesign: pageData?.contentDesign || siteContext.contentDesign,
     footer: pageData?.footer || siteContext.footer,
-    globalContent: pageData?.globalContent || null,
+    globalContent: pageData?.globalContent || siteContext.globalContent || null,
     isPreviewMode: !!getQueryParams().previewToken,
     moduleEntitlements: siteContext.moduleEntitlements,
     headerCTAs,
@@ -397,6 +397,24 @@ const App: React.FC = () => {
         setSiteContext(response.data);
         // Default to active theme's settings
         setThemeSettings(response.data.theme.settings || {});
+
+        // Set dynamic title and favicon
+        if (response.data?.tenant) {
+          const tenantName = response.data.tenant.name;
+          document.title = tenantName;
+
+          const globalContent = response.data.globalContent;
+          const faviconUrl = globalContent?.churchIdentity?.faviconUrl || '';
+          if (faviconUrl) {
+            let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+            if (!link) {
+              link = document.createElement('link');
+              link.rel = 'icon';
+              document.head.appendChild(link);
+            }
+            link.href = faviconUrl;
+          }
+        }
       } catch (err: any) {
         setError(err.message || 'Failed to initialize site context');
       } finally {

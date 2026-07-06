@@ -211,7 +211,17 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
     <header className={headerClasses} {...headerData}>
       <div className="nav-wrap">
         <Link to={withLocalChurchBase('/')} className="brand">
-          <span className="brand-mark"><Church size={20} /></span>
+          <span className="brand-mark">
+            {globalContent?.churchIdentity?.logoUrl ? (
+              <img 
+                src={globalContent.churchIdentity.logoUrl} 
+                alt={`${churchName} Logo`} 
+                style={{ height: '100%', width: '100%', objectFit: 'contain', display: 'block' }} 
+              />
+            ) : (
+              <Church size={20} />
+            )}
+          </span>
           <span>{churchName}</span>
         </Link>
  

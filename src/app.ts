@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
+import prisma from './lib/prisma';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { tenantMiddleware } from './middleware/tenant';
@@ -77,7 +78,8 @@ app.use(helmet({
   hsts: isProd, // Only enforce HTTPS in production
   contentSecurityPolicy: isProd ? undefined : false, // Disable CSP in local development
 }));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Rate limiting: 100 requests per 15 minutes in production; high limits/bypass locally
 const apiLimiter = rateLimit({
@@ -120,7 +122,7 @@ function isIpHost(hostname: string): boolean {
   return /^\d{1,3}(?:\.\d{1,3}){3}$/.test(hostname) || hostname === '::1' || hostname === '[::1]';
 }
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   const rawHost = (req.headers['x-forwarded-host'] || req.headers.host) as string | undefined;
   if (!rawHost) return next();
 
@@ -136,7 +138,60 @@ app.use((req, res, next) => {
     return next();
   }
 
-  if (p === '/sw.js' || p === '/manifest.json' || p.startsWith('/assets/')) {
+  if (p === '/manifest.json') {
+    try {
+      const tenant = await prisma.tenant.findUnique({ where: { subdomain } });
+      if (tenant) {
+        const block = await prisma.reusableBlock.findUnique({
+          where: { tenantId_key: { tenantId: tenant.id, key: 'ecclesia-global-content' } }
+        });
+        let churchName = tenant.name;
+        let logoUrl = '/light.png';
+        let description = "CMS-driven modern church website with native application feel and offline support.";
+        if (block && block.content) {
+          try {
+            const content = typeof block.content === 'string' ? JSON.parse(block.content) : block.content;
+            const identity = content?.churchIdentity;
+            if (identity?.churchName) churchName = identity.churchName;
+            if (identity?.logoUrl) logoUrl = identity.logoUrl;
+            if (identity?.description) description = identity.description;
+          } catch (e) {
+            console.error('Failed to parse global content for manifest.json:', e);
+          }
+        }
+        const manifest = {
+          "name": churchName,
+          "short_name": churchName.length > 12 ? (churchName.split(' ')[0] || 'Church') : churchName,
+          "description": description,
+          "start_url": "/",
+          "display": "standalone",
+          "background_color": "#f8fafc",
+          "theme_color": "#f97316",
+          "icons": [
+            {
+              "src": logoUrl || "/light.png",
+              "sizes": "512x512",
+              "type": "image/png"
+            },
+            {
+              "src": logoUrl || "/dark.png",
+              "sizes": "512x512",
+              "type": "image/png"
+            }
+          ]
+        };
+        res.setHeader('content-type', 'application/json; charset=utf-8');
+        res.setHeader('cache-control', 'public, max-age=3600');
+        return res.json(manifest);
+      }
+    } catch (dbErr) {
+      console.error('Database error fetching manifest.json details:', dbErr);
+    }
+    // Fallback
+    return res.sendFile(path.join(churchFrontendDistPath, 'manifest.json'));
+  }
+
+  if (p === '/sw.js' || p.startsWith('/assets/')) {
     return res.sendFile(path.join(churchFrontendDistPath, p.replace(/^\/+/, '')));
   }
 

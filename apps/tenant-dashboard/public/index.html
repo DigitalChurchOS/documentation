@@ -3,11 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ChurchOS Tenant Dashboard</title>
+  <title>Churchtell Church Workspace</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <style>
     :root {
       --accent: #4f46e5;
@@ -101,6 +103,25 @@
 
     * { box-sizing: border-box; }
 
+    .upload-zone {
+      border: 2px dashed var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel-2);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      min-height: 150px;
+      text-align: center;
+    }
+    .upload-zone:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -144,32 +165,52 @@
     }
 
     .brand-mark {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border-radius: 8px;
-      background: var(--accent);
-      color: #fff;
+      width: 38px !important;
+      height: 38px !important;
+      flex: 0 0 auto !important;
+      border-radius: 12px !important;
+      display: grid !important;
+      place-items: center !important;
+      background: linear-gradient(145deg, var(--accent), var(--accent-2)) !important;
+      color: white !important;
+      box-shadow: 0 16px 34px var(--accent-shadow) !important;
+      position: relative !important;
+      overflow: hidden !important;
+    }
+    .brand-mark:after {
+      content: "" !important;
+      position: absolute !important;
+      width: 48px !important;
+      height: 48px !important;
+      border: 1px solid rgba(255,255,255,.35) !important;
+      transform: rotate(35deg) !important;
+      border-radius: 16px !important;
+    }
+    .brand-mark svg, .brand-mark i {
+      width: 18px !important;
+      height: 18px !important;
     }
 
-    .brand-mark svg, .brand-mark i {
-      width: 15px !important;
-      height: 15px !important;
-      stroke-width: 1.5 !important;
+    .brand-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
     }
 
     .brand-copy strong {
       display: block;
-      font-size: 15px;
+      font-size: 16px;
+      font-weight: 700;
       line-height: 1.1;
     }
 
     .brand-copy span {
       display: block;
-      font-size: 11px;
+      font-size: 12px;
       color: var(--muted);
       margin-top: 2px;
+      line-height: 1.1;
       max-width: 170px;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -205,12 +246,72 @@
     }
 
     .login-card {
-      width: min(460px, 100%);
+      width: min(520px, 100%);
       background: var(--panel);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 28px;
+      padding: 56px;
+    }
+
+    .login-card input:not([type="checkbox"]) {
+      padding: 17px 15px !important;
+      font-size: 14px !important;
+    }
+
+    .login-card select {
+      min-height: 50px !important;
+    }
+
+    .login-card .btn {
+      min-height: 50px !important;
+      font-size: 15px !important;
+    }
+
+    .password-field-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .password-field-wrapper input {
+      padding-right: 44px !important;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      padding: 4px;
+      z-index: 10;
+    }
+
+    .password-toggle-btn:hover {
+      color: var(--text);
+      transform: none !important;
+    }
+
+    .password-toggle-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .login-error-container {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 10px;
+      color: #ef4444;
+      font-size: 13px;
+      text-align: center;
+      width: 100%;
     }
 
     .login-card h2, .section-head h2, .module-preview h2 {
@@ -3045,7 +3146,7 @@
     }
   
 /* ==========================================================
-   Digital Church OS — Blueish Purple Modern Theme Override
+   Digital Churchtell — Blueish Purple Modern Theme Override
    Safe visual layer only: no body HTML, module markup, or JS changes.
    ========================================================== */
 :root {
@@ -4912,8 +5013,8 @@ body.customizer-open { overflow: hidden; }
       <div class="brand-lockup">
         <div class="brand-mark"><i data-lucide="church"></i></div>
         <div class="brand-copy">
-          <strong>ChurchOS</strong>
-          <span>Tenant command center</span>
+          <strong>Churchtell</strong>
+          <span>Church control center</span>
         </div>
       </div>
       <div>
@@ -4926,24 +5027,29 @@ body.customizer-open { overflow: hidden; }
     <section class="login-panel">
       <form id="loginForm" class="login-card">
         <h2>Sign in</h2>
-        <p>Access the tenant workspace, module previews, central settings, and super-admin controls.</p>
+        <p>Access the Church Workspace, module previews, central settings, and super-admin controls.</p>
         <div class="field">
           <label for="email">Email</label>
           <input id="email" type="email" placeholder="admin@yourchurch.com" required>
         </div>
         <div class="field">
           <label for="password">Password</label>
-          <input id="password" type="password" required>
+          <div class="password-field-wrapper">
+            <input id="password" type="password" required>
+            <button type="button" id="passwordToggleBtn" class="password-toggle-btn" onclick="togglePasswordVisibility('passwordToggleBtn', 'password')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
         </div>
         <button class="btn primary w-full" type="submit"><i data-lucide="log-in"></i>Enter dashboard</button>
-        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--muted);">
+        <p style="text-align: center; margin-top: 16px; margin-bottom: 0 !important; padding-bottom: 0 !important; font-size: 13px; color: var(--muted);">
           Don't have an account? <a href="#" onclick="toggleSignup(true); return false;" style="color: var(--accent); text-decoration: none; font-weight: 600;">Create church account</a>
         </p>
       </form>
 
       <form id="signupForm" class="login-card hidden">
         <h2>Create Church Account</h2>
-        <p>Set up your ministry on ChurchOS.</p>
+        <p>Set up your ministry on Churchtell.</p>
         <div class="field">
           <label for="regChurchName">Church Name</label>
           <input id="regChurchName" type="text" placeholder="e.g. Grace Community Church" required>
@@ -4954,10 +5060,15 @@ body.customizer-open { overflow: hidden; }
         </div>
         <div class="field">
           <label for="regPassword">Password</label>
-          <input id="regPassword" type="password" required>
+          <div class="password-field-wrapper">
+            <input id="regPassword" type="password" required>
+            <button type="button" id="regPasswordToggleBtn" class="password-toggle-btn" onclick="togglePasswordVisibility('regPasswordToggleBtn', 'regPassword')">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
         </div>
         <button class="btn primary w-full" type="submit"><i data-lucide="user-plus"></i>Create account</button>
-        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--muted);">
+        <p style="text-align: center; margin-top: 16px; margin-bottom: 0 !important; padding-bottom: 0 !important; font-size: 13px; color: var(--muted);">
           Already registered? <a href="#" onclick="toggleSignup(false); return false;" style="color: var(--accent); text-decoration: none; font-weight: 600;">Sign in here</a>
         </p>
       </form>
@@ -4969,7 +5080,7 @@ body.customizer-open { overflow: hidden; }
     <div class="sidebar-wrapper">
       <!-- Column A: Module Category Sidebar (thin vertical bar on the left) -->
       <aside class="sidebar-column-a">
-        <div class="sidebar-a-logo" onclick="selectSidebarCategory('home')" style="cursor: pointer;" title="ChurchOS">
+        <div class="sidebar-a-logo" onclick="selectSidebarCategory('home')" style="cursor: pointer;" title="Churchtell">
           <i data-lucide="church"></i>
         </div>
         <div class="sidebar-a-nav" id="sidebarCategoriesA">
@@ -5013,8 +5124,8 @@ body.customizer-open { overflow: hidden; }
             <i data-lucide="menu"></i>
           </button>
           <div class="topbar-title-wrapper" style="min-width: 0;">
-            <h1 id="viewTitle">Tenant Dashboard</h1>
-            <p id="viewSubtitle">Unified backend for all ChurchOS modules.</p>
+            <h1 id="viewTitle">Church Workspace</h1>
+            <p id="viewSubtitle">Unified backend for all Churchtell modules.</p>
           </div>
         </div>
         <div class="top-actions" style="display: flex; align-items: center; gap: 8px;">
@@ -5635,7 +5746,7 @@ body.customizer-open { overflow: hidden; }
                   <div class="section-head">
                     <div>
                       <h2>Staff Invitations</h2>
-                      <p>Invite ministry leaders, finance managers, or media coordinators to join your ChurchOS dashboard.</p>
+                      <p>Invite ministry leaders, finance managers, or media coordinators to join your Churchtell dashboard.</p>
                     </div>
                     <button class="btn" onclick="openInviteStaffModal()"><i data-lucide="plus"></i>Invite Staff</button>
                   </div>
@@ -6174,36 +6285,61 @@ body.customizer-open { overflow: hidden; }
                   </div>
                   <div class="panel" style="padding:24px; display:flex; flex-direction:column; gap:24px;">
                     <div class="grid" style="grid-template-columns: 1fr 1fr; gap:24px;">
-                      <!-- Logo -->
+                      
+                      <!-- Logo Uploader -->
                       <div>
                         <label style="font-weight:600; display:block; margin-bottom:4px;">Church Logo</label>
                         <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Displayed in your website header and communications.</p>
-                        <div class="row" style="gap:8px;">
-                          <input type="file" id="dtLogoFileInput" style="display:none;" accept="image/*" onchange="handleImageUpload(event, 'logo')">
-                          <input type="hidden" id="dtLogoUrlInput">
-                          <button class="btn secondary" onclick="document.getElementById('dtLogoFileInput').click()"><i data-lucide="upload" style="margin-right: 6px;"></i>Upload Logo</button>
+                        
+                        <input type="hidden" id="dtLogoUrlInput" />
+                        <input type="file" id="logoFileInput" accept="image/*" style="display:none;" onchange="handleDashboardFileSelect('logo', this, false)" />
+                        
+                        <div class="upload-zone" id="logoUploadZone" onclick="document.getElementById('logoFileInput').click()">
+                          <div id="logoUploadZoneContent" style="display: flex; flex-direction:column; align-items:center; gap:8px;">
+                            <i data-lucide="upload-cloud" style="width:28px; height:28px; color:var(--muted);"></i>
+                            <span style="font-weight:700; font-size:12px; color:var(--text);">Drag and drop, or <span style="color:var(--accent);">browse</span></span>
+                            <span style="font-size:10px; color:var(--muted);">PNG, JPG, SVG up to 2MB</span>
+                          </div>
+                          
+                          <div id="logoUploadZonePreview" style="display: none; flex-direction:column; align-items:center; gap:12px; position:relative;">
+                            <div style="position:relative; display:inline-block; padding:8px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px;">
+                              <img id="logoPreviewImg" src="" style="max-height:60px; max-width:100%; object-fit:contain; border-radius:6px;" />
+                              <button type="button" onclick="clearDashboardAssetFile('logo', event)" style="position:absolute; top:-10px; right:-10px; height:24px; width:24px; border-radius:50%; background:#fee2e2; border:1px solid #fecaca; padding:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.05); cursor:pointer;" title="Remove">
+                                <i data-lucide="trash-2" style="width:12px; height:12px; color:#dc2626;"></i>
+                              </button>
+                            </div>
+                            <span style="font-size:10px; color:var(--muted); font-weight:600;">Click or drag to replace image</span>
+                          </div>
                         </div>
-                        <div id="dtLogoPreviewContainer" class="hidden" style="margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--panel-2); max-width: fit-content; display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                          <img id="dtLogoPreview" style="max-height: 48px; border-radius: 4px;">
-                          <span class="muted" style="font-size: 10px;">Logo Preview</span>
-                        </div>
-
                       </div>
 
-                      <!-- Favicon -->
+                      <!-- Favicon Uploader -->
                       <div>
                         <label style="font-weight:600; display:block; margin-bottom:4px;">Favicon</label>
                         <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Shown in browser tabs. Best results with a square image.</p>
-                        <div class="row" style="gap:8px;">
-                          <input type="file" id="dtFaviconFileInput" style="display:none;" accept="image/*" onchange="handleImageUpload(event, 'favicon')">
-                          <input type="hidden" id="dtFaviconUrlInput">
-                          <button class="btn secondary" onclick="document.getElementById('dtFaviconFileInput').click()"><i data-lucide="upload" style="margin-right: 6px;"></i>Upload Favicon</button>
-                        </div>
-                        <div id="dtFaviconPreviewContainer" class="hidden" style="margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: var(--panel-2); max-width: fit-content; display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                          <img id="dtFaviconPreview" style="width: 32px; height: 32px; border-radius: 4px;">
-                          <span class="muted" style="font-size: 10px;">Favicon Preview</span>
+                        
+                        <input type="hidden" id="dtFaviconUrlInput" />
+                        <input type="file" id="faviconFileInput" accept="image/*" style="display:none;" onchange="handleDashboardFileSelect('favicon', this, true)" />
+                        
+                        <div class="upload-zone" id="faviconUploadZone" onclick="document.getElementById('faviconFileInput').click()">
+                          <div id="faviconUploadZoneContent" style="display: flex; flex-direction:column; align-items:center; gap:8px;">
+                            <i data-lucide="upload-cloud" style="width:28px; height:28px; color:var(--muted);"></i>
+                            <span style="font-weight:700; font-size:12px; color:var(--text);">Drag and drop, or <span style="color:var(--accent);">browse</span></span>
+                            <span style="font-size:10px; color:var(--muted);">Square PNG, ICO up to 1MB (Required to crop)</span>
+                          </div>
+                          
+                          <div id="faviconUploadZonePreview" style="display: none; flex-direction:column; align-items:center; gap:12px; position:relative;">
+                            <div style="position:relative; display:inline-block; padding:8px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px;">
+                              <img id="faviconPreviewImg" src="" style="width:48px; height:48px; object-fit:contain; border-radius:6px;" />
+                              <button type="button" onclick="clearDashboardAssetFile('favicon', event)" style="position:absolute; top:-10px; right:-10px; height:24px; width:24px; border-radius:50%; background:#fee2e2; border:1px solid #fecaca; padding:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.05); cursor:pointer;" title="Remove">
+                                <i data-lucide="trash-2" style="width:12px; height:12px; color:#dc2626;"></i>
+                              </button>
+                            </div>
+                            <span style="font-size:10px; color:var(--muted); font-weight:600;">Click or drag to replace image</span>
+                          </div>
                         </div>
                       </div>
+
                     </div>
 
                     <div class="row" style="justify-content: flex-end; padding-top: 16px; border-top: 1px solid var(--line);">
@@ -6695,7 +6831,7 @@ body.customizer-open { overflow: hidden; }
               </div>
             </div>
           </div>
-          <!-- TENANT THEMES CONSOLE -->
+          <!-- church themeS CONSOLE -->
           <div id="tenantThemesConsoleContainer" class="hidden">
             <div class="cms-view-layout" style="display: flex; flex-direction: column; gap: 20px; padding: 46px 54px 80px; width: 100%;">
               <div class="themes-view active" id="themesView">
@@ -6790,7 +6926,7 @@ body.customizer-open { overflow: hidden; }
             </div>
           </div>
 
-          <!-- TENANT PLUGINS CONSOLE -->
+          <!-- church pluginS CONSOLE -->
           <div id="tenantPluginsConsoleContainer" class="hidden">
             <div class="cms-view-layout" style="display: flex; flex-direction: column; gap: 20px; padding: 24px; width: 100%;">
               <div class="section-head">
@@ -6834,7 +6970,7 @@ body.customizer-open { overflow: hidden; }
                   <div class="section-head" style="margin-bottom:20px;">
                     <div>
                       <h2>Settings Configuration Profiles</h2>
-                      <p>Manage and switch customized setup profiles/records scoped to your church tenant.</p>
+                      <p>Manage and switch customized setup profiles/records scoped to your church workspace.</p>
                     </div>
                     <button class="btn primary" onclick="showCreateSettingsProfileModal()"><i data-lucide="plus"></i>New Profile</button>
                   </div>
@@ -7412,21 +7548,15 @@ body.customizer-open { overflow: hidden; }
                 <h3 id="dtCropModalTitle" style="margin: 0 0 16px 0; font-weight: 700;">Crop and Edit Image</h3>
                 
                 <!-- Interactive Workspace -->
-                <div id="dtCropWorkspace" style="width: 100%; height: 300px; background: #0F131A; border-radius: 8px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: move; user-select: none;">
-                  <img id="dtCropImage" style="position: absolute; transform-origin: center center;" draggable="false" />
-                  <!-- Spotlight Overlay Frame -->
-                  <div id="dtCropFrame" style="position: absolute; border: 2px solid var(--accent); box-shadow: 0 0 0 9999px rgba(11, 14, 20, 0.75); pointer-events: none; z-index: 10;"></div>
+                <div id="dtCropWorkspace" style="width: 100%; height: 320px; background: #0F131A; border-radius: 8px; overflow: hidden; display: block;">
+                  <img id="dtCropImage" style="max-width: 100%; max-height: 100%; display: block;" />
                 </div>
                 
                 <!-- Controls -->
                 <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
-                  <div class="field">
-                    <label style="font-size: 12px; font-weight: 600; color: var(--muted);">Zoom & Scale</label>
-                    <input type="range" id="dtCropZoom" min="1" max="4" step="0.01" value="1" style="width: 100%; cursor: pointer;" />
-                  </div>
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <button class="btn secondary btn-sm" onclick="rotateCropImage()"><i data-lucide="rotate-cw"></i>Rotate 90°</button>
-                    <span style="font-size: 11px; color: var(--muted);">Drag image to reposition inside frame</span>
+                    <span style="font-size: 11px; color: var(--muted);">Drag selection corners to crop. Pinch or scroll to zoom.</span>
                   </div>
                 </div>
                 
@@ -8160,7 +8290,7 @@ body.customizer-open { overflow: hidden; }
                     <div class="panel">
                       <div class="settings-list">
                         <div class="setting-row row">
-                          <div><strong>Enable analytics module</strong><span class="muted">Tenant admins can preview and configure reports.</span></div>
+                          <div><strong>Enable analytics module</strong><span class="muted">Church admins can preview and configure reports.</span></div>
                           <button id="analyticsEnabledToggle" class="toggle on" onclick="toggleAnalyticsSetting('enabled')" aria-label="Toggle analytics module"></button>
                         </div>
                         <div class="setting-row row">
@@ -8180,7 +8310,7 @@ body.customizer-open { overflow: hidden; }
                       <div class="field" style="margin-top:16px;">
                         <label for="analyticsProviderMode">Provider Mode</label>
                         <select id="analyticsProviderMode" class="form-control">
-                          <option value="internal">ChurchOS Event API</option>
+                          <option value="internal">Churchtell Event API</option>
                           <option value="posthog">PostHog</option>
                           <option value="ga4">Google Analytics 4</option>
                           <option value="plausible">Plausible</option>
@@ -11812,7 +11942,7 @@ body.customizer-open { overflow: hidden; }
                         </div>
                         <div class="field">
                           <label>File Reference (.PDF/.MP4)</label>
-                          <input type="text" id="childrenCurriculumUrl" class="input" value="https://cdn.churchos.io/curriculums/week1.pdf" style="width:100%;">
+                          <input type="text" id="childrenCurriculumUrl" class="input" value="https://cdn.churchtell.io/curriculums/week1.pdf" style="width:100%;">
                         </div>
                       </div>
                       <button class="btn primary" onclick="submitCurriculumResource()"><i data-lucide="upload"></i>Publish Lesson Resource</button>
@@ -12645,7 +12775,7 @@ body.customizer-open { overflow: hidden; }
                       <div id="outreachFlyerMock" style="width:100%; height:260px; background:radial-gradient(circle, #2c3e50, #000); border:1px solid #1c1e21; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; text-align:center; padding:30px; position:relative; overflow:hidden;">
                         <h2 id="outreachFlyerTitle" style="font-size:22px; font-weight:800; text-transform:uppercase;">Easter Concert</h2>
                         <p id="outreachFlyerMsg" style="font-size:12px; margin-top:10px; color:#ccc;">He is Risen! Celebrate hope with us.</p>
-                        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.2); padding-top:10px; font-size:10px; color:var(--success);">Personal Referral Link: churchos.io/invite/admin</div>
+                        <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.2); padding-top:10px; font-size:10px; color:var(--success);">Personal Referral Link: churchtell.io/invite/admin</div>
                       </div>
                     </div>
                     <div class="panel" style="display:flex; flex-direction:column; gap:12px;">
@@ -13433,7 +13563,7 @@ body.customizer-open { overflow: hidden; }
                   <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
                     <div style="width: 100%;">
                       <strong>Platform API Key</strong>
-                      <span class="muted">Use this key to authorize external requests to ChurchOS endpoints.</span>
+                      <span class="muted">Use this key to authorize external requests to Churchtell endpoints.</span>
                     </div>
                     <div style="display: flex; gap: 8px; width: 100%; max-width: 500px; margin-top: 4px;">
                       <input type="text" id="platformApiKey" class="input" style="flex: 1; font-family: monospace; font-size: 13px;" value="pk_live_51Nv928JkHw2..." readonly>
@@ -13528,7 +13658,7 @@ body.customizer-open { overflow: hidden; }
               <div class="field" style="text-align:left;">
                 <label for="role">Role</label>
                 <select id="role">
-                  <option>Tenant owner</option>
+                  <option>Church owner</option>
                   <option>Ministry administrator</option>
                   <option>Content editor</option>
                 </select>
@@ -14861,6 +14991,39 @@ body.customizer-open { overflow: hidden; }
       render();
     }
 
+    window.togglePasswordVisibility = function(btnId, inputId) {
+      const btn = document.getElementById(btnId);
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></svg>`;
+      } else {
+        input.type = 'password';
+        btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0z"/><circle cx="12" cy="12" r="3"/></svg>`;
+      }
+    };
+
+    window.showError = function(formId, message) {
+      const form = document.getElementById(formId);
+      let errorEl = form.querySelector('.login-error-container');
+      if (!errorEl) {
+        errorEl = document.createElement('div');
+        errorEl.className = 'login-error-container';
+        const btn = form.querySelector('button[type="submit"]');
+        btn.parentNode.insertBefore(errorEl, btn.nextSibling);
+      }
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+      
+      if (errorEl.timeoutId) {
+        clearTimeout(errorEl.timeoutId);
+      }
+      
+      errorEl.timeoutId = setTimeout(() => {
+        errorEl.classList.add('hidden');
+      }, 4500);
+    };
+
     function isLoggedIn() {
       return localStorage.getItem(SESSION_KEY) === 'active';
     }
@@ -14900,22 +15063,57 @@ body.customizer-open { overflow: hidden; }
       if (accentParam) {
         state.theme.accent = accentParam.startsWith('#') ? accentParam : '#' + accentParam;
       }
-      if (isLocalTestingHost()) {
-        localStorage.setItem(SESSION_KEY, 'active');
-        localStorage.setItem('churchos.tenantId', localStorage.getItem('churchos.tenantId') || 'demo-church-local');
-        localStorage.setItem('churchos.token', localStorage.getItem('churchos.token') || 'local-preview-token');
-      }
-
       applyTheme();
       setLocalLoginDefaults();
-      document.getElementById('loginForm').addEventListener('submit', (event) => {
+      document.getElementById('loginForm').addEventListener('submit', async (event) => {
         event.preventDefault();
-        state.user.email = document.getElementById('email').value;
-        localStorage.setItem(SESSION_KEY, 'active');
-        saveState('Signed into tenant dashboard');
-        mountApp();
-        bootstrapCms();
-        bootstrapUserRoles();
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const subdomain = getTenantSubdomain();
+
+        try {
+          // Resolve tenant ID from subdomain
+          const resolveRes = await fetch(`/api/public/resolve-subdomain?subdomain=${encodeURIComponent(subdomain)}`);
+          if (!resolveRes.ok) {
+            throw new Error("We couldn't find a church workspace matching this web address. Please verify the URL or contact support.");
+          }
+          const resolveData = await resolveRes.json();
+          const tenantId = resolveData.data?.id;
+          if (!tenantId) {
+            throw new Error("We couldn't load your church workspace. Please refresh the page or try again.");
+          }
+
+          // Authenticate with resolved tenant ID
+          const loginRes = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-tenant-id': tenantId
+            },
+            body: JSON.stringify({ email, password })
+          });
+          const loginData = await loginRes.json();
+          if (!loginRes.ok) {
+            throw new Error(loginData.error || 'Invalid credentials');
+          }
+
+          localStorage.setItem('churchos.token', loginData.token);
+          localStorage.setItem('churchos.tenantId', tenantId);
+          localStorage.setItem('churchos.tenantName', loginData.user?.tenant?.name || state.tenant.name);
+          localStorage.setItem('churchos.subdomain', subdomain);
+          localStorage.setItem(SESSION_KEY, 'active');
+
+          state.user.email = email;
+          state.user.name = loginData.user?.member?.firstName || email.split('@')[0];
+          state.tenant.id = tenantId;
+
+          saveState('Signed into tenant dashboard');
+          mountApp();
+          bootstrapCms();
+          bootstrapUserRoles();
+        } catch (err) {
+          showError('loginForm', err.message || 'Login failed');
+        }
       });
 
       document.getElementById('signupForm').addEventListener('submit', async (event) => {
@@ -14950,11 +15148,36 @@ body.customizer-open { overflow: hidden; }
           localStorage.setItem('churchos.subdomain', state.tenant.subdomain || '');
           localStorage.setItem(SESSION_KEY, 'active');
           saveState('Registered new church context');
-          mountApp();
-          bootstrapCms();
-          bootstrapUserRoles();
+
+          // Setup onboarding context
+          let existingContext = {};
+          try {
+            existingContext = JSON.parse(localStorage.getItem('churchos.onboardingContext.v1') || '{}');
+          } catch (e) {}
+
+          localStorage.setItem('churchos.onboardingContext.v1', JSON.stringify({
+            ...existingContext,
+            tenant: {
+              ...(existingContext.tenant || {}),
+              id: state.tenant.id,
+              name: state.tenant.name,
+              subdomain: state.tenant.subdomain,
+              subdomainHost: state.tenant.subdomain ? `${state.tenant.subdomain}.churched.online` : '',
+              plan: 'growth'
+            },
+            owner: {
+              ...(existingContext.owner || {}),
+              name: state.user.name,
+              email: state.user.email
+            },
+            steps: existingContext.steps || {},
+            completedAt: existingContext.completedAt || null
+          }));
+
+          // Redirect to the onboarding process
+          window.location.href = '/onboarding';
         } catch (err) {
-          alert(err.message || 'Unable to create church account');
+          showError('signupForm', err.message || 'Unable to create church account');
         }
       });
 
@@ -15071,7 +15294,7 @@ body.customizer-open { overflow: hidden; }
       }
 
       const titles = {
-        overview: ['Tenant Dashboard', 'Unified backend for all ChurchOS modules.'],
+        overview: ['Tenant Dashboard', 'Unified backend for all Churchtell modules.'],
         modules: ['Module Hub', 'Preview and configure every installed or available module.'],
         settings: ['Central Settings', 'Global dashboard controls and per-module configuration.'],
         profile: ['Profile', 'User profile, role, and activity for the logged-in admin.'],
@@ -17502,38 +17725,56 @@ body.customizer-open { overflow: hidden; }
       const timezoneSelect = document.getElementById('dtTimezoneSelect');
       if (timezoneSelect) timezoneSelect.value = dtState.branding.timezone || 'UTC';
 
+      // Initialize logo uploader preview
       const logoUrlInput = document.getElementById('dtLogoUrlInput');
       if (logoUrlInput) {
         logoUrlInput.value = dtState.branding.logo || '';
-        const logoPreview = document.getElementById('dtLogoPreview');
-        const logoPreviewContainer = document.getElementById('dtLogoPreviewContainer');
+        const preview = document.getElementById('logoUploadZonePreview');
+        const content = document.getElementById('logoUploadZoneContent');
+        const previewImg = document.getElementById('logoPreviewImg');
         if (dtState.branding.logo) {
-          if (logoPreview) {
-            logoPreview.src = dtState.branding.logo;
-            logoPreviewContainer?.classList.remove('hidden');
+          if (preview && content && previewImg) {
+            preview.style.display = 'flex';
+            content.style.display = 'none';
+            previewImg.src = dtState.branding.logo;
           }
         } else {
-          logoPreviewContainer?.classList.add('hidden');
+          if (preview && content && previewImg) {
+            preview.style.display = 'none';
+            content.style.display = 'flex';
+            previewImg.src = '';
+          }
         }
       }
 
+      // Initialize favicon uploader preview
       const faviconUrlInput = document.getElementById('dtFaviconUrlInput');
       if (faviconUrlInput) {
         faviconUrlInput.value = dtState.branding.favicon || '';
-        const faviconPreview = document.getElementById('dtFaviconPreview');
-        const faviconPreviewContainer = document.getElementById('dtFaviconPreviewContainer');
+        const preview = document.getElementById('faviconUploadZonePreview');
+        const content = document.getElementById('faviconUploadZoneContent');
+        const previewImg = document.getElementById('faviconPreviewImg');
         if (dtState.branding.favicon) {
-          if (faviconPreview) {
-            faviconPreview.src = dtState.branding.favicon;
-            faviconPreviewContainer?.classList.remove('hidden');
+          if (preview && content && previewImg) {
+            preview.style.display = 'flex';
+            content.style.display = 'none';
+            previewImg.src = dtState.branding.favicon;
           }
         } else {
-          faviconPreviewContainer?.classList.add('hidden');
+          if (preview && content && previewImg) {
+            preview.style.display = 'none';
+            content.style.display = 'flex';
+            previewImg.src = '';
+          }
         }
       }
 
       updateDomainStatusBadge();
       renderChecklist();
+
+      // Hook dashboard upload zones drag & drop
+      setupDashboardDragDrop('logo');
+      setupDashboardDragDrop('favicon');
 
       // Event listeners for tabs & image cropper events
       bindDomainTenantTabEvents();
@@ -17767,77 +18008,141 @@ body.customizer-open { overflow: hidden; }
       // Reserved for future live preview bindings
     }
 
-    window.handleImageUpload = function(event, type) {
-      const file = event.target.files[0];
+    window.handleDashboardFileSelect = function(id, input, isFavicon = false) {
+      const file = input.files[0];
       if (!file) return;
+      
+      const maxSize = isFavicon ? 1 * 1024 * 1024 : 2 * 1024 * 1024;
+      if (file.size > maxSize) {
+        showToast(`File size cannot exceed ${isFavicon ? '1MB' : '2MB'}`, true);
+        input.value = '';
+        return;
+      }
       
       const reader = new FileReader();
       reader.onload = function(e) {
-        openCropperModal(e.target.result, type);
+        const base64 = e.target.result;
+        openCropperModal(base64, id);
       };
       reader.readAsDataURL(file);
-      event.target.value = '';
+      input.value = '';
     };
+
+    window.clearDashboardAssetFile = function(id, event) {
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
+      
+      const logoUrl = document.getElementById(id === 'logo' ? 'dtLogoUrlInput' : 'dtFaviconUrlInput');
+      const input = document.getElementById(id === 'logo' ? 'logoFileInput' : 'faviconFileInput');
+      const preview = document.getElementById(`${id}UploadZonePreview`);
+      const content = document.getElementById(`${id}UploadZoneContent`);
+      const previewImg = document.getElementById(`${id}PreviewImg`);
+      
+      if (logoUrl) logoUrl.value = '';
+      if (input) input.value = '';
+      
+      if (preview && content && previewImg) {
+        preview.style.display = 'none';
+        content.style.display = 'flex';
+        previewImg.src = '';
+      }
+      
+      if (id === 'logo') {
+        const logoMockPreview = document.getElementById('dtLogoMockPreview');
+        const logoMockText = document.getElementById('dtLogoMockText');
+        if (logoMockPreview) {
+          logoMockPreview.src = '';
+          logoMockPreview.style.display = 'none';
+        }
+        if (logoMockText) logoMockText.style.display = 'block';
+      }
+      lucide.createIcons();
+    };
+
+    window.setupDashboardDragDrop = function(id) {
+      const zone = document.getElementById(`${id}UploadZone`);
+      if (!zone) return;
+      
+      // Prevent defaults for all drag events
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        zone.addEventListener(eventName, e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, false);
+      });
+      
+      // Add visual cues
+      ['dragenter', 'dragover'].forEach(eventName => {
+        zone.addEventListener(eventName, () => {
+          zone.style.borderColor = 'var(--accent)';
+          zone.style.background = 'var(--accent-soft)';
+        }, false);
+      });
+      
+      // Reset visual cues
+      ['dragleave', 'drop'].forEach(eventName => {
+        zone.addEventListener(eventName, () => {
+          zone.style.borderColor = 'var(--line)';
+          zone.style.background = 'var(--panel-2)';
+        }, false);
+      });
+      
+      // Handle drop
+      zone.addEventListener('drop', e => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        const input = document.getElementById(id === 'logo' ? 'logoFileInput' : 'faviconFileInput');
+        if (files.length && input) {
+          input.files = files;
+          const isFavicon = id === 'favicon';
+          handleDashboardFileSelect(id, input, isFavicon);
+        }
+      }, false);
+    };
+
+    let activeCropper = null;
 
     window.openCropperModal = function(src, type) {
       const modal = document.getElementById('dtCropModal');
       const title = document.getElementById('dtCropModalTitle');
       const img = document.getElementById('dtCropImage');
-      const frame = document.getElementById('dtCropFrame');
-      const zoomInput = document.getElementById('dtCropZoom');
       
-      if (!modal || !img || !frame) return;
+      if (!modal || !img) return;
       
       cropperState.type = type;
-      cropperState.zoom = 1.0;
-      cropperState.rotation = 0;
-      cropperState.panX = 0;
-      cropperState.panY = 0;
       
-      if (zoomInput) zoomInput.value = 1.0;
-      
-      title.textContent = type === 'favicon' ? 'Crop & Resize Favicon (Strict Square)' : 'Crop & Resize Church Logo (Free Control)';
-      
-      if (type === 'favicon') {
-        frame.style.width = '150px';
-        frame.style.height = '150px';
-        frame.style.left = 'calc(50% - 75px)';
-        frame.style.top = 'calc(50% - 75px)';
-      } else {
-        frame.style.width = '300px';
-        frame.style.height = '120px';
-        frame.style.left = 'calc(50% - 150px)';
-        frame.style.top = 'calc(50% - 60px)';
-      }
+      title.textContent = type === 'favicon' ? 'Crop & Resize Favicon (Strict 1:1)' : 'Crop & Resize Church Logo (Free Aspect Ratio)';
       
       img.src = src;
-      img.onload = function() {
-        let baseWidth = img.naturalWidth;
-        let baseHeight = img.naturalHeight;
-        let scaleFactor = 1.0;
-        if (baseWidth > 400 || baseHeight > 280) {
-          scaleFactor = Math.min(400 / baseWidth, 280 / baseHeight);
-          baseWidth = baseWidth * scaleFactor;
-          baseHeight = baseHeight * scaleFactor;
-        }
-        
-        img.style.width = baseWidth + 'px';
-        img.style.height = baseHeight + 'px';
-        updateCropperTransform();
-      };
-      
       modal.classList.remove('hidden');
+      
+      if (activeCropper) {
+        activeCropper.destroy();
+      }
+      
+      setTimeout(() => {
+        activeCropper = new Cropper(img, {
+          aspectRatio: type === 'favicon' ? 1 : NaN,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 1,
+          restore: false,
+          guides: true,
+          center: true,
+          highlight: false,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          toggleDragModeOnDblclick: false,
+        });
+      }, 50);
     };
 
-    function updateCropperTransform() {
-      const img = document.getElementById('dtCropImage');
-      if (!img) return;
-      img.style.transform = `translate(${cropperState.panX}px, ${cropperState.panY}px) rotate(${cropperState.rotation}deg) scale(${cropperState.zoom})`;
-    }
-
     window.rotateCropImage = function() {
-      cropperState.rotation = (cropperState.rotation + 90) % 360;
-      updateCropperTransform();
+      if (activeCropper) {
+        activeCropper.rotate(90);
+      }
     };
 
     window.closeCropperModal = function() {
@@ -17845,65 +18150,58 @@ body.customizer-open { overflow: hidden; }
       if (modal) {
         modal.classList.add('hidden');
       }
+      if (activeCropper) {
+        activeCropper.destroy();
+        activeCropper = null;
+      }
     };
 
     window.applyCrop = function() {
-      const img = document.getElementById('dtCropImage');
-      if (!img || !img.src) return;
+      if (!activeCropper) return;
       
       const type = cropperState.type;
-      const cropWidth = type === 'favicon' ? 150 : 300;
-      const cropHeight = type === 'favicon' ? 150 : 120;
-      
-      let baseWidth = img.naturalWidth;
-      let baseHeight = img.naturalHeight;
-      let scaleFactor = 1.0;
-      if (baseWidth > 400 || baseHeight > 280) {
-        scaleFactor = Math.min(400 / baseWidth, 280 / baseHeight);
-        baseWidth = baseWidth * scaleFactor;
-        baseHeight = baseHeight * scaleFactor;
-      }
-      
-      const canvas = document.createElement('canvas');
-      canvas.width = cropWidth;
-      canvas.height = cropHeight;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      
-      ctx.clearRect(0, 0, cropWidth, cropHeight);
-      ctx.translate(cropWidth / 2 + cropperState.panX, cropHeight / 2 + cropperState.panY);
-      ctx.rotate(cropperState.rotation * Math.PI / 180);
-      ctx.scale(cropperState.zoom, cropperState.zoom);
-      ctx.drawImage(img, -baseWidth / 2, -baseHeight / 2, baseWidth, baseHeight);
+      const canvasOptions = type === 'favicon' ? { width: 256, height: 256 } : {};
+      const canvas = activeCropper.getCroppedCanvas(canvasOptions);
+      if (!canvas) return;
       
       const dataUrl = canvas.toDataURL('image/png');
       
       if (type === 'logo') {
         const logoUrlInput = document.getElementById('dtLogoUrlInput');
-        const logoPreview = document.getElementById('dtLogoPreview');
-        const logoPreviewContainer = document.getElementById('dtLogoPreviewContainer');
         const logoMockPreview = document.getElementById('dtLogoMockPreview');
         const logoMockText = document.getElementById('dtLogoMockText');
         
         if (logoUrlInput) logoUrlInput.value = dataUrl;
-        if (logoPreview) logoPreview.src = dataUrl;
-        if (logoPreviewContainer) logoPreviewContainer.classList.remove('hidden');
         if (logoMockPreview) {
           logoMockPreview.src = dataUrl;
           logoMockPreview.style.display = 'block';
         }
         if (logoMockText) logoMockText.style.display = 'none';
         
+        const preview = document.getElementById('logoUploadZonePreview');
+        const content = document.getElementById('logoUploadZoneContent');
+        const previewImg = document.getElementById('logoPreviewImg');
+        if (preview && content && previewImg) {
+          preview.style.display = 'flex';
+          content.style.display = 'none';
+          previewImg.src = dataUrl;
+        }
+
         showToast('Logo crop applied successfully');
       } else {
         const faviconUrlInput = document.getElementById('dtFaviconUrlInput');
-        const faviconPreview = document.getElementById('dtFaviconPreview');
-        const faviconPreviewContainer = document.getElementById('dtFaviconPreviewContainer');
         
         if (faviconUrlInput) faviconUrlInput.value = dataUrl;
-        if (faviconPreview) faviconPreview.src = dataUrl;
-        if (faviconPreviewContainer) faviconPreviewContainer.classList.remove('hidden');
         
+        const preview = document.getElementById('faviconUploadZonePreview');
+        const content = document.getElementById('faviconUploadZoneContent');
+        const previewImg = document.getElementById('faviconPreviewImg');
+        if (preview && content && previewImg) {
+          preview.style.display = 'flex';
+          content.style.display = 'none';
+          previewImg.src = dataUrl;
+        }
+
         showToast('Favicon crop applied successfully');
       }
       
@@ -17911,55 +18209,7 @@ body.customizer-open { overflow: hidden; }
     };
 
     function initCropperEvents() {
-      if (cropperEventsBound) return;
-      const ws = document.getElementById('dtCropWorkspace');
-      const zoomInput = document.getElementById('dtCropZoom');
-      
-      if (!ws || !zoomInput) return;
-      
-      zoomInput.addEventListener('input', (e) => {
-        cropperState.zoom = parseFloat(e.target.value);
-        updateCropperTransform();
-      });
-      
-      ws.addEventListener('mousedown', (e) => {
-        cropperState.isDragging = true;
-        cropperState.startX = e.clientX - cropperState.panX;
-        cropperState.startY = e.clientY - cropperState.panY;
-      });
-      
-      window.addEventListener('mousemove', (e) => {
-        if (!cropperState.isDragging) return;
-        cropperState.panX = e.clientX - cropperState.startX;
-        cropperState.panY = e.clientY - cropperState.startY;
-        updateCropperTransform();
-      });
-      
-      window.addEventListener('mouseup', () => {
-        cropperState.isDragging = false;
-      });
-      
-      ws.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 1) {
-          cropperState.isDragging = true;
-          cropperState.startX = e.touches[0].clientX - cropperState.panX;
-          cropperState.startY = e.touches[0].clientY - cropperState.panY;
-        }
-      });
-      
-      ws.addEventListener('touchmove', (e) => {
-        if (!cropperState.isDragging || e.touches.length !== 1) return;
-        e.preventDefault();
-        cropperState.panX = e.touches[0].clientX - cropperState.startX;
-        cropperState.panY = e.touches[0].clientY - cropperState.startY;
-        updateCropperTransform();
-      }, { passive: false });
-      
-      ws.addEventListener('touchend', () => {
-        cropperState.isDragging = false;
-      });
-      
-      cropperEventsBound = true;
+      // Cropper events are handled internally by Cropper.js
     }
 
     // =========================================================================
@@ -19644,7 +19894,7 @@ body.customizer-open { overflow: hidden; }
     };
 
     window.installTenantAsset = async function(assetId, assetName, type) {
-      const confirmInstall = confirm(`Would you like to purchase and install ${assetName} to your ChurchOS workspace?`);
+      const confirmInstall = confirm(`Would you like to purchase and install ${assetName} to your Churchtell workspace?`);
       if (!confirmInstall) return;
 
       showToast(`Installing ${assetName}...`);
@@ -21108,7 +21358,7 @@ body.customizer-open { overflow: hidden; }
 
       const websiteRes = await cmsApiRequest('POST', '/api/cms/websites', {
         title: 'Demo Church',
-        description: 'Digital-first demo church for testing every ChurchOS website and ministry workflow.',
+        description: 'Digital-first demo church for testing every Churchtell website and ministry workflow.',
         domain: 'nextchurch.local',
         themeId: themeId
       });
@@ -21125,7 +21375,7 @@ body.customizer-open { overflow: hidden; }
           isHome: true,
           status: 'published',
           seoTitle: 'Demo Church | Home',
-          seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing ChurchOS website, CMS, and ministry features.',
+          seoDescription: 'A vibrant digital-first Christ Embassy demo church for testing Churchtell website, CMS, and ministry features.',
           content: [
             { type: 'hero', title: 'Demo Church', subtitle: 'A Spirit-filled, digital-first church community built for worship, discipleship, prayer, media, giving, and outreach.', bgImage: 'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=1400&q=80', buttonText: 'Join This Sunday', buttonUrl: '/services' },
             { type: 'service_times', title: 'Weekly Service Rhythm', sundayTimes: 'Sunday Celebration Service - 9:00 AM and 11:30 AM', midweekTimes: 'Wednesday Word & Prayer - 7:00 PM, Friday Youth Ignite - 6:30 PM', address: 'Next Church Campus, 221 Victory Avenue, Lagos' },
@@ -24901,7 +25151,7 @@ body.customizer-open { overflow: hidden; }
         const lines = analyticsReportCatalog
           .filter((report) => category === 'all' || report.category === category || report.area === category)
           .map((report) => `${report.name}: ${report.status} | ${report.cadence} | ${report.description}`);
-        const pdf = buildAnalyticsPdf('ChurchOS Analytics Board Pack', [`Range: ${start} to ${end}`, `Category: ${category}`, ...lines]);
+        const pdf = buildAnalyticsPdf('Churchtell Analytics Board Pack', [`Range: ${start} to ${end}`, `Category: ${category}`, ...lines]);
         downloadAnalyticsBlob(`analytics_${category}_board_pack.pdf`, pdf, 'application/pdf');
         showToast('PDF board pack downloaded.');
         return;
@@ -33766,8 +34016,8 @@ VENUE: MAIN AUDITORIUM & LIVE FEED PORTAL
       showToast('Syncing dynamic invitation metrics...');
       if (window.outreachState.campaigns.length === 0) {
         window.outreachState.campaigns = [
-          { id: 'cmp-1', name: 'Easter Hope Celebration', goal: 500, invitees: 240, link: 'churchos.io/invite/easter' },
-          { id: 'cmp-2', name: 'Youth Impact Webinar', goal: 200, invitees: 85, link: 'churchos.io/invite/youth' }
+          { id: 'cmp-1', name: 'Easter Hope Celebration', goal: 500, invitees: 240, link: 'churchtell.io/invite/easter' },
+          { id: 'cmp-2', name: 'Youth Impact Webinar', goal: 200, invitees: 85, link: 'churchtell.io/invite/youth' }
         ];
       }
       if (window.outreachState.leads.length === 0) {
@@ -33883,7 +34133,7 @@ function renderOutreachTab(tab) {
         if (!name || !goal) return;
 
         window.outreachState.campaigns.push({
-          id: 'cmp-' + Date.now(), name, goal, invitees: 0, link: 'churchos.io/invite/' + name.toLowerCase().replace(/\s+/g, '-')
+          id: 'cmp-' + Date.now(), name, goal, invitees: 0, link: 'churchtell.io/invite/' + name.toLowerCase().replace(/\s+/g, '-')
         });
         showToast('Outreach invitation Campaign initialized.');
         bootstrapOutreach();
@@ -34901,7 +35151,7 @@ function renderOutreachTab(tab) {
           tbody.innerHTML = funnelsState.funnels.map(f => `
             <tr>
               <td><strong>${escapeHtml(f.name)}</strong></td>
-              <td><a href="https://churchos.io/funnels/${f.slug}" target="_blank" class="muted" style="text-decoration:underline;">/funnels/${escapeHtml(f.slug)}</a></td>
+              <td><a href="https://churchtell.io/funnels/${f.slug}" target="_blank" class="muted" style="text-decoration:underline;">/funnels/${escapeHtml(f.slug)}</a></td>
               <td><span class="badge">${escapeHtml(f.type)}</span></td>
               <td><code>${escapeHtml(f.steps.length)} stages</code></td>
               <td><span class="badge success">${f.isActive ? 'Active' : 'Draft'}</span></td>

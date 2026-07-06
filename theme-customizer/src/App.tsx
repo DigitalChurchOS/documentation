@@ -97,7 +97,9 @@ html{width:100%;max-width:100%;overflow-x:clip;scrollbar-gutter:stable}
 *{box-sizing:border-box}
 body{margin:0;width:100%;max-width:100%;overflow-x:clip;background:var(--site-bg,#fffaf3);color:var(--site-text,#1d1812);font-family:var(--font-body,Inter,system-ui,sans-serif)}
 header{width:100%;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:24px clamp(24px,5vw,64px);background:var(--site-surface,#fff);border-bottom:1px solid var(--site-border,rgba(29,24,18,.12))}
-.logo{font-weight:900;font-size:20px;color:var(--primary,#f97316)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:900;font-size:20px;color:var(--primary,#f97316)}
+.brand-mark{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:rgba(249,115,22,0.1);color:var(--primary,#f97316)}
+.brand-mark img{width:100%;height:100%;object-fit:contain;display:block}
 nav{display:flex;gap:18px;flex-wrap:wrap}
 nav a{color:var(--site-muted,#74685e);text-decoration:none;font-weight:700}
 .hero{padding:clamp(72px,9vw,128px) clamp(28px,6vw,88px);background:linear-gradient(135deg,var(--site-soft,#fff7ed),var(--site-bg,#fffaf3))}
@@ -113,7 +115,10 @@ footer{padding:36px clamp(28px,6vw,88px);background:var(--site-soft,#fff7ed);col
 </head>
 <body>
 <header data-editor-type="header" data-editor-label="Header">
-  <div class="logo" data-editor-type="title">Ecclesia</div>
+  <a href="/" class="brand" data-editor-type="title">
+    <span class="brand-mark"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-church"><path d="M12 22v-4"/><path d="M18 22V10l-6-6-6 6v12"/><path d="M12 2v2"/><path d="M10 3h4"/><path d="M10 10h4"/><path d="M12 8v4"/><path d="M8 14h8"/></svg></span>
+    <span>Ecclesia</span>
+  </a>
   <nav>
     <a href="/" data-editor-type="button">Home</a>
     <a href="/about" data-editor-type="button">About</a>
@@ -270,7 +275,7 @@ const apiFetch = async (method: string, path: string, body?: any) => {
   const tenantId = queryTenantId || (shouldUseDemoWorkspace ? DEMO_TENANT_ID : "") || localStorage.getItem("churchos.tenantId") || "";
   const tenantName = queryTenantName || localStorage.getItem("churchos.tenantName") || "";
   const tenantSubdomain = params.get("subdomain") || (shouldUseDemoWorkspace ? DEMO_TENANT_SUBDOMAIN : "") || getSubdomainFromHostname() || localStorage.getItem("churchos.subdomain") || "";
-  const token = localStorage.getItem("churchos.token") || "local-preview-token";
+  const token = localStorage.getItem("churchos.token") || "";
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     "Authorization": `Bearer ${token}`
@@ -428,10 +433,6 @@ export function App() {
           }
         }
 
-        const existingToken = localStorage.getItem("churchos.token");
-        if (!existingToken) {
-          localStorage.setItem("churchos.token", "local-preview-token");
-        }
 
         // Fetch themes, websites and pages
         const themesRes = await apiFetch("GET", "/api/theme-engine/themes");

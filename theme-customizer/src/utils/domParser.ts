@@ -132,8 +132,9 @@ function replaceTenantText(root: ParentNode, replacements: Array<[string, string
   });
 }
 
-export function applyTenantContent(doc: Document, globalContent?: TenantGlobalContent | null): void {
-  if (!globalContent) return;
+export function applyTenantContent(doc: Document, globalContentInput?: any | null): void {
+  if (!globalContentInput) return;
+  const globalContent = globalContentInput.content && typeof globalContentInput.content === 'object' ? globalContentInput.content : globalContentInput;
 
   const churchName = tenantText(globalContent.churchIdentity?.churchName);
   if (!churchName) return;
@@ -170,9 +171,18 @@ export function applyTenantContent(doc: Document, globalContent?: TenantGlobalCo
   doc.querySelectorAll<HTMLElement>(".brand").forEach((brand) => {
     const label = Array.from(brand.querySelectorAll("span")).find((span) => {
       const text = tenantText(span.textContent);
-      return text.includes("Grace City") || text.includes("Church");
+      return text.includes("Grace City") || text.includes("Church") || text.includes("Ecclesia");
     });
-    if (label) label.textContent = churchName;
+    if (label) {
+      label.textContent = churchName;
+    } else {
+      const spans = brand.querySelectorAll("span");
+      if (spans.length > 1) {
+        spans[spans.length - 1].textContent = churchName;
+      } else if (spans.length === 1 && !spans[0].classList.contains("brand-mark")) {
+        spans[0].textContent = churchName;
+      }
+    }
   });
 
   if (logoUrl) {
@@ -195,6 +205,8 @@ export function applyTenantContent(doc: Document, globalContent?: TenantGlobalCo
   replaceTenantText(doc.body || doc, [
     ["Grace City Church", churchName],
     ["Grace City", churchName],
+    ["Ecclesia Church", churchName],
+    ["Ecclesia", churchName],
     ["A Spirit-filled church helping people encounter Jesus, grow in the Word, build strong families, and serve their city.", description],
     ["Grace City Church is a vibrant, Spirit-filled community where people worship, grow, serve, pray, and discover God’s purpose for their lives.", description],
     ["Grace City Church exists to help people know Jesus, grow in the Word, build strong families, and serve their city with compassion and excellence.", description],
