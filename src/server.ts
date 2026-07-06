@@ -18,7 +18,7 @@ if (!isCloudflare && !isVercel) {
   app.listen(PORT, () => {
     console.log(`
   ╔═══════════════════════════════════════════╗
-  ║   ⛪  ChurchOS Kernel — Phase 1           ║
+  ║   ⛪  Churchtell Kernel — Phase 1         ║
   ║   🚀  Running on http://localhost:${PORT}    ║
   ║   📦  Database: SQLite (dev.db)           ║
   ╚═══════════════════════════════════════════╝

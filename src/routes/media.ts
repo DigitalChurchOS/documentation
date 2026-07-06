@@ -3,6 +3,7 @@ import { authMiddleware } from '../middleware/auth';
 import { requireAnyPermission } from '../middleware/rbac';
 import { requireModule } from '../middleware/entitlements';
 import { generateEmbed, MEDIA_MODULE_KEY, MediaService } from '../services/media';
+import { getPlatformCloudinaryCredentials, uploadToCloudinary } from '../services/cloudinary';
 
 const router = Router();
 
@@ -68,6 +69,21 @@ router.get('/templates', requireMediaPermission('media.read'), async (req, res) 
 router.post('/uploads/intent', requireMediaPermission('media.create'), async (req, res) => {
   try { res.status(201).json({ data: await MediaService.createUploadIntent(req.tenantId!, req.body, req.user?.userId) }); }
   catch (err: any) { res.status(statusFor(err)).json({ error: err.message }); }
+});
+
+router.post('/uploads/:id', requireMediaPermission('media.create'), async (req: Request, res: Response) => {
+  try {
+    const { file } = req.body;
+    if (!file) {
+      res.status(400).json({ error: 'file content (base64) is required' });
+      return;
+    }
+    const credentials = await getPlatformCloudinaryCredentials('content');
+    const fileUrl = await uploadToCloudinary(file, credentials, `churchtell-media-${req.tenantId}`);
+    res.json({ data: { success: true, fileUrl } });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 router.get('/categories', requireMediaPermission('media.read'), async (req, res) => {

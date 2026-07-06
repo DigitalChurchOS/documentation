@@ -61,7 +61,7 @@ describe('Super Admin Backend API', () => {
       data: { userId: superUser.id, roleId: superAdminRole.id },
     });
     superAdminToken = jwt.sign(
-      { userId: superUser.id, tenantId: systemTenantId, email: superUser.email },
+      { userId: superUser.id, tenantId: systemTenantId, email: superUser.email, role: 'super-admin' },
       JWT_SECRET
     );
 

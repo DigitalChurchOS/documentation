@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Church OS — Developer Hub</title>
+  <title>Digital Churchtell — Developer Hub</title>
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Google Fonts: Inter & Outfit -->
@@ -599,7 +599,7 @@
           <i data-lucide="code-2"></i>
         </div>
         <div>
-          <h1>Digital Church OS</h1>
+          <h1>Digital Churchtell</h1>
           <span>Developer Hub</span>
         </div>
       </a>
@@ -674,7 +674,7 @@
                   <i data-lucide="code-2"></i>
                   Partner Hub Console
                 </div>
-                <h2 id="heroTitle">Build safe themes and plugins for Digital Church OS.</h2>
+                <h2 id="heroTitle">Build safe themes and plugins for Digital Churchtell.</h2>
                 <p id="heroText">Use this dashboard console to upload and publish layouts, test templates inside dedicated sandbox environments, check payout commission cuts, and review developer system audit logs.</p>
               </div>
             </div>
@@ -733,7 +733,7 @@
               <h3 class="page-section-title">Quick Sandbox Setup</h3>
               <div class="panel">
                 <p style="font-size: 13.5px; color: var(--muted); margin-bottom: 16px; line-height: 1.55;">
-                  Spin up a temporary ChurchOS tenant environment to test layouts and functional logic in real time with preloaded church data.
+                  Spin up a temporary Churchtell tenant environment to test layouts and functional logic in real time with preloaded church data.
                 </p>
                 <button class="btn primary" onclick="switchView('sandbox')">Open Sandbox Manager</button>
               </div>
@@ -913,7 +913,7 @@
 
   <script>
     const tenantId = localStorage.getItem('churchos.tenantId') || 'demo-church-local';
-    const token = localStorage.getItem('churchos.token') || 'local-preview-token';
+    const token = localStorage.getItem('churchos.token') || '';
     const apiHeaders = {
       'Authorization': `Bearer ${token}`,
       'x-tenant-id': tenantId,
@@ -1213,7 +1213,7 @@
       const current = await apiRequest('GET', '/api/marketplace/developer/profile');
       if (current?.id) return current;
 
-      const tenantName = localStorage.getItem('churchos.tenantName') || 'ChurchOS Developer';
+      const tenantName = localStorage.getItem('churchos.tenantName') || 'Churchtell Developer';
       const ownerEmail = localStorage.getItem('churchos.userEmail') || 'developer@churched.online';
       const profile = await apiRequest('POST', '/api/marketplace/developer/register', {
         companyName: `${tenantName} Studio`,

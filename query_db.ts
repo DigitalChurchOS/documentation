@@ -1,28 +1,28 @@
 import prisma from './src/lib/prisma';
 
-
 async function main() {
-  const pages = await prisma.page.findMany({
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      status: true,
-      content: true,
-      draftContent: true,
+  const tenants = await prisma.tenant.findMany();
+  console.log('--- Tenants ---');
+  tenants.forEach((t: any) => console.log(`ID: ${t.id}, Name: ${t.name}, Subdomain: ${t.subdomain}`));
+
+  const users = await prisma.user.findMany({
+    include: {
+      userRoles: {
+        include: {
+          role: true
+        }
+      }
     }
   });
-
-  for (const page of pages) {
-    console.log(`\n--- PAGE: ${page.title} (${page.slug}) ---`);
-    console.log("Has content:", !!page.content);
-    console.log("Has draftContent:", !!page.draftContent);
-    const contentStr = typeof page.content === 'string' ? page.content : JSON.stringify(page.content);
-    const draftStr = typeof page.draftContent === 'string' ? page.draftContent : JSON.stringify(page.draftContent);
-    console.log("Content includes mobile-drawer:", contentStr?.includes("mobile-drawer") || contentStr?.includes("mobileDrawer"));
-    console.log("Content includes class=\"drawer\":", contentStr?.includes('class="drawer"') || contentStr?.includes("class=\\\"drawer\\\""));
-    console.log("Draft includes mobile-drawer:", draftStr?.includes("mobile-drawer") || draftStr?.includes("mobileDrawer"));
-  }
+  console.log('--- Users ---');
+  users.forEach((u: any) => {
+    console.log(`ID: ${u.id}, TenantID: ${u.tenantId}, Email: ${u.email}`);
+    u.userRoles.forEach((ur: any) => {
+      console.log(`  Role: ${ur.role.name} (TenantID: ${ur.role.tenantId})`);
+    });
+  });
 }
 
 main().catch(err => console.error(err)).finally(() => prisma.$disconnect());
+
+

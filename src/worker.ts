@@ -346,7 +346,62 @@ export default {
       });
     }
 
-    if (isTenantPublicHost && (pathname === '/sw.js' || pathname === '/manifest.json' || pathname.startsWith('/assets/'))) {
+    if (isTenantPublicHost && pathname === '/manifest.json') {
+      if (env.API) {
+        try {
+          const globalContentUrl = new URL('/api/cms/global-content', request.url);
+          const apiResponse = await env.API.fetch(new Request(globalContentUrl.toString(), {
+            headers: {
+              'accept': 'application/json',
+              'x-tenant-id': request.headers.get('x-tenant-id') || '',
+              'x-tenant-subdomain': hostContext.tenantSubdomain || '',
+            }
+          }));
+          if (apiResponse.ok) {
+            const json = await apiResponse.json() as any;
+            const identity = json?.data?.churchIdentity;
+            const churchName = identity?.churchName || 'Digital Church OS Portal';
+            const logoUrl = identity?.logoUrl || '/light.png';
+            
+            const manifest = {
+              "name": churchName,
+              "short_name": churchName.length > 12 ? (churchName.split(' ')[0] || 'Church') : churchName,
+              "description": identity?.description || "CMS-driven modern church website with native application feel and offline support.",
+              "start_url": "/",
+              "display": "standalone",
+              "background_color": "#f8fafc",
+              "theme_color": "#f97316",
+              "icons": [
+                {
+                  "src": logoUrl || "/light.png",
+                  "sizes": "512x512",
+                  "type": "image/png"
+                },
+                {
+                  "src": logoUrl || "/dark.png",
+                  "sizes": "512x512",
+                  "type": "image/png"
+                }
+              ]
+            };
+            return new Response(JSON.stringify(manifest), {
+              headers: {
+                'content-type': 'application/json; charset=utf-8',
+                'cache-control': 'public, max-age=3600',
+              }
+            });
+          }
+        } catch (err) {
+          console.error('Error generating dynamic manifest.json:', err);
+        }
+      }
+      // Fallback
+      const assetUrl = new URL(request.url);
+      assetUrl.pathname = `/church/manifest.json`;
+      return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+    }
+
+    if (isTenantPublicHost && (pathname === '/sw.js' || pathname.startsWith('/assets/'))) {
       const assetUrl = new URL(request.url);
       assetUrl.pathname = `/church${pathname}`;
       return env.ASSETS.fetch(new Request(assetUrl.toString(), request));

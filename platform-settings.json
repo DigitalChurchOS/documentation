@@ -1,0 +1,12 @@
+{
+  "platformName": "Churchteller",
+  "defaultTrialDays": 14,
+  "signupEnabled": false,
+  "cloudinaryCloudName": "pguyn8bv",
+  "cloudinaryApiKey": "361943296662427",
+  "cloudinaryApiSecret": "ssUh1aCybDMpnaMK1-cVs8ik320",
+  "cloudinarySeparateContent": false,
+  "cloudinaryContentCloudName": "",
+  "cloudinaryContentApiKey": "",
+  "cloudinaryContentApiSecret": ""
+}

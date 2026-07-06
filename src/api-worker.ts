@@ -1192,6 +1192,7 @@ function makeSiteContextForContext(
     },
     enabledPlugins: [],
     pluginSettings: {},
+    globalContent: makeGlobalContentForContext(context),
   };
 }
 

@@ -43,23 +43,7 @@ export async function authMiddleware(
   let payload: TokenPayload;
 
   try {
-    if (token === 'local-preview-token') {
-      const user = await prisma.user.findFirst({
-        where: req.tenantId ? { tenantId: req.tenantId } : {},
-        select: { id: true, email: true, tenantId: true }
-      });
-      if (!user) {
-        res.status(401).json({ error: 'Local bypass user not found' });
-        return;
-      }
-      payload = {
-        userId: user.id,
-        tenantId: user.tenantId,
-        email: user.email,
-      };
-    } else {
-      payload = jwt.verify(token, JWT_SECRET) as TokenPayload;
-    }
+    payload = jwt.verify(token, JWT_SECRET) as TokenPayload;
 
     if (!payload || !payload.userId) {
       res.status(401).json({ error: 'Invalid token payload: userId is missing' });

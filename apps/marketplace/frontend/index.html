@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Digital Church OS — Theme & Plugin Marketplace</title>
+  <title>Digital Churchtell — Theme & Plugin Marketplace</title>
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <!-- Google Fonts: Inter & Outfit -->
@@ -1276,7 +1276,7 @@
           <i data-lucide="store"></i>
         </div>
         <div>
-          <h1>Digital Church OS</h1>
+          <h1>Digital Churchtell</h1>
           <span>Theme & Plugin Marketplace</span>
         </div>
       </div>
@@ -1609,7 +1609,7 @@
 
   <script>
     const tenantId = localStorage.getItem('churchos.tenantId') || 'demo-church-local';
-    const token = localStorage.getItem('churchos.token') || 'local-preview-token';
+    const token = localStorage.getItem('churchos.token') || '';
     const apiHeaders = {
       'Authorization': `Bearer ${token}`,
       'x-tenant-id': tenantId,
@@ -1753,7 +1753,7 @@
         title.textContent = "Install beautiful themes and safe plugins for every church tenant.";
         text.textContent = "Browse approved themes, plugins, blocks, and integrations. Preview themes in desktop, tablet, and mobile, approve plugin permissions, manage updates, and keep every tenant protected.";
       } else if (view === "developer") {
-        title.textContent = "Give approved developers a clean portal to build for Digital Church OS.";
+        title.textContent = "Give approved developers a clean portal to build for Digital Churchtell.";
         text.textContent = "Developers can submit themes, plugins, blocks, and integrations, test inside sandbox tenants, view review feedback, and track installs and revenue.";
         loadDeveloperData();
       }
@@ -2017,7 +2017,7 @@
             <strong>${isTheme ? "Theme Compatibility" : "Plugin Permissions"}</strong>
             ${
               isTheme
-                ? `<p>Compatible with Digital Church OS Theme Engine. Supports real-time layout templates, styles config, and custom colors.</p>`
+                ? `<p>Compatible with Digital Churchtell Theme Engine. Supports real-time layout templates, styles config, and custom colors.</p>`
                 : `<div class="permission-list">
                     ${(config.requiredPermissions || []).map(p => `
                       <div class="permission">
@@ -2406,7 +2406,7 @@
       const current = await apiRequest('GET', '/api/marketplace/developer/profile');
       if (current?.id) return current;
 
-      const tenantName = localStorage.getItem('churchos.tenantName') || 'ChurchOS Developer';
+      const tenantName = localStorage.getItem('churchos.tenantName') || 'Churchtell Developer';
       const ownerEmail = localStorage.getItem('churchos.userEmail') || 'developer@churched.online';
       const created = await apiRequest('POST', '/api/marketplace/developer/register', {
         companyName: `${tenantName} Studio`,

@@ -1,8 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import prisma from '../lib/prisma';
 import { BillingService } from '../services/billing';
 import { PUBLIC_DOMAIN_SUFFIX, TenantProvisioningService, subdomainHost } from '../services/tenantProvisioning';
+import { getPlatformSettings, savePlatformSettings } from '../services/platformSettings';
 import { logMarketplaceActivity, reviewSubmission } from '../services/marketplace';
 
 const router = Router();
@@ -20,12 +22,17 @@ function superAdminTokenMiddleware(req: Request, res: Response, next: NextFuncti
   }
 
   try {
-    const payload = jwt.verify(authHeader.slice(7), JWT_SECRET) as { role?: string; email?: string };
+    const payload = jwt.verify(authHeader.slice(7), JWT_SECRET) as { role?: string; email?: string; isMainSuperAdmin?: boolean; permissions?: string[] };
     if (payload.role !== 'super-admin') {
       res.status(403).json({ error: 'Forbidden: Super Admin access required' });
       return;
     }
-    (req as any).superAdmin = { email: payload.email || 'superadmin@churchos.local', role: payload.role };
+    (req as any).superAdmin = {
+      email: payload.email || 'superadmin@churchos.local',
+      role: payload.role,
+      isMainSuperAdmin: payload.isMainSuperAdmin ?? false,
+      permissions: payload.permissions || []
+    };
     next();
   } catch (err: any) {
     if (err.name === 'JsonWebTokenError' || err.name === 'TokenExpiredError') {
@@ -35,6 +42,66 @@ function superAdminTokenMiddleware(req: Request, res: Response, next: NextFuncti
     next(err);
   }
 }
+
+function checkPermission(permissionName: string) {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const superAdmin = (req as any).superAdmin;
+      if (!superAdmin) {
+        res.status(401).json({ error: 'Unauthorized' });
+        return;
+      }
+
+      // Fetch user roles and permissions live from DB
+      const user = await prisma.user.findFirst({
+        where: { email: superAdmin.email, tenantId: 'platform-super-admin' },
+        include: {
+          userRoles: {
+            include: {
+              role: {
+                include: {
+                  rolePermissions: {
+                    include: {
+                      permission: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (!user) {
+        res.status(403).json({ error: 'Forbidden: Platform user not found' });
+        return;
+      }
+
+      const isSuperAdmin = user.userRoles.some(
+        (ur) => ur.role.tenantId === null && ur.role.name === 'SuperAdmin'
+      );
+      if (isSuperAdmin) {
+        next();
+        return;
+      }
+
+      // Check for specific platform view permission
+      const hasPermission = user.userRoles.some((ur) =>
+        ur.role.rolePermissions.some((rp) => rp.permission.name === permissionName)
+      );
+
+      if (!hasPermission) {
+        res.status(403).json({ error: `Forbidden: Requires permission ${permissionName}` });
+        return;
+      }
+
+      next();
+    } catch (err: any) {
+      next(err);
+    }
+  };
+}
+
 
 type PlatformModule = {
   key: string;
@@ -234,20 +301,106 @@ async function ensureModuleDefinition(moduleKey: string) {
   });
 }
 
-router.post('/login', (req: Request, res: Response) => {
-  const { email } = req.body;
-  if (email === 'superadmin@churchos.local' || email === 'superadmin@churched.online') {
-    const token = jwt.sign({ role: 'super-admin', email }, JWT_SECRET, { expiresIn: '24h' });
-    res.json({ token, user: { email, role: 'super-admin' } });
-  } else {
-    res.status(401).json({ error: 'Invalid super admin credentials' });
+router.post('/login', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.status(400).json({ error: 'email and password are required' });
+      return;
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    // 1. Find user by email
+    const user = await prisma.user.findFirst({
+      where: { email: cleanEmail, tenantId: 'platform-super-admin' },
+      include: {
+        userRoles: {
+          include: {
+            role: true
+          }
+        }
+      }
+    });
+
+    if (!user) {
+      res.status(401).json({ error: 'Invalid super admin credentials' });
+      return;
+    }
+
+    // 2. Verify password
+    const valid = await bcrypt.compare(password, user.passwordHash);
+    if (!valid) {
+      res.status(401).json({ error: 'Invalid super admin credentials' });
+      return;
+    }
+
+    // 3. Verify they have the SuperAdmin role or Staff role
+    const isSuperAdmin = user.userRoles.some(
+      (ur) => ur.role.tenantId === null && ur.role.name === 'SuperAdmin'
+    );
+    const isStaffAdmin = user.userRoles.some(
+      (ur) => ur.role.tenantId === null && ur.role.name.startsWith('Staff:')
+    );
+
+    if (!isSuperAdmin && !isStaffAdmin) {
+      res.status(403).json({ error: 'Forbidden: Platform access required' });
+      return;
+    }
+
+    // Fetch all permissions live from DB
+    let permissions: string[] = [];
+    if (isSuperAdmin) {
+      permissions = ['*'];
+    } else {
+      const rolesWithPermissions = await prisma.role.findMany({
+        where: {
+          id: { in: user.userRoles.map((ur) => ur.roleId) }
+        },
+        include: {
+          rolePermissions: {
+            include: {
+              permission: true
+            }
+          }
+        }
+      });
+      permissions = rolesWithPermissions.flatMap((role) =>
+        role.rolePermissions.map((rp) => rp.permission.name)
+      );
+    }
+
+    const token = jwt.sign(
+      {
+        role: 'super-admin',
+        email: user.email,
+        isMainSuperAdmin: isSuperAdmin,
+        permissions
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      token,
+      user: {
+        email: user.email,
+        role: 'super-admin',
+        isMainSuperAdmin: isSuperAdmin,
+        permissions
+      }
+    });
+  } catch (err) {
+    console.error('Super admin login error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 // Enforce standard authentication and Super Admin checks on all subsequent routes
 router.use(superAdminTokenMiddleware);
 
-router.get('/overview', async (_req: Request, res: Response) => {
+router.get('/overview', checkPermission('platform.overview'), async (_req: Request, res: Response) => {
   try {
     const [totalChurches, activeChurches, trialChurches, customDomains, subscriptions, activities] = await Promise.all([
       prisma.tenant.count(),
@@ -287,11 +440,11 @@ router.get('/overview', async (_req: Request, res: Response) => {
   }
 });
 
-router.get('/modules', (_req: Request, res: Response) => {
+router.get('/modules', checkPermission('platform.modules'), (_req: Request, res: Response) => {
   res.json({ data: platformModules });
 });
 
-router.patch('/modules/:key', (req: Request, res: Response) => {
+router.patch('/modules/:key', checkPermission('platform.modules'), (req: Request, res: Response) => {
   const module = platformModules.find((item) => item.key === req.params.key);
   if (!module) {
     res.status(404).json({ error: 'Module not found' });
@@ -305,7 +458,7 @@ router.patch('/modules/:key', (req: Request, res: Response) => {
   res.json({ data: module });
 });
 
-router.get('/plans', async (_req: Request, res: Response) => {
+router.get('/plans', checkPermission('platform.plans'), async (_req: Request, res: Response) => {
   try {
     const plans = await BillingService.listPlans();
     res.json({ data: plans });
@@ -314,7 +467,7 @@ router.get('/plans', async (_req: Request, res: Response) => {
   }
 });
 
-router.post('/plans', async (req: Request, res: Response) => {
+router.post('/plans', checkPermission('platform.plans'), async (req: Request, res: Response) => {
   try {
     const plan = await prisma.subscriptionPlan.create({
       data: BillingService.normalizePlanInput(req.body || {}, true) as any,
@@ -325,7 +478,7 @@ router.post('/plans', async (req: Request, res: Response) => {
   }
 });
 
-router.patch('/plans/:id', async (req: Request, res: Response) => {
+router.patch('/plans/:id', checkPermission('platform.plans'), async (req: Request, res: Response) => {
   try {
     const plan = await prisma.subscriptionPlan.update({
       where: { id: req.params.id as string },
@@ -337,7 +490,7 @@ router.patch('/plans/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/tenants', async (req: Request, res: Response) => {
+router.get('/tenants', checkPermission('platform.tenants'), async (req: Request, res: Response) => {
   try {
     const search = String(req.query.search || '').trim();
     const status = String(req.query.status || '').trim();
@@ -360,7 +513,7 @@ router.get('/tenants', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/tenants', async (req: Request, res: Response) => {
+router.post('/tenants', checkPermission('platform.tenants'), async (req: Request, res: Response) => {
   try {
     const { name, subdomain, customDomain } = req.body;
 
@@ -455,7 +608,7 @@ router.post('/tenants', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/tenants/:id', async (req: Request, res: Response) => {
+router.get('/tenants/:id', checkPermission('platform.tenants'), async (req: Request, res: Response) => {
   try {
     const tenant = await tenantWithAdminIncludes(req.params.id as string);
     if (!tenant) {
@@ -476,7 +629,7 @@ router.get('/tenants/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.patch('/tenants/:id', async (req: Request, res: Response) => {
+router.patch('/tenants/:id', checkPermission('platform.tenants'), async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
     const { name, subdomain, customDomain, status } = req.body;
@@ -522,7 +675,7 @@ router.patch('/tenants/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.delete('/tenants/:id', async (req: Request, res: Response) => {
+router.delete('/tenants/:id', checkPermission('platform.tenants'), async (req: Request, res: Response) => {
   try {
     const updated = await prisma.tenant.update({
       where: { id: req.params.id as string },
@@ -534,7 +687,7 @@ router.delete('/tenants/:id', async (req: Request, res: Response) => {
   }
 });
 
-router.patch('/tenants/:id/modules', async (req: Request, res: Response) => {
+router.patch('/tenants/:id/modules', checkPermission('platform.tenants'), async (req: Request, res: Response) => {
   try {
     const tenantId = req.params.id as string;
     const moduleKey = String(req.body?.moduleKey || '').trim();
@@ -572,7 +725,7 @@ router.patch('/tenants/:id/modules', async (req: Request, res: Response) => {
   }
 });
 
-router.patch('/tenants/:id/subscription', async (req: Request, res: Response) => {
+router.patch('/tenants/:id/subscription', checkPermission('platform.tenants'), async (req: Request, res: Response) => {
   try {
     const data = await BillingService.subscribeTenant(req.params.id as string, null, {
       planId: req.body?.planId,
@@ -580,6 +733,7 @@ router.patch('/tenants/:id/subscription', async (req: Request, res: Response) =>
       provider: req.body?.provider,
       providerMode: req.body?.providerMode,
       trialDays: req.body?.trialDays ? Number(req.body.trialDays) : 0,
+
     });
     res.json({ data });
   } catch (err: any) {
@@ -939,16 +1093,33 @@ router.post('/marketplace/assets/:assetId/suspend', async (req: Request, res: Re
   }
 });
 
-router.get('/settings', async (_req: Request, res: Response) => {
-  res.json({ data: { platformName: 'ChurchOS', defaultTrialDays: 14, signupEnabled: true } });
+router.get('/settings', checkPermission('platform.settings'), async (_req: Request, res: Response) => {
+  try {
+    res.json({ data: getPlatformSettings() });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-router.patch('/settings', async (req: Request, res: Response) => {
-  res.json({ data: { ...req.body, updatedAt: new Date().toISOString() } });
+router.patch('/settings', checkPermission('platform.settings'), async (req: Request, res: Response) => {
+  try {
+    const existing = getPlatformSettings();
+    const incoming = { ...req.body };
+    if (!incoming.cloudinaryApiSecret) {
+      incoming.cloudinaryApiSecret = existing.cloudinaryApiSecret || 'ssUh1aCybDMpnaMK1-cVs8ik320';
+    }
+    if (!incoming.cloudinaryContentApiSecret) {
+      incoming.cloudinaryContentApiSecret = existing.cloudinaryContentApiSecret || '';
+    }
+    const updated = savePlatformSettings(incoming);
+    res.json({ data: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── entitlements management ──────────────────────────────────
-router.post('/entitlements', async (req: Request, res: Response) => {
+router.post('/entitlements', checkPermission('platform.tenants'), async (req: Request, res: Response) => {
   try {
     const { tenantId, moduleKey, status, billingRule, usageLimits } = req.body;
 
@@ -998,7 +1169,7 @@ router.post('/entitlements', async (req: Request, res: Response) => {
 });
 
 // ── GET /api/super-admin/logs ──────────────────────────────────
-router.get('/logs', async (req: Request, res: Response) => {
+router.get('/logs', checkPermission('platform.audit'), async (req: Request, res: Response) => {
   try {
     const level = req.query.level as string | undefined;
     const scope = req.query.scope as string | undefined;
@@ -1036,9 +1207,206 @@ router.get('/logs', async (req: Request, res: Response) => {
   }
 });
 
+// ── GET /api/super-admin/platform-users ─────────────────────────
+router.get('/platform-users', checkPermission('platform.users-roles'), async (req: Request, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      where: { tenantId: 'platform-super-admin' },
+      include: {
+        userRoles: {
+          include: {
+            role: {
+              include: {
+                rolePermissions: {
+                  include: {
+                    permission: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const data = users.map((u) => {
+      const isMainSuperAdmin = u.userRoles.some((ur) => ur.role.name === 'SuperAdmin');
+      const perms = isMainSuperAdmin
+        ? ['platform.all']
+        : u.userRoles.flatMap((ur) => ur.role.rolePermissions.map((rp) => rp.permission.name));
+
+      return {
+        id: u.id,
+        email: u.email,
+        status: u.status,
+        createdAt: u.createdAt,
+        isMainSuperAdmin,
+        platformRole: { name: isMainSuperAdmin ? 'Platform Owner' : 'Staff User' },
+        permissions: perms,
+      };
+    });
+
+    res.json({ data });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── POST /api/super-admin/platform-users ────────────────────────
+router.post('/platform-users', async (req: Request, res: Response) => {
+  try {
+    const superAdmin = (req as any).superAdmin;
+    const user = await prisma.user.findFirst({
+      where: { email: superAdmin.email, tenantId: 'platform-super-admin' },
+      include: { userRoles: { include: { role: true } } }
+    });
+
+    const isMainSuper = user?.userRoles.some(ur => ur.role.name === 'SuperAdmin');
+    if (!isMainSuper) {
+      res.status(403).json({ error: 'Forbidden: Only the primary Platform Owner can manage staff accounts' });
+      return;
+    }
+
+    const { email, password, permissions } = req.body;
+    if (!email || !password) {
+      res.status(400).json({ error: 'email and password are required' });
+      return;
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    const existing = await prisma.user.findFirst({
+      where: { email: cleanEmail, tenantId: 'platform-super-admin' }
+    });
+    if (existing) {
+      res.status(409).json({ error: 'User already exists' });
+      return;
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const platformTenantId = 'platform-super-admin';
+
+    const newStaff = await prisma.$transaction(async (tx) => {
+      const u = await tx.user.create({
+        data: {
+          tenantId: platformTenantId,
+          email: cleanEmail,
+          passwordHash,
+          status: 'active',
+        }
+      });
+
+      const role = await tx.role.create({
+        data: {
+          tenantId: null,
+          name: `Staff: ${cleanEmail}`,
+          description: `Platform staff role for ${cleanEmail}`,
+          isCustom: true,
+        }
+      });
+
+      await tx.userRole.create({
+        data: {
+          userId: u.id,
+          roleId: role.id
+        }
+      });
+
+      const chosenPerms = Array.isArray(permissions) ? permissions : ['overview'];
+      for (const view of chosenPerms) {
+        const permName = `platform.${view}`;
+        const perm = await tx.permission.upsert({
+          where: { name: permName },
+          update: {},
+          create: { name: permName, description: `System management scope for ${view}` },
+        });
+
+        await tx.rolePermission.create({
+          data: {
+            roleId: role.id,
+            permissionId: perm.id
+          }
+        });
+      }
+
+      return u;
+    });
+
+    res.status(201).json({ data: { id: newStaff.id, email: newStaff.email } });
+  } catch (err: any) {
+    console.error('Create platform user error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ── DELETE /api/super-admin/platform-users/:id ──────────────────
+router.delete('/platform-users/:id', async (req: Request, res: Response) => {
+  try {
+    const superAdmin = (req as any).superAdmin;
+    const user = await prisma.user.findFirst({
+      where: { email: superAdmin.email, tenantId: 'platform-super-admin' },
+      include: { userRoles: { include: { role: true } } }
+    });
+
+    const isMainSuper = (user as any)?.userRoles.some((ur: any) => ur.role.name === 'SuperAdmin');
+    if (!isMainSuper) {
+      res.status(403).json({ error: 'Forbidden: Only the primary Platform Owner can manage staff accounts' });
+      return;
+    }
+
+    const targetUserId = req.params.id as string;
+
+    const targetUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      include: { userRoles: { include: { role: true } } }
+    });
+
+    if (!targetUser) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    const isTargetMainSuper = (targetUser as any).userRoles.some((ur: any) => ur.role.name === 'SuperAdmin');
+    if (isTargetMainSuper) {
+      res.status(400).json({ error: 'Cannot delete the primary platform owner account' });
+      return;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const customRoles = (targetUser as any).userRoles
+        .map((ur: any) => ur.role)
+        .filter((r: any) => r.name.startsWith('Staff:'));
+
+      await tx.userRole.deleteMany({
+        where: { userId: targetUserId }
+      });
+
+      await tx.user.delete({
+        where: { id: targetUserId }
+      });
+
+      for (const role of customRoles) {
+        await tx.rolePermission.deleteMany({
+          where: { roleId: role.id }
+        });
+        await tx.role.delete({
+          where: { id: role.id }
+        });
+      }
+    });
+
+    res.json({ message: 'Platform staff user successfully deleted' });
+  } catch (err: any) {
+    console.error('Delete platform user error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 router.use((_req, res) => {
   res.json({ data: [] });
 });
 
 export default router;
+

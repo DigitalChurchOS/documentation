@@ -281,24 +281,44 @@ export class MediaService {
 
   static async getSettings(tenantId: string) {
     const settings = await prisma.mediaModuleSettings.findUnique({ where: { tenantId_moduleKey: { tenantId, moduleKey: MEDIA_MODULE_KEY } } });
-    return settings || { id: 'default', tenantId, moduleKey: MEDIA_MODULE_KEY, enabled: true, billingPlan: 'free', providerMode: 'hybrid', configJson: JSON.stringify(DEFAULT_CONFIG), updatedAt: new Date() };
+    const record = settings || { id: 'default', tenantId, moduleKey: MEDIA_MODULE_KEY, enabled: true, billingPlan: 'free', providerMode: 'hybrid', configJson: JSON.stringify(DEFAULT_CONFIG), updatedAt: new Date() };
+    const config = parseJson<Record<string, any>>(record.configJson, DEFAULT_CONFIG);
+    return {
+      ...record,
+      ...config,
+      enabled: record.enabled,
+      billingPlan: record.billingPlan,
+      providerMode: record.providerMode,
+      configJson: record.configJson
+    };
   }
 
-  static async updateSettings(tenantId: string, data: MediaSettingsInput, userId?: string | null) {
+  static async updateSettings(tenantId: string, data: any, userId?: string | null) {
     if (data.enabled !== undefined && typeof data.enabled !== 'boolean') throw new Error('enabled must be a boolean');
-    allowed(data.billingPlan, BILLING_PLANS, 'billingPlan');
-    allowed(data.providerMode, PROVIDER_MODES, 'providerMode');
-    const current = await this.getSettings(tenantId);
-    const currentConfig = parseJson<Record<string, any>>(current.configJson, DEFAULT_CONFIG);
-    const incoming = typeof data.configJson === 'string' ? parseJson<Record<string, any>>(data.configJson, {}) : (data.configJson || {});
-    const configJson = data.configJson !== undefined ? normalizedConfig({ ...currentConfig, ...incoming, ...(data.providerMode ? { providerMode: data.providerMode } : {}) }) : undefined;
+    if (data.billingPlan !== undefined) allowed(data.billingPlan, BILLING_PLANS, 'billingPlan');
+    if (data.providerMode !== undefined) allowed(data.providerMode, PROVIDER_MODES, 'providerMode');
+    const current = await prisma.mediaModuleSettings.findUnique({ where: { tenantId_moduleKey: { tenantId, moduleKey: MEDIA_MODULE_KEY } } });
+    const currentRecord = current || { id: 'default', tenantId, moduleKey: MEDIA_MODULE_KEY, enabled: true, billingPlan: 'free', providerMode: 'hybrid', configJson: JSON.stringify(DEFAULT_CONFIG), updatedAt: new Date() };
+    
+    const currentConfig = parseJson<Record<string, any>>(currentRecord.configJson, DEFAULT_CONFIG);
+    const incomingConfig = {
+      ...(typeof data.configJson === 'string' ? parseJson<Record<string, any>>(data.configJson, {}) : (data.configJson || {})),
+      ...(data.storageMode !== undefined && { storageMode: data.storageMode }),
+      ...(data.cloudName !== undefined && { cloudName: data.cloudName }),
+      ...(data.apiKey !== undefined && { apiKey: data.apiKey }),
+      ...(data.apiSecret !== undefined && { apiSecret: data.apiSecret }),
+      ...(data.uploadFolder !== undefined && { uploadFolder: data.uploadFolder }),
+      ...(data.syncUploads !== undefined && { syncUploads: data.syncUploads }),
+    };
+
+    const configJson = JSON.stringify({ ...currentConfig, ...incomingConfig });
     const settings = await prisma.mediaModuleSettings.upsert({
       where: { tenantId_moduleKey: { tenantId, moduleKey: MEDIA_MODULE_KEY } },
       update: {
         ...(data.enabled !== undefined && { enabled: data.enabled }),
         ...(data.billingPlan !== undefined && { billingPlan: data.billingPlan }),
         ...(data.providerMode !== undefined && { providerMode: data.providerMode }),
-        ...(configJson !== undefined && { configJson }),
+        configJson,
       },
       create: {
         tenantId,
@@ -306,7 +326,7 @@ export class MediaService {
         enabled: data.enabled ?? true,
         billingPlan: data.billingPlan || 'free',
         providerMode: data.providerMode || 'hybrid',
-        configJson: configJson || JSON.stringify(DEFAULT_CONFIG),
+        configJson,
       },
     });
     await prisma.moduleSettings.upsert({
