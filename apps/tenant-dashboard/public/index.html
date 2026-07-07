@@ -17174,6 +17174,16 @@ body.customizer-open { overflow: hidden; }
       try {
         const res = await fetch(path, options);
         if (res.status === 204) return { ok: true, data: null };
+        if (res.status === 401) {
+          showToast('Session expired. Please log in again.', true);
+          localStorage.removeItem('churchos.token');
+          const loginWall = document.getElementById('loginWall');
+          const appShell = document.getElementById('appShell');
+          if (loginWall && appShell) {
+            appShell.classList.add('hidden');
+            loginWall.classList.remove('hidden');
+          }
+        }
         const text = await res.text();
         let json = null;
         if (text) {
@@ -18115,14 +18125,14 @@ body.customizer-open { overflow: hidden; }
       
       title.textContent = type === 'favicon' ? 'Crop & Resize Favicon (Strict 1:1)' : 'Crop & Resize Church Logo (Free Aspect Ratio)';
       
-      img.src = src;
       modal.classList.remove('hidden');
       
       if (activeCropper) {
         activeCropper.destroy();
+        activeCropper = null;
       }
       
-      setTimeout(() => {
+      img.onload = function() {
         activeCropper = new Cropper(img, {
           aspectRatio: type === 'favicon' ? 1 : NaN,
           viewMode: 1,
@@ -18136,7 +18146,8 @@ body.customizer-open { overflow: hidden; }
           cropBoxResizable: true,
           toggleDragModeOnDblclick: false,
         });
-      }, 50);
+      };
+      img.src = src;
     };
 
     window.rotateCropImage = function() {
