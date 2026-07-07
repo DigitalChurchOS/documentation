@@ -5361,7 +5361,7 @@ body.customizer-open { overflow: hidden; }
                   </button>
                   <button class="cms-nav-item" data-cms-tab="templates">
                     <i data-lucide="layout-template"></i>
-                    <span>Page Templates</span>
+                    <span>Templates</span>
                   </button>
                   <button class="cms-nav-item" data-cms-tab="menus">
                     <i data-lucide="menu"></i>
@@ -5400,19 +5400,33 @@ body.customizer-open { overflow: hidden; }
                         <option value="updatedDesc">Recently Updated</option>
                         <option value="titleAsc">Title A-Z</option>
                         <option value="statusAsc">Status</option>
-                        <option value="seoFirst">SEO Attention</option>
                       </select>
                     </div>
                   </div>
-                  <div class="grid-layout" id="cmsPagesGrid"></div>
+                  <div class="pages-sections-container">
+                    <div style="margin-bottom: 32px;">
+                      <h3 style="margin: 0 0 12px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="layout" style="width:16px;height:16px;color:var(--accent);"></i>
+                        <span>Main Pages</span>
+                      </h3>
+                      <div class="grid-layout" id="cmsMainPagesGrid"></div>
+                    </div>
+                    <div>
+                      <h3 style="margin: 0 0 12px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                        <i data-lucide="file-plus" style="width:16px;height:16px;color:var(--muted);"></i>
+                        <span>Assisting Pages</span>
+                      </h3>
+                      <div class="grid-layout" id="cmsAssistingPagesGrid"></div>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- 2. PAGE TEMPLATES TAB -->
+                <!-- 2. TEMPLATES TAB -->
                 <div id="cmsTemplatesTab" class="cms-tab-content hidden">
                   <div class="section-head">
                     <div>
-                      <h2>Page Templates</h2>
-                      <p>Start with church-specific structures for home, about, ministries, leadership, services, locations, contact, and landing pages.</p>
+                      <h2>Templates</h2>
+                      <p>Manage layouts and header content for dynamic resource catalogs, media archives, store items, and event lists.</p>
                     </div>
                   </div>
                   <div class="grid-layout" id="cmsTemplatesGrid"></div>
@@ -13636,6 +13650,129 @@ body.customizer-open { overflow: hidden; }
     </div>
   </div>
 
+  <!-- EDIT PAGE CONTENT MODAL (Shopify Style) -->
+  <div class="modal-overlay" id="cmsPageContentModal">
+    <div class="modal-content" style="max-width: 680px; width: 90%;">
+      <div class="modal-header">
+        <h3 id="pageContentModalTitle">Edit Page Content</h3>
+        <button class="btn small" style="padding: 4px;" onclick="closeCmsModal('cmsPageContentModal')"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: calc(100vh - 200px); overflow-y: auto; padding-right: 8px;">
+        <input type="hidden" id="pageContentModalId">
+        <input type="hidden" id="pageContentModalSlug">
+
+        <!-- 1. Fields for HOME Page (Hero block) -->
+        <div id="fieldsHome" class="hidden stack" style="gap: 12px;">
+          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">Hero Banner Content</h4>
+          <div class="field">
+            <label for="homeHeroTitle">Hero Headline</label>
+            <input type="text" id="homeHeroTitle" class="form-control">
+          </div>
+          <div class="field">
+            <label for="homeHeroSubtitle">Hero Subtitle</label>
+            <input type="text" id="homeHeroSubtitle" class="form-control">
+          </div>
+          <div class="field">
+            <label for="homeHeroButtonLabel">Button Label</label>
+            <input type="text" id="homeHeroButtonLabel" class="form-control">
+          </div>
+          <div class="field">
+            <label for="homeHeroButtonUrl">Button Link (URL)</label>
+            <input type="text" id="homeHeroButtonUrl" class="form-control">
+          </div>
+          <div class="field">
+            <label for="homeHeroBgImage">Hero Background Image URL</label>
+            <input type="text" id="homeHeroBgImage" class="form-control">
+          </div>
+        </div>
+
+        <!-- 2. Fields for ABOUT Page (Story, Vision, Mission, Values) -->
+        <div id="fieldsAbout" class="hidden stack" style="gap: 12px;">
+          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">About Church Details</h4>
+          <div class="field">
+            <label for="aboutHeading">About Us Page Title / Heading</label>
+            <input type="text" id="aboutHeading" class="form-control">
+          </div>
+          <div class="field">
+            <label for="aboutShortBio">Short Bio / Story Text</label>
+            <textarea id="aboutShortBio" class="form-control" style="min-height: 90px;"></textarea>
+          </div>
+          <div class="field">
+            <label for="aboutVision">Vision Statement</label>
+            <textarea id="aboutVision" class="form-control" style="min-height: 60px;"></textarea>
+          </div>
+          <div class="field">
+            <label for="aboutMission">Mission Statement</label>
+            <textarea id="aboutMission" class="form-control" style="min-height: 60px;"></textarea>
+          </div>
+          <div class="field">
+            <label for="aboutValues">Core Values (Comma separated)</label>
+            <input type="text" id="aboutValues" class="form-control">
+          </div>
+        </div>
+
+        <!-- 3. Fields for SERVICES Page (Service Times and address) -->
+        <div id="fieldsServices" class="hidden stack" style="gap: 12px;">
+          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">Service Rhythms & Address</h4>
+          <div class="field">
+            <label for="servicesTitle">Services Page Title</label>
+            <input type="text" id="servicesTitle" class="form-control">
+          </div>
+          <div class="field">
+            <label for="servicesSundayTimes">Sunday Services Schedule</label>
+            <input type="text" id="servicesSundayTimes" class="form-control">
+          </div>
+          <div class="field">
+            <label for="servicesMidweekTimes">Midweek & Youth Gatherings</label>
+            <input type="text" id="servicesMidweekTimes" class="form-control">
+          </div>
+          <div class="field">
+            <label for="servicesAddress">Physical Meeting Address</label>
+            <input type="text" id="servicesAddress" class="form-control">
+          </div>
+        </div>
+
+        <!-- 4. Fields for CONTACT Page (Email, Phone, Address, Map toggle) -->
+        <div id="fieldsContact" class="hidden stack" style="gap: 12px;">
+          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">Contact Information</h4>
+          <div class="field">
+            <label for="contactHeader">Contact Page Headline</label>
+            <input type="text" id="contactHeader" class="form-control">
+          </div>
+          <div class="field">
+            <label for="contactEmail">Email Address</label>
+            <input type="email" id="contactEmail" class="form-control">
+          </div>
+          <div class="field">
+            <label for="contactPhone">Phone Number</label>
+            <input type="text" id="contactPhone" class="form-control">
+          </div>
+          <div class="field" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+            <input type="checkbox" id="contactShowMap" style="width: auto; margin:0;">
+            <label for="contactShowMap" style="margin-bottom: 0;">Show Interactive Location Map</label>
+          </div>
+        </div>
+
+        <!-- 5. Default/Generic Page Fields (Assisting / other pages) -->
+        <div id="fieldsGeneric" class="hidden stack" style="gap: 12px;">
+          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">Page Content</h4>
+          <div class="field">
+            <label for="genericTitle">Page Title</label>
+            <input type="text" id="genericTitle" class="form-control">
+          </div>
+          <div class="field">
+            <label for="genericBody">Page Body Content (Markdown/HTML support)</label>
+            <textarea id="genericBody" class="form-control" style="min-height: 200px;"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="closeCmsModal('cmsPageContentModal')">Cancel</button>
+        <button class="btn primary" onclick="saveCmsPageContent()"><i data-lucide="save"></i>Save Content</button>
+      </div>
+    </div>
+  </div>
+
   <!-- REUSABLE BLOCK MODAL -->
   <div class="modal-overlay" id="cmsBlockModal">
     <div class="modal-content">
@@ -14609,7 +14746,7 @@ body.customizer-open { overflow: hidden; }
 
     const modules = [
       { key: 'domain-tenant-management', name: 'Church Details', icon: 'sliders-horizontal', category: 'Churchfront', desc: 'Configure domains, branding, modules, and launch readiness.', workspaces: ['Church Identity', 'Branding', 'Domain Setup'], settings: [] },
-      { key: 'cms', resourceKey: 'core-website-cms', entitlementKey: 'website-cms', apiBase: '/api/cms', name: 'Churchfront', icon: 'layout-template', category: 'Churchfront', desc: 'Create pages, manage navigation, publish content, reuse blocks, and control the public church website.', workspaces: ['Pages', 'Page Templates', 'Navigation', 'Footer', 'Reusable Sections'], settings: [] },
+      { key: 'cms', resourceKey: 'core-website-cms', entitlementKey: 'website-cms', apiBase: '/api/cms', name: 'Churchfront', icon: 'layout-template', category: 'Churchfront', desc: 'Create pages, manage navigation, publish content, reuse blocks, and control the public church website.', workspaces: ['Pages', 'Templates', 'Menus', 'Footer', 'Reusable Sections'], settings: [] },
       { key: 'tenant-themes', name: 'Themes', icon: 'palette', category: 'Churchfront', desc: 'Browse and install clean premium website theme templates designed for your church.', workspaces: ['Browse Themes'], settings: [] },
       { key: 'theme-engine', name: 'Styling', icon: 'brush', category: 'Churchfront', desc: 'Customize themes, typography, colors, layouts, and CSS.', workspaces: ['Overview', 'Customize Colors', 'Typography', 'Logo & Layouts', 'Templates', 'Custom CSS', 'Settings', 'Audit Logs'], settings: [] },
       { key: 'tenant-plugins', name: 'Plugins', icon: 'toy-brick', category: 'Churchfront', desc: 'Activate dynamic features and plugin extensions to expand your platform.', workspaces: ['Browse Plugins'], settings: [] },
@@ -21759,9 +21896,222 @@ body.customizer-open { overflow: hidden; }
       return Boolean(page.seoTitle && page.seoDescription);
     }
 
+    function isAssistingPage(page) {
+      const slug = String(page.slug || '').toLowerCase().trim();
+      const title = String(page.title || '').toLowerCase().trim();
+      const assistingSlugs = [
+        'privacy', 'terms', 'legal', 'success', 'confirmed', 'checkout', 'cart',
+        'payment', 'order', 'cookie', 'policy', 'successful-payment', 'order-confirmed', 'shopping-cart'
+      ];
+      return assistingSlugs.some(s => slug.includes(s) || title.includes(s));
+    }
+
+    function isDefaultPage(page) {
+      const slug = String(page.slug || '').toLowerCase().trim();
+      return slug === 'home' || slug === '' || slug === 'about' || slug === 'contact';
+    }
+
+    window.togglePageActive = async function(pageId, isChecked) {
+      const page = cmsState.pages.find(p => p.id === pageId);
+      if (!page) return;
+      const status = isChecked ? 'published' : 'draft';
+      const res = await cmsApiRequest('PATCH', `/api/cms/pages/${pageId}`, { status });
+      if (res && res.ok) {
+        showToast(`Page "${page.title}" ${isChecked ? 'activated' : 'deactivated'}.`);
+        await loadAllCmsData();
+        renderCmsPagesGrid();
+      } else {
+        alert(res?.data?.error || 'Failed to toggle page status.');
+      }
+    };
+
+    window.provisionAssistingPage = async function(slug) {
+      const catalogItem = assistingPagesCatalog.find(item => item.slug === slug);
+      if (!catalogItem) return;
+      const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
+      if (!websiteId) {
+        alert('Load a website context before provisioning page.');
+        return;
+      }
+      const payload = {
+        websiteId,
+        title: catalogItem.title,
+        slug: catalogItem.slug,
+        isHome: false,
+        status: 'published',
+        content: [{ type: 'text_section', heading: catalogItem.title, content: catalogItem.content }],
+        seoTitle: `${catalogItem.title} | ${localCmsState.websiteTitle}`,
+        seoDescription: catalogItem.title
+      };
+      const res = await cmsApiRequest('POST', '/api/cms/pages', payload);
+      if (res && res.data) {
+        showToast(`Page "${catalogItem.title}" provisioned and activated.`);
+        await loadAllCmsData();
+        renderCmsPagesGrid();
+      } else {
+        alert('Failed to provision page.');
+      }
+    };
+
+    const assistingPagesCatalog = [
+      { slug: 'privacy', title: 'Privacy Policy', content: 'Our Privacy Policy details how we protect your personal information...' },
+      { slug: 'terms', title: 'Terms of Service', content: 'By using our site, you agree to our Terms of Service...' },
+      { slug: 'payment-success', title: 'Successful Payment', content: 'Thank you for your generous gift. Your transaction has been completed successfully.' },
+      { slug: 'order-confirmed', title: 'Order Confirmed', content: 'Thank you for your order! We have confirmed your purchase and are processing it now.' },
+      { slug: 'checkout', title: 'Checkout', content: 'Please review and finalize your details to complete your order.' },
+      { slug: 'shopping-cart', title: 'Shopping Cart', content: 'Review the items in your cart before checking out.' }
+    ];
+
+    window.openCmsPageContentEditor = function(pageId) {
+      const page = cmsState.pages.find(p => p.id === pageId);
+      if (!page) return;
+      
+      document.getElementById('pageContentModalId').value = page.id;
+      const slug = String(page.slug || '').toLowerCase().trim();
+      document.getElementById('pageContentModalSlug').value = slug;
+      
+      // Hide all fieldsets first
+      ['fieldsHome', 'fieldsAbout', 'fieldsServices', 'fieldsContact', 'fieldsGeneric'].forEach(id => {
+        document.getElementById(id)?.classList.add('hidden');
+      });
+      
+      const content = typeof page.content === 'string' ? parseMaybeJson(page.content, []) : (page.content || []);
+      
+      if (slug === 'home' || slug === '') {
+        document.getElementById('fieldsHome').classList.remove('hidden');
+        const heroBlock = content.find(b => b.type === 'hero') || {};
+        const data = heroBlock.data || heroBlock.properties || heroBlock || {};
+        document.getElementById('homeHeroTitle').value = data.title || '';
+        document.getElementById('homeHeroSubtitle').value = data.subtitle || '';
+        document.getElementById('homeHeroButtonLabel').value = data.buttonText || data.buttonLabel || '';
+        document.getElementById('homeHeroButtonUrl').value = data.buttonUrl || data.buttonLink || '';
+        document.getElementById('homeHeroBgImage').value = data.bgImage || data.imageUrl || '';
+      } else if (slug === 'about') {
+        document.getElementById('fieldsAbout').classList.remove('hidden');
+        const aboutBlock = content.find(b => b.type === 'about_template') || {};
+        const data = aboutBlock.data || aboutBlock.properties || aboutBlock || {};
+        document.getElementById('aboutHeading').value = data.headline || data.heading || '';
+        document.getElementById('aboutShortBio').value = data.storyText || data.text || '';
+        document.getElementById('aboutVision').value = data.visionText || '';
+        document.getElementById('aboutMission').value = data.missionText || '';
+        document.getElementById('aboutValues').value = Array.isArray(data.valuesList) ? data.valuesList.join(', ') : (data.valuesList || '');
+      } else if (slug === 'services') {
+        document.getElementById('fieldsServices').classList.remove('hidden');
+        const timesBlock = content.find(b => b.type === 'service_times') || {};
+        const data = timesBlock.data || timesBlock.properties || timesBlock || {};
+        document.getElementById('servicesTitle').value = page.title || '';
+        document.getElementById('servicesSundayTimes').value = data.sundayTimes || '';
+        document.getElementById('servicesMidweekTimes').value = data.midweekTimes || '';
+        document.getElementById('servicesAddress').value = data.address || '';
+      } else if (slug === 'contact') {
+        document.getElementById('fieldsContact').classList.remove('hidden');
+        const contactBlock = content.find(b => b.type === 'contact_form') || {};
+        const data = contactBlock.data || contactBlock.properties || contactBlock || {};
+        document.getElementById('contactHeader').value = data.header || data.headline || '';
+        document.getElementById('contactEmail').value = data.email || '';
+        document.getElementById('contactPhone').value = data.phone || '';
+        document.getElementById('contactShowMap').checked = data.showMap !== false;
+      } else {
+        document.getElementById('fieldsGeneric').classList.remove('hidden');
+        document.getElementById('genericTitle').value = page.title || '';
+        const textBlock = content.find(b => b.type === 'text_section' || b.type === 'prose') || {};
+        const data = textBlock.data || textBlock.properties || textBlock || {};
+        document.getElementById('genericBody').value = data.content || data.text || (typeof page.content === 'string' && !page.content.startsWith('[') ? page.content : '');
+      }
+      
+      document.getElementById('cmsPageContentModal').style.display = 'flex';
+      refreshIcons();
+    };
+
+    window.saveCmsPageContent = async function() {
+      const pageId = document.getElementById('pageContentModalId').value;
+      const slug = document.getElementById('pageContentModalSlug').value;
+      const page = cmsState.pages.find(p => p.id === pageId);
+      if (!page) return;
+      
+      let nextContent = [];
+      const currentContent = typeof page.content === 'string' ? parseMaybeJson(page.content, []) : (page.content || []);
+      let nextTitle = page.title;
+      
+      if (slug === 'home' || slug === '') {
+        const heroBlock = currentContent.find(b => b.type === 'hero') || { type: 'hero' };
+        heroBlock.title = document.getElementById('homeHeroTitle').value.trim();
+        heroBlock.subtitle = document.getElementById('homeHeroSubtitle').value.trim();
+        heroBlock.buttonText = document.getElementById('homeHeroButtonLabel').value.trim();
+        heroBlock.buttonUrl = document.getElementById('homeHeroButtonUrl').value.trim();
+        heroBlock.bgImage = document.getElementById('homeHeroBgImage').value.trim();
+        
+        nextContent = [heroBlock, ...currentContent.filter(b => b.type !== 'hero')];
+      } else if (slug === 'about') {
+        const aboutBlock = currentContent.find(b => b.type === 'about_template') || { type: 'about_template' };
+        aboutBlock.headline = document.getElementById('aboutHeading').value.trim();
+        aboutBlock.storyText = document.getElementById('aboutShortBio').value.trim();
+        aboutBlock.visionText = document.getElementById('aboutVision').value.trim();
+        aboutBlock.missionText = document.getElementById('aboutMission').value.trim();
+        aboutBlock.valuesList = document.getElementById('aboutValues').value.split(',').map(v => v.trim()).filter(Boolean);
+        
+        nextContent = [aboutBlock, ...currentContent.filter(b => b.type !== 'about_template')];
+      } else if (slug === 'services') {
+        nextTitle = document.getElementById('servicesTitle').value.trim();
+        const timesBlock = currentContent.find(b => b.type === 'service_times') || { type: 'service_times' };
+        timesBlock.sundayTimes = document.getElementById('servicesSundayTimes').value.trim();
+        timesBlock.midweekTimes = document.getElementById('servicesMidweekTimes').value.trim();
+        timesBlock.address = document.getElementById('servicesAddress').value.trim();
+        
+        nextContent = [timesBlock, ...currentContent.filter(b => b.type !== 'service_times')];
+      } else if (slug === 'contact') {
+        const contactBlock = currentContent.find(b => b.type === 'contact_form') || { type: 'contact_form' };
+        contactBlock.header = document.getElementById('contactHeader').value.trim();
+        contactBlock.email = document.getElementById('contactEmail').value.trim();
+        contactBlock.phone = document.getElementById('contactPhone').value.trim();
+        contactBlock.showMap = document.getElementById('contactShowMap').checked;
+        
+        nextContent = [contactBlock, ...currentContent.filter(b => b.type !== 'contact_form')];
+      } else {
+        nextTitle = document.getElementById('genericTitle').value.trim();
+        const bodyContent = document.getElementById('genericBody').value;
+        const textBlock = {
+          type: 'text_section',
+          heading: nextTitle,
+          content: bodyContent
+        };
+        nextContent = [textBlock];
+      }
+      
+      const payload = {
+        title: nextTitle,
+        content: nextContent
+      };
+      
+      const res = await cmsApiRequest('PATCH', `/api/cms/pages/${pageId}`, payload);
+      if (res && res.data) {
+        showToast('Page content saved successfully.');
+        closeCmsModal('cmsPageContentModal');
+        await loadAllCmsData();
+        renderCmsPagesGrid();
+      } else {
+        alert(res?.data?.error || 'Failed to save page content.');
+      }
+    };
+
+    window.openTemplateSettings = function(key) {
+      switchCmsTab('blocks');
+      setTimeout(() => {
+        const select = document.getElementById('cmsContentDesignTemplate');
+        if (select) {
+          select.value = key;
+          loadCmsContentDesignForm();
+          select.scrollIntoView({ behavior: 'smooth' });
+          select.style.border = '2px solid var(--accent)';
+          setTimeout(() => select.style.border = '', 1500);
+        }
+      }, 200);
+    };
+
     function renderCmsPagesGrid() {
-      const grid = document.getElementById('cmsPagesGrid');
-      if (!grid) return;
+      const mainGrid = document.getElementById('cmsMainPagesGrid');
+      const assistingGrid = document.getElementById('cmsAssistingPagesGrid');
+      if (!mainGrid || !assistingGrid) return;
       
       let filtered = [...cmsState.pages];
       if (cmsState.activePageFilter === 'published') {
@@ -21783,120 +22133,153 @@ body.customizer-open { overflow: hidden; }
       filtered.sort((a, b) => {
         if (cmsState.activePageSort === 'titleAsc') return String(a.title || '').localeCompare(String(b.title || ''));
         if (cmsState.activePageSort === 'statusAsc') return String(a.status || '').localeCompare(String(b.status || ''));
-        if (cmsState.activePageSort === 'seoFirst') return Number(pageSeoReady(a)) - Number(pageSeoReady(b));
         return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
       });
 
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="empty-state" style="grid-column: 1 / -1;">
-            <i data-lucide="folder-open" style="width: 48px; height: 48px;"></i>
-            <p>No pages found for this view.</p>
-            <button class="btn small" onclick="document.getElementById('cmsPageSearchInput').value=''; handleCmsPageSearch(''); filterCmsPages('all');"><i data-lucide="rotate-ccw"></i>Reset filters</button>
-          </div>
-        `;
-        refreshIcons();
-        return;
+      const mainPages = filtered.filter(p => !isAssistingPage(p));
+      const existingAssistingPages = filtered.filter(p => isAssistingPage(p));
+
+      // 1. Render Main Pages
+      if (mainPages.length === 0) {
+        mainGrid.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><p>No main pages found.</p></div>`;
+      } else {
+        mainGrid.innerHTML = mainPages.map(page => {
+          const isPub = page.status === 'published';
+          const blockCount = parseMaybeJson(page.content, []).length;
+          const isDefault = isDefaultPage(page);
+          
+          const toggleHtml = isDefault 
+            ? `<span class="badge-status badge-published" style="font-size:11px;">Default Page</span>`
+            : `
+              <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle; margin-right:8px;">
+                <input type="checkbox" ${isPub ? 'checked' : ''} onchange="togglePageActive('${page.id}', this.checked)" style="opacity:0; width:0; height:0;">
+                <span class="slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
+              </label>
+              <span style="font-size:12px; color:var(--muted); vertical-align:middle;">${isPub ? 'Active' : 'Inactive'}</span>
+            `;
+
+          return `
+            <div class="cms-card">
+              <div class="cms-card-header">
+                <div>
+                  <h3 class="cms-card-title">${escapeHtml(page.title)} ${page.isHome ? '<span style="color:var(--accent); font-size:12px;">(Home)</span>' : ''}</h3>
+                  <span class="cms-card-slug">${escapeHtml(cmsDisplaySlug(page.slug))}</span>
+                </div>
+                <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page.status}</span>
+              </div>
+              <p class="muted" style="font-size:12px; margin:0 0 12px 0;">${blockCount} content block${blockCount === 1 ? '' : 's'} · Updated ${page.updatedAt ? new Date(page.updatedAt).toLocaleDateString() : 'recently'}</p>
+              <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
+                <div class="row" style="align-items:center;">
+                  ${toggleHtml}
+                </div>
+                <div class="row" style="gap: 8px;">
+                  <button class="btn small primary icon-only" onclick="openCmsPageContentEditor('${page.id}')" title="Edit Content" aria-label="Edit Content ${escapeHtml(page.title)}"><i data-lucide="pencil"></i></button>
+                  <button class="btn small icon-only" onclick="openCmsLivePreview('${page.id}')" title="Preview" aria-label="Preview ${escapeHtml(page.title)}"><i data-lucide="eye"></i></button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
       }
 
-      grid.innerHTML = filtered.map(page => {
-        const isPub = page.status === 'published';
-        const hasSeo = pageSeoReady(page);
-        const blockCount = parseMaybeJson(page.content, []).length;
+      // 2. Render Assisting Pages
+      const allAssistingHtml = assistingPagesCatalog.map(catItem => {
+        const page = existingAssistingPages.find(p => String(p.slug || '').toLowerCase().trim() === catItem.slug);
+        const isPub = page ? page.status === 'published' : false;
+        
+        const toggleAction = page 
+          ? `togglePageActive('${page.id}', this.checked)`
+          : `provisionAssistingPage('${catItem.slug}')`;
+
+        const editButton = page
+          ? `<button class="btn small primary icon-only" onclick="openCmsPageContentEditor('${page.id}')" title="Edit Content"><i data-lucide="pencil"></i></button>`
+          : `<button class="btn small primary icon-only" disabled title="Activate page to edit content" style="opacity:0.5;"><i data-lucide="pencil"></i></button>`;
+
+        const previewButton = page
+          ? `<button class="btn small icon-only" onclick="openCmsLivePreview('${page.id}')" title="Preview"><i data-lucide="eye"></i></button>`
+          : `<button class="btn small icon-only" disabled title="Activate page to preview" style="opacity:0.5;"><i data-lucide="eye"></i></button>`;
+
         return `
           <div class="cms-card">
             <div class="cms-card-header">
               <div>
-                <h3 class="cms-card-title">${escapeHtml(page.title)} ${page.isHome ? '<span style="color:var(--accent); font-size:12px;">(Home)</span>' : ''}</h3>
-                <span class="cms-card-slug">${escapeHtml(cmsDisplaySlug(page.slug))}</span>
+                <h3 class="cms-card-title">${escapeHtml(catItem.title)}</h3>
+                <span class="cms-card-slug">/${catItem.slug}</span>
               </div>
-              <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page.status}</span>
+              <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page ? page.status : 'Inactive'}</span>
             </div>
-            <p class="muted" style="font-size:12px; margin:0;">${blockCount} content block${blockCount === 1 ? '' : 's'} · Updated ${page.updatedAt ? new Date(page.updatedAt).toLocaleDateString() : 'recently'}</p>
-            <div class="cms-card-footer">
-              <div class="cms-card-meta">SEO <i data-lucide="check-circle-2" class="seo-check ${hasSeo ? 'active' : ''}"></i>${hasSeo ? 'Ready' : 'Needs copy'}</div>
+            <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Assisting & System Page · Status: ${page ? 'Created' : 'Not Activated'}</p>
+            <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
+              <div class="row" style="align-items:center;">
+                <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle; margin-right:8px;">
+                  <input type="checkbox" ${isPub ? 'checked' : ''} onchange="${toggleAction}" style="opacity:0; width:0; height:0;">
+                  <span class="slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
+                </label>
+                <span style="font-size:12px; color:var(--muted); vertical-align:middle;">${isPub ? 'Active' : 'Inactive'}</span>
+              </div>
               <div class="row" style="gap: 8px;">
-                <button class="btn small primary icon-only" onclick="openVisualEditor('${page.id}')" title="Edit" aria-label="Edit ${escapeHtml(page.title)}"><i data-lucide="pencil"></i></button>
-                <button class="btn small icon-only" onclick="openCmsLivePreview('${page.id}')" title="Preview" aria-label="Preview ${escapeHtml(page.title)}"><i data-lucide="eye"></i></button>
-                <button class="btn small icon-only" style="color: var(--muted);" onclick="openCmsPageDetailsModal('${page.id}')" title="Settings" aria-label="Page settings"><i data-lucide="settings"></i></button>
+                ${editButton}
+                ${previewButton}
               </div>
             </div>
           </div>
         `;
       }).join('');
-      refreshIcons();
-    }
 
-    function makeUniqueCmsSlug(baseSlug) {
-      const normalized = String(baseSlug || '').trim().toLowerCase().replace(/^\/+/, '').replace(/\s+/g, '-');
-      if (!normalized) return '';
-      const existing = new Set(cmsState.pages.map(p => String(p.slug || '').toLowerCase()));
-      if (!existing.has(normalized)) return normalized;
-      let index = 2;
-      while (existing.has(`${normalized}-${index}`)) index += 1;
-      return `${normalized}-${index}`;
+      assistingGrid.innerHTML = allAssistingHtml;
+      
+      if (!document.getElementById('toggleSliderStyle')) {
+        const style = document.createElement('style');
+        style.id = 'toggleSliderStyle';
+        style.textContent = `
+          .switch input:checked + .slider { background-color: var(--accent, #f97316); }
+          .switch input:checked + .slider:before { transform: translateX(20px); }
+          .slider:before {
+            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+          }
+        `;
+        document.head.appendChild(style);
+      }
+
+      refreshIcons();
     }
 
     function renderCmsTemplates() {
       const grid = document.getElementById('cmsTemplatesGrid');
       if (!grid) return;
-      grid.innerHTML = getWebsiteBuilderTemplateCatalog().map(template => {
-        const blockCount = template.blocks.length;
-        const existing = cmsState.pages.some(page => String(page.slug || '') === String(template.slug || ''));
+      
+      const dynamicTemplatesList = [
+        { key: 'blog.archive', title: 'Blog Template', icon: 'file-text', scope: 'Blog channels & posts', description: 'Configure headers and CTAs for blog listings and individual blog articles.' },
+        { key: 'media.archive', title: 'Media & Sermons Template', icon: 'clapperboard', scope: 'Sermons catalog', description: 'Customize Hero and bottom CTA sections on the sermons archive and replay pages.' },
+        { key: 'events.archive', title: 'Events Calendar Template', icon: 'calendar-days', scope: 'Event directories', description: 'Manage the public presentation of event lists and single event registration details.' },
+        { key: 'store.archive', title: 'E-Commerce Store Template', icon: 'shopping-cart', scope: 'Products list', description: 'Style header designs for products catalogs and single checkout conversion points.' },
+        { key: 'groups.archive', title: 'Groups Directory Template', icon: 'network', scope: 'Group finder', description: 'Configure hero headlines and contact calls for the small groups finding page.' },
+        { key: 'courses.archive', title: 'Discipleship Courses Template', icon: 'graduation-cap', scope: 'Courses catalog', description: 'Customize the landing sections for student curriculum catalogs and lesson players.' },
+        { key: 'podcast.archive', title: 'Podcast Center Template', icon: 'mic', scope: 'Podcasts RSS page', description: 'Hydrate banner templates for show channels and podcast episode archives.' },
+        { key: 'library.archive', title: 'Resources Template', icon: 'book-open', scope: 'Resource downloads', description: 'Configure the digital library landing page headers and CTAs.' }
+      ];
+
+      grid.innerHTML = dynamicTemplatesList.map(template => {
         return `
-          <article class="cms-card cms-template-card">
+          <article class="cms-card">
             <div class="cms-card-header">
               <div class="row" style="gap:10px; align-items:flex-start;">
                 <i data-lucide="${template.icon}" style="width:22px;height:22px;color:var(--accent);"></i>
                 <div>
                   <h3 class="cms-card-title">${escapeHtml(template.title)}</h3>
-                  <span class="cms-card-slug">${escapeHtml(cmsDisplaySlug(template.slug))}</span>
+                  <span class="cms-card-slug">${escapeHtml(template.scope)}</span>
                 </div>
               </div>
-              <span class="badge-status ${existing ? 'badge-published' : 'badge-draft'}">${existing ? 'Exists' : 'Template'}</span>
             </div>
             <p style="font-size:13px; color:var(--muted); margin:0; line-height:1.5;">${escapeHtml(template.description)}</p>
             <div class="cms-card-footer">
-              <span class="cms-card-meta"><i data-lucide="blocks"></i>${blockCount} starter block${blockCount === 1 ? '' : 's'}</span>
-              <button class="btn small" onclick="createCmsTemplatePage('${template.key}')"><i data-lucide="plus"></i>Create</button>
+              <button class="btn small" onclick="openTemplateSettings('${template.key}')"><i data-lucide="pencil"></i>Edit Hero & CTA</button>
             </div>
           </article>
         `;
       }).join('');
       refreshIcons();
-    }
-
-    async function createCmsTemplatePage(templateKey) {
-      const template = getWebsiteBuilderTemplateCatalog().find(item => item.key === templateKey);
-      if (!template) return;
-
-      const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
-      if (!websiteId) {
-        alert('Create or load a website context before adding a template page.');
-        return;
-      }
-
-      const slug = makeUniqueCmsSlug(template.slug);
-      const payload = {
-        websiteId,
-        title: template.title,
-        slug,
-        isHome: template.key === 'home',
-        status: template.status || 'draft',
-        content: template.blocks,
-        seoTitle: `${template.title} | ${localCmsState.websiteTitle}`,
-        seoDescription: template.description,
-        seoKeywords: template.key.replace('-', ', ')
-      };
-
-      const res = await cmsApiRequest('POST', '/api/cms/pages', payload);
-      if (res && res.data) {
-        showToast(`${template.title} template created`);
-        await loadAllCmsData();
-        switchCmsTab('pages');
-      } else {
-        alert(res?.data?.error || 'Failed to create template page.');
-      }
     }
 
     function readCmsContentDesignEntry(key) {
