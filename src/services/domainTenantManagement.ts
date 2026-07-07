@@ -325,7 +325,7 @@ export class DomainTenantManagementService {
   static async updateBranding(
     tenantId: string,
     userId: string | null | undefined,
-    data: { name?: string; logo?: string; favicon?: string; timezone?: string; accent?: string; language?: string; description?: string; phone?: string; address?: string }
+    data: { name?: string; logo?: string; logoDark?: string; favicon?: string; timezone?: string; accent?: string; language?: string; description?: string; phone?: string; address?: string }
   ) {
     if (data.name) {
       await prisma.tenant.update({
@@ -349,9 +349,25 @@ export class DomainTenantManagementService {
     if (logoUrl && logoUrl.startsWith('data:') && logoUrl.includes(';base64,')) {
       try {
         const credentials = await getPlatformCloudinaryCredentials('onboarding');
-        logoUrl = await uploadToCloudinary(logoUrl, credentials, `churchtell-${tenantId}`);
+        const cloudinaryUrl = await uploadToCloudinary(logoUrl, credentials, `churchtell-${tenantId}`);
+        console.log('[Branding] Logo uploaded to Cloudinary:', cloudinaryUrl);
+        logoUrl = cloudinaryUrl;
       } catch (err: any) {
-        console.error('Failed to upload logo to Cloudinary:', err);
+        console.warn('[Branding] Cloudinary logo upload failed, saving base64 data URL directly:', err.message);
+        // logoUrl remains as base64 data URL — still valid for storage
+      }
+    }
+
+    let logoDarkUrl = data.logoDark;
+    if (logoDarkUrl && logoDarkUrl.startsWith('data:') && logoDarkUrl.includes(';base64,')) {
+      try {
+        const credentials = await getPlatformCloudinaryCredentials('onboarding');
+        const cloudinaryUrl = await uploadToCloudinary(logoDarkUrl, credentials, `churchtell-${tenantId}`);
+        console.log('[Branding] Dark logo uploaded to Cloudinary:', cloudinaryUrl);
+        logoDarkUrl = cloudinaryUrl;
+      } catch (err: any) {
+        console.warn('[Branding] Cloudinary dark logo upload failed, saving base64 data URL directly:', err.message);
+        // logoDarkUrl remains as base64 data URL — still valid for storage
       }
     }
 
@@ -359,15 +375,19 @@ export class DomainTenantManagementService {
     if (faviconUrl && faviconUrl.startsWith('data:') && faviconUrl.includes(';base64,')) {
       try {
         const credentials = await getPlatformCloudinaryCredentials('onboarding');
-        faviconUrl = await uploadToCloudinary(faviconUrl, credentials, `churchtell-${tenantId}`);
+        const cloudinaryUrl = await uploadToCloudinary(faviconUrl, credentials, `churchtell-${tenantId}`);
+        console.log('[Branding] Favicon uploaded to Cloudinary:', cloudinaryUrl);
+        faviconUrl = cloudinaryUrl;
       } catch (err: any) {
-        console.error('Failed to upload favicon to Cloudinary:', err);
+        console.warn('[Branding] Cloudinary favicon upload failed, saving base64 data URL directly:', err.message);
+        // faviconUrl remains as base64 data URL — still valid for storage
       }
     }
 
     const updatedSettings = {
       ...currentSettings,
       ...(logoUrl !== undefined && { logo: logoUrl }),
+      ...(logoDarkUrl !== undefined && { logoDark: logoDarkUrl }),
       ...(faviconUrl !== undefined && { favicon: faviconUrl }),
       ...(data.timezone !== undefined && { timezone: data.timezone }),
       ...(data.accent !== undefined && { accent: data.accent }),
@@ -403,6 +423,7 @@ export class DomainTenantManagementService {
         const content = JSON.parse(cmsBlock.content);
         if (content.churchIdentity) {
           if (logoUrl !== undefined) content.churchIdentity.logoUrl = logoUrl;
+          if (logoDarkUrl !== undefined) content.churchIdentity.logoDarkUrl = logoDarkUrl;
           if (faviconUrl !== undefined) content.churchIdentity.faviconUrl = faviconUrl;
           if (data.name !== undefined) content.churchIdentity.churchName = data.name;
           if (data.description !== undefined) content.churchIdentity.description = data.description;

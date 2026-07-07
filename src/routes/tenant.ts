@@ -29,11 +29,18 @@ router.get('/branding', async (req: Request, res: Response) => {
  */
 router.patch('/branding', async (req: Request, res: Response) => {
   try {
+    const bodyKeys = Object.keys(req.body);
+    const hasLogo = !!(req.body.logo && req.body.logo.length > 0);
+    const hasLogoDark = !!(req.body.logoDark && req.body.logoDark.length > 0);
+    const hasFavicon = !!(req.body.favicon && req.body.favicon.length > 0);
+    console.log(`[PATCH /branding] Fields: ${bodyKeys.join(', ')} | Logo: ${hasLogo ? 'yes' : 'empty'} | LogoDark: ${hasLogoDark ? 'yes' : 'empty'} | Favicon: ${hasFavicon ? 'yes' : 'empty'}`);
+    
     const data = await DomainTenantManagementService.updateBranding(
       req.tenantId!,
       req.user?.userId,
       req.body
     );
+    console.log('[PATCH /branding] Save successful');
     res.json({ data });
   } catch (err: any) {
     console.error('Update branding error:', err);

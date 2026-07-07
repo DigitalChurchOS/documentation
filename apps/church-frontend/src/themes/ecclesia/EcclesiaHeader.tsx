@@ -49,6 +49,7 @@ interface Props {
 
 const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
   const { tenant, navigation, themeSettings, globalContent, moduleEntitlements, headerCTAs } = useEcclesia();
+  const isDark = themeSettings.colorMode === 'dark' || themeSettings.colorMode === 'slate' || themeSettings.previewMode === 'dark';
   const location = useLocation();
   const [memberSession, setMemberSession] = useState<MemberSession | null>(() => loadMemberSession());
   
@@ -212,7 +213,13 @@ const EcclesiaHeader: React.FC<Props> = ({ onOpenDrawer }) => {
       <div className="nav-wrap">
         <Link to={withLocalChurchBase('/')} className="brand">
           <span className="brand-mark">
-            {globalContent?.churchIdentity?.logoUrl ? (
+            {isDark && globalContent?.churchIdentity?.logoDarkUrl ? (
+              <img 
+                src={globalContent.churchIdentity.logoDarkUrl} 
+                alt={`${churchName} Logo`} 
+                style={{ height: '100%', width: '100%', objectFit: 'contain', display: 'block' }} 
+              />
+            ) : globalContent?.churchIdentity?.logoUrl ? (
               <img 
                 src={globalContent.churchIdentity.logoUrl} 
                 alt={`${churchName} Logo`} 

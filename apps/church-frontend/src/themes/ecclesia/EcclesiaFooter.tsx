@@ -36,7 +36,13 @@ const EcclesiaFooter: React.FC = () => {
           <div>
             <Link to={withLocalChurchBase('/')} className="brand" style={{ color: 'white' }}>
               <span className="brand-mark">
-                {globalContent?.churchIdentity?.logoUrl ? (
+                {globalContent?.churchIdentity?.logoDarkUrl ? (
+                  <img 
+                    src={globalContent.churchIdentity.logoDarkUrl} 
+                    alt={`${churchName} Logo`} 
+                    style={{ height: '100%', width: '100%', objectFit: 'contain', display: 'block' }} 
+                  />
+                ) : globalContent?.churchIdentity?.logoUrl ? (
                   <img 
                     src={globalContent.churchIdentity.logoUrl} 
                     alt={`${churchName} Logo`} 

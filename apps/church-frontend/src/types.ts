@@ -160,6 +160,7 @@ export interface GlobalContent {
   churchIdentity: {
     churchName: string;
     logoUrl: string;
+    logoDarkUrl?: string;
     faviconUrl: string;
     tagline: string;
     description: string;

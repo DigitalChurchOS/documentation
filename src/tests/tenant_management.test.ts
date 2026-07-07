@@ -99,7 +99,8 @@ describe('Domain & Tenant Management Module', () => {
           name: 'Grace Fellowship Global',
           accent: '#0f766e',
           timezone: 'Africa/Lagos',
-          logo: 'https://example.com/mock-logo.png'
+          logo: 'https://example.com/mock-logo.png',
+          logoDark: 'https://example.com/mock-logo-dark.png'
         });
 
       expect(res.status).toBe(200);
@@ -107,6 +108,7 @@ describe('Domain & Tenant Management Module', () => {
       expect(res.body.data.branding.accent).toBe('#0f766e');
       expect(res.body.data.branding.timezone).toBe('Africa/Lagos');
       expect(res.body.data.branding.logo).toBe('https://example.com/mock-logo.png');
+      expect(res.body.data.branding.logoDark).toBe('https://example.com/mock-logo-dark.png');
 
       // Verify db persistence
       const updatedTenant = await prisma.tenant.findUnique({ where: { id: tenantId } });
@@ -118,6 +120,7 @@ describe('Domain & Tenant Management Module', () => {
       const parsed = JSON.parse(brandingRec!.settings);
       expect(parsed.accent).toBe('#0f766e');
       expect(parsed.timezone).toBe('Africa/Lagos');
+      expect(parsed.logoDark).toBe('https://example.com/mock-logo-dark.png');
     });
   });
 

@@ -5355,11 +5355,7 @@ body.customizer-open { overflow: hidden; }
               <aside class="cms-nav-panel">
                 <div class="cms-nav-group">
                   <div class="cms-nav-header">Churchfront</div>
-                  <button class="cms-nav-item active" data-cms-tab="overview">
-                    <i data-lucide="layout-dashboard"></i>
-                    <span>Overview</span>
-                  </button>
-                  <button class="cms-nav-item" data-cms-tab="pages">
+                  <button class="cms-nav-item active" data-cms-tab="pages">
                     <i data-lucide="files"></i>
                     <span>Pages</span>
                   </button>
@@ -5379,62 +5375,11 @@ body.customizer-open { overflow: hidden; }
                     <i data-lucide="layout-grid"></i>
                     <span>Reusable Sections</span>
                   </button>
-                  <button class="cms-nav-item" data-cms-tab="content-design">
-                    <i data-lucide="sparkles"></i>
-                    <span>Hero & CTA</span>
-                  </button>
-                  <button class="cms-nav-item" data-cms-tab="publishing">
-                    <i data-lucide="radio-tower"></i>
-                    <span>Publishing</span>
-                  </button>
-                  <button class="cms-nav-item" data-cms-tab="reports">
-                    <i data-lucide="chart-no-axes-combined"></i>
-                    <span>Reports</span>
-                  </button>
-                  <button class="cms-nav-item" data-cms-tab="logs">
-                    <i data-lucide="activity"></i>
-                    <span>Audit Logs</span>
-                  </button>
                 </div>
               </aside>
-
-              <!-- CMS Content Panel -->
               <div class="cms-content-panel" style="padding: 0; display: flex; flex-direction: column; gap: 16px;">
-                <!-- 0. OVERVIEW TAB -->
-                <div id="cmsOverviewTab" class="cms-tab-content">
-                  <div class="section-head">
-                    <div>
-                      <h2>Churchfront Control Center</h2>
-                      <p>Create public pages, guide publishing, manage reusable content, and keep church website records tenant-safe.</p>
-                    </div>
-                    <button class="btn primary" onclick="createNewPageModal()"><i data-lucide="plus"></i>New Page</button>
-                  </div>
-                  <div id="cmsOverviewMetrics" class="cms-kpi-grid"></div>
-                  <div class="cms-spec-grid" id="cmsSpecCoverage" style="margin-top: 12px;"></div>
-                  <div class="grid" style="grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr); gap: 16px; margin-top: 16px;">
-                    <div class="panel">
-                      <div class="section-head">
-                        <div>
-                          <h2>Operational Surface</h2>
-                          <p>The dashboard mirrors the module document without changing the established CMS stack.</p>
-                        </div>
-                      </div>
-                      <div id="cmsOperationalSurface" class="settings-list"></div>
-                    </div>
-                    <div class="panel">
-                      <div class="section-head">
-                        <div>
-                          <h2>Module Identity</h2>
-                          <p>Resource keys, entitlement checks, and permission scopes for implementation review.</p>
-                        </div>
-                      </div>
-                      <div id="cmsIdentityPanel" class="settings-list"></div>
-                    </div>
-                  </div>
-                </div>
-
                 <!-- 1. PAGES TAB -->
-                <div id="cmsPagesTab" class="cms-tab-content hidden">
+                <div id="cmsPagesTab" class="cms-tab-content">
                   <div class="section-head">
                     <div>
                       <h2>Website Pages</h2>
@@ -5536,11 +5481,10 @@ body.customizer-open { overflow: hidden; }
                     </div>
                     <button class="btn" onclick="createCmsReusableBlockModal()"><i data-lucide="plus"></i>New Reusable Block</button>
                   </div>
-                  <div class="grid-layout" id="cmsReusableBlocksGrid"></div>
-                </div>
+                  <div class="grid-layout" id="cmsReusableBlocksGrid" style="margin-bottom: 32px;"></div>
 
-                <!-- 6. HERO & CTA TAB -->
-                <div id="cmsContentDesignTab" class="cms-tab-content hidden">
+                  <hr style="border: none; border-top: 1px solid var(--line); margin: 32px 0 24px 0;">
+
                   <div class="section-head">
                     <div>
                       <h2>Archive & Single Page Hero / CTA</h2>
@@ -5601,86 +5545,6 @@ body.customizer-open { overflow: hidden; }
                       </div>
                     </div>
                   </div>
-                </div>
-
-                <!-- 7. PUBLISHING TAB -->
-                <div id="cmsPublishingTab" class="cms-tab-content hidden">
-                  <div class="section-head">
-                    <div>
-                      <h2>Publishing & Module Settings</h2>
-                      <p>Keep dashboard previews available while controlling what can appear publicly online.</p>
-                    </div>
-                    <button class="btn primary" onclick="saveCmsPublishingSettings()"><i data-lucide="save"></i>Save Settings</button>
-                  </div>
-                  <div class="grid" style="grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr); gap: 16px;">
-                    <div class="panel">
-                      <div class="settings-list" id="cmsPublishingSettingsList"></div>
-                    </div>
-                    <div class="panel">
-                      <div class="section-head">
-                        <div>
-                          <h2>Permissions</h2>
-                          <p>Documented RBAC scopes for this module.</p>
-                        </div>
-                      </div>
-                      <div id="cmsPermissionsList" class="cms-permission-list"></div>
-                    </div>
-                  </div>
-                  <div class="panel" style="margin-top: 16px;">
-                    <div class="section-head">
-                      <div>
-                        <h2>API Playground</h2>
-                        <p>Suggested public resource contract plus the implemented CMS API used by this dashboard.</p>
-                      </div>
-                    </div>
-                    <table class="mini-table" style="width:100%;">
-                      <thead>
-                        <tr>
-                          <th>Method</th>
-                          <th>Documented Contract</th>
-                          <th>Implemented Route</th>
-                          <th>Tenant Rule</th>
-                        </tr>
-                      </thead>
-                      <tbody id="cmsApiSurfaceTable"></tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <!-- 7. REPORTS TAB -->
-                <div id="cmsReportsTab" class="cms-tab-content hidden">
-                  <div class="section-head">
-                    <div>
-                      <h2>Website Reports</h2>
-                      <p>Review publishing health, SEO coverage, page mix, and integration readiness.</p>
-                    </div>
-                  </div>
-                  <div id="cmsReportsMetrics" class="cms-kpi-grid"></div>
-                  <div class="panel" style="margin-top: 16px; padding:0; overflow:hidden;">
-                    <table class="mini-table" style="width:100%;">
-                      <thead>
-                        <tr>
-                          <th>Page</th>
-                          <th>Status</th>
-                          <th>SEO</th>
-                          <th>Content Blocks</th>
-                          <th>Last Updated</th>
-                        </tr>
-                      </thead>
-                      <tbody id="cmsReportsPagesTable"></tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <!-- 8. AUDIT LOGS TAB -->
-                <div id="cmsLogsTab" class="cms-tab-content hidden">
-                  <div class="section-head">
-                    <div>
-                      <h2>CMS Activity Logs & Audit Trails</h2>
-                      <p>View administrators' page edits, navigation changes, and rollback actions.</p>
-                    </div>
-                  </div>
-                  <div class="settings-list" id="cmsLogsList" style="margin-top: 10px;"></div>
                 </div>
               </div>
             </div>
@@ -6284,12 +6148,12 @@ body.customizer-open { overflow: hidden; }
                     </div>
                   </div>
                   <div class="panel" style="padding:24px; display:flex; flex-direction:column; gap:24px;">
-                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap:24px;">
+                    <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; gap:24px;">
                       
                       <!-- Logo Uploader -->
                       <div>
-                        <label style="font-weight:600; display:block; margin-bottom:4px;">Church Logo</label>
-                        <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Displayed in your website header and communications.</p>
+                        <label style="font-weight:600; display:block; margin-bottom:4px;">Church Logo (Light Mode)</label>
+                        <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Used on light backgrounds and headers.</p>
                         
                         <input type="hidden" id="dtLogoUrlInput" />
                         <input type="file" id="logoFileInput" accept="image/*" style="display:none;" onchange="handleDashboardFileSelect('logo', this, false)" />
@@ -6305,6 +6169,33 @@ body.customizer-open { overflow: hidden; }
                             <div style="position:relative; display:inline-block; padding:8px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px;">
                               <img id="logoPreviewImg" src="" style="max-height:60px; max-width:100%; object-fit:contain; border-radius:6px;" />
                               <button type="button" onclick="clearDashboardAssetFile('logo', event)" style="position:absolute; top:-10px; right:-10px; height:24px; width:24px; border-radius:50%; background:#fee2e2; border:1px solid #fecaca; padding:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.05); cursor:pointer;" title="Remove">
+                                <i data-lucide="trash-2" style="width:12px; height:12px; color:#dc2626;"></i>
+                              </button>
+                            </div>
+                            <span style="font-size:10px; color:var(--muted); font-weight:600;">Click or drag to replace image</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Dark Logo Uploader -->
+                      <div>
+                        <label style="font-weight:600; display:block; margin-bottom:4px;">Church Logo (Dark Mode)</label>
+                        <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Used on dark backgrounds and dark headers.</p>
+                        
+                        <input type="hidden" id="dtLogoDarkUrlInput" />
+                        <input type="file" id="logoDarkFileInput" accept="image/*" style="display:none;" onchange="handleDashboardFileSelect('logoDark', this, false)" />
+                        
+                        <div class="upload-zone" id="logoDarkUploadZone" onclick="document.getElementById('logoDarkFileInput').click()">
+                          <div id="logoDarkUploadZoneContent" style="display: flex; flex-direction:column; align-items:center; gap:8px;">
+                            <i data-lucide="upload-cloud" style="width:28px; height:28px; color:var(--muted);"></i>
+                            <span style="font-weight:700; font-size:12px; color:var(--text);">Drag and drop, or <span style="color:var(--accent);">browse</span></span>
+                            <span style="font-size:10px; color:var(--muted);">PNG, JPG, SVG up to 2MB</span>
+                          </div>
+                          
+                          <div id="logoDarkUploadZonePreview" style="display: none; flex-direction:column; align-items:center; gap:12px; position:relative;">
+                            <div style="position:relative; display:inline-block; padding:8px; background:#0F131A; border:1px solid var(--line); border-radius:12px;">
+                              <img id="logoDarkPreviewImg" src="" style="max-height:60px; max-width:100%; object-fit:contain; border-radius:6px;" />
+                              <button type="button" onclick="clearDashboardAssetFile('logoDark', event)" style="position:absolute; top:-10px; right:-10px; height:24px; width:24px; border-radius:50%; background:#fee2e2; border:1px solid #fecaca; padding:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.05); cursor:pointer;" title="Remove">
                                 <i data-lucide="trash-2" style="width:12px; height:12px; color:#dc2626;"></i>
                               </button>
                             </div>
@@ -14718,7 +14609,7 @@ body.customizer-open { overflow: hidden; }
 
     const modules = [
       { key: 'domain-tenant-management', name: 'Church Details', icon: 'sliders-horizontal', category: 'Churchfront', desc: 'Configure domains, branding, modules, and launch readiness.', workspaces: ['Church Identity', 'Branding', 'Domain Setup'], settings: [] },
-      { key: 'cms', resourceKey: 'core-website-cms', entitlementKey: 'website-cms', apiBase: '/api/cms', name: 'Churchfront', icon: 'layout-template', category: 'Churchfront', desc: 'Create pages, manage navigation, publish content, reuse blocks, and control the public church website.', workspaces: ['Overview', 'Pages', 'Page Templates', 'Navigation', 'Footer', 'Reusable Sections', 'Publishing', 'Reports'], settings: [{ key: 'autoSave', label: 'Autosave drafts', type: 'toggle' }, { key: 'searchIndexing', label: 'Allow search indexing', type: 'toggle' }, { key: 'revisionLimit', label: 'Revision limit', type: 'range', min: 5, max: 50, value: 20 }] },
+      { key: 'cms', resourceKey: 'core-website-cms', entitlementKey: 'website-cms', apiBase: '/api/cms', name: 'Churchfront', icon: 'layout-template', category: 'Churchfront', desc: 'Create pages, manage navigation, publish content, reuse blocks, and control the public church website.', workspaces: ['Pages', 'Page Templates', 'Navigation', 'Footer', 'Reusable Sections'], settings: [] },
       { key: 'tenant-themes', name: 'Themes', icon: 'palette', category: 'Churchfront', desc: 'Browse and install clean premium website theme templates designed for your church.', workspaces: ['Browse Themes'], settings: [] },
       { key: 'theme-engine', name: 'Styling', icon: 'brush', category: 'Churchfront', desc: 'Customize themes, typography, colors, layouts, and CSS.', workspaces: ['Overview', 'Customize Colors', 'Typography', 'Logo & Layouts', 'Templates', 'Custom CSS', 'Settings', 'Audit Logs'], settings: [] },
       { key: 'tenant-plugins', name: 'Plugins', icon: 'toy-brick', category: 'Churchfront', desc: 'Activate dynamic features and plugin extensions to expand your platform.', workspaces: ['Browse Plugins'], settings: [] },
@@ -17006,7 +16897,7 @@ body.customizer-open { overflow: hidden; }
       activityLogs: [],
       contentDesign: { entries: {} },
       activeWebsiteId: '',
-      activeTab: 'overview',
+      activeTab: 'pages',
       activePageFilter: 'all',
       activePageSearch: '',
       activePageSort: 'updatedDesc',
@@ -17757,6 +17648,28 @@ body.customizer-open { overflow: hidden; }
         }
       }
 
+      // Initialize dark logo uploader preview
+      const logoDarkUrlInput = document.getElementById('dtLogoDarkUrlInput');
+      if (logoDarkUrlInput) {
+        logoDarkUrlInput.value = dtState.branding.logoDark || '';
+        const preview = document.getElementById('logoDarkUploadZonePreview');
+        const content = document.getElementById('logoDarkUploadZoneContent');
+        const previewImg = document.getElementById('logoDarkPreviewImg');
+        if (dtState.branding.logoDark) {
+          if (preview && content && previewImg) {
+            preview.style.display = 'flex';
+            content.style.display = 'none';
+            previewImg.src = dtState.branding.logoDark;
+          }
+        } else {
+          if (preview && content && previewImg) {
+            preview.style.display = 'none';
+            content.style.display = 'flex';
+            previewImg.src = '';
+          }
+        }
+      }
+
       // Initialize favicon uploader preview
       const faviconUrlInput = document.getElementById('dtFaviconUrlInput');
       if (faviconUrlInput) {
@@ -17784,6 +17697,7 @@ body.customizer-open { overflow: hidden; }
 
       // Hook dashboard upload zones drag & drop
       setupDashboardDragDrop('logo');
+      setupDashboardDragDrop('logoDark');
       setupDashboardDragDrop('favicon');
 
       // Event listeners for tabs & image cropper events
@@ -17947,6 +17861,7 @@ body.customizer-open { overflow: hidden; }
       const address = (document.getElementById('dtAddressInput')?.value || '').trim();
       const timezone = document.getElementById('dtTimezoneSelect')?.value || 'UTC';
       const logo = (document.getElementById('dtLogoUrlInput')?.value || '').trim();
+      const logoDark = (document.getElementById('dtLogoDarkUrlInput')?.value || '').trim();
       const favicon = (document.getElementById('dtFaviconUrlInput')?.value || '').trim();
 
       const res = await cmsApiRequest('PATCH', '/api/tenant/branding', {
@@ -17957,6 +17872,7 @@ body.customizer-open { overflow: hidden; }
         address,
         timezone,
         logo,
+        logoDark,
         favicon
       });
 
@@ -18044,8 +17960,19 @@ body.customizer-open { overflow: hidden; }
         event.preventDefault();
       }
       
-      const logoUrl = document.getElementById(id === 'logo' ? 'dtLogoUrlInput' : 'dtFaviconUrlInput');
-      const input = document.getElementById(id === 'logo' ? 'logoFileInput' : 'faviconFileInput');
+      let logoUrl = null;
+      let input = null;
+      if (id === 'logo') {
+        logoUrl = document.getElementById('dtLogoUrlInput');
+        input = document.getElementById('logoFileInput');
+      } else if (id === 'logoDark') {
+        logoUrl = document.getElementById('dtLogoDarkUrlInput');
+        input = document.getElementById('logoDarkFileInput');
+      } else {
+        logoUrl = document.getElementById('dtFaviconUrlInput');
+        input = document.getElementById('faviconFileInput');
+      }
+      
       const preview = document.getElementById(`${id}UploadZonePreview`);
       const content = document.getElementById(`${id}UploadZoneContent`);
       const previewImg = document.getElementById(`${id}PreviewImg`);
@@ -18103,7 +18030,9 @@ body.customizer-open { overflow: hidden; }
       zone.addEventListener('drop', e => {
         const dt = e.dataTransfer;
         const files = dt.files;
-        const input = document.getElementById(id === 'logo' ? 'logoFileInput' : 'faviconFileInput');
+        const input = document.getElementById(
+          id === 'logo' ? 'logoFileInput' : (id === 'logoDark' ? 'logoDarkFileInput' : 'faviconFileInput')
+        );
         if (files.length && input) {
           input.files = files;
           const isFavicon = id === 'favicon';
@@ -18199,6 +18128,21 @@ body.customizer-open { overflow: hidden; }
         }
 
         showToast('Logo crop applied successfully');
+      } else if (type === 'logoDark') {
+        const logoDarkUrlInput = document.getElementById('dtLogoDarkUrlInput');
+        
+        if (logoDarkUrlInput) logoDarkUrlInput.value = dataUrl;
+        
+        const preview = document.getElementById('logoDarkUploadZonePreview');
+        const content = document.getElementById('logoDarkUploadZoneContent');
+        const previewImg = document.getElementById('logoDarkPreviewImg');
+        if (preview && content && previewImg) {
+          preview.style.display = 'flex';
+          content.style.display = 'none';
+          previewImg.src = dataUrl;
+        }
+
+        showToast('Dark logo crop applied successfully');
       } else {
         const faviconUrlInput = document.getElementById('dtFaviconUrlInput');
         
@@ -21686,16 +21630,14 @@ body.customizer-open { overflow: hidden; }
         tab.classList.toggle('hidden', tab.id !== `cms${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`);
       });
       
-      if (tabName === 'overview') renderCmsOverview();
-      else if (tabName === 'pages') renderCmsPagesGrid();
+      if (tabName === 'pages') renderCmsPagesGrid();
       else if (tabName === 'templates') renderCmsTemplates();
       else if (tabName === 'menus') loadCmsNavigationMenu();
       else if (tabName === 'footer') loadCmsFooterConfig();
-      else if (tabName === 'blocks') renderCmsBlocksInventory();
-      else if (tabName === 'content-design') renderCmsContentDesign();
-      else if (tabName === 'publishing') renderCmsPublishing();
-      else if (tabName === 'reports') renderCmsReports();
-      else if (tabName === 'logs') populateCmsLogs();
+      else if (tabName === 'blocks') {
+        renderCmsBlocksInventory();
+        renderCmsContentDesign();
+      }
       
       refreshIcons();
     }
