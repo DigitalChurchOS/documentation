@@ -21983,17 +21983,83 @@ body.customizer-open { overflow: hidden; }
     ];
 
     const dynamicTemplatesCatalog = [
-      { slug: 'events', title: 'Events', icon: 'calendar-days', key: 'events.archive', scope: 'Event directories', description: 'Archive listing for upcoming events, registrations, and event detail pages.', seoDescription: 'Upcoming church events, registrations, and event details.', content: [{ type: 'hero', title: 'Upcoming Events', subtitle: 'Join us for worship, conferences, and community gatherings.', buttonText: 'Register Now', buttonUrl: '#events' }, { type: 'dynamic_events_grid', sourceModule: 'Events' }] },
-      { slug: 'sermons', title: 'Sermons & Media', icon: 'clapperboard', key: 'media.archive', scope: 'Sermons catalog', description: 'Archive listing for sermon replays, series browsing, and media library.', seoDescription: 'Watch and listen to sermons, series, and media content.', content: [{ type: 'dynamic_sermon_grid', sourceModule: 'Sermons / Media', filters: ['series', 'speaker', 'topic'] }] },
-      { slug: 'blog', title: 'Blog', icon: 'file-text', key: 'blog.archive', scope: 'Blog channels & posts', description: 'Archive listing for blog articles, devotionals, and newsletter posts.', seoDescription: 'Read the latest articles, devotionals, and updates.', content: [{ type: 'text_section', heading: 'Our Blog', content: 'Read the latest updates from our church community.' }] },
-      { slug: 'groups', title: 'Groups', icon: 'network', key: 'groups.archive', scope: 'Group finder', description: 'Archive directory for small groups, connect groups, and life groups.', seoDescription: 'Find and join a small group near you.', content: [{ type: 'dynamic_group_finder', sourceModule: 'Groups', fields: ['location', 'day', 'leader'] }] },
-      { slug: 'courses', title: 'Discipleship Courses', icon: 'graduation-cap', key: 'courses.archive', scope: 'Courses catalog', description: 'Archive listing for discipleship tracks, lesson players, and certificates.', seoDescription: 'Explore discipleship courses and grow in your faith.', content: [{ type: 'dynamic_course_list', sourceModule: 'Courses' }] },
-      { slug: 'branches', title: 'Branches', icon: 'map-pin', key: 'branches.archive', scope: 'Campus locator', description: 'Archive directory for church campuses, service times, and campus pastors.', seoDescription: 'Find a church campus near you.', content: [{ type: 'dynamic_branch_finder', sourceModule: 'Branches', fields: ['pastor', 'serviceTimes', 'map'] }] },
-      { slug: 'announcements', title: 'Announcements', icon: 'bell', key: 'announcements.archive', scope: 'Church updates', description: 'Archive feed for church announcements, alerts, and featured updates.', seoDescription: 'Stay updated with the latest church announcements.', content: [{ type: 'dynamic_announcement_list', sourceModule: 'Announcements' }] },
-      { slug: 'prayer', title: 'Prayer & Testimonies', icon: 'heart', key: 'prayer.archive', scope: 'Prayer wall', description: 'Public prayer request wall, testimony submissions, and prayer sessions.', seoDescription: 'Submit prayer requests and share testimonies.', content: [{ type: 'hero', title: 'Prayer & Testimonies', subtitle: 'Submit prayer requests and share what God has done.', buttonText: 'Request Prayer', buttonUrl: '#prayer-request' }, { type: 'dynamic_prayer_wall', sourceModule: 'Prayer' }] },
-      { slug: 'podcast', title: 'Podcasts', icon: 'mic', key: 'podcast.archive', scope: 'Podcasts RSS page', description: 'Archive feed for podcast episodes, show channels, and audio content.', seoDescription: 'Listen to our podcast episodes and audio content.', content: [{ type: 'text_section', heading: 'Podcasts', content: 'Listen to the latest podcast episodes.' }] },
-      { slug: 'library', title: 'Digital Library', icon: 'book-open', key: 'library.archive', scope: 'Resource downloads', description: 'Archive for digital books, sermon outlines, and downloadable resources.', seoDescription: 'Access books, resources, and study materials.', content: [{ type: 'text_section', heading: 'Digital Library', content: 'Browse and download study materials and resources.' }] },
-      { slug: 'store', title: 'E-Commerce Store', icon: 'shopping-cart', key: 'store.archive', scope: 'Products list', description: 'Archive listing for products, merchandise, and store checkout.', seoDescription: 'Browse and purchase church merchandise and resources.', content: [{ type: 'text_section', heading: 'Store', content: 'Support the ministry by purchasing items.' }] }
+      {
+        slug: 'events', title: 'Events', icon: 'calendar-days',
+        archive: { key: 'events.archive', label: 'Archive Template', route: '/events', description: 'Lists all upcoming events with filters, pagination, and registration links.' },
+        single:  { key: 'events.single',  label: 'Single Event Template', route: '/events/:slug', description: 'Individual event detail page with date, location, map, and registration form.' },
+        seoDescription: 'Upcoming church events, registrations, and event details.',
+        content: [{ type: 'hero', title: 'Upcoming Events', subtitle: 'Join us for worship, conferences, and community gatherings.', buttonText: 'Register Now', buttonUrl: '#events' }, { type: 'dynamic_events_grid', sourceModule: 'Events' }]
+      },
+      {
+        slug: 'sermons', title: 'Sermons & Media', icon: 'clapperboard',
+        archive: { key: 'media.archive', label: 'Archive Template', route: '/sermons', description: 'Sermon grid with series, speaker, and topic filters.' },
+        single:  { key: 'media.single',  label: 'Single Sermon Template', route: '/sermons/:slug', description: 'Individual sermon replay page with video player, notes, and related sermons.' },
+        seoDescription: 'Watch and listen to sermons, series, and media content.',
+        content: [{ type: 'dynamic_sermon_grid', sourceModule: 'Sermons / Media', filters: ['series', 'speaker', 'topic'] }]
+      },
+      {
+        slug: 'blog', title: 'Blog', icon: 'file-text',
+        archive: { key: 'blog.archive', label: 'Archive Template', route: '/blog', description: 'Blog listing page with article cards, categories, and pagination.' },
+        single:  { key: 'blog.single',  label: 'Single Post Template', route: '/blog/:slug', description: 'Individual blog article with author, date, featured image, and comments.' },
+        seoDescription: 'Read the latest articles, devotionals, and updates.',
+        content: [{ type: 'text_section', heading: 'Our Blog', content: 'Read the latest updates from our church community.' }]
+      },
+      {
+        slug: 'groups', title: 'Groups', icon: 'network',
+        archive: { key: 'groups.archive', label: 'Archive Template', route: '/groups', description: 'Group finder directory with location, day, and category filters.' },
+        single:  { key: 'groups.single',  label: 'Single Group Template', route: '/groups/:slug', description: 'Individual group page with leader info, meeting schedule, and join request.' },
+        seoDescription: 'Find and join a small group near you.',
+        content: [{ type: 'dynamic_group_finder', sourceModule: 'Groups', fields: ['location', 'day', 'leader'] }]
+      },
+      {
+        slug: 'courses', title: 'Discipleship Courses', icon: 'graduation-cap',
+        archive: { key: 'courses.archive', label: 'Archive Template', route: '/courses', description: 'Course catalog with enrollment, progress tracking, and curriculum overview.' },
+        single:  { key: 'courses.single',  label: 'Single Course Template', route: '/courses/:slug', description: 'Individual course page with lesson player, quizzes, and completion certificate.' },
+        seoDescription: 'Explore discipleship courses and grow in your faith.',
+        content: [{ type: 'dynamic_course_list', sourceModule: 'Courses' }]
+      },
+      {
+        slug: 'branches', title: 'Branches', icon: 'map-pin',
+        archive: { key: 'branches.archive', label: 'Archive Template', route: '/branches', description: 'Campus locator with map view, service times, and nearest branch finder.' },
+        single:  { key: 'branches.single',  label: 'Single Branch Template', route: '/branches/:slug', description: 'Individual campus page with pastor, service schedule, directions, and contact.' },
+        seoDescription: 'Find a church campus near you.',
+        content: [{ type: 'dynamic_branch_finder', sourceModule: 'Branches', fields: ['pastor', 'serviceTimes', 'map'] }]
+      },
+      {
+        slug: 'announcements', title: 'Announcements', icon: 'bell',
+        archive: { key: 'announcements.archive', label: 'Archive Template', route: '/announcements', description: 'Announcements feed with featured alerts, branch filters, and date sorting.' },
+        single:  { key: 'announcements.single',  label: 'Single Announcement Template', route: '/announcements/:slug', description: 'Individual announcement detail with full content, related links, and sharing.' },
+        seoDescription: 'Stay updated with the latest church announcements.',
+        content: [{ type: 'dynamic_announcement_list', sourceModule: 'Announcements' }]
+      },
+      {
+        slug: 'prayer', title: 'Prayer & Testimonies', icon: 'heart',
+        archive: { key: 'prayer.archive', label: 'Archive Template', route: '/prayer', description: 'Prayer wall with request submissions, "I prayed" reactions, and testimony feed.' },
+        single:  { key: 'prayer.single',  label: 'Single Request Template', route: '/prayer/:slug', description: 'Individual prayer request or testimony detail with prayer count and comments.' },
+        seoDescription: 'Submit prayer requests and share testimonies.',
+        content: [{ type: 'hero', title: 'Prayer & Testimonies', subtitle: 'Submit prayer requests and share what God has done.', buttonText: 'Request Prayer', buttonUrl: '#prayer-request' }, { type: 'dynamic_prayer_wall', sourceModule: 'Prayer' }]
+      },
+      {
+        slug: 'podcast', title: 'Podcasts', icon: 'mic',
+        archive: { key: 'podcast.archive', label: 'Archive Template', route: '/podcast', description: 'Show channel listing with episode cards, RSS links, and platform badges.' },
+        single:  { key: 'podcast.single',  label: 'Single Episode Template', route: '/podcast/:slug', description: 'Individual episode player with show notes, transcript, and subscribe links.' },
+        seoDescription: 'Listen to our podcast episodes and audio content.',
+        content: [{ type: 'text_section', heading: 'Podcasts', content: 'Listen to the latest podcast episodes.' }]
+      },
+      {
+        slug: 'library', title: 'Digital Library', icon: 'book-open',
+        archive: { key: 'library.archive', label: 'Archive Template', route: '/library', description: 'Resource directory with category filters, search, and download cards.' },
+        single:  { key: 'library.single',  label: 'Single Resource Template', route: '/library/:slug', description: 'Individual resource page with file preview, download button, and related items.' },
+        seoDescription: 'Access books, resources, and study materials.',
+        content: [{ type: 'text_section', heading: 'Digital Library', content: 'Browse and download study materials and resources.' }]
+      },
+      {
+        slug: 'store', title: 'E-Commerce Store', icon: 'shopping-cart',
+        archive: { key: 'store.archive', label: 'Archive Template', route: '/store', description: 'Product catalog with category filters, price sorting, and add-to-cart buttons.' },
+        single:  { key: 'store.single',  label: 'Single Product Template', route: '/store/:slug', description: 'Individual product page with gallery, description, variants, and checkout button.' },
+        seoDescription: 'Browse and purchase church merchandise and resources.',
+        content: [{ type: 'text_section', heading: 'Store', content: 'Support the ministry by purchasing items.' }]
+      }
     ];
 
     window.toggleTemplatePageActive = async function(pageId, isChecked) {
@@ -22325,6 +22391,23 @@ body.customizer-open { overflow: hidden; }
       const grid = document.getElementById('cmsTemplatesGrid');
       if (!grid) return;
 
+      // Inject template-card styles once
+      if (!document.getElementById('templateCardStyles')) {
+        const s = document.createElement('style');
+        s.id = 'templateCardStyles';
+        s.textContent = `
+          .template-pair-table { width:100%; border-collapse:collapse; margin-top:12px; }
+          .template-pair-table td { padding:10px 12px; vertical-align:middle; font-size:13px; }
+          .template-pair-table tr { border-top:1px solid var(--line); }
+          .template-pair-table tr:first-child { border-top:none; }
+          .template-type-badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; letter-spacing:0.3px; }
+          .template-type-archive { background:rgba(99,102,241,0.12); color:#818cf8; }
+          .template-type-single  { background:rgba(249,115,22,0.12); color:#fb923c; }
+          .template-route { font-family: monospace; font-size:12px; color:var(--muted); background:var(--bg-secondary, rgba(255,255,255,0.04)); padding:2px 6px; border-radius:4px; }
+        `;
+        document.head.appendChild(s);
+      }
+
       grid.innerHTML = dynamicTemplatesCatalog.map(template => {
         const page = cmsState.pages.find(p => String(p.slug || '').toLowerCase().trim() === template.slug);
         const isPub = page ? page.status === 'published' : false;
@@ -22334,30 +22417,57 @@ body.customizer-open { overflow: hidden; }
           : `provisionTemplatePage('${template.slug}')`;
 
         return `
-          <article class="cms-card">
-            <div class="cms-card-header">
-              <div class="row" style="gap:10px; align-items:flex-start;">
-                <i data-lucide="${template.icon}" style="width:22px;height:22px;color:var(--accent);"></i>
+          <article class="cms-card" style="grid-column: 1 / -1;">
+            <div class="cms-card-header" style="align-items:center;">
+              <div class="row" style="gap:10px; align-items:center;">
+                <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(249,115,22,0.10));display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <i data-lucide="${template.icon}" style="width:20px;height:20px;color:var(--accent);"></i>
+                </div>
                 <div>
-                  <h3 class="cms-card-title">${escapeHtml(template.title)}</h3>
-                  <span class="cms-card-slug">${escapeHtml(template.scope)}</span>
+                  <h3 class="cms-card-title" style="margin:0;">${escapeHtml(template.title)}</h3>
                 </div>
               </div>
-              <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page ? page.status : 'Inactive'}</span>
-            </div>
-            <p style="font-size:13px; color:var(--muted); margin:0 0 12px 0; line-height:1.5;">${escapeHtml(template.description)}</p>
-            <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
-              <div class="row" style="align-items:center;">
-                <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle; margin-right:8px;">
+              <div class="row" style="gap:10px; align-items:center;">
+                <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle;">
                   <input type="checkbox" ${isPub ? 'checked' : ''} onchange="${toggleAction}" style="opacity:0; width:0; height:0;">
                   <span class="slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
                 </label>
-                <span style="font-size:12px; color:var(--muted); vertical-align:middle;">${isPub ? 'Active' : 'Inactive'}</span>
-              </div>
-              <div class="row" style="gap: 8px;">
-                <button class="btn small" onclick="openTemplateSettings('${template.key}')"><i data-lucide="pencil"></i>Edit Hero & CTA</button>
+                <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page ? page.status : 'Inactive'}</span>
               </div>
             </div>
+
+            <table class="template-pair-table">
+              <tr>
+                <td style="width:160px;">
+                  <span class="template-type-badge template-type-archive"><i data-lucide="layout-grid" style="width:12px;height:12px;vertical-align:-2px;margin-right:4px;"></i>Archive</span>
+                </td>
+                <td>
+                  <div style="font-weight:500; margin-bottom:2px;">${escapeHtml(template.archive.label)}</div>
+                  <div style="color:var(--muted); font-size:12px; line-height:1.4;">${escapeHtml(template.archive.description)}</div>
+                </td>
+                <td style="width:120px; text-align:center;">
+                  <span class="template-route">${escapeHtml(template.archive.route)}</span>
+                </td>
+                <td style="width:140px; text-align:right;">
+                  <button class="btn small" onclick="openTemplateSettings('${template.archive.key}')" style="font-size:12px;"><i data-lucide="pencil" style="width:13px;height:13px;"></i>Edit Hero</button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span class="template-type-badge template-type-single"><i data-lucide="file" style="width:12px;height:12px;vertical-align:-2px;margin-right:4px;"></i>Single Page</span>
+                </td>
+                <td>
+                  <div style="font-weight:500; margin-bottom:2px;">${escapeHtml(template.single.label)}</div>
+                  <div style="color:var(--muted); font-size:12px; line-height:1.4;">${escapeHtml(template.single.description)}</div>
+                </td>
+                <td style="text-align:center;">
+                  <span class="template-route">${escapeHtml(template.single.route)}</span>
+                </td>
+                <td style="text-align:right;">
+                  <button class="btn small" onclick="openTemplateSettings('${template.single.key}')" style="font-size:12px;"><i data-lucide="pencil" style="width:13px;height:13px;"></i>Edit Hero</button>
+                </td>
+              </tr>
+            </table>
           </article>
         `;
       }).join('');
