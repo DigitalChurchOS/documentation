@@ -2195,8 +2195,8 @@
 
     .grid-layout {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
       margin-top: 12px;
     }
 
@@ -5436,19 +5436,58 @@ body.customizer-open { overflow: hidden; }
                 <div id="cmsMenusTab" class="cms-tab-content hidden">
                   <div class="section-head">
                     <div>
-                      <h2>Header Navigation Builder</h2>
-                      <p>Construct menus and links that direct site users to your pages.</p>
+                      <h2>Menu Builder</h2>
+                      <p>Drag pages from the available list into the menu zones below. Rearrange items by dragging within each menu.</p>
                     </div>
-                    <button class="btn" onclick="addNewCmsMenuItem()"><i data-lucide="plus"></i>Add Menu Link</button>
+                    <button class="btn primary" onclick="saveAllCmsMenus()"><i data-lucide="save"></i>Save All Menus</button>
                   </div>
-                  <div style="max-width: 800px; display: flex; flex-direction: column; gap: 16px;">
-                    <div class="field">
-                      <label for="selectWebsiteNav">Choose Website Context</label>
-                      <select id="selectWebsiteNav" class="form-control" onchange="loadCmsNavigationMenu()"></select>
+                  <div style="display:grid; grid-template-columns:280px 1fr; gap:24px; min-height:500px;">
+                    <!-- Left: Available Pages -->
+                    <div>
+                      <h3 style="font-size:14px; font-weight:600; margin:0 0 12px; display:flex; align-items:center; gap:6px;"><i data-lucide="layers" style="width:15px;height:15px;color:var(--accent);"></i>Available Pages</h3>
+                      <p class="muted" style="font-size:12px; margin:0 0 12px;">Drag pages into menus on the right.</p>
+                      <div id="cmsMenuAvailablePages" style="display:flex; flex-direction:column; gap:6px; max-height:600px; overflow-y:auto; padding-right:4px;"></div>
                     </div>
-                    <div id="cmsMenuItemsList" style="margin-top: 10px;"></div>
-                    <div class="row" style="justify-content: flex-end; margin-top: 10px;">
-                      <button class="btn primary" onclick="saveCmsNavigationMenu()"><i data-lucide="save"></i>Save</button>
+                    <!-- Right: Menu Zones -->
+                    <div style="display:flex; flex-direction:column; gap:20px;">
+                      <div>
+                        <h3 style="font-size:14px; font-weight:600; margin:0 0 12px; color:var(--accent);">Header Menus</h3>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                          <div class="cms-menu-zone" data-menu-key="header">
+                            <div class="cms-menu-zone-label"><i data-lucide="navigation" style="width:14px;height:14px;"></i>Header Menu</div>
+                            <div class="cms-menu-zone-drop" data-menu-key="header"></div>
+                          </div>
+                          <div class="cms-menu-zone" data-menu-key="rail">
+                            <div class="cms-menu-zone-label"><i data-lucide="panel-left" style="width:14px;height:14px;"></i>Rail Menu</div>
+                            <div class="cms-menu-zone-drop" data-menu-key="rail"></div>
+                          </div>
+                          <div class="cms-menu-zone" data-menu-key="mobile-rail">
+                            <div class="cms-menu-zone-label"><i data-lucide="smartphone" style="width:14px;height:14px;"></i>Mobile Rail</div>
+                            <div class="cms-menu-zone-drop" data-menu-key="mobile-rail"></div>
+                          </div>
+                          <div class="cms-menu-zone" data-menu-key="mobile-drawer">
+                            <div class="cms-menu-zone-label"><i data-lucide="menu" style="width:14px;height:14px;"></i>Mobile Drawer</div>
+                            <div class="cms-menu-zone-drop" data-menu-key="mobile-drawer"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 style="font-size:14px; font-weight:600; margin:0 0 12px; color:var(--muted);">Footer Menus</h3>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                          <div class="cms-menu-zone" data-menu-key="footer-1">
+                            <div class="cms-menu-zone-label"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i>Footer Menu 1</div>
+                            <div class="cms-menu-zone-drop" data-menu-key="footer-1"></div>
+                          </div>
+                          <div class="cms-menu-zone" data-menu-key="footer-2">
+                            <div class="cms-menu-zone-label"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i>Footer Menu 2</div>
+                            <div class="cms-menu-zone-drop" data-menu-key="footer-2"></div>
+                          </div>
+                          <div class="cms-menu-zone" data-menu-key="footer-3">
+                            <div class="cms-menu-zone-label"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i>Footer Menu 3</div>
+                            <div class="cms-menu-zone-drop" data-menu-key="footer-3"></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -22409,15 +22448,8 @@ body.customizer-open { overflow: hidden; }
       }
 
       grid.innerHTML = dynamicTemplatesCatalog.map(template => {
-        const page = cmsState.pages.find(p => String(p.slug || '').toLowerCase().trim() === template.slug);
-        const isPub = page ? page.status === 'published' : false;
-
-        const toggleAction = page
-          ? `toggleTemplatePageActive('${page.id}', this.checked)`
-          : `provisionTemplatePage('${template.slug}')`;
-
         return `
-          <article class="cms-card" style="grid-column: 1 / -1;">
+          <article class="cms-card">
             <div class="cms-card-header" style="align-items:center;">
               <div class="row" style="gap:10px; align-items:center;">
                 <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(249,115,22,0.10));display:flex;align-items:center;justify-content:center;flex-shrink:0;">
@@ -22427,44 +22459,31 @@ body.customizer-open { overflow: hidden; }
                   <h3 class="cms-card-title" style="margin:0;">${escapeHtml(template.title)}</h3>
                 </div>
               </div>
-              <div class="row" style="gap:10px; align-items:center;">
-                <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle;">
-                  <input type="checkbox" ${isPub ? 'checked' : ''} onchange="${toggleAction}" style="opacity:0; width:0; height:0;">
-                  <span class="slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
-                </label>
-                <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page ? page.status : 'Inactive'}</span>
-              </div>
             </div>
 
             <table class="template-pair-table">
               <tr>
-                <td style="width:160px;">
+                <td style="width:110px;">
                   <span class="template-type-badge template-type-archive"><i data-lucide="layout-grid" style="width:12px;height:12px;vertical-align:-2px;margin-right:4px;"></i>Archive</span>
                 </td>
                 <td>
                   <div style="font-weight:500; margin-bottom:2px;">${escapeHtml(template.archive.label)}</div>
-                  <div style="color:var(--muted); font-size:12px; line-height:1.4;">${escapeHtml(template.archive.description)}</div>
+                  <div style="color:var(--muted); font-size:11px; line-height:1.4;">${escapeHtml(template.archive.description)}</div>
                 </td>
-                <td style="width:120px; text-align:center;">
-                  <span class="template-route">${escapeHtml(template.archive.route)}</span>
-                </td>
-                <td style="width:140px; text-align:right;">
-                  <button class="btn small" onclick="openTemplateSettings('${template.archive.key}')" style="font-size:12px;"><i data-lucide="pencil" style="width:13px;height:13px;"></i>Edit Hero</button>
+                <td style="width:100px; text-align:right;">
+                  <button class="btn small" onclick="openTemplateSettings('${template.archive.key}')" style="font-size:11px;"><i data-lucide="pencil" style="width:12px;height:12px;"></i>Edit</button>
                 </td>
               </tr>
               <tr>
                 <td>
-                  <span class="template-type-badge template-type-single"><i data-lucide="file" style="width:12px;height:12px;vertical-align:-2px;margin-right:4px;"></i>Single Page</span>
+                  <span class="template-type-badge template-type-single"><i data-lucide="file" style="width:12px;height:12px;vertical-align:-2px;margin-right:4px;"></i>Single</span>
                 </td>
                 <td>
                   <div style="font-weight:500; margin-bottom:2px;">${escapeHtml(template.single.label)}</div>
-                  <div style="color:var(--muted); font-size:12px; line-height:1.4;">${escapeHtml(template.single.description)}</div>
-                </td>
-                <td style="text-align:center;">
-                  <span class="template-route">${escapeHtml(template.single.route)}</span>
+                  <div style="color:var(--muted); font-size:11px; line-height:1.4;">${escapeHtml(template.single.description)}</div>
                 </td>
                 <td style="text-align:right;">
-                  <button class="btn small" onclick="openTemplateSettings('${template.single.key}')" style="font-size:12px;"><i data-lucide="pencil" style="width:13px;height:13px;"></i>Edit Hero</button>
+                  <button class="btn small" onclick="openTemplateSettings('${template.single.key}')" style="font-size:11px;"><i data-lucide="pencil" style="width:12px;height:12px;"></i>Edit</button>
                 </td>
               </tr>
             </table>
@@ -22748,102 +22767,202 @@ body.customizer-open { overflow: hidden; }
 
     let currentNavMenu = null;
 
+    // ── Menu Builder: drag-and-drop multi-zone system ──
+    const MENU_ZONES = ['header', 'rail', 'mobile-rail', 'mobile-drawer', 'footer-1', 'footer-2', 'footer-3'];
+    let cmsMenuData = {}; // { 'header': [{label,url},...], 'rail': [...], ... }
+
     async function loadCmsNavigationMenu() {
-      const websiteId = document.getElementById('selectWebsiteNav').value || cmsState.activeWebsiteId;
-      const res = await cmsApiRequest('GET', '/api/cms/navigation');
-      
-      if (res && res.data) {
-        currentNavMenu = res.data.find(n => n.websiteId === websiteId);
-      }
-      
-      if (!currentNavMenu) {
-        currentNavMenu = {
-          websiteId,
-          name: 'Header Navigation',
-          items: [
-            { label: 'Home', url: '/' },
-            { label: 'Services', url: '/services' }
-          ]
-        };
+      // Inject menu builder styles once
+      if (!document.getElementById('menuBuilderStyles')) {
+        const s = document.createElement('style');
+        s.id = 'menuBuilderStyles';
+        s.textContent = `
+          .cms-menu-zone { background:var(--bg-secondary, rgba(255,255,255,0.03)); border:1px solid var(--line); border-radius:10px; padding:0; overflow:hidden; }
+          .cms-menu-zone-label { font-size:13px; font-weight:600; padding:10px 14px; display:flex; align-items:center; gap:6px; border-bottom:1px solid var(--line); background:rgba(99,102,241,0.04); }
+          .cms-menu-zone-drop { min-height:80px; padding:8px; display:flex; flex-direction:column; gap:4px; transition:background .2s; }
+          .cms-menu-zone-drop.drag-over { background:rgba(99,102,241,0.08); outline:2px dashed var(--accent); outline-offset:-2px; border-radius:0 0 8px 8px; }
+          .cms-menu-zone-drop:empty::after { content:'Drop pages here'; display:block; text-align:center; padding:20px 0; font-size:12px; color:var(--muted); opacity:0.6; }
+          .cms-menu-drag-item { padding:8px 12px; background:var(--bg, #1a1a2e); border:1px solid var(--line); border-radius:6px; cursor:grab; display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:13px; transition:transform .15s, box-shadow .15s; }
+          .cms-menu-drag-item:active { cursor:grabbing; }
+          .cms-menu-drag-item:hover { box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+          .cms-menu-drag-item .drag-handle { color:var(--muted); flex-shrink:0; }
+          .cms-menu-drag-item .item-remove { cursor:pointer; color:var(--muted); opacity:0.5; transition:opacity .2s; flex-shrink:0; }
+          .cms-menu-drag-item .item-remove:hover { opacity:1; color:var(--danger, #ef4444); }
+          .cms-avail-item { padding:8px 12px; background:var(--bg, #1a1a2e); border:1px solid var(--line); border-radius:6px; cursor:grab; font-size:13px; display:flex; align-items:center; gap:8px; transition:transform .15s; }
+          .cms-avail-item:hover { border-color:var(--accent); }
+          .cms-avail-item .avail-slug { font-family:monospace; font-size:11px; color:var(--muted); margin-left:auto; }
+        `;
+        document.head.appendChild(s);
       }
 
-      renderCmsNavMenuRows();
+      // Load existing menus from backend
+      const res = await cmsApiRequest('GET', '/api/cms/navigation');
+      MENU_ZONES.forEach(key => { cmsMenuData[key] = []; });
+
+      if (res && res.data) {
+        const navItems = Array.isArray(res.data) ? res.data : [res.data];
+        navItems.forEach(nav => {
+          const key = (nav.name || '').toLowerCase().replace(/\s+/g, '-');
+          const items = parseMaybeJson(nav.items, []);
+          if (MENU_ZONES.includes(key)) {
+            cmsMenuData[key] = items;
+          } else if (key === 'header-navigation' || key === 'header-menu') {
+            cmsMenuData['header'] = items;
+          }
+        });
+      }
+
+      renderMenuAvailablePages();
+      MENU_ZONES.forEach(key => renderMenuZone(key));
+      initMenuDragDrop();
+      refreshIcons();
     }
 
-    function renderCmsNavMenuRows() {
-      const container = document.getElementById('cmsMenuItemsList');
-      const items = parseMaybeJson(currentNavMenu.items, []);
-      
-      if (items.length === 0) {
-        container.innerHTML = `<p class="muted" style="text-align:center; padding: 20px;">No links configured in navigation.</p>`;
-        return;
-      }
+    function renderMenuAvailablePages() {
+      const container = document.getElementById('cmsMenuAvailablePages');
+      if (!container) return;
+      const activePages = cmsState.pages.filter(p => p.status === 'published');
+      const allTemplates = dynamicTemplatesCatalog || [];
 
-      container.innerHTML = items.map((item, idx) => `
-        <div class="menu-item-row">
-          <div class="field" style="margin-bottom:0; width: 40%;">
-            <input type="text" class="form-control" value="${escapeHtml(item.label)}" onchange="updateCmsMenuItem(${idx}, 'label', this.value)" placeholder="Link Label">
-          </div>
-          <div class="field" style="margin-bottom:0; width: 45%;">
-            <input type="text" class="form-control" value="${escapeHtml(item.url)}" onchange="updateCmsMenuItem(${idx}, 'url', this.value)" placeholder="/slug or custom URL">
-          </div>
-          <div class="menu-item-actions">
-            <button class="btn small" style="padding: 4px 8px;" onclick="moveCmsMenuItem(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}><i data-lucide="arrow-up" style="width:14px;height:14px;"></i></button>
-            <button class="btn small" style="padding: 4px 8px;" onclick="moveCmsMenuItem(${idx}, 1)" ${idx === items.length - 1 ? 'disabled' : ''}><i data-lucide="arrow-down" style="width:14px;height:14px;"></i></button>
-            <button class="btn small" style="padding: 4px 8px; color: var(--danger);" onclick="deleteCmsMenuItem(${idx})"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
-          </div>
+      let html = '';
+      activePages.forEach(page => {
+        const slug = page.slug || '';
+        const url = slug === 'home' || slug === '' ? '/' : `/${slug}`;
+        html += `<div class="cms-avail-item" draggable="true" data-label="${escapeHtml(page.title)}" data-url="${escapeHtml(url)}">
+          <i data-lucide="grip-vertical" style="width:14px;height:14px;color:var(--muted);flex-shrink:0;"></i>
+          <span>${escapeHtml(page.title)}</span>
+          <span class="avail-slug">${escapeHtml(url)}</span>
+        </div>`;
+      });
+      allTemplates.forEach(t => {
+        html += `<div class="cms-avail-item" draggable="true" data-label="${escapeHtml(t.title)}" data-url="/${t.slug}">
+          <i data-lucide="grip-vertical" style="width:14px;height:14px;color:var(--muted);flex-shrink:0;"></i>
+          <span>${escapeHtml(t.title)}</span>
+          <span class="avail-slug">/${t.slug}</span>
+        </div>`;
+      });
+
+      container.innerHTML = html || '<p class="muted" style="font-size:12px;">No active pages found.</p>';
+      refreshIcons();
+    }
+
+    function renderMenuZone(key) {
+      const drop = document.querySelector(`.cms-menu-zone-drop[data-menu-key="${key}"]`);
+      if (!drop) return;
+      const items = cmsMenuData[key] || [];
+      drop.innerHTML = items.map((item, idx) => `
+        <div class="cms-menu-drag-item" draggable="true" data-menu-key="${key}" data-idx="${idx}">
+          <span class="drag-handle"><i data-lucide="grip-vertical" style="width:13px;height:13px;"></i></span>
+          <span style="flex:1;">${escapeHtml(item.label)}</span>
+          <span style="font-family:monospace;font-size:11px;color:var(--muted);">${escapeHtml(item.url)}</span>
+          <span class="item-remove" onclick="removeFromMenu('${key}', ${idx})"><i data-lucide="x" style="width:14px;height:14px;"></i></span>
         </div>
       `).join('');
       refreshIcons();
     }
 
-    function updateCmsMenuItem(idx, key, val) {
-      const items = parseMaybeJson(currentNavMenu.items, []);
-      items[idx][key] = val;
-      currentNavMenu.items = items;
+    window.removeFromMenu = function(key, idx) {
+      cmsMenuData[key].splice(idx, 1);
+      renderMenuZone(key);
+    };
+
+    let menuDragDropInitialized = false;
+    function initMenuDragDrop() {
+      if (menuDragDropInitialized) return;
+      menuDragDropInitialized = true;
+
+      // Delegate dragstart for available items
+      const availContainer = document.getElementById('cmsMenuAvailablePages');
+      if (availContainer) {
+        availContainer.addEventListener('dragstart', e => {
+          const item = e.target.closest('.cms-avail-item');
+          if (!item) return;
+          e.dataTransfer.setData('text/plain', JSON.stringify({
+            label: item.dataset.label,
+            url: item.dataset.url,
+            source: 'available'
+          }));
+          e.dataTransfer.effectAllowed = 'copy';
+          item.style.opacity = '0.5';
+        });
+        availContainer.addEventListener('dragend', e => {
+          const item = e.target.closest('.cms-avail-item');
+          if (item) item.style.opacity = '1';
+        });
+      }
+
+      // Delegate dragstart for zone items
+      document.querySelectorAll('.cms-menu-zone-drop').forEach(zone => {
+        zone.addEventListener('dragstart', e => {
+          const item = e.target.closest('.cms-menu-drag-item');
+          if (!item) return;
+          e.dataTransfer.setData('text/plain', JSON.stringify({
+            label: item.querySelector('span[style*="flex"]')?.textContent || '',
+            url: item.querySelector('span[style*="monospace"]')?.textContent || '',
+            source: 'menu',
+            fromKey: item.dataset.menuKey,
+            fromIdx: parseInt(item.dataset.idx)
+          }));
+          e.dataTransfer.effectAllowed = 'move';
+          item.style.opacity = '0.5';
+        });
+        zone.addEventListener('dragend', e => {
+          const item = e.target.closest('.cms-menu-drag-item');
+          if (item) item.style.opacity = '1';
+        });
+
+        // Setup drop listeners
+        zone.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'copy';
+          zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', e => {
+          zone.classList.remove('drag-over');
+        });
+        zone.addEventListener('drop', e => {
+          e.preventDefault();
+          zone.classList.remove('drag-over');
+          try {
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            const targetKey = zone.dataset.menuKey;
+            
+            // If reordering within same zone, remove from old position first
+            if (data.source === 'menu' && data.fromKey) {
+              cmsMenuData[data.fromKey].splice(data.fromIdx, 1);
+              if (data.fromKey !== targetKey) renderMenuZone(data.fromKey);
+            }
+            cmsMenuData[targetKey].push({ label: data.label, url: data.url });
+            renderMenuZone(targetKey);
+          } catch(err) {
+            console.error('Drop parse error', err);
+          }
+        });
+      });
     }
 
-    function moveCmsMenuItem(idx, dir) {
-      const items = parseMaybeJson(currentNavMenu.items, []);
-      const temp = items[idx];
-      items[idx] = items[idx + dir];
-      items[idx + dir] = temp;
-      currentNavMenu.items = items;
-      renderCmsNavMenuRows();
-    }
+    async function saveAllCmsMenus() {
+      const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
+      if (!websiteId) { alert('No website context found.'); return; }
 
-    function deleteCmsMenuItem(idx) {
-      const items = parseMaybeJson(currentNavMenu.items, []);
-      items.splice(idx, 1);
-      currentNavMenu.items = items;
-      renderCmsNavMenuRows();
-    }
+      let success = true;
+      for (const key of MENU_ZONES) {
+        const items = cmsMenuData[key] || [];
+        const payload = {
+          websiteId,
+          name: key,
+          items: items,
+          isActive: true
+        };
+        const res = await cmsApiRequest('POST', '/api/cms/navigation', payload);
+        if (!res || !res.data) success = false;
+      }
 
-    function addNewCmsMenuItem() {
-      if (!currentNavMenu) return;
-      const items = parseMaybeJson(currentNavMenu.items, []);
-      items.push({ label: 'New Link', url: '/new-page' });
-      currentNavMenu.items = items;
-      renderCmsNavMenuRows();
-    }
-
-    async function saveCmsNavigationMenu() {
-      if (!currentNavMenu) return;
-      const items = parseMaybeJson(currentNavMenu.items, []);
-      
-      const payload = {
-        websiteId: currentNavMenu.websiteId,
-        name: currentNavMenu.name || 'Header Navigation',
-        items: items,
-        isActive: true
-      };
-
-      const res = await cmsApiRequest('POST', '/api/cms/navigation', payload);
-      if (res && res.data) {
-        showToast('Navigation menu saved successfully');
+      if (success) {
+        showToast('All menus saved successfully.');
         await loadAllCmsData();
       } else {
-        alert('Failed to save navigation menu');
+        alert('Some menus failed to save. Please try again.');
       }
     }
 
