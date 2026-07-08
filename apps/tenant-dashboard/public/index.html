@@ -21908,7 +21908,27 @@ body.customizer-open { overflow: hidden; }
 
     function isDefaultPage(page) {
       const slug = String(page.slug || '').toLowerCase().trim();
-      return slug === 'home' || slug === '' || slug === 'about' || slug === 'contact';
+      return ['home', '', 'about', 'contact'].includes(slug);
+    }
+
+    function isStaticPage(page) {
+      const slug = String(page.slug || '').toLowerCase().trim();
+      const staticSlugs = [
+        'home', '', 'about', 'contact', 'livestream', 'live-stream', 'live',
+        'worship', 'salvation', 'leadership', 'giving', 'volunteer',
+        'first-time-visitor', 'first-time', 'visitor', 'services'
+      ];
+      return staticSlugs.includes(slug);
+    }
+
+    function isDynamicTemplatePage(page) {
+      const slug = String(page.slug || '').toLowerCase().trim();
+      const dynamicSlugs = [
+        'events', 'prayer', 'courses', 'branches', 'announcements',
+        'sermons', 'groups', 'blog', 'podcast', 'library', 'media',
+        'store', 'testimonies'
+      ];
+      return dynamicSlugs.some(s => slug === s || slug.startsWith(s + '-'));
     }
 
     window.togglePageActive = async function(pageId, isChecked) {
@@ -21961,6 +21981,62 @@ body.customizer-open { overflow: hidden; }
       { slug: 'checkout', title: 'Checkout', content: 'Please review and finalize your details to complete your order.' },
       { slug: 'shopping-cart', title: 'Shopping Cart', content: 'Review the items in your cart before checking out.' }
     ];
+
+    const dynamicTemplatesCatalog = [
+      { slug: 'events', title: 'Events', icon: 'calendar-days', key: 'events.archive', scope: 'Event directories', description: 'Archive listing for upcoming events, registrations, and event detail pages.', seoDescription: 'Upcoming church events, registrations, and event details.', content: [{ type: 'hero', title: 'Upcoming Events', subtitle: 'Join us for worship, conferences, and community gatherings.', buttonText: 'Register Now', buttonUrl: '#events' }, { type: 'dynamic_events_grid', sourceModule: 'Events' }] },
+      { slug: 'sermons', title: 'Sermons & Media', icon: 'clapperboard', key: 'media.archive', scope: 'Sermons catalog', description: 'Archive listing for sermon replays, series browsing, and media library.', seoDescription: 'Watch and listen to sermons, series, and media content.', content: [{ type: 'dynamic_sermon_grid', sourceModule: 'Sermons / Media', filters: ['series', 'speaker', 'topic'] }] },
+      { slug: 'blog', title: 'Blog', icon: 'file-text', key: 'blog.archive', scope: 'Blog channels & posts', description: 'Archive listing for blog articles, devotionals, and newsletter posts.', seoDescription: 'Read the latest articles, devotionals, and updates.', content: [{ type: 'text_section', heading: 'Our Blog', content: 'Read the latest updates from our church community.' }] },
+      { slug: 'groups', title: 'Groups', icon: 'network', key: 'groups.archive', scope: 'Group finder', description: 'Archive directory for small groups, connect groups, and life groups.', seoDescription: 'Find and join a small group near you.', content: [{ type: 'dynamic_group_finder', sourceModule: 'Groups', fields: ['location', 'day', 'leader'] }] },
+      { slug: 'courses', title: 'Discipleship Courses', icon: 'graduation-cap', key: 'courses.archive', scope: 'Courses catalog', description: 'Archive listing for discipleship tracks, lesson players, and certificates.', seoDescription: 'Explore discipleship courses and grow in your faith.', content: [{ type: 'dynamic_course_list', sourceModule: 'Courses' }] },
+      { slug: 'branches', title: 'Branches', icon: 'map-pin', key: 'branches.archive', scope: 'Campus locator', description: 'Archive directory for church campuses, service times, and campus pastors.', seoDescription: 'Find a church campus near you.', content: [{ type: 'dynamic_branch_finder', sourceModule: 'Branches', fields: ['pastor', 'serviceTimes', 'map'] }] },
+      { slug: 'announcements', title: 'Announcements', icon: 'bell', key: 'announcements.archive', scope: 'Church updates', description: 'Archive feed for church announcements, alerts, and featured updates.', seoDescription: 'Stay updated with the latest church announcements.', content: [{ type: 'dynamic_announcement_list', sourceModule: 'Announcements' }] },
+      { slug: 'prayer', title: 'Prayer & Testimonies', icon: 'heart', key: 'prayer.archive', scope: 'Prayer wall', description: 'Public prayer request wall, testimony submissions, and prayer sessions.', seoDescription: 'Submit prayer requests and share testimonies.', content: [{ type: 'hero', title: 'Prayer & Testimonies', subtitle: 'Submit prayer requests and share what God has done.', buttonText: 'Request Prayer', buttonUrl: '#prayer-request' }, { type: 'dynamic_prayer_wall', sourceModule: 'Prayer' }] },
+      { slug: 'podcast', title: 'Podcasts', icon: 'mic', key: 'podcast.archive', scope: 'Podcasts RSS page', description: 'Archive feed for podcast episodes, show channels, and audio content.', seoDescription: 'Listen to our podcast episodes and audio content.', content: [{ type: 'text_section', heading: 'Podcasts', content: 'Listen to the latest podcast episodes.' }] },
+      { slug: 'library', title: 'Digital Library', icon: 'book-open', key: 'library.archive', scope: 'Resource downloads', description: 'Archive for digital books, sermon outlines, and downloadable resources.', seoDescription: 'Access books, resources, and study materials.', content: [{ type: 'text_section', heading: 'Digital Library', content: 'Browse and download study materials and resources.' }] },
+      { slug: 'store', title: 'E-Commerce Store', icon: 'shopping-cart', key: 'store.archive', scope: 'Products list', description: 'Archive listing for products, merchandise, and store checkout.', seoDescription: 'Browse and purchase church merchandise and resources.', content: [{ type: 'text_section', heading: 'Store', content: 'Support the ministry by purchasing items.' }] }
+    ];
+
+    window.toggleTemplatePageActive = async function(pageId, isChecked) {
+      const page = cmsState.pages.find(p => p.id === pageId);
+      if (!page) return;
+      const status = isChecked ? 'published' : 'draft';
+      const res = await cmsApiRequest('PATCH', `/api/cms/pages/${pageId}`, { status });
+      if (res && res.ok) {
+        showToast(`Template "${page.title}" ${isChecked ? 'activated' : 'deactivated'}.`);
+        await loadAllCmsData();
+        renderCmsTemplates();
+      } else {
+        alert(res?.data?.error || 'Failed to toggle template status.');
+      }
+    };
+
+    window.provisionTemplatePage = async function(slug) {
+      const catalogItem = dynamicTemplatesCatalog.find(item => item.slug === slug);
+      if (!catalogItem) return;
+      const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
+      if (!websiteId) {
+        alert('Load a website context before provisioning template page.');
+        return;
+      }
+      const payload = {
+        websiteId,
+        title: catalogItem.title,
+        slug: catalogItem.slug,
+        isHome: false,
+        status: 'published',
+        content: catalogItem.content,
+        seoTitle: `${catalogItem.title} | ${localCmsState.websiteTitle}`,
+        seoDescription: catalogItem.seoDescription || catalogItem.title
+      };
+      const res = await cmsApiRequest('POST', '/api/cms/pages', payload);
+      if (res && res.data) {
+        showToast(`Template "${catalogItem.title}" provisioned and activated.`);
+        await loadAllCmsData();
+        renderCmsTemplates();
+      } else {
+        alert('Failed to provision template page.');
+      }
+    };
 
     window.openCmsPageContentEditor = function(pageId) {
       const page = cmsState.pages.find(p => p.id === pageId);
@@ -22136,8 +22212,8 @@ body.customizer-open { overflow: hidden; }
         return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
       });
 
-      const mainPages = filtered.filter(p => !isAssistingPage(p));
-      const existingAssistingPages = filtered.filter(p => isAssistingPage(p));
+      const mainPages = filtered.filter(p => !isAssistingPage(p) && !isDynamicTemplatePage(p));
+      const existingAssistingPages = filtered.filter(p => isAssistingPage(p) && !isDynamicTemplatePage(p));
 
       // 1. Render Main Pages
       if (mainPages.length === 0) {
@@ -22248,19 +22324,15 @@ body.customizer-open { overflow: hidden; }
     function renderCmsTemplates() {
       const grid = document.getElementById('cmsTemplatesGrid');
       if (!grid) return;
-      
-      const dynamicTemplatesList = [
-        { key: 'blog.archive', title: 'Blog Template', icon: 'file-text', scope: 'Blog channels & posts', description: 'Configure headers and CTAs for blog listings and individual blog articles.' },
-        { key: 'media.archive', title: 'Media & Sermons Template', icon: 'clapperboard', scope: 'Sermons catalog', description: 'Customize Hero and bottom CTA sections on the sermons archive and replay pages.' },
-        { key: 'events.archive', title: 'Events Calendar Template', icon: 'calendar-days', scope: 'Event directories', description: 'Manage the public presentation of event lists and single event registration details.' },
-        { key: 'store.archive', title: 'E-Commerce Store Template', icon: 'shopping-cart', scope: 'Products list', description: 'Style header designs for products catalogs and single checkout conversion points.' },
-        { key: 'groups.archive', title: 'Groups Directory Template', icon: 'network', scope: 'Group finder', description: 'Configure hero headlines and contact calls for the small groups finding page.' },
-        { key: 'courses.archive', title: 'Discipleship Courses Template', icon: 'graduation-cap', scope: 'Courses catalog', description: 'Customize the landing sections for student curriculum catalogs and lesson players.' },
-        { key: 'podcast.archive', title: 'Podcast Center Template', icon: 'mic', scope: 'Podcasts RSS page', description: 'Hydrate banner templates for show channels and podcast episode archives.' },
-        { key: 'library.archive', title: 'Resources Template', icon: 'book-open', scope: 'Resource downloads', description: 'Configure the digital library landing page headers and CTAs.' }
-      ];
 
-      grid.innerHTML = dynamicTemplatesList.map(template => {
+      grid.innerHTML = dynamicTemplatesCatalog.map(template => {
+        const page = cmsState.pages.find(p => String(p.slug || '').toLowerCase().trim() === template.slug);
+        const isPub = page ? page.status === 'published' : false;
+
+        const toggleAction = page
+          ? `toggleTemplatePageActive('${page.id}', this.checked)`
+          : `provisionTemplatePage('${template.slug}')`;
+
         return `
           <article class="cms-card">
             <div class="cms-card-header">
@@ -22271,10 +22343,20 @@ body.customizer-open { overflow: hidden; }
                   <span class="cms-card-slug">${escapeHtml(template.scope)}</span>
                 </div>
               </div>
+              <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page ? page.status : 'Inactive'}</span>
             </div>
-            <p style="font-size:13px; color:var(--muted); margin:0; line-height:1.5;">${escapeHtml(template.description)}</p>
-            <div class="cms-card-footer">
-              <button class="btn small" onclick="openTemplateSettings('${template.key}')"><i data-lucide="pencil"></i>Edit Hero & CTA</button>
+            <p style="font-size:13px; color:var(--muted); margin:0 0 12px 0; line-height:1.5;">${escapeHtml(template.description)}</p>
+            <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
+              <div class="row" style="align-items:center;">
+                <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle; margin-right:8px;">
+                  <input type="checkbox" ${isPub ? 'checked' : ''} onchange="${toggleAction}" style="opacity:0; width:0; height:0;">
+                  <span class="slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
+                </label>
+                <span style="font-size:12px; color:var(--muted); vertical-align:middle;">${isPub ? 'Active' : 'Inactive'}</span>
+              </div>
+              <div class="row" style="gap: 8px;">
+                <button class="btn small" onclick="openTemplateSettings('${template.key}')"><i data-lucide="pencil"></i>Edit Hero & CTA</button>
+              </div>
             </div>
           </article>
         `;
