@@ -483,6 +483,71 @@ export class TenantProvisioningService {
         },
       });
 
+      await tx.page.create({
+        data: {
+          tenantId: tenant.id,
+          websiteId: website.id,
+          slug: 'about',
+          title: 'About Us',
+          status: 'published',
+          isHome: false,
+          seoTitle: `${name} | About Us`,
+          seoDescription: `Learn about our mission, leadership, and values.`,
+          content: jsonString([
+            {
+              type: 'about_template',
+              headline: 'Our Story',
+              storyText: 'We are a community of believers dedicated to worship and service.',
+              valuesList: ['Word', 'Worship', 'Prayer']
+            }
+          ])
+        }
+      });
+
+      await tx.page.create({
+        data: {
+          tenantId: tenant.id,
+          websiteId: website.id,
+          slug: 'service-times',
+          title: 'Service Times',
+          status: 'published',
+          isHome: false,
+          seoTitle: `${name} | Service Times`,
+          seoDescription: `Weekly service rhythm and gathering times.`,
+          content: jsonString([
+            {
+              type: 'service_times',
+              title: 'Service Times & Locations',
+              sundayTimes: 'Sunday Worship Celebration — 9:30 AM',
+              midweekTimes: 'Wednesday Bible Study — 7:00 PM',
+              address: 'Main Campus Sanctuary Address'
+            }
+          ])
+        }
+      });
+
+      await tx.page.create({
+        data: {
+          tenantId: tenant.id,
+          websiteId: website.id,
+          slug: 'contact',
+          title: 'Contact',
+          status: 'published',
+          isHome: false,
+          seoTitle: `${name} | Contact`,
+          seoDescription: `Get in touch with us.`,
+          content: jsonString([
+            {
+              type: 'contact_form',
+              header: 'Contact Us',
+              email: ownerEmail,
+              phone: '',
+              showMap: true
+            }
+          ])
+        }
+      });
+
       await tx.navigationMenu.create({
         data: {
           tenantId: tenant.id,

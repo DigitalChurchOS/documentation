@@ -91,8 +91,8 @@ export const ECCLESIA_THEME_SOURCE_PAGES: EcclesiaSourcePage[] = [
   sourcePage('contact', 'Contact', 'contact', 'contact.html', 'mail', 'Core', 'Contact, visit planning, and location details.'),
   sourcePage('login', 'Member Login / Register', 'login', 'login.html', 'log-in', 'Core', 'Member registration and authentication portal.'),
   sourcePage('account', 'Member Account', 'account', 'account.html', 'user', 'Core', 'Member profile management and account settings.'),
-  sourcePage('giving', 'Giving', 'giving', 'giving.html', 'hand-coins', 'Giving', 'Giving page with generosity prompts and secure giving entry.'),
-  sourcePage('giving-partnership', 'Partnership', 'partnership', 'giving-partnership.html', 'handshake', 'Giving', 'Partnership campaign and recurring support page.'),
+  sourcePage('giving', 'Giving', 'giving', 'giving-partnership.html', 'hand-coins', 'Giving', 'Giving page with generosity prompts and secure giving entry.'),
+  sourcePage('giving-partnership', 'Partnership', 'partnership', 'partnership.html', 'handshake', 'Giving', 'Partnership campaign and recurring support page.'),
   sourcePage('livestream-page', 'Livestream', 'livestream', 'livestream-page.html', 'radio-tower', 'Livestream', 'Live worship page with stream, prayer, and service actions.'),
   sourcePage('media-archive', 'Media Archive', 'media', 'media-archive.html', 'folder-play', 'Media', 'Media archive for videos, sermon clips, and collections.'),
   sourcePage('media-single', 'Media Single', 'media/sample-message', 'media-single.html', 'play-square', 'Media', 'Single media item with player, notes, and related content.'),
@@ -125,6 +125,14 @@ export const ECCLESIA_THEME_SOURCE_PAGES: EcclesiaSourcePage[] = [
   sourcePage('checkout', 'Checkout', 'store/checkout', 'checkout.html', 'credit-card', 'Store', 'Checkout form with shipping and payment fields.'),
   sourcePage('checkout-success', 'Order Confirmed', 'store/thank-you', 'checkout-success.html', 'check-circle', 'Store', 'Order confirmation receipt with tracking timeline.'),
   sourcePage('checkout-failed', 'Payment Failed', 'store/checkout-failed', 'checkout-failed.html', 'alert-triangle', 'Store', 'Payment declined error page with troubleshooting.'),
+  sourcePage('service-times', 'Service Times', 'service-times', 'service-times.html', 'clock', 'Core', 'Church service times and weekly rhythm.'),
+  sourcePage('plan-visit', 'Plan a Visit', 'plan-visit', 'plan-visit.html', 'map-pin', 'Core', 'First-time visitor planning page.'),
+  sourcePage('meetings', 'Meetings', 'meetings', 'meetings.html', 'video', 'Meetings', 'Live meetings and video gatherings.'),
+  sourcePage('announcements', 'Announcements', 'announcements', 'announcements.html', 'bell', 'Announcements', 'Church updates and notices.'),
+  sourcePage('branches', 'Branches', 'branches', 'branches.html', 'map', 'Branches', 'Multi-campus locations.'),
+  sourcePage('gallery', 'Gallery', 'gallery', 'gallery.html', 'images', 'Gallery', 'Photo and video galleries.'),
+  sourcePage('campaigns', 'Campaigns', 'campaigns', 'campaigns.html', 'award', 'Campaigns', 'Kingdom impact campaigns.'),
+  sourcePage('resources', 'Resources', 'resources', 'resources.html', 'download', 'Resources', 'Discipleship resources.'),
 ];
 
 export interface EcclesiaSectionTemplate {

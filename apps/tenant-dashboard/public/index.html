@@ -2195,8 +2195,8 @@
 
     .grid-layout {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
       margin-top: 12px;
     }
 
@@ -2503,21 +2503,120 @@
       font-weight: 800;
     }
 
-    /* Bedrock preview theme simulator styles */
+    /* Bedrock preview theme simulator and device switcher styles */
     .preview-modal-content {
-      max-width: 1000px;
-      width: 90%;
-      height: 85vh;
+      max-width: 1600px;
+      width: 98vw;
+      height: 95vh;
+      display: flex;
+      flex-direction: column;
     }
     
     .preview-frame-container {
       flex: 1;
       width: 100%;
-      background: white;
+      height: 100%;
+      background: #eaedf2;
       border-radius: var(--radius);
       overflow: hidden;
       display: flex;
       flex-direction: column;
+      position: relative;
+    }
+
+    .device-switcher {
+      display: flex;
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 8px;
+      gap: 4px;
+      margin-left: 20px;
+    }
+    
+    .device-btn {
+      background: none;
+      border: none;
+      color: #64748b;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    
+    .device-btn:hover {
+      color: #0f172a;
+      background: rgba(15, 23, 42, 0.05);
+    }
+    
+    .device-btn.active {
+      background: white;
+      color: #0f172a;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .preview-iframe-wrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #eaedf2;
+      overflow: auto;
+      padding: 20px;
+    }
+    
+    .preview-iframe {
+      border: none;
+      background: white;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      transition: width 0.3s ease, height 0.3s ease;
+      border-radius: 8px;
+    }
+    
+    .floating-edit-btn {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.4);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 10;
+    }
+    
+    .floating-edit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(249, 115, 22, 0.5);
+    }
+
+    /* Stale/inactive module card styles */
+    .cms-card.disabled-template {
+      opacity: 0.55;
+      filter: grayscale(90%);
+      position: relative;
+      cursor: not-allowed;
+      border-color: #cbd5e1;
+    }
+    .cms-card.disabled-template button,
+    .cms-card.disabled-template input {
+      pointer-events: none !important;
+      cursor: not-allowed !important;
     }
 
     .bedrock-header {
@@ -5361,7 +5460,7 @@ body.customizer-open { overflow: hidden; }
                   </button>
                   <button class="cms-nav-item" data-cms-tab="templates">
                     <i data-lucide="layout-template"></i>
-                    <span>Templates</span>
+                    <span>Dynamic Templates</span>
                   </button>
                   <button class="cms-nav-item" data-cms-tab="menus">
                     <i data-lucide="menu"></i>
@@ -5400,94 +5499,59 @@ body.customizer-open { overflow: hidden; }
                         <option value="updatedDesc">Recently Updated</option>
                         <option value="titleAsc">Title A-Z</option>
                         <option value="statusAsc">Status</option>
+                        <option value="seoFirst">SEO Attention</option>
                       </select>
                     </div>
                   </div>
                   <div class="pages-sections-container">
-                    <div style="margin-bottom: 32px;">
-                      <h3 style="margin: 0 0 12px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                        <i data-lucide="layout" style="width:16px;height:16px;color:var(--accent);"></i>
-                        <span>Main Pages</span>
-                      </h3>
-                      <div class="grid-layout" id="cmsMainPagesGrid"></div>
-                    </div>
                     <div>
-                      <h3 style="margin: 0 0 12px; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                        <i data-lucide="file-plus" style="width:16px;height:16px;color:var(--muted);"></i>
-                        <span>Assisting Pages</span>
-                      </h3>
-                      <div class="grid-layout" id="cmsAssistingPagesGrid"></div>
+                      <div class="grid-layout" id="cmsStaticPagesGrid"></div>
                     </div>
                   </div>
                 </div>
 
-                <!-- 2. TEMPLATES TAB -->
+                <!-- 2. DYNAMIC TEMPLATES TAB -->
                 <div id="cmsTemplatesTab" class="cms-tab-content hidden">
                   <div class="section-head">
                     <div>
-                      <h2>Templates</h2>
-                      <p>Manage layouts and header content for dynamic resource catalogs, media archives, store items, and event lists.</p>
+                      <h2>Dynamic Templates</h2>
+                      <p>Manage and preview dynamic module-backed website templates (livestream, blog, store, podcasts, etc.).</p>
                     </div>
                   </div>
-                  <div class="grid-layout" id="cmsTemplatesGrid"></div>
+                  <div class="cms-toolbar">
+                    <div class="field">
+                      <label for="cmsTemplateSearchInput">Search Templates</label>
+                      <input type="search" id="cmsTemplateSearchInput" class="form-control" placeholder="Search templates..." oninput="handleCmsPageSearch(this.value)">
+                    </div>
+                    <div class="cms-toolbar-actions">
+                      <select id="cmsTemplateSortSelect" class="form-control" style="width: 164px;" onchange="sortCmsPages(this.value)">
+                        <option value="updatedDesc">Recently Updated</option>
+                        <option value="titleAsc">Title A-Z</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="pages-sections-container">
+                    <div class="grid-layout" id="cmsDynamicTemplatesGrid"></div>
+                  </div>
                 </div>
 
                 <!-- 3. MENUS TAB -->
                 <div id="cmsMenusTab" class="cms-tab-content hidden">
                   <div class="section-head">
                     <div>
-                      <h2>Menu Builder</h2>
-                      <p>Drag pages from the available list into the menu zones below. Rearrange items by dragging within each menu.</p>
+                      <h2>Header Navigation Builder</h2>
+                      <p>Construct menus and links that direct site users to your pages.</p>
                     </div>
-                    <button class="btn primary" onclick="saveAllCmsMenus()"><i data-lucide="save"></i>Save All Menus</button>
+                    <button class="btn" onclick="addNewCmsMenuItem()"><i data-lucide="plus"></i>Add Menu Link</button>
                   </div>
-                  <div style="display:grid; grid-template-columns:280px 1fr; gap:24px; min-height:500px;">
-                    <!-- Left: Available Pages -->
-                    <div>
-                      <h3 style="font-size:14px; font-weight:600; margin:0 0 12px; display:flex; align-items:center; gap:6px;"><i data-lucide="layers" style="width:15px;height:15px;color:var(--accent);"></i>Available Pages</h3>
-                      <p class="muted" style="font-size:12px; margin:0 0 12px;">Drag pages into menus on the right.</p>
-                      <div id="cmsMenuAvailablePages" style="display:flex; flex-direction:column; gap:6px; max-height:600px; overflow-y:auto; padding-right:4px;"></div>
+                  <div style="max-width: 800px; display: flex; flex-direction: column; gap: 16px;">
+                    <div class="field">
+                      <label for="selectWebsiteNav">Choose Website Context</label>
+                      <select id="selectWebsiteNav" class="form-control" onchange="loadCmsNavigationMenu()"></select>
                     </div>
-                    <!-- Right: Menu Zones -->
-                    <div style="display:flex; flex-direction:column; gap:20px;">
-                      <div>
-                        <h3 style="font-size:14px; font-weight:600; margin:0 0 12px; color:var(--accent);">Header Menus</h3>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                          <div class="cms-menu-zone" data-menu-key="header">
-                            <div class="cms-menu-zone-label"><i data-lucide="navigation" style="width:14px;height:14px;"></i>Header Menu</div>
-                            <div class="cms-menu-zone-drop" data-menu-key="header"></div>
-                          </div>
-                          <div class="cms-menu-zone" data-menu-key="rail">
-                            <div class="cms-menu-zone-label"><i data-lucide="panel-left" style="width:14px;height:14px;"></i>Rail Menu</div>
-                            <div class="cms-menu-zone-drop" data-menu-key="rail"></div>
-                          </div>
-                          <div class="cms-menu-zone" data-menu-key="mobile-rail">
-                            <div class="cms-menu-zone-label"><i data-lucide="smartphone" style="width:14px;height:14px;"></i>Mobile Rail</div>
-                            <div class="cms-menu-zone-drop" data-menu-key="mobile-rail"></div>
-                          </div>
-                          <div class="cms-menu-zone" data-menu-key="mobile-drawer">
-                            <div class="cms-menu-zone-label"><i data-lucide="menu" style="width:14px;height:14px;"></i>Mobile Drawer</div>
-                            <div class="cms-menu-zone-drop" data-menu-key="mobile-drawer"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div>
-                        <h3 style="font-size:14px; font-weight:600; margin:0 0 12px; color:var(--muted);">Footer Menus</h3>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
-                          <div class="cms-menu-zone" data-menu-key="footer-1">
-                            <div class="cms-menu-zone-label"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i>Footer Menu 1</div>
-                            <div class="cms-menu-zone-drop" data-menu-key="footer-1"></div>
-                          </div>
-                          <div class="cms-menu-zone" data-menu-key="footer-2">
-                            <div class="cms-menu-zone-label"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i>Footer Menu 2</div>
-                            <div class="cms-menu-zone-drop" data-menu-key="footer-2"></div>
-                          </div>
-                          <div class="cms-menu-zone" data-menu-key="footer-3">
-                            <div class="cms-menu-zone-label"><i data-lucide="layout-grid" style="width:14px;height:14px;"></i>Footer Menu 3</div>
-                            <div class="cms-menu-zone-drop" data-menu-key="footer-3"></div>
-                          </div>
-                        </div>
-                      </div>
+                    <div id="cmsMenuItemsList" style="margin-top: 10px;"></div>
+                    <div class="row" style="justify-content: flex-end; margin-top: 10px;">
+                      <button class="btn primary" onclick="saveCmsNavigationMenu()"><i data-lucide="save"></i>Save</button>
                     </div>
                   </div>
                 </div>
@@ -13689,129 +13753,6 @@ body.customizer-open { overflow: hidden; }
     </div>
   </div>
 
-  <!-- EDIT PAGE CONTENT MODAL (Shopify Style) -->
-  <div class="modal-overlay" id="cmsPageContentModal">
-    <div class="modal-content" style="max-width: 680px; width: 90%;">
-      <div class="modal-header">
-        <h3 id="pageContentModalTitle">Edit Page Content</h3>
-        <button class="btn small" style="padding: 4px;" onclick="closeCmsModal('cmsPageContentModal')"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
-      </div>
-      <div class="modal-body" style="max-height: calc(100vh - 200px); overflow-y: auto; padding-right: 8px;">
-        <input type="hidden" id="pageContentModalId">
-        <input type="hidden" id="pageContentModalSlug">
-
-        <!-- 1. Fields for HOME Page (Hero block) -->
-        <div id="fieldsHome" class="hidden stack" style="gap: 12px;">
-          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">Hero Banner Content</h4>
-          <div class="field">
-            <label for="homeHeroTitle">Hero Headline</label>
-            <input type="text" id="homeHeroTitle" class="form-control">
-          </div>
-          <div class="field">
-            <label for="homeHeroSubtitle">Hero Subtitle</label>
-            <input type="text" id="homeHeroSubtitle" class="form-control">
-          </div>
-          <div class="field">
-            <label for="homeHeroButtonLabel">Button Label</label>
-            <input type="text" id="homeHeroButtonLabel" class="form-control">
-          </div>
-          <div class="field">
-            <label for="homeHeroButtonUrl">Button Link (URL)</label>
-            <input type="text" id="homeHeroButtonUrl" class="form-control">
-          </div>
-          <div class="field">
-            <label for="homeHeroBgImage">Hero Background Image URL</label>
-            <input type="text" id="homeHeroBgImage" class="form-control">
-          </div>
-        </div>
-
-        <!-- 2. Fields for ABOUT Page (Story, Vision, Mission, Values) -->
-        <div id="fieldsAbout" class="hidden stack" style="gap: 12px;">
-          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">About Church Details</h4>
-          <div class="field">
-            <label for="aboutHeading">About Us Page Title / Heading</label>
-            <input type="text" id="aboutHeading" class="form-control">
-          </div>
-          <div class="field">
-            <label for="aboutShortBio">Short Bio / Story Text</label>
-            <textarea id="aboutShortBio" class="form-control" style="min-height: 90px;"></textarea>
-          </div>
-          <div class="field">
-            <label for="aboutVision">Vision Statement</label>
-            <textarea id="aboutVision" class="form-control" style="min-height: 60px;"></textarea>
-          </div>
-          <div class="field">
-            <label for="aboutMission">Mission Statement</label>
-            <textarea id="aboutMission" class="form-control" style="min-height: 60px;"></textarea>
-          </div>
-          <div class="field">
-            <label for="aboutValues">Core Values (Comma separated)</label>
-            <input type="text" id="aboutValues" class="form-control">
-          </div>
-        </div>
-
-        <!-- 3. Fields for SERVICES Page (Service Times and address) -->
-        <div id="fieldsServices" class="hidden stack" style="gap: 12px;">
-          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">Service Rhythms & Address</h4>
-          <div class="field">
-            <label for="servicesTitle">Services Page Title</label>
-            <input type="text" id="servicesTitle" class="form-control">
-          </div>
-          <div class="field">
-            <label for="servicesSundayTimes">Sunday Services Schedule</label>
-            <input type="text" id="servicesSundayTimes" class="form-control">
-          </div>
-          <div class="field">
-            <label for="servicesMidweekTimes">Midweek & Youth Gatherings</label>
-            <input type="text" id="servicesMidweekTimes" class="form-control">
-          </div>
-          <div class="field">
-            <label for="servicesAddress">Physical Meeting Address</label>
-            <input type="text" id="servicesAddress" class="form-control">
-          </div>
-        </div>
-
-        <!-- 4. Fields for CONTACT Page (Email, Phone, Address, Map toggle) -->
-        <div id="fieldsContact" class="hidden stack" style="gap: 12px;">
-          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">Contact Information</h4>
-          <div class="field">
-            <label for="contactHeader">Contact Page Headline</label>
-            <input type="text" id="contactHeader" class="form-control">
-          </div>
-          <div class="field">
-            <label for="contactEmail">Email Address</label>
-            <input type="email" id="contactEmail" class="form-control">
-          </div>
-          <div class="field">
-            <label for="contactPhone">Phone Number</label>
-            <input type="text" id="contactPhone" class="form-control">
-          </div>
-          <div class="field" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-            <input type="checkbox" id="contactShowMap" style="width: auto; margin:0;">
-            <label for="contactShowMap" style="margin-bottom: 0;">Show Interactive Location Map</label>
-          </div>
-        </div>
-
-        <!-- 5. Default/Generic Page Fields (Assisting / other pages) -->
-        <div id="fieldsGeneric" class="hidden stack" style="gap: 12px;">
-          <h4 style="margin:0 0 8px; font-size:14px; font-weight:600; color:var(--accent);">Page Content</h4>
-          <div class="field">
-            <label for="genericTitle">Page Title</label>
-            <input type="text" id="genericTitle" class="form-control">
-          </div>
-          <div class="field">
-            <label for="genericBody">Page Body Content (Markdown/HTML support)</label>
-            <textarea id="genericBody" class="form-control" style="min-height: 200px;"></textarea>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" onclick="closeCmsModal('cmsPageContentModal')">Cancel</button>
-        <button class="btn primary" onclick="saveCmsPageContent()"><i data-lucide="save"></i>Save Content</button>
-      </div>
-    </div>
-  </div>
-
   <!-- REUSABLE BLOCK MODAL -->
   <div class="modal-overlay" id="cmsBlockModal">
     <div class="modal-content">
@@ -13846,13 +13787,23 @@ body.customizer-open { overflow: hidden; }
     <div class="modal-content preview-modal-content">
       <div class="modal-header">
         <h3 id="previewModalTitle">Bedrock Theme Live Preview</h3>
-        <div class="row" style="gap: 12px;">
+        <div class="row" style="gap: 12px; align-items: center;">
+          <div class="device-switcher" style="display: flex; gap: 4px; background: var(--panel-2); padding: 4px; border-radius: 8px;">
+            <button class="device-btn active" data-device="desktop" onclick="setPreviewDevice('desktop')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; background: white; color: #0f172a; border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1);"><i data-lucide="monitor" style="width:14px;height:14px;"></i>Desktop</button>
+            <button class="device-btn" data-device="tablet" onclick="setPreviewDevice('tablet')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; background: none; color: #64748b; border: none;"><i data-lucide="tablet" style="width:14px;height:14px;"></i>Tablet</button>
+            <button class="device-btn" data-device="mobile" onclick="setPreviewDevice('mobile')" style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; background: none; color: #64748b; border: none;"><i data-lucide="smartphone" style="width:14px;height:14px;"></i>Mobile</button>
+          </div>
           <span class="badge-status badge-published" id="previewSlugBadge">/welcome</span>
           <button class="btn small" style="padding: 4px;" onclick="closeCmsModal('cmsPreviewModal')"><i data-lucide="x" style="width:16px;height:16px;"></i></button>
         </div>
       </div>
-      <div class="modal-body" style="padding: 16px; background: #eaedf2; display: flex; flex-direction: column;">
-        <div class="preview-frame-container" id="previewFrameContainer"></div>
+      <div class="modal-body" style="padding: 0; background: #eaedf2; display: flex; flex-direction: column; flex: 1; overflow: hidden; position: relative;">
+        <div class="preview-iframe-wrapper" style="flex: 1; display: flex; justify-content: center; align-items: center; background: #eaedf2; overflow: auto; padding: 20px; position: relative;">
+          <iframe id="cmsPreviewIframe" class="preview-iframe" style="border: none; background: white; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: width 0.3s, height 0.3s; width: 100%; height: 100%;"></iframe>
+          <button class="floating-edit-btn" id="cmsPreviewCustomizeBtn" style="position: absolute; bottom: 24px; right: 24px; background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 30px; font-weight: 700; font-size: 14px; box-shadow: 0 10px 15px -3px rgba(249, 115, 22, 0.4); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s; z-index: 10;">
+            <i data-lucide="edit-3" style="width:16px;height:16px;"></i> Customize Page
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -14785,7 +14736,7 @@ body.customizer-open { overflow: hidden; }
 
     const modules = [
       { key: 'domain-tenant-management', name: 'Church Details', icon: 'sliders-horizontal', category: 'Churchfront', desc: 'Configure domains, branding, modules, and launch readiness.', workspaces: ['Church Identity', 'Branding', 'Domain Setup'], settings: [] },
-      { key: 'cms', resourceKey: 'core-website-cms', entitlementKey: 'website-cms', apiBase: '/api/cms', name: 'Churchfront', icon: 'layout-template', category: 'Churchfront', desc: 'Create pages, manage navigation, publish content, reuse blocks, and control the public church website.', workspaces: ['Pages', 'Templates', 'Menus', 'Footer', 'Reusable Sections'], settings: [] },
+      { key: 'cms', resourceKey: 'core-website-cms', entitlementKey: 'website-cms', apiBase: '/api/cms', name: 'Churchfront', icon: 'layout-template', category: 'Churchfront', desc: 'Create pages, manage navigation, publish content, reuse blocks, and control the public church website.', workspaces: ['Pages', 'Page Templates', 'Navigation', 'Footer', 'Reusable Sections'], settings: [] },
       { key: 'tenant-themes', name: 'Themes', icon: 'palette', category: 'Churchfront', desc: 'Browse and install clean premium website theme templates designed for your church.', workspaces: ['Browse Themes'], settings: [] },
       { key: 'theme-engine', name: 'Styling', icon: 'brush', category: 'Churchfront', desc: 'Customize themes, typography, colors, layouts, and CSS.', workspaces: ['Overview', 'Customize Colors', 'Typography', 'Logo & Layouts', 'Templates', 'Custom CSS', 'Settings', 'Audit Logs'], settings: [] },
       { key: 'tenant-plugins', name: 'Plugins', icon: 'toy-brick', category: 'Churchfront', desc: 'Activate dynamic features and plugin extensions to expand your platform.', workspaces: ['Browse Plugins'], settings: [] },
@@ -21440,11 +21391,12 @@ body.customizer-open { overflow: hidden; }
     }
 
     async function loadAllCmsData() {
-      const [pagesRes, blocksRes, globalContentRes, contentDesignRes] = await Promise.all([
+      const [pagesRes, blocksRes, globalContentRes, contentDesignRes, modulesRes] = await Promise.all([
         cmsApiRequest('GET', '/api/cms/pages'),
         cmsApiRequest('GET', '/api/cms/reusable-blocks'),
         cmsApiRequest('GET', '/api/cms/global-content'),
-        cmsApiRequest('GET', '/api/cms/content-design')
+        cmsApiRequest('GET', '/api/cms/content-design'),
+        cmsApiRequest('GET', '/api/tenant/modules')
       ]);
       if (pagesRes && pagesRes.data) {
         cmsState.pages = pagesRes.data;
@@ -21457,6 +21409,11 @@ body.customizer-open { overflow: hidden; }
       }
       if (contentDesignRes && contentDesignRes.data) {
         cmsState.contentDesign = contentDesignRes.data;
+      }
+      if (modulesRes && modulesRes.data) {
+        cmsState.tenantModules = modulesRes.data;
+      } else {
+        cmsState.tenantModules = [];
       }
 
       const websiteIds = Array.from(new Set(cmsState.pages.map(p => p.websiteId)));
@@ -21799,6 +21756,12 @@ body.customizer-open { overflow: hidden; }
 
     function switchCmsTab(tabName) {
       cmsState.activeTab = tabName;
+      cmsState.activePageSearch = '';
+      const pageSearchInput = document.getElementById('cmsPageSearchInput');
+      if (pageSearchInput) pageSearchInput.value = '';
+      const templateSearchInput = document.getElementById('cmsTemplateSearchInput');
+      if (templateSearchInput) templateSearchInput.value = '';
+
       document.querySelectorAll('#cmsConsoleContainer .cms-nav-item').forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.cmsTab === tabName);
       });
@@ -21807,7 +21770,7 @@ body.customizer-open { overflow: hidden; }
       });
       
       if (tabName === 'pages') renderCmsPagesGrid();
-      else if (tabName === 'templates') renderCmsTemplates();
+      else if (tabName === 'templates') renderCmsPagesGrid();
       else if (tabName === 'menus') loadCmsNavigationMenu();
       else if (tabName === 'footer') loadCmsFooterConfig();
       else if (tabName === 'blocks') {
@@ -21935,308 +21898,158 @@ body.customizer-open { overflow: hidden; }
       return Boolean(page.seoTitle && page.seoDescription);
     }
 
-    function isAssistingPage(page) {
-      const slug = String(page.slug || '').toLowerCase().trim();
-      const title = String(page.title || '').toLowerCase().trim();
-      const assistingSlugs = [
-        'privacy', 'terms', 'legal', 'success', 'confirmed', 'checkout', 'cart',
-        'payment', 'order', 'cookie', 'policy', 'successful-payment', 'order-confirmed', 'shopping-cart'
-      ];
-      return assistingSlugs.some(s => slug.includes(s) || title.includes(s));
-    }
+    const staticPagesCatalog = [
+      { slug: '', title: 'Home', icon: 'home', description: 'Your church homepage with heroes, service times, and next steps.' },
+      { slug: 'about', title: 'About Us', icon: 'info', description: 'Mission, story, leadership, and church identity page.' },
+      { slug: 'contact', title: 'Contact', icon: 'mail', description: 'Contact form, maps, phone, email, and visitor capture.' },
+      { slug: 'service-times', title: 'Service Times', icon: 'clock', description: 'Church service times, gatherings, and weekly rhythm.' },
+      { slug: 'plan-visit', title: 'Plan a Visit', icon: 'map-pin', description: 'First-time visitor planning page and welcome flow.' },
+      { slug: 'account', title: 'Member Account', icon: 'user', description: 'Personalized member portal, profile, and settings.' },
+      { slug: 'login', title: 'Login / Register', icon: 'log-in', description: 'Member authentication, registration, and login portal.' },
+      { slug: 'giving', title: 'Giving', icon: 'hand-coins', description: 'Tithes, offerings, campaigns, and secure giving page.' },
+      { slug: 'partnership', title: 'Partnership', icon: 'handshake', description: 'Dedicated kingdom partnership campaign page.' }
+    ];
 
-    function isDefaultPage(page) {
-      const slug = String(page.slug || '').toLowerCase().trim();
-      return ['home', '', 'about', 'contact'].includes(slug);
-    }
-
-    function isStaticPage(page) {
-      const slug = String(page.slug || '').toLowerCase().trim();
-      const staticSlugs = [
-        'home', '', 'about', 'contact', 'livestream', 'live-stream', 'live',
-        'worship', 'salvation', 'leadership', 'giving', 'volunteer',
-        'first-time-visitor', 'first-time', 'visitor', 'services'
-      ];
-      return staticSlugs.includes(slug);
-    }
-
-    function isDynamicTemplatePage(page) {
-      const slug = String(page.slug || '').toLowerCase().trim();
-      const dynamicSlugs = [
-        'events', 'prayer', 'courses', 'branches', 'announcements',
-        'sermons', 'groups', 'blog', 'podcast', 'library', 'media',
-        'store', 'testimonies'
-      ];
-      return dynamicSlugs.some(s => slug === s || slug.startsWith(s + '-'));
-    }
+    const dynamicTemplatesCatalog = [
+      { slug: 'livestream', title: 'Livestream', icon: 'video', module: 'livestream', description: 'Live player, countdown, chat, and notes.' },
+      { slug: 'blog', title: 'Blogs', icon: 'file-text', module: 'dynamic-blog-publishing-engine', description: 'Church blog, devotionals, and newsletters.' },
+      { slug: 'store', title: 'Store', icon: 'shopping-bag', module: 'store', description: 'Product catalog, cart, and secure checkout.' },
+      { slug: 'podcast', title: 'Podcasts', icon: 'podcast', module: 'podcast', description: 'Podcast episodes and subscription options.' },
+      { slug: 'courses', title: 'Courses', icon: 'graduation-cap', module: 'lms', description: 'Discipleship tracks and lesson progress.' },
+      { slug: 'cells', title: 'Groups', icon: 'users', module: 'groups', description: 'Small groups and connect group directories.' },
+      { slug: 'worship', title: 'Worship', icon: 'music', module: 'worship', description: 'Worship resources, chord sheets, and audio.' },
+      { slug: 'prayer', title: 'Prayer & Testimony', icon: 'heart', module: 'prayer', description: 'Prayer requests and testimony walls.' },
+      { slug: 'meetings', title: 'Meetings', icon: 'video', module: 'live-meetings', description: 'Live virtual meetings and classes.' },
+      { slug: 'events', title: 'Events', icon: 'calendar', module: 'events', description: 'Church events calendar and registration.' },
+      { slug: 'sermons', title: 'Sermons', icon: 'mic', module: 'media-sermons', description: 'Teachings and messages archive.' },
+      { slug: 'services', title: 'Services', icon: 'calendar-days', module: 'church-services', description: 'Gatherings schedule and visiting details.' },
+      { slug: 'announcements', title: 'Announcements', icon: 'bell', module: 'announcements', description: 'Latest church updates and notification feeds.' },
+      { slug: 'media', title: 'Media Library', icon: 'folder-play', module: 'media', description: 'Dynamic video and media player collections.' },
+      { slug: 'ministries', title: 'Ministries', icon: 'network', module: 'ministries', description: 'Ministry departments and serve signups.' },
+      { slug: 'branches', title: 'Branches', icon: 'map', module: 'multi-branch', description: 'Multi-campus locations and map finders.' },
+      { slug: 'gallery', title: 'Gallery', icon: 'images', module: 'gallery', description: 'Photo albums and video highlight reels.' },
+      { slug: 'campaigns', title: 'Campaigns', icon: 'award', module: 'giving', description: 'Generosity campaign listings and progress trackers.' },
+      { slug: 'resources', title: 'Resources', icon: 'download', module: 'library', description: 'Discipleship guides, eBooks, and resource center downloads.' }
+    ];
 
     window.togglePageActive = async function(pageId, isChecked) {
-      const page = cmsState.pages.find(p => p.id === pageId);
-      if (!page) return;
       const status = isChecked ? 'published' : 'draft';
       const res = await cmsApiRequest('PATCH', `/api/cms/pages/${pageId}`, { status });
-      if (res && res.ok) {
-        showToast(`Page "${page.title}" ${isChecked ? 'activated' : 'deactivated'}.`);
+      if (res && res.data) {
+        showToast(`Page status updated to ${status}.`);
         await loadAllCmsData();
         renderCmsPagesGrid();
       } else {
-        alert(res?.data?.error || 'Failed to toggle page status.');
+        alert('Failed to update page status.');
       }
     };
 
-    window.provisionAssistingPage = async function(slug) {
-      const catalogItem = assistingPagesCatalog.find(item => item.slug === slug);
+    window.provisionStaticPage = async function(slug) {
+      const catalogItem = staticPagesCatalog.find(item => item.slug === slug);
       if (!catalogItem) return;
       const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
       if (!websiteId) {
         alert('Load a website context before provisioning page.');
         return;
       }
+      
       const payload = {
         websiteId,
         title: catalogItem.title,
         slug: catalogItem.slug,
-        isHome: false,
+        isHome: catalogItem.slug === '',
         status: 'published',
-        content: [{ type: 'text_section', heading: catalogItem.title, content: catalogItem.content }],
-        seoTitle: `${catalogItem.title} | ${localCmsState.websiteTitle}`,
+        content: [],
+        seoTitle: `${catalogItem.title} | ${localCmsState.websiteTitle || 'Church'}`,
         seoDescription: catalogItem.title
       };
+      
       const res = await cmsApiRequest('POST', '/api/cms/pages', payload);
       if (res && res.data) {
-        showToast(`Page "${catalogItem.title}" provisioned and activated.`);
+        showToast(`Page "${catalogItem.title}" activated.`);
         await loadAllCmsData();
         renderCmsPagesGrid();
       } else {
-        alert('Failed to provision page.');
+        alert('Failed to activate page.');
       }
     };
 
-    const assistingPagesCatalog = [
-      { slug: 'privacy', title: 'Privacy Policy', content: 'Our Privacy Policy details how we protect your personal information...' },
-      { slug: 'terms', title: 'Terms of Service', content: 'By using our site, you agree to our Terms of Service...' },
-      { slug: 'payment-success', title: 'Successful Payment', content: 'Thank you for your generous gift. Your transaction has been completed successfully.' },
-      { slug: 'order-confirmed', title: 'Order Confirmed', content: 'Thank you for your order! We have confirmed your purchase and are processing it now.' },
-      { slug: 'checkout', title: 'Checkout', content: 'Please review and finalize your details to complete your order.' },
-      { slug: 'shopping-cart', title: 'Shopping Cart', content: 'Review the items in your cart before checking out.' }
-    ];
-
-    const dynamicTemplatesCatalog = [
-      { slug: 'events', title: 'Events', icon: 'calendar-days', key: 'events.archive', scope: 'Event directories', description: 'Archive listing for upcoming events, registrations, and event detail pages.', seoDescription: 'Upcoming church events, registrations, and event details.', content: [{ type: 'hero', title: 'Upcoming Events', subtitle: 'Join us for worship, conferences, and community gatherings.', buttonText: 'Register Now', buttonUrl: '#events' }, { type: 'dynamic_events_grid', sourceModule: 'Events' }] },
-      { slug: 'sermons', title: 'Sermons & Media', icon: 'clapperboard', key: 'media.archive', scope: 'Sermons catalog', description: 'Archive listing for sermon replays, series browsing, and media library.', seoDescription: 'Watch and listen to sermons, series, and media content.', content: [{ type: 'dynamic_sermon_grid', sourceModule: 'Sermons / Media', filters: ['series', 'speaker', 'topic'] }] },
-      { slug: 'blog', title: 'Blog', icon: 'file-text', key: 'blog.archive', scope: 'Blog channels & posts', description: 'Archive listing for blog articles, devotionals, and newsletter posts.', seoDescription: 'Read the latest articles, devotionals, and updates.', content: [{ type: 'text_section', heading: 'Our Blog', content: 'Read the latest updates from our church community.' }] },
-      { slug: 'groups', title: 'Groups', icon: 'network', key: 'groups.archive', scope: 'Group finder', description: 'Archive directory for small groups, connect groups, and life groups.', seoDescription: 'Find and join a small group near you.', content: [{ type: 'dynamic_group_finder', sourceModule: 'Groups', fields: ['location', 'day', 'leader'] }] },
-      { slug: 'courses', title: 'Discipleship Courses', icon: 'graduation-cap', key: 'courses.archive', scope: 'Courses catalog', description: 'Archive listing for discipleship tracks, lesson players, and certificates.', seoDescription: 'Explore discipleship courses and grow in your faith.', content: [{ type: 'dynamic_course_list', sourceModule: 'Courses' }] },
-      { slug: 'branches', title: 'Branches', icon: 'map-pin', key: 'branches.archive', scope: 'Campus locator', description: 'Archive directory for church campuses, service times, and campus pastors.', seoDescription: 'Find a church campus near you.', content: [{ type: 'dynamic_branch_finder', sourceModule: 'Branches', fields: ['pastor', 'serviceTimes', 'map'] }] },
-      { slug: 'announcements', title: 'Announcements', icon: 'bell', key: 'announcements.archive', scope: 'Church updates', description: 'Archive feed for church announcements, alerts, and featured updates.', seoDescription: 'Stay updated with the latest church announcements.', content: [{ type: 'dynamic_announcement_list', sourceModule: 'Announcements' }] },
-      { slug: 'prayer', title: 'Prayer & Testimonies', icon: 'heart', key: 'prayer.archive', scope: 'Prayer wall', description: 'Public prayer request wall, testimony submissions, and prayer sessions.', seoDescription: 'Submit prayer requests and share testimonies.', content: [{ type: 'hero', title: 'Prayer & Testimonies', subtitle: 'Submit prayer requests and share what God has done.', buttonText: 'Request Prayer', buttonUrl: '#prayer-request' }, { type: 'dynamic_prayer_wall', sourceModule: 'Prayer' }] },
-      { slug: 'podcast', title: 'Podcasts', icon: 'mic', key: 'podcast.archive', scope: 'Podcasts RSS page', description: 'Archive feed for podcast episodes, show channels, and audio content.', seoDescription: 'Listen to our podcast episodes and audio content.', content: [{ type: 'text_section', heading: 'Podcasts', content: 'Listen to the latest podcast episodes.' }] },
-      { slug: 'library', title: 'Digital Library', icon: 'book-open', key: 'library.archive', scope: 'Resource downloads', description: 'Archive for digital books, sermon outlines, and downloadable resources.', seoDescription: 'Access books, resources, and study materials.', content: [{ type: 'text_section', heading: 'Digital Library', content: 'Browse and download study materials and resources.' }] },
-      { slug: 'store', title: 'E-Commerce Store', icon: 'shopping-cart', key: 'store.archive', scope: 'Products list', description: 'Archive listing for products, merchandise, and store checkout.', seoDescription: 'Browse and purchase church merchandise and resources.', content: [{ type: 'text_section', heading: 'Store', content: 'Support the ministry by purchasing items.' }] }
-    ];
-
-    window.toggleTemplatePageActive = async function(pageId, isChecked) {
-      const page = cmsState.pages.find(p => p.id === pageId);
-      if (!page) return;
-      const status = isChecked ? 'published' : 'draft';
-      const res = await cmsApiRequest('PATCH', `/api/cms/pages/${pageId}`, { status });
-      if (res && res.ok) {
-        showToast(`Template "${page.title}" ${isChecked ? 'activated' : 'deactivated'}.`);
-        await loadAllCmsData();
-        renderCmsTemplates();
-      } else {
-        alert(res?.data?.error || 'Failed to toggle template status.');
-      }
-    };
-
-    window.provisionTemplatePage = async function(slug) {
+    window.provisionDynamicPage = async function(slug) {
       const catalogItem = dynamicTemplatesCatalog.find(item => item.slug === slug);
       if (!catalogItem) return;
       const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
       if (!websiteId) {
-        alert('Load a website context before provisioning template page.');
+        alert('Load a website context before provisioning page.');
         return;
       }
+      
       const payload = {
         websiteId,
         title: catalogItem.title,
         slug: catalogItem.slug,
         isHome: false,
         status: 'published',
-        content: catalogItem.content,
-        seoTitle: `${catalogItem.title} | ${localCmsState.websiteTitle}`,
-        seoDescription: catalogItem.seoDescription || catalogItem.title
+        content: [],
+        seoTitle: `${catalogItem.title} | ${localCmsState.websiteTitle || 'Church'}`,
+        seoDescription: catalogItem.title
       };
+      
       const res = await cmsApiRequest('POST', '/api/cms/pages', payload);
       if (res && res.data) {
-        showToast(`Template "${catalogItem.title}" provisioned and activated.`);
-        await loadAllCmsData();
-        renderCmsTemplates();
-      } else {
-        alert('Failed to provision template page.');
-      }
-    };
-
-    window.openCmsPageContentEditor = function(pageId) {
-      const page = cmsState.pages.find(p => p.id === pageId);
-      if (!page) return;
-      
-      document.getElementById('pageContentModalId').value = page.id;
-      const slug = String(page.slug || '').toLowerCase().trim();
-      document.getElementById('pageContentModalSlug').value = slug;
-      
-      // Hide all fieldsets first
-      ['fieldsHome', 'fieldsAbout', 'fieldsServices', 'fieldsContact', 'fieldsGeneric'].forEach(id => {
-        document.getElementById(id)?.classList.add('hidden');
-      });
-      
-      const content = typeof page.content === 'string' ? parseMaybeJson(page.content, []) : (page.content || []);
-      
-      if (slug === 'home' || slug === '') {
-        document.getElementById('fieldsHome').classList.remove('hidden');
-        const heroBlock = content.find(b => b.type === 'hero') || {};
-        const data = heroBlock.data || heroBlock.properties || heroBlock || {};
-        document.getElementById('homeHeroTitle').value = data.title || '';
-        document.getElementById('homeHeroSubtitle').value = data.subtitle || '';
-        document.getElementById('homeHeroButtonLabel').value = data.buttonText || data.buttonLabel || '';
-        document.getElementById('homeHeroButtonUrl').value = data.buttonUrl || data.buttonLink || '';
-        document.getElementById('homeHeroBgImage').value = data.bgImage || data.imageUrl || '';
-      } else if (slug === 'about') {
-        document.getElementById('fieldsAbout').classList.remove('hidden');
-        const aboutBlock = content.find(b => b.type === 'about_template') || {};
-        const data = aboutBlock.data || aboutBlock.properties || aboutBlock || {};
-        document.getElementById('aboutHeading').value = data.headline || data.heading || '';
-        document.getElementById('aboutShortBio').value = data.storyText || data.text || '';
-        document.getElementById('aboutVision').value = data.visionText || '';
-        document.getElementById('aboutMission').value = data.missionText || '';
-        document.getElementById('aboutValues').value = Array.isArray(data.valuesList) ? data.valuesList.join(', ') : (data.valuesList || '');
-      } else if (slug === 'services') {
-        document.getElementById('fieldsServices').classList.remove('hidden');
-        const timesBlock = content.find(b => b.type === 'service_times') || {};
-        const data = timesBlock.data || timesBlock.properties || timesBlock || {};
-        document.getElementById('servicesTitle').value = page.title || '';
-        document.getElementById('servicesSundayTimes').value = data.sundayTimes || '';
-        document.getElementById('servicesMidweekTimes').value = data.midweekTimes || '';
-        document.getElementById('servicesAddress').value = data.address || '';
-      } else if (slug === 'contact') {
-        document.getElementById('fieldsContact').classList.remove('hidden');
-        const contactBlock = content.find(b => b.type === 'contact_form') || {};
-        const data = contactBlock.data || contactBlock.properties || contactBlock || {};
-        document.getElementById('contactHeader').value = data.header || data.headline || '';
-        document.getElementById('contactEmail').value = data.email || '';
-        document.getElementById('contactPhone').value = data.phone || '';
-        document.getElementById('contactShowMap').checked = data.showMap !== false;
-      } else {
-        document.getElementById('fieldsGeneric').classList.remove('hidden');
-        document.getElementById('genericTitle').value = page.title || '';
-        const textBlock = content.find(b => b.type === 'text_section' || b.type === 'prose') || {};
-        const data = textBlock.data || textBlock.properties || textBlock || {};
-        document.getElementById('genericBody').value = data.content || data.text || (typeof page.content === 'string' && !page.content.startsWith('[') ? page.content : '');
-      }
-      
-      document.getElementById('cmsPageContentModal').style.display = 'flex';
-      refreshIcons();
-    };
-
-    window.saveCmsPageContent = async function() {
-      const pageId = document.getElementById('pageContentModalId').value;
-      const slug = document.getElementById('pageContentModalSlug').value;
-      const page = cmsState.pages.find(p => p.id === pageId);
-      if (!page) return;
-      
-      let nextContent = [];
-      const currentContent = typeof page.content === 'string' ? parseMaybeJson(page.content, []) : (page.content || []);
-      let nextTitle = page.title;
-      
-      if (slug === 'home' || slug === '') {
-        const heroBlock = currentContent.find(b => b.type === 'hero') || { type: 'hero' };
-        heroBlock.title = document.getElementById('homeHeroTitle').value.trim();
-        heroBlock.subtitle = document.getElementById('homeHeroSubtitle').value.trim();
-        heroBlock.buttonText = document.getElementById('homeHeroButtonLabel').value.trim();
-        heroBlock.buttonUrl = document.getElementById('homeHeroButtonUrl').value.trim();
-        heroBlock.bgImage = document.getElementById('homeHeroBgImage').value.trim();
-        
-        nextContent = [heroBlock, ...currentContent.filter(b => b.type !== 'hero')];
-      } else if (slug === 'about') {
-        const aboutBlock = currentContent.find(b => b.type === 'about_template') || { type: 'about_template' };
-        aboutBlock.headline = document.getElementById('aboutHeading').value.trim();
-        aboutBlock.storyText = document.getElementById('aboutShortBio').value.trim();
-        aboutBlock.visionText = document.getElementById('aboutVision').value.trim();
-        aboutBlock.missionText = document.getElementById('aboutMission').value.trim();
-        aboutBlock.valuesList = document.getElementById('aboutValues').value.split(',').map(v => v.trim()).filter(Boolean);
-        
-        nextContent = [aboutBlock, ...currentContent.filter(b => b.type !== 'about_template')];
-      } else if (slug === 'services') {
-        nextTitle = document.getElementById('servicesTitle').value.trim();
-        const timesBlock = currentContent.find(b => b.type === 'service_times') || { type: 'service_times' };
-        timesBlock.sundayTimes = document.getElementById('servicesSundayTimes').value.trim();
-        timesBlock.midweekTimes = document.getElementById('servicesMidweekTimes').value.trim();
-        timesBlock.address = document.getElementById('servicesAddress').value.trim();
-        
-        nextContent = [timesBlock, ...currentContent.filter(b => b.type !== 'service_times')];
-      } else if (slug === 'contact') {
-        const contactBlock = currentContent.find(b => b.type === 'contact_form') || { type: 'contact_form' };
-        contactBlock.header = document.getElementById('contactHeader').value.trim();
-        contactBlock.email = document.getElementById('contactEmail').value.trim();
-        contactBlock.phone = document.getElementById('contactPhone').value.trim();
-        contactBlock.showMap = document.getElementById('contactShowMap').checked;
-        
-        nextContent = [contactBlock, ...currentContent.filter(b => b.type !== 'contact_form')];
-      } else {
-        nextTitle = document.getElementById('genericTitle').value.trim();
-        const bodyContent = document.getElementById('genericBody').value;
-        const textBlock = {
-          type: 'text_section',
-          heading: nextTitle,
-          content: bodyContent
-        };
-        nextContent = [textBlock];
-      }
-      
-      const payload = {
-        title: nextTitle,
-        content: nextContent
-      };
-      
-      const res = await cmsApiRequest('PATCH', `/api/cms/pages/${pageId}`, payload);
-      if (res && res.data) {
-        showToast('Page content saved successfully.');
-        closeCmsModal('cmsPageContentModal');
+        showToast(`Dynamic page "${catalogItem.title}" provisioned.`);
         await loadAllCmsData();
         renderCmsPagesGrid();
+        return res.data.id;
       } else {
-        alert(res?.data?.error || 'Failed to save page content.');
+        alert('Failed to provision dynamic page.');
+        return null;
       }
     };
 
-    window.openTemplateSettings = function(key) {
-      switchCmsTab('blocks');
-      setTimeout(() => {
-        const select = document.getElementById('cmsContentDesignTemplate');
-        if (select) {
-          select.value = key;
-          loadCmsContentDesignForm();
-          select.scrollIntoView({ behavior: 'smooth' });
-          select.style.border = '2px solid var(--accent)';
-          setTimeout(() => select.style.border = '', 1500);
+    window.openDynamicCmsPageContentEditor = async function(slug) {
+      const page = cmsState.pages.find(p => String(p.slug || '').toLowerCase().trim() === slug);
+      if (page) {
+        openCmsPageContentEditor(page.id);
+      } else {
+        const newPageId = await window.provisionDynamicPage(slug);
+        if (newPageId) {
+          openCmsPageContentEditor(newPageId);
         }
-      }, 200);
+      }
+    };
+
+    window.openDynamicCmsLivePreview = async function(slug) {
+      const page = cmsState.pages.find(p => String(p.slug || '').toLowerCase().trim() === slug);
+      if (page) {
+        openCmsLivePreview(page.id);
+      } else {
+        const newPageId = await window.provisionDynamicPage(slug);
+        if (newPageId) {
+          openCmsLivePreview(newPageId);
+        }
+      }
+    };
+
+    window.openDynamicCmsPageDetailsModal = async function(slug) {
+      const page = cmsState.pages.find(p => String(p.slug || '').toLowerCase().trim() === slug);
+      if (page) {
+        openCmsPageDetailsModal(page.id);
+      } else {
+        const newPageId = await window.provisionDynamicPage(slug);
+        if (newPageId) {
+          openCmsPageDetailsModal(newPageId);
+        }
+      }
     };
 
     function renderCmsPagesGrid() {
-      const mainGrid = document.getElementById('cmsMainPagesGrid');
-      const assistingGrid = document.getElementById('cmsAssistingPagesGrid');
-      if (!mainGrid || !assistingGrid) return;
-      
-      let filtered = [...cmsState.pages];
-      if (cmsState.activePageFilter === 'published') {
-        filtered = cmsState.pages.filter(p => p.status === 'published');
-      } else if (cmsState.activePageFilter === 'draft') {
-        filtered = cmsState.pages.filter(p => p.status === 'draft');
-      }
+      const staticGrid = document.getElementById('cmsStaticPagesGrid');
+      const dynamicGrid = document.getElementById('cmsDynamicTemplatesGrid');
+      if (!staticGrid || !dynamicGrid) return;
 
+      let filteredPages = [...cmsState.pages];
       if (cmsState.activePageSearch) {
-        filtered = filtered.filter(page => {
+        filteredPages = filteredPages.filter(page => {
           const haystack = [page.title, page.slug, page.seoTitle, page.seoDescription, page.seoKeywords]
             .filter(Boolean)
             .join(' ')
@@ -22245,162 +22058,226 @@ body.customizer-open { overflow: hidden; }
         });
       }
 
-      filtered.sort((a, b) => {
+      const sortHelper = (a, b) => {
         if (cmsState.activePageSort === 'titleAsc') return String(a.title || '').localeCompare(String(b.title || ''));
         if (cmsState.activePageSort === 'statusAsc') return String(a.status || '').localeCompare(String(b.status || ''));
+        if (cmsState.activePageSort === 'seoFirst') return Number(pageSeoReady(a)) - Number(pageSeoReady(b));
         return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
-      });
+      };
 
-      const mainPages = filtered.filter(p => !isAssistingPage(p) && !isDynamicTemplatePage(p));
-      const existingAssistingPages = filtered.filter(p => isAssistingPage(p) && !isDynamicTemplatePage(p));
+      // 1. Render Static Pages
+      let displayedStatic = staticPagesCatalog.map(catItem => {
+        const page = filteredPages.find(p => String(p.slug || '').toLowerCase().trim() === catItem.slug);
+        const isDefaultPage = ['', 'about', 'service-times', 'contact'].includes(catItem.slug);
+        const isPub = isDefaultPage ? true : (page ? page.status === 'published' : false);
 
-      // 1. Render Main Pages
-      if (mainPages.length === 0) {
-        mainGrid.innerHTML = `<div class="empty-state" style="grid-column: 1 / -1;"><p>No main pages found.</p></div>`;
-      } else {
-        mainGrid.innerHTML = mainPages.map(page => {
-          const isPub = page.status === 'published';
-          const blockCount = parseMaybeJson(page.content, []).length;
-          const isDefault = isDefaultPage(page);
-          
-          const toggleHtml = isDefault 
-            ? `<span class="badge-status badge-published" style="font-size:11px;">Default Page</span>`
-            : `
-              <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle; margin-right:8px;">
-                <input type="checkbox" ${isPub ? 'checked' : ''} onchange="togglePageActive('${page.id}', this.checked)" style="opacity:0; width:0; height:0;">
-                <span class="slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
-              </label>
-              <span style="font-size:12px; color:var(--muted); vertical-align:middle;">${isPub ? 'Active' : 'Inactive'}</span>
-            `;
+        if (cmsState.activePageFilter === 'published' && !isPub) return null;
+        if (cmsState.activePageFilter === 'draft' && (!isDefaultPage && (!page || page.status !== 'draft'))) return null;
 
-          return `
-            <div class="cms-card">
-              <div class="cms-card-header">
-                <div>
-                  <h3 class="cms-card-title">${escapeHtml(page.title)} ${page.isHome ? '<span style="color:var(--accent); font-size:12px;">(Home)</span>' : ''}</h3>
-                  <span class="cms-card-slug">${escapeHtml(cmsDisplaySlug(page.slug))}</span>
-                </div>
-                <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page.status}</span>
-              </div>
-              <p class="muted" style="font-size:12px; margin:0 0 12px 0;">${blockCount} content block${blockCount === 1 ? '' : 's'} · Updated ${page.updatedAt ? new Date(page.updatedAt).toLocaleDateString() : 'recently'}</p>
-              <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
-                <div class="row" style="align-items:center;">
-                  ${toggleHtml}
-                </div>
-                <div class="row" style="gap: 8px;">
-                  <button class="btn small primary icon-only" onclick="openCmsPageContentEditor('${page.id}')" title="Edit Content" aria-label="Edit Content ${escapeHtml(page.title)}"><i data-lucide="pencil"></i></button>
-                  <button class="btn small icon-only" onclick="openCmsLivePreview('${page.id}')" title="Preview" aria-label="Preview ${escapeHtml(page.title)}"><i data-lucide="eye"></i></button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
+        const toggleAction = isDefaultPage 
+          ? '' 
+          : (page 
+            ? `togglePageActive('${page.id}', this.checked)`
+            : `provisionStaticPage('${catItem.slug}')`);
 
-      // 2. Render Assisting Pages
-      const allAssistingHtml = assistingPagesCatalog.map(catItem => {
-        const page = existingAssistingPages.find(p => String(p.slug || '').toLowerCase().trim() === catItem.slug);
-        const isPub = page ? page.status === 'published' : false;
-        
-        const toggleAction = page 
-          ? `togglePageActive('${page.id}', this.checked)`
-          : `provisionAssistingPage('${catItem.slug}')`;
+        const toggleDisabled = isDefaultPage ? 'disabled' : '';
 
         const editButton = page
-          ? `<button class="btn small primary icon-only" onclick="openCmsPageContentEditor('${page.id}')" title="Edit Content"><i data-lucide="pencil"></i></button>`
+          ? `<button class="btn small primary icon-only" onclick="openCmsPageContentEditor('${page.id}')" title="Edit Content" aria-label="Edit Content ${escapeHtml(catItem.title)}"><i data-lucide="pencil"></i></button>`
           : `<button class="btn small primary icon-only" disabled title="Activate page to edit content" style="opacity:0.5;"><i data-lucide="pencil"></i></button>`;
 
         const previewButton = page
-          ? `<button class="btn small icon-only" onclick="openCmsLivePreview('${page.id}')" title="Preview"><i data-lucide="eye"></i></button>`
+          ? `<button class="btn small icon-only" onclick="openCmsLivePreview('${page.id}')" title="Preview" aria-label="Preview ${escapeHtml(catItem.title)}"><i data-lucide="eye"></i></button>`
           : `<button class="btn small icon-only" disabled title="Activate page to preview" style="opacity:0.5;"><i data-lucide="eye"></i></button>`;
 
-        return `
-          <div class="cms-card">
-            <div class="cms-card-header">
-              <div>
-                <h3 class="cms-card-title">${escapeHtml(catItem.title)}</h3>
-                <span class="cms-card-slug">/${catItem.slug}</span>
-              </div>
-              <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page ? page.status : 'Inactive'}</span>
-            </div>
-            <p class="muted" style="font-size:12px; margin:0 0 12px 0;">Assisting & System Page · Status: ${page ? 'Created' : 'Not Activated'}</p>
-            <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
-              <div class="row" style="align-items:center;">
-                <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle; margin-right:8px;">
-                  <input type="checkbox" ${isPub ? 'checked' : ''} onchange="${toggleAction}" style="opacity:0; width:0; height:0;">
-                  <span class="slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
-                </label>
-                <span style="font-size:12px; color:var(--muted); vertical-align:middle;">${isPub ? 'Active' : 'Inactive'}</span>
-              </div>
-              <div class="row" style="gap: 8px;">
-                ${editButton}
-                ${previewButton}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
+        const settingsButton = page
+          ? `<button class="btn small icon-only" style="color: var(--muted);" onclick="openCmsPageDetailsModal('${page.id}')" title="Settings" aria-label="Page settings"><i data-lucide="settings"></i></button>`
+          : `<button class="btn small icon-only" style="color: var(--muted);" disabled title="Activate page to edit settings" style="opacity:0.5;"><i data-lucide="settings"></i></button>`;
 
-      assistingGrid.innerHTML = allAssistingHtml;
-      
-      if (!document.getElementById('toggleSliderStyle')) {
-        const style = document.createElement('style');
-        style.id = 'toggleSliderStyle';
-        style.textContent = `
-          .switch input:checked + .slider { background-color: var(--accent, #f97316); }
-          .switch input:checked + .slider:before { transform: translateX(20px); }
-          .slider:before {
-            position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px;
-            background-color: white; transition: .4s; border-radius: 50%;
-          }
-        `;
-        document.head.appendChild(style);
-      }
+        return {
+          title: catItem.title,
+          slug: catItem.slug,
+          updatedAt: page?.updatedAt || page?.createdAt || 0,
+          status: isPub ? 'published' : 'inactive',
+          html: `
+            <div class="cms-card">
+              <div class="cms-card-header">
+                <div>
+                  <h3 class="cms-card-title">${escapeHtml(catItem.title)} ${catItem.slug === '' ? '<span style="color:var(--accent); font-size:12px;">(Home)</span>' : ''}</h3>
+                  <span class="cms-card-slug">${escapeHtml(cmsDisplaySlug(catItem.slug))}</span>
+                </div>
+                <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${isPub ? 'Published' : 'Inactive'}</span>
+              </div>
+              <p class="muted" style="font-size:12px; margin:0 0 12px 0;">${escapeHtml(catItem.description)}</p>
+              <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
+                <div class="row" style="align-items:center;">
+                  <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle; margin-right:8px; ${isDefaultPage ? 'opacity:0.6; cursor:not-allowed;' : ''}">
+                    <input type="checkbox" ${isPub ? 'checked' : ''} ${toggleDisabled} onchange="${toggleAction}" style="opacity:0; width:0; height:0;">
+                    <span class="slider" style="position:absolute; cursor:${isDefaultPage ? 'not-allowed' : 'pointer'}; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
+                  </label>
+                  <span style="font-size:12px; color:var(--muted); vertical-align:middle;">${isPub ? 'Active' : 'Inactive'}</span>
+                </div>
+                <div class="row" style="gap: 8px;">
+                  ${editButton}
+                  ${previewButton}
+                  ${settingsButton}
+                </div>
+              </div>
+            </div>
+          `
+        };
+      }).filter(Boolean);
+
+      displayedStatic.sort(sortHelper);
+      staticGrid.innerHTML = displayedStatic.length > 0 
+        ? displayedStatic.map(item => item.html).join('')
+        : `<p class="muted" style="grid-column: 1/-1; text-align:center; padding: 20px;">No static pages found.</p>`;
+
+      // 2. Render Dynamic Templates
+      let displayedDynamic = dynamicTemplatesCatalog.map(catItem => {
+        const page = filteredPages.find(p => String(p.slug || '').toLowerCase().trim() === catItem.slug);
+        const isPub = page ? page.status === 'published' : false;
+
+        if (cmsState.activePageFilter === 'published' && !isPub && page) return null;
+        if (cmsState.activePageFilter === 'draft' && (!page || page.status !== 'draft')) return null;
+
+        const isModuleActive = (cmsState.tenantModules || []).some(m => m.key === catItem.module && m.status === 'active');
+
+        if (isModuleActive) {
+          return {
+            title: catItem.title,
+            slug: catItem.slug,
+            updatedAt: page?.updatedAt || page?.createdAt || 0,
+            status: isPub ? 'published' : 'inactive',
+            html: `
+              <div class="cms-card">
+                <div class="cms-card-header">
+                  <div>
+                    <h3 class="cms-card-title">${escapeHtml(catItem.title)}</h3>
+                    <span class="cms-card-slug">${escapeHtml(cmsDisplaySlug(catItem.slug))}</span>
+                  </div>
+                  <span class="badge-status badge-published">Active</span>
+                </div>
+                <p class="muted" style="font-size:12px; margin:0 0 12px 0;">${escapeHtml(catItem.description)}</p>
+                <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
+                  <span style="font-size:12px; color:var(--accent); font-weight:600; display:flex; align-items:center; gap:4px;"><i data-lucide="shield-check" style="width:14px;height:14px;"></i>Included</span>
+                  <div class="row" style="gap: 8px;">
+                    <button class="btn small primary icon-only" onclick="openDynamicCmsPageContentEditor('${catItem.slug}')" title="Edit Content" aria-label="Edit Content ${escapeHtml(catItem.title)}"><i data-lucide="pencil"></i></button>
+                    <button class="btn small icon-only" onclick="openDynamicCmsLivePreview('${catItem.slug}')" title="Preview" aria-label="Preview ${escapeHtml(catItem.title)}"><i data-lucide="eye"></i></button>
+                    <button class="btn small icon-only" style="color: var(--muted);" onclick="openDynamicCmsPageDetailsModal('${catItem.slug}')" title="Settings" aria-label="Page settings"><i data-lucide="settings"></i></button>
+                  </div>
+                </div>
+              </div>
+            `
+          };
+        } else {
+          return {
+            title: catItem.title,
+            slug: catItem.slug,
+            updatedAt: 0,
+            status: 'inactive',
+            html: `
+              <div class="cms-card disabled-template" style="opacity: 0.5; background: #f8fafc; border: 1px dashed #cbd5e1;">
+                <div class="cms-card-header">
+                  <div>
+                    <h3 class="cms-card-title" style="color: #64748b;">${escapeHtml(catItem.title)}</h3>
+                    <span class="cms-card-slug" style="color: #94a3b8;">${escapeHtml(cmsDisplaySlug(catItem.slug))}</span>
+                  </div>
+                  <span class="badge-status badge-draft" style="background: #e2e8f0; color: #64748b; border: 1px solid #cbd5e1;">Inactive</span>
+                </div>
+                <p class="muted" style="font-size:12px; margin:0 0 12px 0; color: #94a3b8;">${escapeHtml(catItem.description)}</p>
+                <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px dashed #cbd5e1; pointer-events: none;">
+                  <span style="font-size:11px; color:#94a3b8; font-weight:600; display:flex; align-items:center; gap:4px;"><i data-lucide="lock" style="width:12px;height:12px;"></i>Locked (Module Inactive)</span>
+                  <div class="row" style="gap: 8px;">
+                    <button class="btn small primary icon-only" disabled title="Unlock module in package settings to edit" style="opacity:0.5; cursor:not-allowed;"><i data-lucide="pencil"></i></button>
+                    <button class="btn small icon-only" disabled title="Unlock module in package settings to preview" style="opacity:0.5; cursor:not-allowed;"><i data-lucide="eye"></i></button>
+                    <button class="btn small icon-only" style="color: var(--muted);" disabled title="Unlock module in package settings to adjust settings" style="opacity:0.5; cursor:not-allowed;"><i data-lucide="settings"></i></button>
+                  </div>
+                </div>
+              </div>
+            `
+          };
+        }
+      }).filter(Boolean);
+
+      displayedDynamic.sort(sortHelper);
+      dynamicGrid.innerHTML = displayedDynamic.length > 0 
+        ? displayedDynamic.map(item => item.html).join('')
+        : `<p class="muted" style="grid-column: 1/-1; text-align:center; padding: 20px;">No dynamic templates found.</p>`;
 
       refreshIcons();
+    }
+
+    function makeUniqueCmsSlug(baseSlug) {
+      const normalized = String(baseSlug || '').trim().toLowerCase().replace(/^\/+/, '').replace(/\s+/g, '-');
+      if (!normalized) return '';
+      const existing = new Set(cmsState.pages.map(p => String(p.slug || '').toLowerCase()));
+      if (!existing.has(normalized)) return normalized;
+      let index = 2;
+      while (existing.has(`${normalized}-${index}`)) index += 1;
+      return `${normalized}-${index}`;
     }
 
     function renderCmsTemplates() {
       const grid = document.getElementById('cmsTemplatesGrid');
       if (!grid) return;
-
-      grid.innerHTML = dynamicTemplatesCatalog.map(template => {
-        const page = cmsState.pages.find(p => String(p.slug || '').toLowerCase().trim() === template.slug);
-        const isPub = page ? page.status === 'published' : false;
-
-        const toggleAction = page
-          ? `toggleTemplatePageActive('${page.id}', this.checked)`
-          : `provisionTemplatePage('${template.slug}')`;
-
+      grid.innerHTML = getWebsiteBuilderTemplateCatalog().map(template => {
+        const blockCount = template.blocks.length;
+        const existing = cmsState.pages.some(page => String(page.slug || '') === String(template.slug || ''));
         return `
-          <article class="cms-card">
+          <article class="cms-card cms-template-card">
             <div class="cms-card-header">
               <div class="row" style="gap:10px; align-items:flex-start;">
                 <i data-lucide="${template.icon}" style="width:22px;height:22px;color:var(--accent);"></i>
                 <div>
                   <h3 class="cms-card-title">${escapeHtml(template.title)}</h3>
-                  <span class="cms-card-slug">${escapeHtml(template.scope)}</span>
+                  <span class="cms-card-slug">${escapeHtml(cmsDisplaySlug(template.slug))}</span>
                 </div>
               </div>
-              <span class="badge-status ${isPub ? 'badge-published' : 'badge-draft'}">${page ? page.status : 'Inactive'}</span>
+              <span class="badge-status ${existing ? 'badge-published' : 'badge-draft'}">${existing ? 'Exists' : 'Template'}</span>
             </div>
-            <p style="font-size:13px; color:var(--muted); margin:0 0 12px 0; line-height:1.5;">${escapeHtml(template.description)}</p>
-            <div class="cms-card-footer" style="display:flex; justify-content:space-between; align-items:center; padding-top:12px; border-top:1px solid var(--line);">
-              <div class="row" style="align-items:center;">
-                <label class="switch" style="display:inline-block; width:44px; height:22px; position:relative; vertical-align:middle; margin-right:8px;">
-                  <input type="checkbox" ${isPub ? 'checked' : ''} onchange="${toggleAction}" style="opacity:0; width:0; height:0;">
-                  <span class="slider" style="position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background-color:#ccc; transition:.4s; border-radius:34px;"></span>
-                </label>
-                <span style="font-size:12px; color:var(--muted); vertical-align:middle;">${isPub ? 'Active' : 'Inactive'}</span>
-              </div>
-              <div class="row" style="gap: 8px;">
-                <button class="btn small" onclick="openTemplateSettings('${template.key}')"><i data-lucide="pencil"></i>Edit Hero & CTA</button>
-              </div>
+            <p style="font-size:13px; color:var(--muted); margin:0; line-height:1.5;">${escapeHtml(template.description)}</p>
+            <div class="cms-card-footer">
+              <span class="cms-card-meta"><i data-lucide="blocks"></i>${blockCount} starter block${blockCount === 1 ? '' : 's'}</span>
+              <button class="btn small" onclick="createCmsTemplatePage('${template.key}')"><i data-lucide="plus"></i>Create</button>
             </div>
           </article>
         `;
       }).join('');
       refreshIcons();
+    }
+
+    async function createCmsTemplatePage(templateKey) {
+      const template = getWebsiteBuilderTemplateCatalog().find(item => item.key === templateKey);
+      if (!template) return;
+
+      const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
+      if (!websiteId) {
+        alert('Create or load a website context before adding a template page.');
+        return;
+      }
+
+      const slug = makeUniqueCmsSlug(template.slug);
+      const payload = {
+        websiteId,
+        title: template.title,
+        slug,
+        isHome: template.key === 'home',
+        status: template.status || 'draft',
+        content: template.blocks,
+        seoTitle: `${template.title} | ${localCmsState.websiteTitle}`,
+        seoDescription: template.description,
+        seoKeywords: template.key.replace('-', ', ')
+      };
+
+      const res = await cmsApiRequest('POST', '/api/cms/pages', payload);
+      if (res && res.data) {
+        showToast(`${template.title} template created`);
+        await loadAllCmsData();
+        switchCmsTab('pages');
+      } else {
+        alert(res?.data?.error || 'Failed to create template page.');
+      }
     }
 
     function readCmsContentDesignEntry(key) {
@@ -22677,202 +22554,102 @@ body.customizer-open { overflow: hidden; }
 
     let currentNavMenu = null;
 
-    // ── Menu Builder: drag-and-drop multi-zone system ──
-    const MENU_ZONES = ['header', 'rail', 'mobile-rail', 'mobile-drawer', 'footer-1', 'footer-2', 'footer-3'];
-    let cmsMenuData = {}; // { 'header': [{label,url},...], 'rail': [...], ... }
-
     async function loadCmsNavigationMenu() {
-      // Inject menu builder styles once
-      if (!document.getElementById('menuBuilderStyles')) {
-        const s = document.createElement('style');
-        s.id = 'menuBuilderStyles';
-        s.textContent = `
-          .cms-menu-zone { background:var(--bg-secondary, rgba(255,255,255,0.03)); border:1px solid var(--line); border-radius:10px; padding:0; overflow:hidden; }
-          .cms-menu-zone-label { font-size:13px; font-weight:600; padding:10px 14px; display:flex; align-items:center; gap:6px; border-bottom:1px solid var(--line); background:rgba(99,102,241,0.04); }
-          .cms-menu-zone-drop { min-height:80px; padding:8px; display:flex; flex-direction:column; gap:4px; transition:background .2s; }
-          .cms-menu-zone-drop.drag-over { background:rgba(99,102,241,0.08); outline:2px dashed var(--accent); outline-offset:-2px; border-radius:0 0 8px 8px; }
-          .cms-menu-zone-drop:empty::after { content:'Drop pages here'; display:block; text-align:center; padding:20px 0; font-size:12px; color:var(--muted); opacity:0.6; }
-          .cms-menu-drag-item { padding:8px 12px; background:var(--bg, #1a1a2e); border:1px solid var(--line); border-radius:6px; cursor:grab; display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:13px; transition:transform .15s, box-shadow .15s; }
-          .cms-menu-drag-item:active { cursor:grabbing; }
-          .cms-menu-drag-item:hover { box-shadow:0 2px 8px rgba(0,0,0,0.15); }
-          .cms-menu-drag-item .drag-handle { color:var(--muted); flex-shrink:0; }
-          .cms-menu-drag-item .item-remove { cursor:pointer; color:var(--muted); opacity:0.5; transition:opacity .2s; flex-shrink:0; }
-          .cms-menu-drag-item .item-remove:hover { opacity:1; color:var(--danger, #ef4444); }
-          .cms-avail-item { padding:8px 12px; background:var(--bg, #1a1a2e); border:1px solid var(--line); border-radius:6px; cursor:grab; font-size:13px; display:flex; align-items:center; gap:8px; transition:transform .15s; }
-          .cms-avail-item:hover { border-color:var(--accent); }
-          .cms-avail-item .avail-slug { font-family:monospace; font-size:11px; color:var(--muted); margin-left:auto; }
-        `;
-        document.head.appendChild(s);
-      }
-
-      // Load existing menus from backend
+      const websiteId = document.getElementById('selectWebsiteNav').value || cmsState.activeWebsiteId;
       const res = await cmsApiRequest('GET', '/api/cms/navigation');
-      MENU_ZONES.forEach(key => { cmsMenuData[key] = []; });
-
+      
       if (res && res.data) {
-        const navItems = Array.isArray(res.data) ? res.data : [res.data];
-        navItems.forEach(nav => {
-          const key = (nav.name || '').toLowerCase().replace(/\s+/g, '-');
-          const items = parseMaybeJson(nav.items, []);
-          if (MENU_ZONES.includes(key)) {
-            cmsMenuData[key] = items;
-          } else if (key === 'header-navigation' || key === 'header-menu') {
-            cmsMenuData['header'] = items;
-          }
-        });
+        currentNavMenu = res.data.find(n => n.websiteId === websiteId);
+      }
+      
+      if (!currentNavMenu) {
+        currentNavMenu = {
+          websiteId,
+          name: 'Header Navigation',
+          items: [
+            { label: 'Home', url: '/' },
+            { label: 'Services', url: '/services' }
+          ]
+        };
       }
 
-      renderMenuAvailablePages();
-      MENU_ZONES.forEach(key => renderMenuZone(key));
-      initMenuDragDrop();
-      refreshIcons();
+      renderCmsNavMenuRows();
     }
 
-    function renderMenuAvailablePages() {
-      const container = document.getElementById('cmsMenuAvailablePages');
-      if (!container) return;
-      const activePages = cmsState.pages.filter(p => p.status === 'published');
-      const allTemplates = dynamicTemplatesCatalog || [];
+    function renderCmsNavMenuRows() {
+      const container = document.getElementById('cmsMenuItemsList');
+      const items = parseMaybeJson(currentNavMenu.items, []);
+      
+      if (items.length === 0) {
+        container.innerHTML = `<p class="muted" style="text-align:center; padding: 20px;">No links configured in navigation.</p>`;
+        return;
+      }
 
-      let html = '';
-      activePages.forEach(page => {
-        const slug = page.slug || '';
-        const url = slug === 'home' || slug === '' ? '/' : `/${slug}`;
-        html += `<div class="cms-avail-item" draggable="true" data-label="${escapeHtml(page.title)}" data-url="${escapeHtml(url)}">
-          <i data-lucide="grip-vertical" style="width:14px;height:14px;color:var(--muted);flex-shrink:0;"></i>
-          <span>${escapeHtml(page.title)}</span>
-          <span class="avail-slug">${escapeHtml(url)}</span>
-        </div>`;
-      });
-      allTemplates.forEach(t => {
-        html += `<div class="cms-avail-item" draggable="true" data-label="${escapeHtml(t.title)}" data-url="/${t.slug}">
-          <i data-lucide="grip-vertical" style="width:14px;height:14px;color:var(--muted);flex-shrink:0;"></i>
-          <span>${escapeHtml(t.title)}</span>
-          <span class="avail-slug">/${t.slug}</span>
-        </div>`;
-      });
-
-      container.innerHTML = html || '<p class="muted" style="font-size:12px;">No active pages found.</p>';
-      refreshIcons();
-    }
-
-    function renderMenuZone(key) {
-      const drop = document.querySelector(`.cms-menu-zone-drop[data-menu-key="${key}"]`);
-      if (!drop) return;
-      const items = cmsMenuData[key] || [];
-      drop.innerHTML = items.map((item, idx) => `
-        <div class="cms-menu-drag-item" draggable="true" data-menu-key="${key}" data-idx="${idx}">
-          <span class="drag-handle"><i data-lucide="grip-vertical" style="width:13px;height:13px;"></i></span>
-          <span style="flex:1;">${escapeHtml(item.label)}</span>
-          <span style="font-family:monospace;font-size:11px;color:var(--muted);">${escapeHtml(item.url)}</span>
-          <span class="item-remove" onclick="removeFromMenu('${key}', ${idx})"><i data-lucide="x" style="width:14px;height:14px;"></i></span>
+      container.innerHTML = items.map((item, idx) => `
+        <div class="menu-item-row">
+          <div class="field" style="margin-bottom:0; width: 40%;">
+            <input type="text" class="form-control" value="${escapeHtml(item.label)}" onchange="updateCmsMenuItem(${idx}, 'label', this.value)" placeholder="Link Label">
+          </div>
+          <div class="field" style="margin-bottom:0; width: 45%;">
+            <input type="text" class="form-control" value="${escapeHtml(item.url)}" onchange="updateCmsMenuItem(${idx}, 'url', this.value)" placeholder="/slug or custom URL">
+          </div>
+          <div class="menu-item-actions">
+            <button class="btn small" style="padding: 4px 8px;" onclick="moveCmsMenuItem(${idx}, -1)" ${idx === 0 ? 'disabled' : ''}><i data-lucide="arrow-up" style="width:14px;height:14px;"></i></button>
+            <button class="btn small" style="padding: 4px 8px;" onclick="moveCmsMenuItem(${idx}, 1)" ${idx === items.length - 1 ? 'disabled' : ''}><i data-lucide="arrow-down" style="width:14px;height:14px;"></i></button>
+            <button class="btn small" style="padding: 4px 8px; color: var(--danger);" onclick="deleteCmsMenuItem(${idx})"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+          </div>
         </div>
       `).join('');
       refreshIcons();
     }
 
-    window.removeFromMenu = function(key, idx) {
-      cmsMenuData[key].splice(idx, 1);
-      renderMenuZone(key);
-    };
-
-    let menuDragDropInitialized = false;
-    function initMenuDragDrop() {
-      if (menuDragDropInitialized) return;
-      menuDragDropInitialized = true;
-
-      // Delegate dragstart for available items
-      const availContainer = document.getElementById('cmsMenuAvailablePages');
-      if (availContainer) {
-        availContainer.addEventListener('dragstart', e => {
-          const item = e.target.closest('.cms-avail-item');
-          if (!item) return;
-          e.dataTransfer.setData('text/plain', JSON.stringify({
-            label: item.dataset.label,
-            url: item.dataset.url,
-            source: 'available'
-          }));
-          e.dataTransfer.effectAllowed = 'copy';
-          item.style.opacity = '0.5';
-        });
-        availContainer.addEventListener('dragend', e => {
-          const item = e.target.closest('.cms-avail-item');
-          if (item) item.style.opacity = '1';
-        });
-      }
-
-      // Delegate dragstart for zone items
-      document.querySelectorAll('.cms-menu-zone-drop').forEach(zone => {
-        zone.addEventListener('dragstart', e => {
-          const item = e.target.closest('.cms-menu-drag-item');
-          if (!item) return;
-          e.dataTransfer.setData('text/plain', JSON.stringify({
-            label: item.querySelector('span[style*="flex"]')?.textContent || '',
-            url: item.querySelector('span[style*="monospace"]')?.textContent || '',
-            source: 'menu',
-            fromKey: item.dataset.menuKey,
-            fromIdx: parseInt(item.dataset.idx)
-          }));
-          e.dataTransfer.effectAllowed = 'move';
-          item.style.opacity = '0.5';
-        });
-        zone.addEventListener('dragend', e => {
-          const item = e.target.closest('.cms-menu-drag-item');
-          if (item) item.style.opacity = '1';
-        });
-
-        // Setup drop listeners
-        zone.addEventListener('dragover', e => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'copy';
-          zone.classList.add('drag-over');
-        });
-        zone.addEventListener('dragleave', e => {
-          zone.classList.remove('drag-over');
-        });
-        zone.addEventListener('drop', e => {
-          e.preventDefault();
-          zone.classList.remove('drag-over');
-          try {
-            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
-            const targetKey = zone.dataset.menuKey;
-            
-            // If reordering within same zone, remove from old position first
-            if (data.source === 'menu' && data.fromKey) {
-              cmsMenuData[data.fromKey].splice(data.fromIdx, 1);
-              if (data.fromKey !== targetKey) renderMenuZone(data.fromKey);
-            }
-            cmsMenuData[targetKey].push({ label: data.label, url: data.url });
-            renderMenuZone(targetKey);
-          } catch(err) {
-            console.error('Drop parse error', err);
-          }
-        });
-      });
+    function updateCmsMenuItem(idx, key, val) {
+      const items = parseMaybeJson(currentNavMenu.items, []);
+      items[idx][key] = val;
+      currentNavMenu.items = items;
     }
 
-    async function saveAllCmsMenus() {
-      const websiteId = cmsState.activeWebsiteId || cmsState.websites[0]?.id;
-      if (!websiteId) { alert('No website context found.'); return; }
+    function moveCmsMenuItem(idx, dir) {
+      const items = parseMaybeJson(currentNavMenu.items, []);
+      const temp = items[idx];
+      items[idx] = items[idx + dir];
+      items[idx + dir] = temp;
+      currentNavMenu.items = items;
+      renderCmsNavMenuRows();
+    }
 
-      let success = true;
-      for (const key of MENU_ZONES) {
-        const items = cmsMenuData[key] || [];
-        const payload = {
-          websiteId,
-          name: key,
-          items: items,
-          isActive: true
-        };
-        const res = await cmsApiRequest('POST', '/api/cms/navigation', payload);
-        if (!res || !res.data) success = false;
-      }
+    function deleteCmsMenuItem(idx) {
+      const items = parseMaybeJson(currentNavMenu.items, []);
+      items.splice(idx, 1);
+      currentNavMenu.items = items;
+      renderCmsNavMenuRows();
+    }
 
-      if (success) {
-        showToast('All menus saved successfully.');
+    function addNewCmsMenuItem() {
+      if (!currentNavMenu) return;
+      const items = parseMaybeJson(currentNavMenu.items, []);
+      items.push({ label: 'New Link', url: '/new-page' });
+      currentNavMenu.items = items;
+      renderCmsNavMenuRows();
+    }
+
+    async function saveCmsNavigationMenu() {
+      if (!currentNavMenu) return;
+      const items = parseMaybeJson(currentNavMenu.items, []);
+      
+      const payload = {
+        websiteId: currentNavMenu.websiteId,
+        name: currentNavMenu.name || 'Header Navigation',
+        items: items,
+        isActive: true
+      };
+
+      const res = await cmsApiRequest('POST', '/api/cms/navigation', payload);
+      if (res && res.data) {
+        showToast('Navigation menu saved successfully');
         await loadAllCmsData();
       } else {
-        alert('Some menus failed to save. Please try again.');
+        alert('Failed to save navigation menu');
       }
     }
 
@@ -23127,38 +22904,87 @@ body.customizer-open { overflow: hidden; }
       refreshIcons();
     }
 
+    window.setPreviewDevice = function(device) {
+      const iframe = document.getElementById('cmsPreviewIframe');
+      if (!iframe) return;
+      
+      document.querySelectorAll('.device-switcher .device-btn').forEach(btn => {
+        const isTarget = btn.getAttribute('data-device') === device;
+        btn.classList.toggle('active', isTarget);
+        if (isTarget) {
+          btn.style.background = 'white';
+          btn.style.color = '#0f172a';
+          btn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+        } else {
+          btn.style.background = 'none';
+          btn.style.color = '#64748b';
+          btn.style.boxShadow = 'none';
+        }
+      });
+      
+      if (device === 'desktop') {
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+      } else if (device === 'tablet') {
+        iframe.style.width = '768px';
+        iframe.style.height = '90%';
+      } else if (device === 'mobile') {
+        iframe.style.width = '375px';
+        iframe.style.height = '90%';
+      }
+    };
+
     async function openCmsLivePreview(pageId) {
       const page = cmsState.pages.find(p => p.id === pageId);
       if (!page) return;
 
-      document.getElementById('previewSlugBadge').textContent = `/${page.slug}`;
+      document.getElementById('previewSlugBadge').textContent = page.slug ? `/${page.slug}` : '/';
       document.getElementById('cmsPreviewModal').style.display = 'flex';
 
-      const frameContainer = document.getElementById('previewFrameContainer');
-      frameContainer.innerHTML = `<div style="text-align:center; color:#1e293b; padding:40px;">Simulating bedrock theme render...</div>`;
+      const iframe = document.getElementById('cmsPreviewIframe');
+      if (iframe) {
+        iframe.src = 'about:blank'; // reset iframe src first
+        
+        let previewToken = '';
+        try {
+          const res = await cmsApiRequest('POST', `/api/cms/pages/${pageId}/preview`);
+          if (res && res.previewToken) {
+            previewToken = res.previewToken;
+          }
+        } catch (err) {
+          console.warn('Failed to fetch preview token:', err);
+        }
 
-      const dnsConf = await cmsApiRequest('GET', `/api/cms/render?slug=${page.slug}`);
-      let renderPayload = null;
-      if (dnsConf && dnsConf.data) {
-        renderPayload = dnsConf.data;
-      } else {
-        const navRes = await cmsApiRequest('GET', '/api/cms/navigation');
-        const activeNav = navRes && navRes.data ? navRes.data.find(n => n.websiteId === page.websiteId && n.isActive) : null;
-        const footerRes = await cmsApiRequest('GET', `/api/cms/footer?websiteId=${page.websiteId}`);
+        const iframeUrl = new URL(`/church/${page.slug}`, window.location.origin);
+        if (previewToken) {
+          iframeUrl.searchParams.set('previewToken', previewToken);
+        }
+        iframe.src = iframeUrl.toString();
+      }
 
-        renderPayload = {
-          title: page.title,
-          slug: page.slug,
-          isHome: page.isHome,
-          contentBlocks: parseMaybeJson(page.content, []),
-          navigation: activeNav ? { name: activeNav.name, items: parseMaybeJson(activeNav.items, []) } : null,
-          footer: footerRes && footerRes.data ? { copyrightText: footerRes.data.copyrightText, socialLinks: parseMaybeJson(footerRes.data.socialLinks, []), secondaryLinks: parseMaybeJson(footerRes.data.secondaryLinks, []) } : null,
-          theme: localCmsState.theme,
-          churchName: localCmsState.websiteTitle
+      const themeId = (window.themeEngineState && window.themeEngineState.activeThemeId) || 'ecclesia';
+      const websiteId = page.websiteId || 'demo-church-website';
+      const tenantId = (window.state && window.state.tenant && window.state.tenant.id) || localStorage.getItem('churchos.tenantId') || '';
+      const tenantName = (window.state && window.state.tenant && window.state.tenant.name) || localStorage.getItem('churchos.tenantName') || '';
+      const subdomain = (window.state && window.state.tenant && window.state.tenant.subdomain) || localStorage.getItem('churchos.subdomain') || '';
+      
+      const customizerUrl = new URL('/customizer/', window.location.origin);
+      customizerUrl.searchParams.set('themeId', themeId);
+      customizerUrl.searchParams.set('websiteId', websiteId);
+      customizerUrl.searchParams.set('pageId', page.id);
+      if (tenantId) customizerUrl.searchParams.set('tenantId', tenantId);
+      if (tenantName) customizerUrl.searchParams.set('tenantName', tenantName);
+      if (subdomain) customizerUrl.searchParams.set('subdomain', subdomain);
+
+      const customizeBtn = document.getElementById('cmsPreviewCustomizeBtn');
+      if (customizeBtn) {
+        customizeBtn.onclick = () => {
+          closeCmsModal('cmsPreviewModal');
+          window.open(customizerUrl.toString(), '_blank');
         };
       }
 
-      renderCmsBedrockSimulator(frameContainer, renderPayload);
+      setPreviewDevice('desktop');
       refreshIcons();
     }
 

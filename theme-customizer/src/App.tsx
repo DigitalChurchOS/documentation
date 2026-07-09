@@ -200,7 +200,15 @@ const CUSTOMIZER_PAGES_LIST: CustomizerPageOption[] = [
   { value: "cart.html", label: "Shopping Cart (cart.html)" },
   { value: "checkout.html", label: "Checkout (checkout.html)" },
   { value: "checkout-success.html", label: "Order Confirmed (checkout-success.html)" },
-  { value: "checkout-failed.html", label: "Payment Failed (checkout-failed.html)" }
+  { value: "checkout-failed.html", label: "Payment Failed (checkout-failed.html)" },
+  { value: "service-times.html", label: "Service Times (service-times.html)" },
+  { value: "plan-visit.html", label: "Plan a Visit (plan-visit.html)" },
+  { value: "meetings.html", label: "Meetings Directory (meetings.html)" },
+  { value: "announcements.html", label: "Announcements (announcements.html)" },
+  { value: "branches.html", label: "Campuses / Branches (branches.html)" },
+  { value: "gallery.html", label: "Gallery (gallery.html)" },
+  { value: "campaigns.html", label: "Campaigns (campaigns.html)" },
+  { value: "resources.html", label: "Resources (resources.html)" }
 ];
 
 
@@ -249,6 +257,57 @@ const CUSTOMIZER_FILE_SLUGS: Record<string, string> = {
   'checkout.html': 'store/checkout',
   'checkout-success.html': 'store/thank-you',
   'checkout-failed.html': 'store/checkout-failed',
+  'service-times.html': 'service-times',
+  'plan-visit.html': 'plan-visit',
+  'meetings.html': 'meetings',
+  'announcements.html': 'announcements',
+  'branches.html': 'branches',
+  'gallery.html': 'gallery',
+  'campaigns.html': 'campaigns',
+  'resources.html': 'resources',
+};
+
+const DYNAMIC_FILE_MODULES: Record<string, string> = {
+  'livestream-page.html': 'livestream',
+  'blog-archive.html': 'dynamic-blog-publishing-engine',
+  'blog-single.html': 'dynamic-blog-publishing-engine',
+  'store-archive.html': 'store',
+  'store-single.html': 'store',
+  'cart.html': 'store',
+  'checkout.html': 'store',
+  'checkout-success.html': 'store',
+  'checkout-failed.html': 'store',
+  'podcast-archive.html': 'podcast',
+  'podcast-episode.html': 'podcast',
+  'courses-archive.html': 'lms',
+  'course-main.html': 'lms',
+  'lesson-single.html': 'lms',
+  'groups-archive.html': 'groups',
+  'group-single.html': 'groups',
+  'worship.html': 'worship',
+  'prayer.html': 'prayer',
+  'prayer-home.html': 'prayer',
+  'prayer-wall.html': 'prayer',
+  'prayer-room.html': 'prayer',
+  'testimony-wall.html': 'prayer',
+  'testimony-single.html': 'prayer',
+  'testimony-submit.html': 'prayer',
+  'meetings.html': 'live-meetings',
+  'events.html': 'events',
+  'event-single.html': 'events',
+  'event-register.html': 'events',
+  'events-archive.html': 'events',
+  'sermons.html': 'media-sermons',
+  'media-single.html': 'media-sermons',
+  'services-archive.html': 'church-services',
+  'service-single.html': 'church-services',
+  'announcements.html': 'announcements',
+  'media-archive.html': 'media',
+  'ministries.html': 'ministries',
+  'branches.html': 'multi-branch',
+  'gallery.html': 'gallery',
+  'campaigns.html': 'giving',
+  'resources.html': 'library',
 };
 
 function fileForCmsPage(page: any) {
@@ -350,6 +409,7 @@ export function App() {
   const [tenantContent, setTenantContent] = useState<any | null>(null);
   
   const [pagesList, setPagesList] = useState<any[]>([]);
+  const [activeModules, setActiveModules] = useState<string[]>([]);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [publishStatus, setPublishStatus] = useState<'idle' | 'publishing' | 'published' | 'preview'>('idle');
   const previewWindowRef = useRef<Window | null>(null);
@@ -455,6 +515,18 @@ export function App() {
 
         if (pagesRes && pagesRes.data) {
           setPagesList(pagesRes.data);
+        }
+
+        try {
+          const modulesRes = await apiFetch("GET", "/api/tenant/modules");
+          if (modulesRes && Array.isArray(modulesRes.data)) {
+            const activeModuleKeys = modulesRes.data
+              .filter((m: any) => m.status === 'active')
+              .map((m: any) => m.key);
+            setActiveModules(activeModuleKeys);
+          }
+        } catch (modulesErr) {
+          console.warn("Could not fetch active tenant modules for Customizer:", modulesErr);
         }
 
         try {
@@ -898,19 +970,54 @@ export function App() {
 
   const pageOptions = useMemo<CustomizerPageOption[]>(() => {
     const options = new Map<string, CustomizerPageOption>();
-    CUSTOMIZER_PAGES_LIST.forEach((option) => options.set(option.value, option));
+    const staticPageFiles = new Set([
+      'index.html',
+      'about.html',
+      'contact.html',
+      'service-times.html',
+      'plan-visit.html',
+      'account.html',
+      'login.html',
+      'giving.html',
+      'giving-partnership.html'
+    ]);
+
+    // 1. Add static pages only if they exist in the DB and are published (activated)
     pagesList.forEach((page) => {
+      if (page.status !== 'published') return;
       const value = fileForCmsPage(page);
-      options.set(value, {
-        value,
-        label: labelForCmsPage(page, value),
-        slug: typeof page.slug === "string" ? page.slug : "",
-        pageId: page.id,
-        sourceFile: page.sourceFile || value,
-      });
+      if (staticPageFiles.has(value)) {
+        options.set(value, {
+          value,
+          label: labelForCmsPage(page, value),
+          slug: typeof page.slug === "string" ? page.slug : "",
+          pageId: page.id,
+          sourceFile: page.sourceFile || value,
+        });
+      }
     });
+
+    // 2. Add dynamic templates if the module is active
+    CUSTOMIZER_PAGES_LIST.forEach((option) => {
+      if (staticPageFiles.has(option.value)) {
+        // Skip static pages that are not active in DB
+        return;
+      }
+
+      // Check if module is active
+      const requiredModule = DYNAMIC_FILE_MODULES[option.value];
+      if (requiredModule && activeModules.length > 0 && !activeModules.includes(requiredModule)) {
+        // Module is inactive, skip from customizer options dropdown!
+        return;
+      }
+
+      if (!options.has(option.value)) {
+        options.set(option.value, option);
+      }
+    });
+
     return Array.from(options.values());
-  }, [pagesList]);
+  }, [pagesList, activeModules]);
 
   const fetchPage = async (filename: string, themeFolder = currentTheme, targetPageId = pageId) => {
     const baseName = filename.split("/").pop() || "index.html";

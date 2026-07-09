@@ -116,10 +116,13 @@ export async function dnsMiddleware(
         }
       }
     } else if (host === 'localhost') {
-      // Local dev fallback to theme-test tenant
-      const tenant = await prisma.tenant.findFirst({
+      // Local dev fallback to theme-test tenant, or any first available tenant
+      let tenant = await prisma.tenant.findFirst({
         where: { subdomain: 'theme-test' },
       });
+      if (!tenant) {
+        tenant = await prisma.tenant.findFirst();
+      }
 
       if (tenant) {
         req.tenantId = tenant.id;
